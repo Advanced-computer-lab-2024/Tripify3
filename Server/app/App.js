@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "app/.env" });
+dotenv.config({ path: ".env" });
 import express from "express";
 import mongoose from "mongoose";
 

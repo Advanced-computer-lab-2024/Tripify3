@@ -2,8 +2,8 @@
   "name": "tripify3",
   "version": "1.0.0",
   "type": "module",
-  "description": "This is advanced computer lab project",
-  "main": "App.js",
+  "description": "",
+  "main": "app/App.js",
   "scripts": {
     "yalabeena": "nodemon app/App.js",
     "test": "echo \"Error: no test specified\" && exit 1"
