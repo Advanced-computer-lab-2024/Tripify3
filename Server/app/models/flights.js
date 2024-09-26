@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const filghtSchema = new Schema({
@@ -21,4 +21,4 @@ const filghtSchema = new Schema({
 }, { timestamps: true });
 
 const flights = mongoose.model('flights', userSchema);
-module.exports = flights;
+export default flights
