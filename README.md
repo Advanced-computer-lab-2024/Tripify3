@@ -3,7 +3,7 @@
 # Go to server directory Tripify3\Server
 
     # RUN: npm install
-    # RUN npm run yalabeenaaa
+    # RUN npm run tripify
 
 # Go to client directory Tripify3\Client
 
