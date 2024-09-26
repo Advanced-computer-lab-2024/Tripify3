@@ -1,12 +1,7 @@
-const Joi = require("joi");
-const { InvalidParameterError } = require("../exceptions/httpException");
 
-const validate = (schema, property) => {
+export const validate = (schema, property) => {
   return (req, res, next) => {
-    
-  
     const { error } = schema.validate(req[property], { abortEarly: false });
-    
 
     if (error) {
       const errorMessage = `Please check your input and try again`;
@@ -17,12 +12,12 @@ const validate = (schema, property) => {
         return { [key]: error.message };
       });
 
-      const validationError = new InvalidParameterError(errorMessage, errors);
-      next(validationError);
+      return res.status(400).json({
+        message: errorMessage,
+        errors,
+      });
     } else {
       next();
     }
   };
 };
-
-module.exports = validate;
