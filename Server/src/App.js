@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import initializeRoutes from "./routes/routes.js";
 
 dotenv.config(); // Load environment variables
@@ -9,14 +10,18 @@ class App {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8000;
+    this.DB=process.env.MONGO_URI.replace("<password>",process.env.MONGO_PASSWORD);
     this.env = process.env.NODE_ENV || "development";  
     initializeRoutes(this.app); // Initialize routes
   }
-
+  
   // Connect to MongoDB
-  connectToDatabase() {
-    mongoose
-      .connect(process.env.MONGO_URI)
+  async connectToDatabase() {
+    if (this.env === "development") {
+      this.app.use(morgan('dev'));
+    }
+    await mongoose
+      .connect(this.DB)
       .then(() => {
         console.log("MongoDB connected successfully!");
       })
@@ -42,5 +47,6 @@ class App {
     return this.app;
   }
 }
+
 
 export default App;
