@@ -7,17 +7,6 @@ import validate from "../middlewares/request_validator_middleware.js";
 export default (app) => {
   app.post(
     "/testing",
-    body("email", enumValidationMessage.IS_REQUIRED).notEmpty({
-      ignore_whitespace: true,
-    }),
-    body("email", enumValidationMessage.SHOULD_BE_STRING).isString(),
-    body("phone", enumValidationMessage.SHOULD_BE_INTEGER).optional().isInt(),
-    // Then, the validate middleware is called
-    // No need to pass by req to validate as express automaticallyinject them when it calls the middleware
-    validate, // This middleware will check if there are any validation errors
-
-    // If there are no validation errors, next() is called,
-    // which means the request continues to this controller function
     getUsers // This is the controller function that will handle the request
     //
   );

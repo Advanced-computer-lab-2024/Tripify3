@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "app/App.js",
+  "main": "src/server.js",
   "scripts": {
-    "tripify": "nodemon app/App.js",
+    "tripify": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
