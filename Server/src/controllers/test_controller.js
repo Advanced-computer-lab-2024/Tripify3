@@ -2,10 +2,10 @@ import enumHttp from "../enumerations/http_code.js";
 import enumStatus from "../enumerations/response_status.js";
 
 export const getUsers = (req, res) => {
-  console.log("Test");
   try {
     console.log(typeof req.body.email);
-
+    
+    console.log("Test");
     res.status(enumHttp.OK).json({
       status: enumStatus.POSITIVE,
     });
@@ -13,7 +13,6 @@ export const getUsers = (req, res) => {
   } catch (err) {
     res.status(enumHttp.BAD_REQUEST).json({
       status: enumStatus.NEGATIVE,
-      message: err.message,
     });
   }
 };

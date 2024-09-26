@@ -1,6 +1,7 @@
-
-export const validate = (schema, property) => {
+import enumHTTP_CODE from "../enumerations/http_code.js";
+export const validate = (schema, property = "body") => {
   return (req, res, next) => {
+
     const { error } = schema.validate(req[property], { abortEarly: false });
 
     if (error) {
@@ -12,9 +13,9 @@ export const validate = (schema, property) => {
         return { [key]: error.message };
       });
 
-      return res.status(400).json({
+      return res.status(enumHTTP_CODE.BAD_REQUEST).json({
         message: errorMessage,
-        errors,
+        error: errors,
       });
     } else {
       next();

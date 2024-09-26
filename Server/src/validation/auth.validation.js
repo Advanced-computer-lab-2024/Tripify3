@@ -1,5 +1,4 @@
 import Joi from "joi";
-
 // Function to calculate age based on date of birth
 function calculateAge(dateOfBirth) {
   const currentDate = new Date();
