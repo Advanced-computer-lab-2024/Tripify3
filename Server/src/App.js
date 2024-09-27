@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import initializeRoutes from "./routes/routes.js";
+import cors from "cors";
 
 dotenv.config(); // Load environment variables
 
@@ -10,10 +11,7 @@ class App {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8000;
-    this.DB = process.env.MONGO_URI.replace(
-      "<password>",
-      process.env.MONGO_PASSWORD
-    );
+    this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
     this.env = process.env.NODE_ENV || "development";
   }
 
@@ -34,6 +32,8 @@ class App {
 
   // Middlewares (CORS, JSON parsing, etc.)
   initializeMiddlewares() {
+    // Enable CORS for all routes
+    this.app.use(cors());
     this.app.use(express.json()); // Parse incoming JSON requests
     initializeRoutes(this.app); // Initialize routes
   }
