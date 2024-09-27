@@ -6,10 +6,12 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
+
     },
     username: {
       type: String,
       required: true,
+
     },
     email: {
       type: String,
@@ -30,6 +32,7 @@ const userSchema = new Schema(
     dateOfBirth: {
       type: String, 
       required: true,
+      immutable: true 
     },
     occupation: {
       type: String, 

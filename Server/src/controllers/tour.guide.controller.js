@@ -22,7 +22,7 @@ export const login = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-  console.log("aaaaa")
+ 
   try {
     const { username, email, password } = req.body;
     const existingUser = await TourGuide.findOne({ username });
@@ -47,3 +47,14 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+router.post('/profile', async (req, res) => {
+  const { userId, name, bio, experience, services } = req.body;
+  try {
+    const newProfile = new TourGuideProfile({ userId, name, bio, experience, services });
+    await newProfile.save();
+    res.status(201).json(newProfile);
+  } catch (error) {
+    res.status(400).json({ error: 'Error creating profile' });
+  }
+});

@@ -1,4 +1,5 @@
 import tourist from "../models/tourist.js"; // Adjust the path as necessary
+import bookings from "../models/bookings.js";
 
 export const login = async (req, res) => {
   try {
@@ -51,6 +52,19 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+export const cancelbooking = async (req,res)=>{
+  const{bookingid,touristid}=req.body
+  try{
+    console.log(bookings.find({bookingid}))
+  const existingbooking = await bookings.findByIdAndDelete({ bookingid });
+    if (!existingbooking) {
+      return res.status(400).json({ message: "booking is not avaliable." });
+    }
+    res.status(200).json({ message: 'booking deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error deleting booking' });
+  }
+}
 
 export const changePassword = async (req, res) => {
   try {
