@@ -23,6 +23,6 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-const advertiser = mongoose.model("Advertiser", userSchema);
+const admin = mongoose.model("Admin", userSchema);
 
-export default advertiser;
+export default admin;
