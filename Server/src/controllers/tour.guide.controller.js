@@ -48,13 +48,4 @@ export const signup = async (req, res) => {
   }
 };
 
-router.post('/profile', async (req, res) => {
-  const { userId, name, bio, experience, services } = req.body;
-  try {
-    const newProfile = new TourGuideProfile({ userId, name, bio, experience, services });
-    await newProfile.save();
-    res.status(201).json(newProfile);
-  } catch (error) {
-    res.status(400).json({ error: 'Error creating profile' });
-  }
-});
+

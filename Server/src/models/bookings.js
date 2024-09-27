@@ -1,18 +1,15 @@
 import mongoose from 'mongoose';
-const Schema = mongoose.Schema;
 
-const bookingsschema = new Schema({
-  booking_id: {
-    type: Number,
-    required: true,
-    unique:true
-              },
-    tourist_id: {
-        type:Number,
-        required:true
-    }
-},
- { timestamps: true });
+const bookingSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  tourId: { type: mongoose.Schema.Types.ObjectId, ref: 'Tour', required: true },
+  bookingDate: { type: Date, default: Date.now },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  status: { type: String, default: 'Pending' },
+  totalPrice: { type: Number, required: true }
+});
 
-const bookings = mongoose.model('bookings', bookingsschema);
-export default bookings
+const Booking = mongoose.model('Booking', bookingSchema);
+
+export default Booking; // ES6 export
