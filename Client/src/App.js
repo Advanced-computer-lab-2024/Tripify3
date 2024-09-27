@@ -3,17 +3,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.js";
 import SignupPage from "./pages/SignupPage.js";
 import Header from "./components/Header.js";
+import LoginPage from "./pages/LoginPage.js"; // Ensure this path is correct
 
 const App = () => {
   return (
     <Router>
-      {" "}
-      {/* This sets up the routing system */}
-      <Header /> {/* The Header component will appear on all pages */}
+      <Header />
       <Routes>
-        {" "}
-        {/* This wraps all the routes for different pages */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/Login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
     </Router>
