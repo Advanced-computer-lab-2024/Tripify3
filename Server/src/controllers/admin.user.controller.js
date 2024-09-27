@@ -2,9 +2,9 @@ import crypto from "crypto";
 import admin from "../models/admin.js"; // Adjust the path as necessary
 import tourismgovernor from "../models/TourismGoverner.js"; // Adjust the path as necessary
 import nodemailer from "nodemailer";
-const { default: mongoose } = require('mongoose');
 
 
+// Requirment 16 i thinkl we can searchh for the user using his type in each table and that we can take it from the front end through the body
 
 // Requirment 17
 export const addTourismGovern = async (req, res) => {
@@ -16,7 +16,7 @@ export const addTourismGovern = async (req, res) => {
         
 
     }catch(error){
-        res.status.send("error:"+error.message);
+        res.status(500).json({message: error.message});
     }
 }
 
@@ -30,8 +30,9 @@ export const addAdmin = async (req, res) => {
         
 
     }catch(error){
-        res.status.send("error:"+error.message);
+        res.status(500).json({message: error.message});
     }
 }
+
 
 

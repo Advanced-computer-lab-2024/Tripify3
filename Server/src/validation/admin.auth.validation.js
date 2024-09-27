@@ -2,9 +2,8 @@ import Joi from "joi";
 
 export const createschema = Joi.object({
     username: Joi
-    .string().
-    required()
-    .unique()
+    .string()
+    .required()
     .messages({
         "string.pattern.base": "Password must contain at least one capital letter, one small letter, one special character, one number, and must be unique",
       }),

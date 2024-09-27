@@ -1,18 +1,22 @@
 import mongoose from "mongoose";
-const schema=mongoose.schema;
+const Schema = mongoose.Schema;
 
-const tourismgovernorschema=new schema({
-    Name:{
-        type:String,
-        unique:true,
-        required:true
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: true,
     },
-    Passowrd:{
-        type:String,
-        required:true
-    }
+    password: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-});
 
-const tourismgovernor=mongoose.model("TourismGoverner",tourismgovernorschema);
+
+const tourismgovernor=mongoose.model("TourismGoverner",userSchema);
 export default tourismgovernor;
