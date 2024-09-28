@@ -53,10 +53,10 @@ export const signup = async (req, res) => {
   }
 };
 export const cancelbooking = async (req,res)=>{
-  const{bookingid,touristid}=req.body
+  const{touristid}=req.body
   try{
-    console.log(bookings.find({bookingid}))
-  const existingbooking = await bookings.findByIdAndDelete({ bookingid });
+    console.log(bookings.find({touristid}))
+  const existingbooking = await bookings.findByIdAndDelete({ touristid });
     if (!existingbooking) {
       return res.status(400).json({ message: "booking is not avaliable." });
     }
@@ -100,3 +100,4 @@ export const changePassword = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
