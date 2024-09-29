@@ -1,17 +1,16 @@
-// emailMiddleware.js
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // Use the email service you're working with
   auth: {
-    user: 'samirelbatal0@gmail.com', // Your email
-    pass: 'epysliporadqknjz', // Your email password or app password
+    user: 'tripify.planner@gmail.com', 
+    pass: 'pcfnbalanziakyst',
   },
 });
 
 export const sendPasswordResetEmail = async (user, verificationCode) => {
   const mailOptions = {
-    from: "samirelbatal0@gmail.com",
+    from: "tripify.planner@gmail.com",
     to: user.email,
     subject: "Password Reset Verification",
     text: `Your verification code is: ${verificationCode}`, // Plain text fallback

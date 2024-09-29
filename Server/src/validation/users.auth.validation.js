@@ -32,9 +32,18 @@ export const loginSchema = Joi.object({
 });
 
 export const signupSchema = Joi.object({
-  name: Joi.string().required(),
+  // Conditional validation for name and email based on user type
+  name: Joi.string().when('type', {
+    is: 'admin',
+    then: Joi.string().optional(), // Not required if type is admin
+    otherwise: Joi.string().required(), // Required for other types
+  }),
   username: Joi.string().required(),
-  email: Joi.string().email().required(),
+  email: Joi.string().email().when('type', {
+    is: 'admin',
+    then: Joi.string().optional(), // Not required if type is admin
+    otherwise: Joi.string().required(), // Required for other types
+  }),
   type: Joi.string()
     .valid("tourist", "tourGuide", "admin", "advertiser", "seller", "touristGovernment")
     .required(),
