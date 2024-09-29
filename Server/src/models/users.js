@@ -38,6 +38,8 @@ const usersSchema = new Schema(
       companyName: String,
       adBudget: Number,
       description: String,
+      website: String,
+      hotline: String,
     },
   },
   { timestamps: true }
