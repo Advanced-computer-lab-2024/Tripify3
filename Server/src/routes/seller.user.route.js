@@ -15,6 +15,7 @@ import {
   filterProduct,
   filterProductCondition,
   sortByRating,
+  deleteAllProducts,
 } from "../controllers/seller.user.controller.js";
 const router = express.Router();
 //view all sellers
@@ -41,5 +42,7 @@ router.get("/access/seller/filterProduct", filterProduct);
 router.get("/access/seller/filterProductCondition", filterProductCondition);
 //sort product by rating
 router.get("/access/seller/sortByRating", sortByRating);
+//delete all products
+router.delete("/access/seller/deleteAllProducts", deleteAllProducts);
 
 export default router;

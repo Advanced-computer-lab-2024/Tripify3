@@ -18,12 +18,29 @@ const productSchema = new Schema(
     rating: {
       type: Number,
       required: true,
+      default: 0,
     },
     quantity: {
+      type: Number,
+      required: true,
+    },
+    imageUrl: {
       type: String,
       required: true,
     },
-    // You can add more fields as needed, such as category, brand, seller_id, etc.
+    category: {
+      type: String,
+      required: true,
+    },
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId, // Reference to the User who is a seller
+      ref: "Users", // Referencing the Users model
+      required: true,
+    },
+    sales: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

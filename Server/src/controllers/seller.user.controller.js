@@ -87,7 +87,16 @@ export const updateSeller = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, details, quantity, rating } = req.body;
+    const {
+      name,
+      price,
+      details,
+      quantity,
+      rating,
+      imageUrl,
+      category,
+      sellerId,
+    } = req.body;
 
     // Check if the product already exists
     const existingProduct = await product.findOne({ name });
@@ -97,6 +106,12 @@ export const createProduct = async (req, res) => {
 
     const productRating = rating ? rating : 0; // Set rating to 0 if not provided
 
+    // Validate if the sellerId refers to a valid seller
+    const sellerUser = await seller.findById(sellerId);
+    if (!sellerUser || sellerUser.type !== "seller") {
+      return res.status(400).json({ message: "Invalid seller." });
+    }
+
     // Create a new product instance
     const newProduct = new product({
       name,
@@ -104,6 +119,10 @@ export const createProduct = async (req, res) => {
       details,
       rating: productRating,
       quantity,
+      imageUrl,
+      category,
+      sellerId,
+      sales: 0, // Initialize sales to 0
     });
 
     // Save the product to the database
@@ -130,14 +149,33 @@ export const searchAllProducts = async (req, res) => {
   }
 };
 export const editProduct = async (req, res) => {
-  const { name, price, details, quantity } = req.body;
+  const {
+    name,
+    price,
+    details,
+    quantity,
+    rating,
+    imageUrl,
+    category,
+    sellerId,
+  } = req.body;
 
   try {
+    // Validate if the sellerId refers to a valid seller (if sellerId is provided)
+    if (sellerId) {
+      const sellerUser = await seller.findById(sellerId);
+      if (!sellerUser || sellerUser.type !== "seller") {
+        return res.status(400).json({ message: "Invalid seller." });
+      }
+    }
+
+    // Find and update the product by name
     const product2 = await product.findOneAndUpdate(
       { name: name }, // Search by name
-      { price: price, details: details, quantity: quantity }, // Fields to update
+      { price, details, quantity, rating, imageUrl, category, sellerId }, // Fields to update
       { new: true } // Return the updated document
     );
+
     if (!product2) {
       return res.status(404).json({ message: "Product not found." });
     }
@@ -316,6 +354,15 @@ export const sortByRating = async (req, res) => {
     const sortOrder = sortBy === "asc" ? 1 : -1;
     const products = await product.find({}).sort({ rating: sortOrder });
     res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const deleteAllProducts = async (req, res) => {
+  try {
+    // Delete all products from the database
+    await product.deleteMany({});
+    res.status(200).json({ message: "All products deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
