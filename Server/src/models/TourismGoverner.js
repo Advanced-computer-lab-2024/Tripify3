@@ -16,6 +16,7 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-const admin = mongoose.model("Admin", userSchema);
 
-export default admin;
+
+const tourismgovernor=mongoose.model("TourismGoverner",userSchema);
+export default tourismgovernor;
