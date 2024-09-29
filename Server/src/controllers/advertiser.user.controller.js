@@ -1,16 +1,12 @@
 import Users from "../models/users.js";
 
 // Create a new user profile
-exports.createProfile = async (req, res) => {
-  //   if (!name || !username || !password || !type) {
-  //     return res.status(400).json({ message: "Required fields are missing" });
-  //   }
-
+export const createProfile = async (req, res) => {
   try {
     const { name, username, email, password, type, details } = req.body;
-    console.log(req.body);
+    
     const existingProfile = await Users.findOne({ username });
-    console.log(existingProfile);
+
     if (existingProfile) {
       return res.status(409).json({ message: "Profile already exists." });
     }
@@ -36,7 +32,7 @@ exports.createProfile = async (req, res) => {
 };
 
 // Update an existing user profile
-exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   const { username } = req.params;
 
   try {
@@ -57,7 +53,7 @@ exports.updateProfile = async (req, res) => {
 };
 
 // Get the user profile
-exports.getProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
   const { username } = req.params;
 
   try {
@@ -75,7 +71,7 @@ exports.getProfile = async (req, res) => {
 };
 
 // Delete the user profile
-exports.deleteProfile = async (req, res) => {
+export const deleteProfile = async (req, res) => {
   const { username } = req.params;
 
   try {
