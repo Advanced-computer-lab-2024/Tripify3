@@ -3,16 +3,21 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <nav>
-      <ul>
-        <li>
-          <Link to="/Login">Home</Link>
-        </li>
-        <li>
-          <Link to="/governor">Governor</Link>
-        </li>
-      </ul>
-    </nav>
+    <header>
+      <div className="container">
+        <ul>
+          <li>
+            <Link to="/Login">Home</Link>
+          </li>
+          <li>
+            <Link to="/governor">Governor</Link>
+          </li>
+          <li>
+            <Link to="/governor/addPlace">Add Place</Link>
+          </li>
+        </ul>
+      </div>
+    </header>
   );
 };
 

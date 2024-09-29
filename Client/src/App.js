@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar.js";
 import LoginPage from "./pages/LoginPage.js"; // Ensure this path is correct
 import PlacesList from "./pages/PlacesList.js"; // Ensure this path is correct
 import PlaceDetails from "./pages/PlaceDetails.js"; // Ensure this path is correct
+import AddPlace from "./pages/AddPlace.js"; // Ensure this path is correct
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/governor" element={<PlacesList />} />
         <Route path="/governor/:id" element={<PlaceDetails />} />
+        <Route path="/governor/addPlace" element={<AddPlace/>}></Route>
       </Routes>
     </Router>
   );
