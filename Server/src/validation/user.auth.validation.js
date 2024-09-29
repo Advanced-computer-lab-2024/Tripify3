@@ -12,7 +12,7 @@ function calculateAge(dateOfBirth) {
 
   return age;
 }
-
+//////////////////////////////////////////////////////
 export const changePasswordSchema = Joi.object({
   username: Joi.string().required(),
   oldPassword: Joi.string().required(),
@@ -25,12 +25,12 @@ export const changePasswordSchema = Joi.object({
   }),
 });
 
-
+///////////////////////////////////////////////////////
 export const loginSchema = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
 });
-
+/////////////////////////////////////////////////////
 export const signupSchema = Joi.object({
   name: Joi.string().required(),
   username: Joi.string().required(),

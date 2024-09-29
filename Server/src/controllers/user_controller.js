@@ -1,11 +1,11 @@
-import tourist from "../models/tourist.js"; // Adjust the path as necessary
-import bookings from "../models/bookings.js";
+
+import user from "../models/user.js"
 
 export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await tourist.findOne({ username });
+    const user = await user.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -23,15 +23,16 @@ export const login = async (req, res) => {
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, dateOfBirth, phoneNumber, username, nationality, password, occupation } = req.body;
+    const {Type,name, email, dateOfBirth, phoneNumber, username, nationality, password, occupation } = req.body;
 
-    const existingUser = await tourist.findOne({ username });
+    const existingUser = await user.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists." });
     }
 
     // Create a new user instance
-    const newTourist = new tourist({
+    const newTourist = new user({
+      Type,
       name,
       username,
       email,
@@ -44,7 +45,6 @@ export const signup = async (req, res) => {
 
     // Save the user to the database
     await newTourist.save();
-
     // Respond with success message and user data
     res.status(201).json({ message: "User created successfully", user: newTourist });
   } catch (err) {
@@ -52,20 +52,38 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-export const cancelbooking = async (req,res)=>{
-  const{touristid}=req.body
-  try{
-    console.log(bookings.find({touristid}))
-  const existingbooking = await bookings.findByIdAndDelete({ touristid });
-    if (!existingbooking) {
-      return res.status(400).json({ message: "booking is not avaliable." });
-    }
-    res.status(200).json({ message: 'booking deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error deleting booking' });
-  }
-}
+export const addBooking = async (req, res) => {
+    const { username, tourName, date, price, status } = req.body;
+    
+    try {
+        // Find the user by username
+        const foundUser = await user.findOne({ username: username });
+        
+        if (!foundUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
+        // Create a new booking object
+        const newBooking = {
+            tourName: tourName,
+            date: date,
+            price: price,
+            status: status,
+        };
+
+        // Add the booking to the user's bookings array
+        foundUser.bookings.push(newBooking);
+        
+        // Save the updated user document
+        const updatedUser = await foundUser.save();
+
+        // Respond with the updated user document
+        res.status(201).json(updatedUser);
+    } catch (error) {
+        console.error('Error creating booking:', error.message);
+        res.status(400).json({ error: 'Error creating booking', details: error.message });
+    }
+};
 export const changePassword = async (req, res) => {
   try {
     const { username, oldPassword, newPassword } = req.body;
@@ -76,7 +94,7 @@ export const changePassword = async (req, res) => {
     }
 
     // Find the user by username
-    const user = await tourist.findOne({ username });
+    const user = await user.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -101,3 +119,24 @@ export const changePassword = async (req, res) => {
   }
 };
 
+
+///////////////////////////////////////
+export const book = async (req, res) => {
+    const {Tourname,date,price,status } = req.body;
+    try {
+      const newBooking = new bookings({
+        Tourname,
+        date,
+        price,
+        status
+      })
+      await newBooking.save();
+      res.status(201).json(newBooking);
+    }
+   catch (error) {
+      res.status(400).json({ error: 'Error creating booking', details: error });
+    }
+  }
+
+  ////////////////////////////////
+ 
