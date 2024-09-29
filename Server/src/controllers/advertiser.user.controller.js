@@ -2,15 +2,15 @@ import Users from "../models/users.js";
 
 // Create a new user profile
 export const createProfile = async (req, res) => {
+  const { name, username, email, password, type, details } = req.body;
+
   try {
-    const { name, username, email, password, type, details } = req.body;
-    
     const existingProfile = await Users.findOne({ username });
 
     if (existingProfile) {
       return res.status(409).json({ message: "Profile already exists." });
     }
-    console.log(existingProfile);
+
     const newProfile = new Users({
       name,
       username,
