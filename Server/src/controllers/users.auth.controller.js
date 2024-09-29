@@ -3,18 +3,8 @@ import Users from "../models/users.js"; // Adjust the path as necessary
 import nodemailer from "nodemailer";
 import { sendPasswordResetEmail } from "../middlewares/sendEmail.middleware.js";
 
-// Assuming you have user and verificationCode available
-try {
-  await sendPasswordResetEmail(user, verificationCode);
-  // Handle success (e.g., send response back to client)
-} catch (error) {
-  // Handle error (e.g., send error response back to client)
-}
-
-
 const verificationCodes = new Map();
 
-// Step 1: Send verification code to tourist's email
 export const sendVerificationCode = async (req, res) => {
   try {
     const { username } = req.body;
@@ -28,7 +18,7 @@ export const sendVerificationCode = async (req, res) => {
     const verificationCode = crypto.randomInt(100000, 999999);
 
     const expirationTime = Date.now() + 5 * 60 * 1000; // 5 minutes from now
-    verificationCodes.set(username, { code: verificationCode, expires: expirationTime });    
+    verificationCodes.set(username, { code: verificationCode, expires: expirationTime });
 
     await sendPasswordResetEmail(user, verificationCode);
 
@@ -39,11 +29,10 @@ export const sendVerificationCode = async (req, res) => {
   }
 };
 
-export const resetPassword = async (req, res) => {
+export const verifyVerificationCode = async (req, res) => {
   try {
     const { username, verificationCode } = req.body;
 
-  
     const storedData = verificationCodes.get(username);
 
     if (!storedData || storedData.code !== parseInt(verificationCode, 10) || Date.now() > storedData.expires) {
@@ -51,6 +40,26 @@ export const resetPassword = async (req, res) => {
     }
 
     verificationCodes.delete(username);
+
+    res.status(200).json({ message: "Verification code entered correctly." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { username, newPassword } = req.body;
+
+    const user = await Users.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Update the password and save it to the database
+    user.password = newPassword;
+    await user.save();
 
     res.status(200).json({ message: "Verification code entered correctly." });
   } catch (err) {
@@ -81,7 +90,7 @@ export const login = async (req, res) => {
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, username, password, type , details } = req.body;
+    const { name, email, username, password, type, details } = req.body;
 
     const existingUser = await Users.findOne({ username });
     const existingEmail = await Users.findOne({ email });
