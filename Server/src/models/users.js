@@ -1,50 +1,49 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-const usersSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: false,
-    },
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    email: {
-      type: String,
-      required: false,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: String,
-      required: true,
-      enum: ["tourist", "tourGuide", "admin", "advertiser", "seller", "touristGovernment"],
-    },
-    details: {
-      phoneNumber: String,
-      nationality: String,
-      dateOfBirth: String,
-      occupation: String,
-      licenseNumber: String,
-      experienceYears: Number,
-      regionSpecialization: String,
-      adminLevel: String,
-      department: String,
-      companyName: String,
-      adBudget: Number,
-      description: String,
-      website: String,
-      hotline: String,
-    },
-  },
-  { timestamps: true }
-);
+const userSchema = new mongoose.Schema({
+  username: { 
+    type: String, 
+    required: true 
+  },  // Username of the user
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true 
+  },  // Email address of the user
+  password: { 
+    type: String, 
+    required: true 
+  },  // Password of the user
+  loyaltyPoints: { 
+    type: Number, 
+    default: 0  
+  },  // Loyalty points earned by the user
+  badges: [{ 
+    type: String 
+  }],  // Array of badges earned by the user
+  complaints: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Complaint'  
+  }],  // Array of complaints made by the user
+  wishlist: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Product'  
+  }],  // Array of products in the user's wishlist
+  addresses: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Address'  
+  }],  // Array of addresses associated with the user
+  cards: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'CardPayment'  
+  }],  // Array of card payments associated with the user
+  createdAt: { 
+    type: Date, 
+    default: Date.now 
+  }
+});
 
-const Users = mongoose.model("Users", usersSchema);
+const Users = mongoose.model("User", usersSchema);
 
 export default Users;
