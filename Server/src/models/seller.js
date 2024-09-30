@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const User = require('./User');
+const user = require('./users.js');
 
 
 const sellerSchema = new mongoose.Schema({
@@ -8,6 +8,6 @@ const sellerSchema = new mongoose.Schema({
   sellerTaxCard: { type: String, required: true },
 });
 
-const seller = User.discriminator('Seller', sellerSchema);
+const seller = user.discriminator('Seller', sellerSchema);
 
 export default seller;

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const User = require("./User");
+import user from "./users.js" ;
 
 const tourGuideSchema = new mongoose.Schema({
   phoneNumber: {
@@ -88,6 +88,6 @@ const tourGuideSchema = new mongoose.Schema({
   ], // Array of comments for the tour guide
 });
 
-const tourGuide = User.discriminator("Tour Guide", tourGuideSchema);
+const tourGuide = user.discriminator("Tour Guide", tourGuideSchema);
 
 export default tourGuide;
