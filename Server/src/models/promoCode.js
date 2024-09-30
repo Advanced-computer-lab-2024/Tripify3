@@ -23,4 +23,7 @@ const promoCodeSchema = new mongoose.Schema({
   }  // Creation date of the promo code
 });
 
-module.exports = mongoose.model('PromoCode', promoCodeSchema);
+const promoCode = mongoose.model('PromoCode', promoCodeSchema);
+
+
+export default promoCode;

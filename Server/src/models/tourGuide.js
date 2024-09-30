@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
+const User = require('./User');
 
 const tourGuideSchema = new mongoose.Schema({
-  user: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
-  },  // Reference to the user who is a tour guide
+  // user: { 
+  //   type: mongoose.Schema.Types.ObjectId, 
+  //   ref: 'User', 
+  //   required: true 
+  // },  // Reference to the user who is a tour guide
   phoneNumber: { 
     type: String, 
     required: true 
@@ -86,4 +87,6 @@ const tourGuideSchema = new mongoose.Schema({
   }]  // Array of comments for the tour guide
 });
 
-module.exports = mongoose.model('TourGuide', tourGuideSchema);
+const tourGuide = User.discriminator('Tour Guide', tourGuideSchema);
+
+export default tourGuide;

@@ -13,4 +13,7 @@ const tripSchema = new mongoose.Schema({
   availableSpots: { type: Number, required: true },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Trip', tripSchema);
+const trip = mongoose.model('Trip', tripSchema);
+
+
+export default trip;

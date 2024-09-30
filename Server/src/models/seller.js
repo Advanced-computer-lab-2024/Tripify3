@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const User = require('./User');
+
 
 const sellerSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Reference to User
@@ -7,4 +9,6 @@ const sellerSchema = new mongoose.Schema({
   sellerTaxCard: { type: String, required: true },
 });
 
-module.exports = mongoose.model('Seller', sellerSchema);
+const seller = User.discriminator('Seller', sellerSchema);
+
+export default seller;

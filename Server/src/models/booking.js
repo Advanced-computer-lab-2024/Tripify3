@@ -9,4 +9,5 @@ const bookingSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ['Paid', 'Unpaid'], default: 'Unpaid' },
 });
 
-module.exports = mongoose.model('Booking', bookingSchema);
+ const booking = mongoose.model('Booking', bookingSchema);
+ export default booking;

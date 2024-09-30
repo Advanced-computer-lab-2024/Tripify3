@@ -8,4 +8,6 @@ const tourPackageSchema = new mongoose.Schema({
   duration: { type: Number, required: true },  // Total duration in days
 });
 
-module.exports = mongoose.model('TourPackage', tourPackageSchema);
+const tourPackage = mongoose.model('TourPackage', tourPackageSchema);
+
+export default tourPackage;

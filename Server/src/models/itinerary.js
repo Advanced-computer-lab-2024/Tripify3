@@ -36,4 +36,6 @@ const itinerarySchema = new mongoose.Schema({
   }  // Preferences for the itinerary
 });
 
-module.exports = mongoose.model('Itinerary', itinerarySchema);
+const itinerary = mongoose.model('Itinerary', itinerarySchema);
+
+export default itinerary;

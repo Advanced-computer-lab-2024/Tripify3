@@ -2,9 +2,15 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const userSchema = new mongoose.Schema({
+  userId: { 
+    type: String, 
+    required: true, 
+    unique: true 
+  },
   username: { 
     type: String, 
-    required: true 
+    required: true,
+    unique: true 
   },  // Username of the user
   email: { 
     type: String, 
@@ -22,6 +28,11 @@ const userSchema = new mongoose.Schema({
   badges: [{ 
     type: String 
   }],  // Array of badges earned by the user
+  type: {
+    type: String,
+    enum: ["tourist", "tourGuide", "admin", "seller", "touristGovernor", "advertiser"],  // Possible user roles
+    required: true
+  },
   complaints: [{ 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Complaint'  
@@ -44,6 +55,6 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-const Users = mongoose.model("User", usersSchema);
+const users = mongoose.model("User", userSchema);
 
-export default Users;
+export default users;

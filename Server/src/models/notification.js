@@ -7,4 +7,6 @@ const notificationSchema = new mongoose.Schema({
   readStatus: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('Notification', notificationSchema);
+const notification = mongoose.model('Notification', notificationSchema);
+
+export default notification;

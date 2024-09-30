@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('./User');
 
 const advertiserSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Reference to User
@@ -11,4 +12,7 @@ const advertiserSchema = new mongoose.Schema({
   advertiserTaxCard: { type: String },
 });
 
-module.exports = mongoose.model('Advertiser', advertiserSchema);
+const advertiser = User.discriminator('Advertiser', advertiserSchema);
+
+
+export default advertiser;

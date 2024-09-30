@@ -35,4 +35,6 @@ const activitySchema = new mongoose.Schema({
   }]  // Array of comments related to the activity
 });
 
-module.exports = mongoose.model('Activity', activitySchema);
+const activity = mongoose.model('Activity', activitySchema);
+
+export default activity;
