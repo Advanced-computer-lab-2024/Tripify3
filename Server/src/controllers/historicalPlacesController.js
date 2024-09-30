@@ -15,7 +15,7 @@ exports.getFilteredHistoricalPlaces = async (req, res) => {
 
     // Build the query object
     let query = {};
-
+    // test
     if (tag) {
       query.tags = tag; // Assuming tags is an array field in the HistoricalPlace model
     }
