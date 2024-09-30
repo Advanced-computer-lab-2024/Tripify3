@@ -1,6 +1,6 @@
 import seller from "../models/users.js"; // Adjust the path as necessary
 import product from "../models/product.js"; // Adjust the path as necessary
-
+import { sendEmailNotification } from "../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
 // Seller
 export const getSellers = async (req, res) => {
   try {
@@ -140,7 +140,7 @@ export const createProduct = async (req, res) => {
 export const searchAllProducts = async (req, res) => {
   try {
     // Find products by name
-    const product2 = await product.find({}); // Using regex for case-insensitive search
+    const product2 = await product.find({ archived: false }); // Using regex for case-insensitive search
     // Return the found product(s)
     return res.status(200).json(product2);
   } catch (err) {
@@ -172,7 +172,17 @@ export const editProduct = async (req, res) => {
     // Find and update the product by name
     const product2 = await product.findOneAndUpdate(
       { name: name }, // Search by name
-      { price, details, quantity, rating, imageUrl, category, sellerId }, // Fields to update
+      {
+        price,
+        details,
+        quantity,
+        rating,
+        imageUrl,
+        category,
+        sellerId,
+        // sales: 0,
+        // salesHistory: [],
+      },
       { new: true } // Return the updated document
     );
 
@@ -365,5 +375,263 @@ export const deleteAllProducts = async (req, res) => {
     res.status(200).json({ message: "All products deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+//dont know whether to search with name or id
+export const addProdImage = async (req, res) => {
+  const { id, imageUrl } = req.body;
+
+  try {
+    // Check if imageUrl is provided
+    if (!imageUrl) {
+      return res.status(400).json({ message: "Image URL is required" });
+    }
+
+    // Find the product by id and update the imageUrl
+    const updatedProduct = await product.findOneAndUpdate(
+      { id: id }, // Search by product id
+      { imageUrl: imageUrl }, // Field to update
+      { new: true } // Return the updated document
+    );
+
+    // Check if product was found and updated
+    if (!updatedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Return success message and the updated product
+    return res.status(200).json({
+      message: "Image added successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+export const viewProductStockAndSales = async (req, res) => {
+  try {
+    // Retrieve all products with quantity and sales
+    const products = await product.find({}, "name quantity sales price");
+
+    // Check if products exist
+    if (!products || products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    // Return the products with relevant fields
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+//dont know whether to search with name or id
+export const archiveProduct = async (req, res) => {
+  const { id } = req.body;
+  try {
+    const product2 = await product.findOneAndUpdate(id, { archived: true });
+    if (!product2) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+    res.status(200).json(product2);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+export const decrementProductQuantity = async (req, res) => {
+  const { productId, quantity } = req.body;
+
+  try {
+    const product3 = await product.findById(productId);
+    if (!product3) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    if (quantity <= 0) {
+      return res.status(400).json({ message: "Invalid quantity" });
+    }
+    if (product3.quantity < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Quantity exceeds available stock" });
+    }
+    const product2 = await product.findByIdAndUpdate(
+      productId,
+      {
+        quantity: product3.quantity - quantity,
+        sales: product3.sales + quantity,
+        $push: { salesHistory: { quantity: quantity, date: Date.now() } },
+      }, // decrement quantity and increment sales
+      { new: true }
+    );
+
+    if (!product2) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (product2.quantity <= 0) {
+      const emailRecipient = await seller.findById(product2.sellerId);
+      if (emailRecipient)
+        await sendEmailNotification(emailRecipient.email, product2.name); // Send email notification to the seller
+      // Send email notification to the admin too
+    }
+
+    res.status(200).json(product2);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+//sprint 3
+export const filterSalesReport = async (req, res) => {
+  const {
+    productId,
+    date,
+    month,
+    year,
+    greaterThan,
+    greaterThanOrEqual,
+    lessThan,
+    lessThanOrEqual,
+    greaterThanMonth,
+    greaterThanMonthOrEqual,
+    lessThanMonth,
+    lessThanMonthOrEqual,
+    exactMonth,
+  } = req.body;
+
+  try {
+    const productRepo = await product.findById(productId); // Correct capitalization for the model
+    if (!productRepo) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    const salesHistory = productRepo.salesHistory;
+    if (salesHistory.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No sales report found for the given criteria" });
+    }
+
+    let filteredSales = salesHistory;
+
+    // Exact date filtering
+    if (date) {
+      filteredSales = filteredSales.filter(
+        (sale) =>
+          new Date(sale.date).toDateString() === new Date(date).toDateString()
+      );
+    }
+
+    // Exact month and year filtering
+    if (month && year) {
+      filteredSales = filteredSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        return (
+          saleDate.getMonth() + 1 === month && // Months are 0-based, so we add 1
+          saleDate.getFullYear() === year
+        );
+      });
+    }
+    if (exactMonth) {
+      filteredSales = filteredSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const saleMonth = saleDate.getMonth() + 1; // Month is zero-based, so add 1
+        return saleMonth === exactMonth;
+      });
+    }
+
+    // Greater than month
+    if (greaterThanMonth) {
+      filteredSales = filteredSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const saleMonth = saleDate.getMonth() + 1;
+        return saleMonth > greaterThanMonth;
+      });
+    }
+
+    // Greater than or equal to month
+    if (greaterThanMonthOrEqual) {
+      filteredSales = filteredSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const saleMonth = saleDate.getMonth() + 1;
+        return saleMonth >= greaterThanMonthOrEqual;
+      });
+    }
+
+    // Less than month
+    if (lessThanMonth) {
+      filteredSales = filteredSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const saleMonth = saleDate.getMonth() + 1;
+        return saleMonth < lessThanMonth;
+      });
+    }
+
+    // Less than or equal to month
+    if (lessThanMonthOrEqual) {
+      filteredSales = filteredSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const saleMonth = saleDate.getMonth() + 1;
+        return saleMonth <= lessThanMonthOrEqual;
+      });
+    }
+    //________________________________________________________________________________________
+    //________________________________________________________________________________________
+    // Greater than date
+    if (greaterThan) {
+      filteredSales = filteredSales.filter(
+        (sale) => new Date(sale.date) > new Date(greaterThan)
+      );
+    }
+
+    // Greater than or equal to date
+    if (greaterThanOrEqual) {
+      filteredSales = filteredSales.filter(
+        (sale) => new Date(sale.date) >= new Date(greaterThanOrEqual)
+      );
+    }
+
+    // Less than date
+    if (lessThan) {
+      filteredSales = filteredSales.filter(
+        (sale) => new Date(sale.date) < new Date(lessThan)
+      );
+    }
+
+    // Less than or equal to date
+    if (lessThanOrEqual) {
+      filteredSales = filteredSales.filter(
+        (sale) => new Date(sale.date) <= new Date(lessThanOrEqual)
+      );
+    }
+
+    if (filteredSales.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No sales report found for the given criteria" });
+    }
+    const sortedSales = filteredSales.sort(
+      (a, b) => new Date(a.date) - new Date(b.date)
+    );
+    if (year) {
+      const byYear = sortedSales.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        return saleDate.getFullYear() === year; // Make sure to return the comparison result
+      });
+      return res.status(200).json({
+        productName: productRepo.name,
+        filteredSales: byYear,
+      });
+    }
+    res.status(200).json({
+      productName: productRepo.name,
+      filteredSales: sortedSales,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

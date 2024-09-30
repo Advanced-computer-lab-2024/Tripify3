@@ -41,6 +41,18 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
+    salesHistory: [
+      {
+        quantity: Number,
+        date: {
+          type: Date,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

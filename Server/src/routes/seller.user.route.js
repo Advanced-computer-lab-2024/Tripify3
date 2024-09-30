@@ -16,6 +16,11 @@ import {
   filterProductCondition,
   sortByRating,
   deleteAllProducts,
+  addProdImage,
+  viewProductStockAndSales,
+  archiveProduct,
+  decrementProductQuantity,
+  filterSalesReport,
 } from "../controllers/seller.user.controller.js";
 const router = express.Router();
 //view all sellers
@@ -44,5 +49,15 @@ router.get("/access/seller/filterProductCondition", filterProductCondition);
 router.get("/access/seller/sortByRating", sortByRating);
 //delete all products
 router.delete("/access/seller/deleteAllProducts", deleteAllProducts);
+//add product image
+router.put("/access/seller/addProdImage", addProdImage);
+//view product stock and sales
+router.get("/access/seller/viewProductStockAndSales", viewProductStockAndSales);
+//archive product
+router.put("/access/seller/archiveProduct", archiveProduct);
+//update product quantity
+router.put("/access/seller/decrementProductQuantity", decrementProductQuantity);
+//filter sales report
+router.get("/access/seller/filterSalesReport", filterSalesReport);
 
 export default router;
