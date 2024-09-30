@@ -3,7 +3,7 @@ const Activity = require("../models/Activity");
 exports.getAllActivities = async (req, res) => {
   try {
     const currentDate = new Date();
-    const activities = await Activity.find({ date: { $gt: currentDate } });
+    const activities = await Activity.find({ date: { $gt: activities } });
     res.json(activities);
   } catch (error) {
     res.status(500).json({ message: error.message });

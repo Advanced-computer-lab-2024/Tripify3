@@ -1,9 +1,9 @@
-const Itinerary = require("../models/Itinerary");
+const HistoricalPlace = require("../models/HistoricalPlace");
 
-exports.getAllItineraries = async (req, res) => {
+exports.getAllHistoricalPlaces = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find();
-    res.json(itineraries);
+    const historicalPlaces = await HistoricalPlace.find();
+    res.json(historicalPlaces);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
