@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, TextField, Typography, Alert, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import backgroundImage from '../../assets/signup/CarouselLogin3.png'; // Import your image
+import backgroundImage from '../../assets/signup/CarouselLogin2.png'; // Import your image
 
 const UsernameInput = () => {
     const [username, setUsername] = useState('');

@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Container, TextField, Typography, Alert, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Alert,
+  IconButton,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import backgroundImage from "../../assets/signup/CarouselLogin3.png"; // Import your image
 
@@ -16,13 +24,16 @@ const VerificationCode = () => {
     setErrorMessage(""); // Clear previous error message
 
     try {
-      const response = await fetch("http://localhost:8000/access/user/verifyVerificationCode", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, verificationCode }),
-      });
+      const response = await fetch(
+        "http://localhost:8000/access/user/verifyVerificationCode",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, verificationCode }),
+        }
+      );
 
       if (response.status === 200) {
         navigate("/new-password", { state: { username } }); // Navigate to new password page
@@ -38,16 +49,19 @@ const VerificationCode = () => {
   // Function to resend the verification code
   const handleResendCode = async () => {
     try {
-      const response = await fetch("http://localhost:8000/access/user/resendVerificationCode", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username }),
-      });
+      const response = await fetch(
+        "http://localhost:8000/access/user/sendVerificationCode",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username }),
+        }
+      );
 
       if (response.status === 200) {
-        alert("Verification code resent!"); // Notify user
+        alert("Verification code resent!");
       } else {
         alert("Failed to resend code. Please try again later.");
       }
@@ -68,6 +82,7 @@ const VerificationCode = () => {
         backgroundColor: "#f5f5f5",
       }}
     >
+      {/* Centered Card with Form and Image */}
       <Box
         sx={{
           display: "flex",
@@ -78,6 +93,7 @@ const VerificationCode = () => {
           padding: "40px",
           borderRadius: "20px", // Adjusted the border radius for a smoother look
           boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)", // Increased shadow for a better card effect
+          textAlign: "center",
           position: "relative", // Enable positioning for absolute children
         }}
       >
@@ -94,11 +110,10 @@ const VerificationCode = () => {
           <ArrowBackIcon />
         </IconButton>
 
-        {/* Form Section */}
+        {/* Left Side - Form */}
         <Box
           sx={{
-            width: "100%", // Use full width for the form
-            maxWidth: "500px", // Max width for the form area
+            width: "50%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
@@ -106,43 +121,65 @@ const VerificationCode = () => {
             padding: "40px",
           }}
         >
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "black" }}>
-            Enter Verification Code
-          </Typography>
-          <Typography variant="body1" sx={{ marginBottom: "20px", color: "gray" }}>
-            Please enter the 6-digit code sent to your email.
-          </Typography>
+          {/* Form Content */}
+          <Box sx={{ width: "100%", maxWidth: "500px" }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{ fontWeight: "bold", color: "black" }}
+            >
+              OTP Verification
+            </Typography>
+            <Typography variant="body1" color="textSecondary" sx={{ marginBottom: "30px" }}>
+              Enter the verification code we just sent on your email address.
+            </Typography>
 
-          {errorMessage && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {errorMessage}
-            </Alert>
-          )}
+            {errorMessage && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {errorMessage}
+              </Alert>
+            )}
 
-          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <TextField fullWidth label="6-digit code" variant="outlined" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} margin="normal" required />
-            <Button fullWidth type="submit" variant="contained" color="primary" sx={{ marginTop: "20px", backgroundColor: "#00695C" }}>
-              Submit
-            </Button>
-          </form>
-          <Typography
-            variant="body2"
-            sx={{ marginTop: "20px", cursor: "pointer", color: "#00695C" }}
-            onClick={handleResendCode} // Call the resend function
-          >
-            Did not get code? Resend
-          </Typography>
+            <form onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                label="Verification Code"
+                variant="outlined"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                margin="normal"
+                required
+              />
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                color="primary"
+                sx={{ marginTop: "20px", backgroundColor: "#00695C" }}
+              >
+                Verify
+              </Button>
+            </form>
+
+            {/* Resend Code Link */}
+            <Typography
+              variant="body2"
+              sx={{ marginTop: "10px", cursor: "pointer", color: "#00695C" }}
+              onClick={handleResendCode}
+            >
+              Didn't get code? <span style={{ textDecoration: 'underline' }}>Resend</span>
+            </Typography>
+          </Box>
         </Box>
 
-        {/* Image Section */}
+        {/* Right Side - Image inside the card */}
         <Box
-          component="img"
-          src={backgroundImage} // Replace with your image path
-          alt="Verification Illustration"
           sx={{
-            width: '50%',
-            height: "auto", // Keep aspect ratio
-            marginLeft: "20px", // Add some space between the form and the image
+            width: "50%",
+            backgroundImage: `url(${backgroundImage})`, // Use the imported image
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            borderRadius: "20px", // Match card's border radius
           }}
         />
       </Box>
