@@ -1,44 +1,11 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose");
+const User = require("./User");
 
-const userSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    phoneNumber: {
-      type: String, 
-      required: true,
-    },
-    password: {
-      type: String, 
-      required: true,
-    },
-    nationality: {
-      type: String, // Changed from Number to String
-      required: true,
-    },
-    dateOfBirth: {
-      type: String, 
-      required: true,
-    },
-    occupation: {
-      type: String, 
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+const touristSchema = new mongoose.Schema({
+  preferences: { type: [String], required: false }, // Tourist preferences like adventure, history, etc.
+  tripsTaken: { type: [String], required: false }, // Array of trip IDs taken by the tourist
+});
 
-const tourist = mongoose.model("Tourist", userSchema);
+const tourist = User.discriminator("Tourist", touristSchema);
 
 export default tourist;

@@ -1,28 +1,17 @@
-import mongoose from "mongoose";
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+import user from './users.js';
 
-const userSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+const advertiserSchema = new mongoose.Schema({
+  companyName: { type: String, required: true },
+  adBudget: { type: Number, required: true },
+  description: { type: String },
+  website: { type: String },
+  hotline: { type: String },
+  advertiserID: { type: Number, required: true },
+  advertiserTaxCard: { type: String },
+});
 
-const advertiser = mongoose.model("Advertiser", userSchema);
+const advertiser = user.discriminator('Advertiser', advertiserSchema);
+
 
 export default advertiser;
