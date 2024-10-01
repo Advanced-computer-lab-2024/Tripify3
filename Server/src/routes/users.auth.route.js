@@ -11,6 +11,6 @@ router.post("/access/user/signup", validate(signupSchema, "body"), signup);
 router.post("/access/user/resetPassword", resetPassword); // Reset password after verification
 router.post("/access/user/sendVerificationCode", sendVerificationCode); // Send verification code
 router.post("/access/user/verifyVerificationCode", verifyVerificationCode); // Send verification code
-router.post("/access/user/changePassword", validate(changePasswordSchema, "body"), changePassword);
+router.put("/access/user/changePassword", validate(changePasswordSchema, "body"), changePassword);
 
 export default router;

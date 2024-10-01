@@ -11,9 +11,9 @@ export const sendVerificationCode = async (req, res) => {
   try {
     const { username } = req.body;
 
-    const user = await user.findOne({ username });
+    const currentUser = await user.findOne({ username });
 
-    if (!user) {
+    if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -22,7 +22,7 @@ export const sendVerificationCode = async (req, res) => {
     const expirationTime = Date.now() + 5 * 60 * 1000; 
     verificationCodes.set(username, { code: verificationCode, expires: expirationTime });
 
-    await sendPasswordResetEmail(user, verificationCode);
+    await sendPasswordResetEmail(currentUser, verificationCode);
 
     res.status(200).json({ message: "Verification code sent to email" });
   } catch (err) {
@@ -54,14 +54,14 @@ export const resetPassword = async (req, res) => {
   try {
     const { username, newPassword } = req.body;
 
-    const user = await user.findOne({ username });
-    if (!user) {
+    const currentUser = await user.findOne({ username });
+    if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }
 
     // Update the password and save it to the database
-    user.password = newPassword;
-    await user.save();
+    currentUser.password = newPassword;
+    await currentUser.save();
 
     res.status(200).json({ message: "Verification code entered correctly." });
   } catch (err) {
@@ -74,16 +74,16 @@ export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await user.findOne({ username });
-    if (!user) {
+    const currentUser = await user.findOne({ username });
+    if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    if (user.password !== password) {
+    if (currentUser.password !== password) {
       return res.status(401).json({ message: "Invalid password." });
     }
 
-    res.status(200).json({ message: "Login successful", user: user });
+    res.status(200).json({ message: "Login successful", user: currentUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -92,7 +92,7 @@ export const login = async (req, res) => {
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, username, password, type } = req.body;
+    const { name, email, username, password, type, phoneNumber, nationality, dateOfBirth, occupation } = req.body;
 
     const existingUsername = await user.findOne({ username });
     const existingEmail = await user.findOne({ email });
@@ -150,13 +150,13 @@ export const changePassword = async (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
 
     // Find the user by username
-    const user = await user.findOne({ username });
-    if (!user) {
+    const currentUser = await user.findOne({ username });
+    if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }
 
     // Check if the old password matches
-    if (user.password !== oldPassword) {
+    if (currentUser.password !== oldPassword) {
       return res.status(401).json({ message: "Invalid old password." });
     }
 
@@ -166,8 +166,8 @@ export const changePassword = async (req, res) => {
     }
 
     // Update the password and save it to the database
-    user.password = newPassword;
-    await user.save();
+    currentUser.password = newPassword;
+    await currentUser.save();
 
     res.status(200).json({ message: "Password changed successfully" });
   } catch (err) {
