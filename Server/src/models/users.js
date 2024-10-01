@@ -49,10 +49,6 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'CardPayment'  
   }],  // Array of card payments associated with the user
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
 });
 
 const user = mongoose.model("User", userSchema);

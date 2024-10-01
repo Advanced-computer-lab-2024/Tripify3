@@ -1,23 +1,23 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 import user from "./users.js" ;
 
 const tourGuideSchema = new mongoose.Schema({
-  phoneNumber: {
-    type: String,
-    required: true,
-  },
-  nationality: {
-    type: String,
-    required: true,
-  },
-  dateOfBirth: {
-    type: String,
-    required: true,
-  },
-  occupation: {
-    type: String,
-    required: true,
-  },
+  // phoneNumber: {
+  //   type: String,
+  //   required: true,
+  // },
+  // nationality: {
+  //   type: String,
+  //   required: true,
+  // },
+  // dateOfBirth: {
+  //   type: String,
+  //   required: true,
+  // },
+  // occupation: {
+  //   type: String,
+  //   required: true,
+  // },
   licenseNumber: {
     type: String,
     required: true,

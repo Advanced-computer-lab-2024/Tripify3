@@ -1,6 +1,8 @@
 import crypto from "crypto";
-import Users from "../models/users.js"; // Adjust the path as necessary
-import nodemailer from "nodemailer";
+import user from "../models/users.js";
+import tourist from "../models/tourist.js";
+import tourGuide from "../models/tourGuide.js";
+import mongoose from "mongoose";
 import { sendPasswordResetEmail } from "../middlewares/sendEmail.middleware.js";
 
 const verificationCodes = new Map();
@@ -9,7 +11,7 @@ export const sendVerificationCode = async (req, res) => {
   try {
     const { username } = req.body;
 
-    const user = await Users.findOne({ username });
+    const user = await user.findOne({ username });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -17,7 +19,7 @@ export const sendVerificationCode = async (req, res) => {
 
     const verificationCode = crypto.randomInt(100000, 999999);
 
-    const expirationTime = Date.now() + 5 * 60 * 1000; // 5 minutes from now
+    const expirationTime = Date.now() + 5 * 60 * 1000; 
     verificationCodes.set(username, { code: verificationCode, expires: expirationTime });
 
     await sendPasswordResetEmail(user, verificationCode);
@@ -52,7 +54,7 @@ export const resetPassword = async (req, res) => {
   try {
     const { username, newPassword } = req.body;
 
-    const user = await Users.findOne({ username });
+    const user = await user.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -72,7 +74,7 @@ export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await Users.findOne({ username });
+    const user = await user.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -90,30 +92,53 @@ export const login = async (req, res) => {
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, username, password, type, details } = req.body;
+    const { name, email, username, password, type } = req.body;
 
-    const existingUser = await Users.findOne({ username });
-    const existingEmail = await Users.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists." });
+    const existingUsername = await user.findOne({ username });
+    const existingEmail = await user.findOne({ email });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already exists." });
     }
 
     if (existingEmail) {
       return res.status(400).json({ message: "Email already exists." });
     }
 
-    const newUser = new Users({
-      name,
-      username,
-      email,
-      password,
-      type,
-      details,
-    });
+    // Based on the user type, create the respective user
+    let newUser;
 
+    if (type === "tourist") {
+      newUser = new tourist({
+        userId: new mongoose.Types.ObjectId().toString(),
+        name,
+        username,
+        email,
+        password, // Be sure to hash this before saving in a real-world scenario
+        type,
+        phoneNumber,
+        nationality,
+        dateOfBirth,
+        occupation,
+      });
+    } else if (type === "tourGuide") {
+      newUser = new tourGuide({
+        userId: new mongoose.Types.ObjectId().toString(),
+        username,
+        email,
+        password, // Be sure to hash this before saving in a real-world scenario
+        type,
+      });
+    } else {
+      return res.status(400).json({ message: "Invalid user type." });
+    }
+
+    // Save the user to the database
     await newUser.save();
 
-    res.status(201).json({ message: "User created successfully", user: newUser });
+    res.status(201).json({
+      message: `${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`,
+      user: newUser,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -125,7 +150,7 @@ export const changePassword = async (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
 
     // Find the user by username
-    const user = await Users.findOne({ username });
+    const user = await user.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }

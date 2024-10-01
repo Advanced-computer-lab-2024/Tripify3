@@ -1,8 +1,12 @@
-// SignupPage.js
 import React, { useState } from "react";
 import signupImage from "../assets/signup/CarouselLogin1.png";
-import { TextField, Button, Checkbox, FormControlLabel, Grid, Box, Typography, Link } from "@mui/material";
+import { TextField, Button, Checkbox, FormControlLabel, Grid, Box, Typography, Link, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { signup } from '../services/Signup.js'; // Import the signup service
+
+const nationalities = [
+  "United States", "Canada","Egypt", "United Kingdom", "Germany", "France", "India", "China", "Brazil", "Japan", "Australia", "Mexico",
+  // Add more nationalities as needed
+];
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -67,10 +71,38 @@ const SignupPage = () => {
                 <TextField label="Last Name" name="lastName" fullWidth margin="normal" value={formData.lastName} onChange={handleInputChange} />
               </Grid>
             </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Birthdate"
+                  name="birthDate"
+                  type="date"
+                  fullWidth
+                  margin="normal"
+                  InputLabelProps={{ shrink: true }}
+                  value={formData.birthDate}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Nationality</InputLabel>
+                  <Select
+                    name="nationality"
+                    value={formData.nationality}
+                    onChange={handleInputChange}
+                  >
+                    {nationalities.map((nation) => (
+                      <MenuItem key={nation} value={nation}>
+                        {nation}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
             <TextField label="Username" name="username" fullWidth margin="normal" value={formData.username} onChange={handleInputChange} />
             <TextField label="Email" name="email" fullWidth margin="normal" value={formData.email} onChange={handleInputChange} />
-            <TextField label="Birthdate" name="birthDate" fullWidth margin="normal" value={formData.birthDate} onChange={handleInputChange} placeholder="DD/MM/YY" />
-            <TextField label="Nationality" name="nationality" fullWidth margin="normal" value={formData.nationality} onChange={handleInputChange} />
             <TextField label="Phone Number" name="phoneNumber" fullWidth margin="normal" value={formData.phoneNumber} onChange={handleInputChange} placeholder="+44" />
             <TextField label="Password" name="password" type="password" fullWidth margin="normal" value={formData.password} onChange={handleInputChange} />
             <TextField label="Confirm Password" name="confirmPassword" type="password" fullWidth margin="normal" value={formData.confirmPassword} onChange={handleInputChange} />

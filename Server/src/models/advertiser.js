@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 import user from './users.js';
 
 const advertiserSchema = new mongoose.Schema({
