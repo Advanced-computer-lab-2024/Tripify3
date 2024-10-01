@@ -1,58 +1,69 @@
 import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
-const productSchema = new mongoose.Schema({
-  seller: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Seller', 
-    required: true 
-  },  // Reference to the seller offering the product
-  name: { 
-    type: String, 
-    required: true 
-  },  // Name of the product
-  description: { 
-    type: String, 
-    required: true 
-  },  // Description of the product
-  price: { 
-    type: Number, 
-    required: true 
-  },  // Price of the product
-  category: { 
-    type: String, 
-    required: true 
-  },  // Category (e.g., gear, tour package, service)
-  stockQuantity: { 
-    type: Number, 
-    default: 0 
-  },  // Available stock
-  images: { 
-    type: [String], 
-    required: false 
-  },  // URLs to product images
-  ratings: { 
-    type: Number, 
-    default: 0 
-  },  // Average rating
-  reviews: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Review' 
-  }],  // List of reviews related to the product
-  numberOfSales: { 
-    type: Number, 
-    default: 0 
-  },  // Number of sales made
-  isArchived: { 
-    type: Boolean, 
-    default: false 
-  },  // Boolean flag for archiving the product
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
-});
+const productSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    details: {
+      type: String,
+      required: true,
+    },
+    rating: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    reviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    imageUrl: {
+      type: [String],
+      required: true,
+      default: [],
+    },
+    category: {
+      type: String,
+      required: true,
+    },
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId, // Reference to the User who is a seller
+      ref: "Users", // Referencing the Users model
+      required: true,
+    },
+    sales: {
+      type: Number,
+      default: 0,
+    },
+    archived: {
+      type: Boolean,
+      default: false,
+    },
+    salesHistory: [
+      {
+        quantity: Number,
+        date: {
+          type: Date,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-const product = mongoose.model('Product', productSchema);
+const Product = mongoose.model("Product", productSchema);
 
-
-export default product;
+export default Product;
