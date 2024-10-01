@@ -3,7 +3,6 @@ import user from "./users.js";
 
 const sellerSchema = new mongoose.Schema({
   companyName: { type: String, required: true },
-  // sellerID: { type: Number, required: true },
   sellerTaxCard: { type: String, required: true },
 });
 

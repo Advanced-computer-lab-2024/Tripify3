@@ -1,16 +1,16 @@
-const Activity = require("../models/Activity");
+import activity from "../models/activity.js";
 
-exports.getAllActivities = async (req, res) => {
+export const getAllActivities = async (req, res) => {
   try {
     const currentDate = new Date();
-    const activities = await Activity.find({ date: { $gt: activities } });
+    const activities = await activity.find({ date: { $gt: activities } });
     res.json(activities);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.getFilteredActivities = async (req, res) => {
+export const  getFilteredActivities = async (req, res) => {
   try {
     const currentDate = new Date();
     const { budget, category, rating } = req.query;
@@ -28,14 +28,14 @@ exports.getFilteredActivities = async (req, res) => {
       query.rating = { $gte: rating }; // Assuming rating is a min value
     }
 
-    const activities = await Activity.find(query);
+    const activities = await activity.find(query);
     res.json(activities);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.getSortedActivities = async (req, res) => {
+export const getSortedActivities = async (req, res) => {
   try {
     const currentDate = new Date();
     const { sortBy, sortOrder } = req.query;
@@ -46,7 +46,7 @@ exports.getSortedActivities = async (req, res) => {
       sort[sortBy] = sortOrder === "desc" ? -1 : 1;
     }
 
-    const activities = await Activity.find({ date: { $gt: currentDate } }).sort(
+    const activities = await activity.find({ date: { $gt: currentDate } }).sort(
       sort
     );
     res.json(activities);

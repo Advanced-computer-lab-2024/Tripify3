@@ -1,15 +1,15 @@
-const Itinerary = require("../models/Itinerary");
+import  itinerary from "../models/itinerary.js";
 
-exports.getAllItineraries = async (req, res) => {
+export const getAllItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find();
+    const itineraries = await itinerary.find();
     res.json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.getSortedItineraries = async (req, res) => {
+export const getSortedItineraries = async (req, res) => {
   try {
     const { sortBy, sortOrder } = req.query;
 
@@ -19,14 +19,14 @@ exports.getSortedItineraries = async (req, res) => {
       sort[sortBy] = sortOrder === "desc" ? -1 : 1;
     }
 
-    const itineraries = await Itinerary.find().sort(sort);
+    const itineraries = await itinerary.find().sort(sort);
     res.json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.getFilteredItineraries = async (req, res) => {
+export const getFilteredItineraries = async (req, res) => {
   try {
     const currentDate = new Date();
     const { budget, date, preferences, language } = req.query;
@@ -50,7 +50,7 @@ exports.getFilteredItineraries = async (req, res) => {
       query.language = language;
     }
 
-    const itineraries = await Itinerary.find(query);
+    const itineraries = await itinerary.find(query);
     res.json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });

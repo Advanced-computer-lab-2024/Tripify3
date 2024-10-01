@@ -85,7 +85,7 @@ const tourGuideSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
     },
-  ], // Array of comments for the tour guide
+  ], 
 });
 
 const tourGuide = user.discriminator("Tour Guide", tourGuideSchema);
