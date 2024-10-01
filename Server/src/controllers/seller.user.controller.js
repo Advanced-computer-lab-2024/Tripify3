@@ -50,9 +50,8 @@ export const signup = async (req, res) => {
 };
 export const viewSeller = async (req, res) => {
   try {
-    const { username } = req.body;
-
-    const user = await seller.find({ username, type: "seller" });
+    const { username } = req.query; // Get the username from query parameters
+    const user = await seller.findOne({ username, type: "seller" });
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -62,6 +61,7 @@ export const viewSeller = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 export const updateSeller = async (req, res) => {
   const { username, name, description } = req.body; // Expecting the username in the request body
 
@@ -196,10 +196,11 @@ export const editProduct = async (req, res) => {
 };
 export const searchProduct = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name } = req.query; // Extracting name from the query parameter
+    console.log(name);
 
-    // Find products by name
-    const product2 = await product.find({ name: new RegExp(name, "i") }); // Using regex for case-insensitive search
+    // Find products by name using regex for case-insensitive search
+    const product2 = await product.find({ name: new RegExp(name, "i") });
 
     // If no product is found
     if (product2.length === 0) {
@@ -213,8 +214,10 @@ export const searchProduct = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 export const deleteProduct = async (req, res) => {
-  const { name } = req.body;
+  const { name } = req.query;
+  console.log(name);
 
   try {
     // Attempt to delete the product
@@ -283,8 +286,7 @@ export const filterProduct = async (req, res) => {
 };
 export const filterProductCondition = async (req, res) => {
   try {
-    const { priceCondition } = req.body; // Expecting something like "price<=10" or "price>=5 and price<=10"
-
+    const { priceCondition } = req.query; // Expecting something like "price<=10" or "price>=5 and price<=10"
     // Ensure that the price condition is provided
     if (!priceCondition) {
       return res.status(400).json({ message: "Price condition is required." });
@@ -358,7 +360,8 @@ export const filterProductCondition = async (req, res) => {
   }
 };
 export const sortByRating = async (req, res) => {
-  const { sortBy } = req.body;
+  const { sortBy } = req.query;
+  console.log(sortBy);
 
   try {
     const sortOrder = sortBy === "asc" ? 1 : -1;
@@ -380,7 +383,6 @@ export const deleteAllProducts = async (req, res) => {
 //dont know whether to search with name or id
 export const addProdImage = async (req, res) => {
   const { id, imageUrl } = req.body;
-
   try {
     // Check if imageUrl is provided
     if (!imageUrl) {
@@ -388,8 +390,10 @@ export const addProdImage = async (req, res) => {
     }
 
     // Find the product by id and update the imageUrl
+    const updatedProduct2 = await product.findById(id);
+    console.log(updatedProduct2);
     const updatedProduct = await product.findOneAndUpdate(
-      { id: id }, // Search by product id
+      { _id: id }, // Search by product id
       { imageUrl: imageUrl }, // Field to update
       { new: true } // Return the updated document
     );
@@ -432,7 +436,11 @@ export const viewProductStockAndSales = async (req, res) => {
 export const archiveProduct = async (req, res) => {
   const { id } = req.body;
   try {
-    const product2 = await product.findOneAndUpdate(id, { archived: true });
+    const product2 = await product.findOneAndUpdate(
+      { _id: id }, // Query to find the product by _id
+      { archived: true }, // Update the "archived" field to true
+      { new: true } // Return the updated document
+    );
     if (!product2) {
       return res.status(404).json({ message: "Product not found." });
     }
@@ -444,7 +452,6 @@ export const archiveProduct = async (req, res) => {
 
 export const decrementProductQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
-
   try {
     const product3 = await product.findById(productId);
     if (!product3) {
@@ -500,9 +507,10 @@ export const filterSalesReport = async (req, res) => {
     lessThanMonth,
     lessThanMonthOrEqual,
     exactMonth,
-  } = req.body;
+  } = req.query;
 
   try {
+    console.log("ProductId:", productId);
     const productRepo = await product.findById(productId); // Correct capitalization for the model
     if (!productRepo) {
       return res.status(404).json({ message: "Product not found." });
