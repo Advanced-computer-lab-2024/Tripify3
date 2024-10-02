@@ -19,7 +19,7 @@ export const sendVerificationCode = async (req, res) => {
 
     const verificationCode = crypto.randomInt(100000, 999999);
 
-    const expirationTime = Date.now() + 5 * 60 * 1000; 
+    const expirationTime = Date.now() + 5 * 60 * 1000;
     verificationCodes.set(username, { code: verificationCode, expires: expirationTime });
 
     await sendPasswordResetEmail(currentUser, verificationCode);
@@ -109,7 +109,6 @@ export const signup = async (req, res) => {
 
     if (type === "tourist") {
       newUser = new tourist({
-        userId: new mongoose.Types.ObjectId().toString(),
         name,
         username,
         email,
@@ -122,7 +121,6 @@ export const signup = async (req, res) => {
       });
     } else if (type === "tourGuide") {
       newUser = new tourGuide({
-        userId: new mongoose.Types.ObjectId().toString(),
         username,
         email,
         password, // Be sure to hash this before saving in a real-world scenario

@@ -1,10 +1,21 @@
 import React, { useState } from "react";
 import signupImage from "../assets/signup/CarouselLogin1.png";
 import { TextField, Button, Checkbox, FormControlLabel, Grid, Box, Typography, Link, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
-import { signup } from '../services/Signup.js'; // Import the signup service
+import { signup } from "../services/Signup.js"; // Import the signup service
 
 const nationalities = [
-  "United States", "Canada","Egypt", "United Kingdom", "Germany", "France", "India", "China", "Brazil", "Japan", "Australia", "Mexico",
+  "United States",
+  "Canada",
+  "Egypt",
+  "United Kingdom",
+  "Germany",
+  "France",
+  "India",
+  "China",
+  "Brazil",
+  "Japan",
+  "Australia",
+  "Mexico",
   // Add more nationalities as needed
 ];
 
@@ -33,7 +44,7 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { firstName, lastName, username, birthDate, nationality, phoneNumber, email, password } = formData;
-    
+
     const signupData = {
       name: `${firstName} ${lastName}`,
       email,
@@ -43,6 +54,7 @@ const SignupPage = () => {
       occupation: "Student", // You can adjust this based on your needs
       nationality,
       password,
+      type: "tourist",
     };
 
     try {
@@ -73,25 +85,12 @@ const SignupPage = () => {
             </Grid>
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <TextField
-                  label="Birthdate"
-                  name="birthDate"
-                  type="date"
-                  fullWidth
-                  margin="normal"
-                  InputLabelProps={{ shrink: true }}
-                  value={formData.birthDate}
-                  onChange={handleInputChange}
-                />
+                <TextField label="Birthdate" name="birthDate" type="date" fullWidth margin="normal" InputLabelProps={{ shrink: true }} value={formData.birthDate} onChange={handleInputChange} />
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth margin="normal">
                   <InputLabel>Nationality</InputLabel>
-                  <Select
-                    name="nationality"
-                    value={formData.nationality}
-                    onChange={handleInputChange}
-                  >
+                  <Select name="nationality" value={formData.nationality} onChange={handleInputChange}>
                     {nationalities.map((nation) => (
                       <MenuItem key={nation} value={nation}>
                         {nation}
