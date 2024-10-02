@@ -14,7 +14,7 @@ const NewPassword = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Separate state for confirm password visibility
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const username = state.username;
+    const email = state.email;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -28,7 +28,7 @@ const NewPassword = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, newPassword }),
+                body: JSON.stringify({ email, newPassword }),
             });
             alert('Password has been reset successfully!');
             navigate('/'); // Redirect to home or login page

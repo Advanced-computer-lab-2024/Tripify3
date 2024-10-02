@@ -17,7 +17,7 @@ const VerificationCode = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const username = state.username;
+  const email = state.email;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,12 +31,12 @@ const VerificationCode = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ username, verificationCode }),
+          body: JSON.stringify({ email, verificationCode }),
         }
       );
 
       if (response.status === 200) {
-        navigate("/new-password", { state: { username } }); // Navigate to new password page
+        navigate("/new-password", { state: { email } }); // Navigate to new password page
       } else {
         setErrorMessage("Incorrect or invalid verification code. Please try again."); // Set error message
       }
@@ -56,7 +56,7 @@ const VerificationCode = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ username }),
+          body: JSON.stringify({ email }),
         }
       );
 

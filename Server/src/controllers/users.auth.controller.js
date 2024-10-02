@@ -9,9 +9,9 @@ const verificationCodes = new Map();
 
 export const sendVerificationCode = async (req, res) => {
   try {
-    const { username } = req.body;
+    const { email } = req.body;
 
-    const currentUser = await user.findOne({ username });
+    const currentUser = await user.findOne({ email });
 
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
@@ -20,7 +20,7 @@ export const sendVerificationCode = async (req, res) => {
     const verificationCode = crypto.randomInt(100000, 999999);
 
     const expirationTime = Date.now() + 5 * 60 * 1000;
-    verificationCodes.set(username, { code: verificationCode, expires: expirationTime });
+    verificationCodes.set(email, { code: verificationCode, expires: expirationTime });
 
     await sendPasswordResetEmail(currentUser, verificationCode);
 
@@ -33,15 +33,15 @@ export const sendVerificationCode = async (req, res) => {
 
 export const verifyVerificationCode = async (req, res) => {
   try {
-    const { username, verificationCode } = req.body;
+    const { email, verificationCode } = req.body;
 
-    const storedData = verificationCodes.get(username);
+    const storedData = verificationCodes.get(email);
 
     if (!storedData || storedData.code !== parseInt(verificationCode, 10) || Date.now() > storedData.expires) {
       return res.status(400).json({ message: "Invalid or expired verification code" });
     }
 
-    verificationCodes.delete(username);
+    verificationCodes.delete(email);
 
     res.status(200).json({ message: "Verification code entered correctly." });
   } catch (err) {
@@ -52,9 +52,9 @@ export const verifyVerificationCode = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    const { username, newPassword } = req.body;
+    const { email, newPassword } = req.body;
 
-    const currentUser = await user.findOne({ username });
+    const currentUser = await user.findOne({ email });
     if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }

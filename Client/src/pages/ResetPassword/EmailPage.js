@@ -4,8 +4,8 @@ import { Box, Button, Container, TextField, Typography, Alert, IconButton } from
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import backgroundImage from '../../assets/signup/CarouselLogin2.png'; // Import your image
 
-const UsernameInput = () => {
-    const [username, setUsername] = useState('');
+const EmailInput = () => {
+    const [email, setEmail] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
@@ -19,13 +19,13 @@ const UsernameInput = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username }),
+                body: JSON.stringify({ email }), // Changed username to email
             });
 
             if (response.status === 200) {
-                navigate('/verify-code', { state: { username } }); // Navigate to verification page
+                navigate('/verify-code', { state: { email } }); // Pass email instead of username
             } else {
-                setErrorMessage('User not found. Please try again.'); // Set the error message
+                setErrorMessage('Email not found. Please try again.'); // Adjust error message
             }
         } catch (error) {
             console.error('Error:', error);
@@ -89,7 +89,7 @@ const UsernameInput = () => {
                             Forgot Password?
                         </Typography>
                         <Typography variant="body1" color="textSecondary" sx={{ marginBottom: '30px' }}>
-                            Don't worry! It occurs. Please enter the username linked with your account.
+                            Don't worry! It occurs. Please enter the email linked with your account.
                         </Typography>
 
                         {errorMessage && (
@@ -101,12 +101,13 @@ const UsernameInput = () => {
                         <form onSubmit={handleSubmit}>
                             <TextField
                                 fullWidth
-                                label="Username"
+                                label="Email"
                                 variant="outlined"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 margin="normal"
                                 required
+                                type="email" // Added email input type for validation
                             />
                             <Button
                                 fullWidth
@@ -136,4 +137,4 @@ const UsernameInput = () => {
     );
 };
 
-export default UsernameInput;
+export default EmailInput;

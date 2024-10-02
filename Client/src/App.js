@@ -4,7 +4,7 @@ import HomePage from "./pages/HomePage.js";
 import SignupPage from "./pages/SignupPage.js";
 import Header from "./components/Header.js";
 import LoginPage from "./pages/LoginPage.js"; // Ensure this path is correct
-import UsernameInput from "./pages/ResetPassword/UsernamePage.js";
+import UsernameInput from "./pages/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
 
