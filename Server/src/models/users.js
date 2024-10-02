@@ -58,5 +58,41 @@ const userSchema = new mongoose.Schema({
 });
 
 const user = mongoose.model("User", userSchema);
-
 export default user;
+//   type: Number,
+//   default: 0,
+// }, // Loyalty points earned by the user
+// badges: [
+//   {
+//     type: String,
+//   },
+// ], // Array of badges earned by the user
+// complaints: [
+//   {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Complaint",
+//   },
+// ], // Array of complaints made by the user
+// wishlist: [
+//   {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Product",
+//   },
+// ], // Array of products in the user's wishlist
+// addresses: [
+//   {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Address",
+//   },
+// ], // Array of addresses associated with the user
+// cards: [
+//   {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "CardPayment",
+//   },
+// ], // Array of card payments associated with the user
+// createdAt
+// createdAt: {
+//   type: Date,
+//   default: Date.now,
+// },
