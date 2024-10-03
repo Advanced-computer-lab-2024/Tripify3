@@ -14,7 +14,7 @@ export const sendVerificationCode = async (req, res) => {
     const currentUser = await user.findOne({ email });
 
     if (!currentUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Email is not linked to any user" });
     }
 
     const verificationCode = crypto.randomInt(100000, 999999);

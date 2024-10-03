@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import user from './users.js';
+import user from "./users.js";
 
 const advertiserSchema = new mongoose.Schema({
   companyName: { type: String, required: true },
@@ -7,11 +7,9 @@ const advertiserSchema = new mongoose.Schema({
   description: { type: String },
   website: { type: String },
   hotline: { type: String },
-  advertiserID: { type: Number, required: true },
   advertiserTaxCard: { type: String },
 });
 
-const advertiser = user.discriminator('Advertiser', advertiserSchema);
-
+const advertiser = user.discriminator("Advertiser", advertiserSchema);
 
 export default advertiser;
