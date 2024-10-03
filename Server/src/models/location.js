@@ -29,9 +29,10 @@ const locationSchema = new mongoose.Schema({
   }, // Ticket prices based on category
   tags: [
     {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tag",
     },
-  ], // Tags representing what the location is known for
+  ], // Array of comments related to the activity
 });
 
 const location = mongoose.model("Location", locationSchema);
