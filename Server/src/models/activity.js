@@ -5,14 +5,19 @@ const activitySchema = new mongoose.Schema({
     type: String,
     required: true,
   }, // Name of the activity
+  booking:{
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  specialDiscount:{
+    type: String,
+    required: true
+  },
   rating: {
     type: Number,
     default: 0,
   }, // Average rating for the activity
-  budget: {
-    type: Number,
-    required: true,
-  }, // Estimated budget for the activity
   date: {
     type: Date,
     required: true,

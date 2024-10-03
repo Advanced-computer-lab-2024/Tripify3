@@ -49,12 +49,6 @@ const userSchema = new mongoose.Schema({
       ref: "CardPayment",
     },
   ], // Array of card payments associated with the user
-  website:{
-    type: String,
-  },
-  hotline:{
-    type: String,
-  }
 
 
 });

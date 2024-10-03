@@ -1,25 +1,27 @@
-import Users from "../models/users.js";
-import Activity from "../models/activity.js";
 
-// Create a new user profile
+import user from "../models/users.js";
+import advertiser from "../models/advertiser.js";
+import activity from "../models/activity.js";
+
 export const createProfile = async (req, res) => {
-  const { name, username, email, password, type, website, hotline } = req.body;
+  const { username, email, password, type, website, hotline, companyName, description } = req.body;
 
   try {
-    const existingProfile = await Users.findOne({ username });
+    const existingProfile = await user.findOne({ username });
 
     if (existingProfile) {
       return res.status(409).json({ message: "Profile already exists." });
     }
 
-    const newProfile = new Users({
-      name,
+    const newProfile = new advertiser ({
       username,
       email,
       password,
       type,
       website,
       hotline,
+      companyName, 
+      description
     });
 
     await newProfile.save();
@@ -38,7 +40,7 @@ export const updateProfile = async (req, res) => {
   const { advertiserId } = req.params;
 
   try {
-    const updatedProfile = await Users.findByIdAndUpdate(advertiserId, { $set: req.body }, { new: true });
+    const updatedProfile = await advertiser.findByIdAndUpdate(advertiserId, { $set: req.body }, { new: true });
 
     if (!updatedProfile) {
       return res.status(404).json({ message: "Profile not found" });
@@ -59,7 +61,7 @@ export const getProfile = async (req, res) => {
   const { advertiserId } = req.params;
 
   try {
-    const profile = await Users.findById(advertiserId);
+    const profile = await advertiser.findById(advertiserId);
 
     if (!profile) {
       return res.status(404).json({ message: "Profile not found." });
@@ -77,7 +79,7 @@ export const deleteProfile = async (req, res) => {
   const { advertiserId } = req.params;
 
   try {
-    const deletedProfile = await Users.findByIdAndDelete(advertiserId);
+    const deletedProfile = await advertiser.findByIdAndDelete(advertiserId);
 
     if (!deletedProfile) {
       return res.status(404).json({ message: "Profile not found." });
@@ -92,12 +94,11 @@ export const deleteProfile = async (req, res) => {
 
 // Create a new activity for the advertiser
 export const createActivity = async (req, res) => {
-  const advertiserId = req.advertiser._id; // Get advertiserId from the authenticated advertiser
-  const { name, date, time, location, price, category, tags, special_discounts, booking_open } = req.body;
+  const { id, name, date, time, location, price, category, tags, specialDiscount, booking } = req.body;
 
   try {
-    const newActivity = new Activity({
-      advertiser: advertiserId, // Use consistent naming
+    const newActivity = new activity({
+      advertiser: id, // Use consistent naming
       name,
       date,
       time,
@@ -105,8 +106,8 @@ export const createActivity = async (req, res) => {
       price,
       category,
       tags,
-      special_discounts,
-      booking_open,
+      specialDiscount,
+      booking,
     });
 
     await newActivity.save();
@@ -125,7 +126,7 @@ export const updateActivity = async (req, res) => {
   const { advertiserId, activityId } = req.params;
 
   try {
-    const updatedActivity = await Activity.findOneAndUpdate(
+    const updatedActivity = await activity.findOneAndUpdate(
       { _id: activityId, advertiser: advertiserId }, // Ensure consistency with "advertiser"
       { $set: req.body },
       { new: true }
@@ -149,7 +150,7 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
   const { advertiserId } = req.params;
 
   try {
-    const activities = await Activity.find({ advertiser: advertiserId });
+    const activities = await activity.find({ advertiser: advertiserId });
     res.json(activities);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving activities", error: error.message });
@@ -161,7 +162,7 @@ export const deleteActivity = async (req, res) => {
   const { advertiserId, activityId } = req.params;
 
   try {
-    const deletedActivity = await Activity.findOneAndDelete({ _id: activityId, advertiser: advertiserId });
+    const deletedActivity = await activity.findOneAndDelete({ _id: activityId, advertiser: advertiserId });
 
     if (!deletedActivity) {
       return res.status(404).json({ message: "Activity not found." });
