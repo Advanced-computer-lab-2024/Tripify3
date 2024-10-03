@@ -1,5 +1,3 @@
-import crypto from "crypto";
-import user from "../models/users.js";
 import tourist from "../models/tourist.js";
 import mongoose from "mongoose";
 
@@ -28,7 +26,7 @@ export const getProfile = async (req, res) => {
 export const editProfile = async (req, res) => {
     try {
       const { username } = req.params; // Assuming username is passed as a route parameter
-      const { phoneNumber, dateOfBirth, occupation, email, nationality } = req.body;
+      const { phoneNumber, dateOfBirth, occupation, email, nationality, name } = req.body;
   
       // Create an update object and only include fields that are provided in the request body
       const updateData = {};
@@ -37,6 +35,7 @@ export const editProfile = async (req, res) => {
       if (occupation) updateData.occupation = occupation;
       if (email) updateData.email = email;
       if (nationality) updateData.nationality = nationality;
+      if (name) updateData.name = name;
   
       // Find the user by username and update only the fields provided in updateData
       const updatedUserProfile = await tourist.findOneAndUpdate(

@@ -32,7 +32,7 @@ const locationSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tag",
     },
-  ], // Array of comments related to the activity
+  ], 
 });
 
 const location = mongoose.model("Location", locationSchema);
