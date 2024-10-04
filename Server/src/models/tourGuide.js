@@ -7,6 +7,11 @@ const tourGuideSchema = new mongoose.Schema({
     required: true,
     unique: true,
   }, // Email address of the user
+  name:{
+    type:String,
+    required:true
+  },
+
   licenseNumber: {
     type: String,
     required: true,
@@ -24,10 +29,10 @@ const tourGuideSchema = new mongoose.Schema({
       type: String,
     },
   ],
-  adminLevel: {
+  department: {
     type: String,
   },
-  department: {
+  mobile: {
     type: String,
   },
   companyName: {
@@ -45,23 +50,14 @@ const tourGuideSchema = new mongoose.Schema({
   hotline: {
     type: String,
   },
-  tourGuideID: {
-    type: Number,
-  },
   tourGuideCertificate: {
     type: String,
   },
-  advertiserID: {
-    type: Number,
-  },
-  advertiserTaxCard: {
-    type: String,
-  },
-  sellerID: {
-    type: Number,
-  },
-  sellerTaxCard: {
-    type: String,
+  photos :[{
+    type:String
+  }],
+  revenue:{
+    type:Number
   },
   ratings: [
     {

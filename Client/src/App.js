@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/username-input" element={<UsernameInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/TourGuideProfile/:id" element={<TourGuideProfile />} />
+        <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} />
 
       </Routes>
     </Router>

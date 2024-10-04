@@ -1,73 +1,89 @@
-// Profile.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom'; // Import useParams
 import '../styles/TourGuideProfile.css';
 
-const updateProfile = async (id, updatedData) => {
-    try {
-        const response = await fetch(`http://localhost:8000/update/${tourGuideId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedProfileData),
-          });
-          
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Failed to update profile:', errorData.message);
-            throw new Error(errorData.message);
-        }
-        const data = await response.json();
-        console.log('Profile updated successfully:', data);
-        return data;
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
+// Fetch the profile based on ID
+const fetchProfile = async (id) => {
+  try {
+    const response = await fetch(`http://localhost:8000/tourGuide/profile/${id}`); // Replace with your actual endpoint
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Failed to fetch profile:', errorData.message);
+      throw new Error(errorData.message);
     }
+    return await response.json(); // Return the profile data
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    throw error;
+  }
 };
 
-  
+const updateProfile = async (id, updatedData) => {
+  try {
+    const response = await fetch(`http://localhost:8000/tourGuide/profile/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedData),
+    });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Failed to update profile:', errorData.message);
+      throw new Error(errorData.message);
+    }
+    return await response.json(); 
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
+};
 
 const TourGuideProfile = () => {
+  const { id } = useParams(); // Get ID from URL params
+
   // State for profile data
-  const [profile, setProfile] = useState({
-    id: 'YOUR_TOUR_GUIDE_ID', // Replace with the actual ID
-    name: 'John Doe',
-    mobile: '+123456789',
-    yearsOfExperience: 5,
-    previousWork: ['Tour Guide at Historical Monuments', 'City Tour Operator'],
-    bio: 'Enthusiastic tour guide with a passion for history and cultural heritage.',
-    email: 'johndoe@example.com',
-});
-
-
-
-  // State for editing profile
+  const [profile, setProfile] = useState(null); // Initialize as null
   const [isEditing, setIsEditing] = useState(false);
   const [updatedProfile, setUpdatedProfile] = useState(profile);
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    const fetchTourGuideProfile = async () => {
+      try {
+        const profileData = await fetchProfile(id);
+        setProfile(profileData);
+        setUpdatedProfile(profileData); // Set the updated profile state
+      } catch (error) {
+        console.error('Failed to fetch tour guide profile:', error);
+      }
+    };
+
+    fetchTourGuideProfile();
+  }, [id]); // Run effect when ID changes
 
   // Handle form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUpdatedProfile({
-        ...updatedProfile,
-        [name]: name === 'previousWork' ? value.split(',').map(item => item.trim()) : value,
+      ...updatedProfile,
+      [name]: name === 'previousWork' ? value.split(',').map(item => item.trim()) : value,
     });
-};
-
+  };
 
   // Save changes
   const handleSave = async () => {
-    const tourGuideId = 'YOUR_TOUR_GUIDE_ID'; // Replace with the actual ID
     try {
-        const updatedData = await updateProfile(tourGuideId, updatedProfile);
-        setProfile(updatedData); // Update local state with new profile data
-        setIsEditing(false);
+      const updatedData = await updateProfile(id, updatedProfile);
+      setProfile(updatedData); // Update local state with new profile data
+      setIsEditing(false);
     } catch (error) {
-        console.error('Failed to save profile changes:', error);
+      console.error('Failed to save profile changes:', error);
     }
-};
+  };
+
+  if (!profile) return <p>Loading...</p>; // Show loading while fetching
 
   return (
     <div className="profile-container">
@@ -85,13 +101,13 @@ const TourGuideProfile = () => {
             <input type="email" name="email" value={updatedProfile.email} onChange={handleChange} />
 
             <label>Years of Experience:</label>
-            <input type="number" name="yearsOfExperience" value={updatedProfile.yearsOfExperience} onChange={handleChange} />
+            <input type="number" name="yearsOfExperience" value={updatedProfile.experienceYears} onChange={handleChange} />
 
             <label>Previous Work:</label>
             <textarea name="previousWork" value={updatedProfile.previousWork.join(', ')} onChange={handleChange} />
 
-            <label>Bio:</label>
-            <textarea name="bio" value={updatedProfile.bio} onChange={handleChange} />
+            <label>description:</label>
+            <textarea name="description" value={updatedProfile.description} onChange={handleChange} />
 
             <button onClick={handleSave}>Save</button>
           </>
@@ -100,9 +116,9 @@ const TourGuideProfile = () => {
             <p><strong>Name:</strong> {profile.name}</p>
             <p><strong>Mobile:</strong> {profile.mobile}</p>
             <p><strong>Email:</strong> {profile.email}</p>
-            <p><strong>Years of Experience:</strong> {profile.yearsOfExperience}</p>
+            <p><strong>Years of Experience:</strong> {profile.experienceYears}</p>
             <p><strong>Previous Work:</strong> {profile.previousWork.join(', ')}</p>
-            <p><strong>Bio:</strong> {profile.bio}</p>
+            <p><strong>description:</strong> {profile.description}</p>
             <button onClick={() => setIsEditing(true)}>Edit Profile</button>
           </>
         )}
