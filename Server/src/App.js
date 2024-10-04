@@ -17,7 +17,6 @@ class App {
 
   // Connect to MongoDB
   async connectToDatabase() {
-    
     await mongoose
       .connect(this.DB)
       .then(() => {

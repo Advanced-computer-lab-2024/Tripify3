@@ -13,7 +13,7 @@ const placeSchema = new Schema(
     },
     pictures: [
       {
-        type: String,
+        type: [String],
         required: [true, "Pictures field is required at least one picture"],
       },
     ],
@@ -77,7 +77,8 @@ const placeSchema = new Schema(
     },
     type: {
       type: String,
-      required: [true, "Type field is required"],
+      enum: ["Monument", "Religious Site", "Palace/Castle", "Museum", "Historical Place"],
+      required: [true,"Please specify the type"],
     },
     historicalPeriod: {
       type: Number,

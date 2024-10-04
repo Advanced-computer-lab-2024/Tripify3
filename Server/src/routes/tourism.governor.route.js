@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post("/governor/addPlace", addPlace);
 router.get("/governor/getAllPlaces", getAllPlaces);
-router.route("/governor/:id").get(getPlace).patch(updatePlace).delete(deletePlace);
+router.route("/governor/:id").get(getPlace).put(updatePlace).delete(deletePlace);
 
 
 export default router;

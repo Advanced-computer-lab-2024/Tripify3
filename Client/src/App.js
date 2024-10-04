@@ -10,6 +10,7 @@ import AddPlace from "./pages/AddPlace.js"; // Ensure this path is correct
 import UsernameInput from "./pages/ResetPassword/UsernamePage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
+import EditPlace from "./pages/EditPlace.js";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/governor" element={<PlacesList />} />
         <Route path="/governor/:id" element={<PlaceDetails />} />
         <Route path="/governor/addPlace" element={<AddPlace/>}></Route>
+        <Route path="/governor/edit/:id" element={<EditPlace/>}></Route>
         <Route path="/username-input" element={<UsernameInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
