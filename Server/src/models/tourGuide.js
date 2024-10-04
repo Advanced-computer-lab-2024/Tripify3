@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import user from "./users.js" ;
+import user from "./user.js";
 
 const tourGuideSchema = new mongoose.Schema({
   email: {
@@ -74,7 +74,7 @@ const tourGuideSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
     },
-  ], 
+  ],
 });
 
 const TourGuide = user.discriminator("Tour Guide", tourGuideSchema);

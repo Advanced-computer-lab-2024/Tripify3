@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import user from "./users.js";
+import user from "./user.js";
 
 const touristSchema = new mongoose.Schema({
-  name: { 
+  name: {
     type: String,
     required: true,
   },
@@ -36,7 +36,7 @@ const touristSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Complaint",
     },
-  ], 
+  ],
   wishlist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wishlist", // References the Wishlist model

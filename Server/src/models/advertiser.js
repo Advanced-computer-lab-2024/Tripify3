@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import user from "./users.js";
+import user from "./user.js";
 
 const advertiserSchema = new mongoose.Schema({
   email: {

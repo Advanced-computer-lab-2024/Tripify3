@@ -17,20 +17,6 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 
-  // addresses: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "Address",
-  //   },
-  // ], // Array of addresses associated with the user
-  // cards: [
-  //   {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "CardPayment",
-  //   },
-  // ], // Array of card payments associated with the user
-
-
 });
 
 const User = mongoose.model("User", userSchema);

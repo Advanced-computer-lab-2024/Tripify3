@@ -2,8 +2,8 @@ import crypto from "crypto";
 import Seller from "../models/seller.js";
 import Advertiser from "../models/advertiser.js";
 import TourGuide from "../models/tourGuide.js";
-import User from '../models/users.js'; // Assuming this is the User model
-import Tourist from '../models/tourist.js'; // Importing the Tourist model (similar for other types)
+import User from "../models/user.js"; // Assuming this is the User model
+import Tourist from "../models/tourist.js"; // Importing the Tourist model (similar for other types)
 import { sendPasswordResetEmail } from "../middlewares/sendEmail.middleware.js";
 
 const verificationCodes = new Map();

@@ -1,5 +1,4 @@
-
-import User from "../models/users.js";
+import User from "../models/user.js";
 import Advertiser from "../models/advertiser.js";
 import Activity from "../models/activity.js";
 
@@ -13,15 +12,15 @@ export const createProfile = async (req, res) => {
       return res.status(409).json({ message: "Profile already exists." });
     }
 
-    const newProfile = new Advertiser ({
+    const newProfile = new Advertiser({
       username,
       email,
       password,
       type,
       website,
       hotline,
-      companyName, 
-      description
+      companyName,
+      description,
     });
 
     await newProfile.save();

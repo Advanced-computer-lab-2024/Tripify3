@@ -1,6 +1,6 @@
 import Seller from "../models/seller.js"; // Adjust the path as necessary
 import Product from "../models/product.js"; // Adjust the path as necessary
-import User from "../models/users.js";
+import User from "../models/user.js";
 import { sendEmailNotification } from "../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
 // Seller
 export const getSellers = async (req, res) => {
@@ -65,13 +65,11 @@ export const updateSeller = async (req, res) => {
   const { username, name, description } = req.body; // Expecting the username in the request body
 
   try {
-    const user = await Seller
-      .findOneAndUpdate(
-        { username: username }, // Search by username
-        { name: name, description: description }, // Fields to update
-        { new: true } // Return the updated document
-      )
-      .select("-__t -__v");
+    const user = await Seller.findOneAndUpdate(
+      { username: username }, // Search by username
+      { name: name, description: description }, // Fields to update
+      { new: true } // Return the updated document
+    ).select("-__t -__v");
     if (!user) {
       return res.status(404).json({ message: "Seller not found." });
     }
@@ -98,8 +96,7 @@ export const deleteAllSellers = async (req, res) => {
 //need to change (check if the product is archived or not)
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, details, quantity, imageUrl, category, sellerId } =
-      req.body;
+    const { name, price, details, quantity, imageUrl, category, sellerId } = req.body;
 
     // Check if the product already exists
     const existingProduct = await Product.findOne({ name });
@@ -130,9 +127,7 @@ export const createProduct = async (req, res) => {
     await newProduct.save();
 
     // Respond with success message and product data
-    res
-      .status(201)
-      .json({ message: "Product created successfully", product: newProduct });
+    res.status(201).json({ message: "Product created successfully", product: newProduct });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -150,8 +145,7 @@ export const searchAllProducts = async (req, res) => {
   }
 };
 export const editProduct = async (req, res) => {
-  const { name, price, details, quantity, imageUrl, category, sellerId } =
-    req.body;
+  const { name, price, details, quantity, imageUrl, category, sellerId } = req.body;
 
   try {
     // Validate if the sellerId refers to a valid seller (if sellerId is provided)
@@ -226,8 +220,7 @@ export const deleteProduct = async (req, res) => {
 };
 export const filterProduct = async (req, res) => {
   try {
-    const { minPrice, maxPrice, greaterThan, lessThan, equal, notEqual } =
-      req.body;
+    const { minPrice, maxPrice, greaterThan, lessThan, equal, notEqual } = req.body;
 
     // Build the price query dynamically based on the provided conditions
     let priceQuery = {};
@@ -261,9 +254,7 @@ export const filterProduct = async (req, res) => {
     const products = await Product.find({ price: priceQuery });
 
     if (products.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No products found matching the criteria." });
+      return res.status(404).json({ message: "No products found matching the criteria." });
     }
 
     // Return the filtered products
@@ -291,9 +282,7 @@ export const filterProductCondition = async (req, res) => {
       // Match operators in each condition
       const operatorMatch = condition.match(/(<=|>=|<|>|==|!=)/);
       if (!operatorMatch) {
-        return res
-          .status(400)
-          .json({ message: `Invalid price condition format: ${condition}` });
+        return res.status(400).json({ message: `Invalid price condition format: ${condition}` });
       }
 
       // Extract the operator and value
@@ -302,9 +291,7 @@ export const filterProductCondition = async (req, res) => {
 
       // Ensure the value is a valid number
       if (isNaN(value)) {
-        return res
-          .status(400)
-          .json({ message: `Invalid price value in condition: ${condition}` });
+        return res.status(400).json({ message: `Invalid price value in condition: ${condition}` });
       }
 
       // Build the query based on the operator
@@ -336,9 +323,7 @@ export const filterProductCondition = async (req, res) => {
     const products = await Product.find({ price: priceQuery });
 
     if (products.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No products found matching the price condition." });
+      return res.status(404).json({ message: "No products found matching the price condition." });
     }
 
     // Return the filtered products
@@ -394,9 +379,7 @@ export const addProdImage = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 export const viewProductStockAndSales = async (req, res) => {
@@ -461,9 +444,7 @@ export const decrementProductQuantity = async (req, res) => {
       return res.status(400).json({ message: "Invalid quantity" });
     }
     if (product3.quantity < quantity) {
-      return res
-        .status(400)
-        .json({ message: "Quantity exceeds available stock" });
+      return res.status(400).json({ message: "Quantity exceeds available stock" });
     }
     const product2 = await Product.findByIdAndUpdate(
       productId,
@@ -481,8 +462,7 @@ export const decrementProductQuantity = async (req, res) => {
 
     if (product2.quantity <= 0) {
       const emailRecipient = await seller.findById(product2.sellerId);
-      if (emailRecipient)
-        await sendEmailNotification(emailRecipient.email, product2.name); // Send email notification to the seller
+      if (emailRecipient) await sendEmailNotification(emailRecipient.email, product2.name); // Send email notification to the seller
       // Send email notification to the admin too
     }
 
@@ -493,21 +473,8 @@ export const decrementProductQuantity = async (req, res) => {
 };
 //sprint 3
 export const filterSalesReport = async (req, res) => {
-  const {
-    productId,
-    date,
-    month,
-    year,
-    greaterThan,
-    greaterThanOrEqual,
-    lessThan,
-    lessThanOrEqual,
-    greaterThanMonth,
-    greaterThanMonthOrEqual,
-    lessThanMonth,
-    lessThanMonthOrEqual,
-    exactMonth,
-  } = req.query;
+  const { productId, date, month, year, greaterThan, greaterThanOrEqual, lessThan, lessThanOrEqual, greaterThanMonth, greaterThanMonthOrEqual, lessThanMonth, lessThanMonthOrEqual, exactMonth } =
+    req.query;
 
   try {
     console.log("ProductId:", productId);
@@ -518,19 +485,14 @@ export const filterSalesReport = async (req, res) => {
 
     const salesHistory = productRepo.salesHistory;
     if (salesHistory.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No sales report found for the given criteria" });
+      return res.status(404).json({ message: "No sales report found for the given criteria" });
     }
 
     let filteredSales = salesHistory;
 
     // Exact date filtering
     if (date) {
-      filteredSales = filteredSales.filter(
-        (sale) =>
-          new Date(sale.date).toDateString() === new Date(date).toDateString()
-      );
+      filteredSales = filteredSales.filter((sale) => new Date(sale.date).toDateString() === new Date(date).toDateString());
     }
 
     // Exact month and year filtering
@@ -590,40 +552,28 @@ export const filterSalesReport = async (req, res) => {
     //________________________________________________________________________________________
     // Greater than date
     if (greaterThan) {
-      filteredSales = filteredSales.filter(
-        (sale) => new Date(sale.date) > new Date(greaterThan)
-      );
+      filteredSales = filteredSales.filter((sale) => new Date(sale.date) > new Date(greaterThan));
     }
 
     // Greater than or equal to date
     if (greaterThanOrEqual) {
-      filteredSales = filteredSales.filter(
-        (sale) => new Date(sale.date) >= new Date(greaterThanOrEqual)
-      );
+      filteredSales = filteredSales.filter((sale) => new Date(sale.date) >= new Date(greaterThanOrEqual));
     }
 
     // Less than date
     if (lessThan) {
-      filteredSales = filteredSales.filter(
-        (sale) => new Date(sale.date) < new Date(lessThan)
-      );
+      filteredSales = filteredSales.filter((sale) => new Date(sale.date) < new Date(lessThan));
     }
 
     // Less than or equal to date
     if (lessThanOrEqual) {
-      filteredSales = filteredSales.filter(
-        (sale) => new Date(sale.date) <= new Date(lessThanOrEqual)
-      );
+      filteredSales = filteredSales.filter((sale) => new Date(sale.date) <= new Date(lessThanOrEqual));
     }
 
     if (filteredSales.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No sales report found for the given criteria" });
+      return res.status(404).json({ message: "No sales report found for the given criteria" });
     }
-    const sortedSales = filteredSales.sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
+    const sortedSales = filteredSales.sort((a, b) => new Date(a.date) - new Date(b.date));
     if (year) {
       const byYear = sortedSales.filter((sale) => {
         const saleDate = new Date(sale.date);
