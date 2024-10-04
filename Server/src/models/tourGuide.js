@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 import user from "./users.js" ;
 
 const tourGuideSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  }, // Email address of the user
   licenseNumber: {
     type: String,
     required: true,
