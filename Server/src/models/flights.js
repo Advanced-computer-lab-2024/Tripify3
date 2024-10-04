@@ -20,5 +20,5 @@ const filghtSchema = new Schema({
   }
 }, { timestamps: true });
 
-const flights = mongoose.model('flights', filghtSchema);
-export default flights
+const Flight = mongoose.model('flights', filghtSchema);
+export default Flight

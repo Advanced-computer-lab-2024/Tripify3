@@ -1,8 +1,9 @@
 import crypto from "crypto";
-import user from "../models/users.js";
-import tourist from "../models/tourist.js";
-import tourGuide from "../models/tourGuide.js";
-import mongoose from "mongoose";
+import Seller from "../models/seller.js";
+import Advertiser from "../models/advertiser.js";
+import TourGuide from "../models/tourGuide.js";
+import User from '../models/users.js'; // Assuming this is the User model
+import Tourist from '../models/tourist.js'; // Importing the Tourist model (similar for other types)
 import { sendPasswordResetEmail } from "../middlewares/sendEmail.middleware.js";
 
 const verificationCodes = new Map();
@@ -11,7 +12,7 @@ export const sendVerificationCode = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const currentUser = await user.findOne({ email });
+    const currentUser = await User.findOne({ email });
 
     if (!currentUser) {
       return res.status(404).json({ message: "Email is not linked to any user" });
@@ -54,7 +55,7 @@ export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
 
-    const currentUser = await user.findOne({ email });
+    const currentUser = await User.findOne({ email });
     if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -74,7 +75,7 @@ export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const currentUser = await user.findOne({ username });
+    const currentUser = await User.findOne({ username });
     if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -92,10 +93,10 @@ export const login = async (req, res) => {
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, username, password, type, phoneNumber, nationality, dateOfBirth, occupation } = req.body;
+    const { email, username, type } = req.body;
 
-    const existingUsername = await user.findOne({ username });
-    const existingEmail = await user.findOne({ email });
+    const existingUsername = await User.findOne({ username });
+    const existingEmail = await User.findOne({ email });
     if (existingUsername) {
       return res.status(400).json({ message: "Username already exists." });
     }
@@ -108,24 +109,13 @@ export const signup = async (req, res) => {
     let newUser;
 
     if (type === "tourist") {
-      newUser = new tourist({
-        name,
-        username,
-        email,
-        password, // Be sure to hash this before saving in a real-world scenario
-        type,
-        phoneNumber,
-        nationality,
-        dateOfBirth,
-        occupation,
-      });
+      newUser = new Tourist(req.body);
     } else if (type === "tourGuide") {
-      newUser = new tourGuide({
-        username,
-        email,
-        password, // Be sure to hash this before saving in a real-world scenario
-        type,
-      });
+      newUser = new TourGuide(req.body);
+    } else if (type === "seller") {
+      newUser = new Seller(req.body);
+    } else if (type === "advertiser") {
+      newUser = new Advertiser(req.body);
     } else {
       return res.status(400).json({ message: "Invalid user type." });
     }
@@ -148,7 +138,7 @@ export const changePassword = async (req, res) => {
     const { username, oldPassword, newPassword } = req.body;
 
     // Find the user by username
-    const currentUser = await user.findOne({ username });
+    const currentUser = await User.findOne({ username });
     if (!currentUser) {
       return res.status(404).json({ message: "User not found." });
     }

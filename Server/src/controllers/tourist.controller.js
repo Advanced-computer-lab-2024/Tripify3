@@ -1,11 +1,11 @@
-import tourist from "../models/tourist.js";
+import Tourist from "../models/tourist.js";
 import mongoose from "mongoose";
 
 export const getProfile = async (req, res) => {
   try {
     const { username } = req.params;
 
-    const userProfile = await tourist.find({ username });
+    const userProfile = await Tourist.find({ username });
 
     if (!userProfile) {
       return res.status(404).json({ message: "User not found" });
@@ -38,7 +38,7 @@ export const editProfile = async (req, res) => {
       if (name) updateData.name = name;
   
       // Find the user by username and update only the fields provided in updateData
-      const updatedUserProfile = await tourist.findOneAndUpdate(
+      const updatedUserProfile = await Tourist.findOneAndUpdate(
         { username }, // Query by username
         { $set: updateData }, // Update only the fields that are in updateData
         { new: true, runValidators: true } // Return the updated document and run schema validations

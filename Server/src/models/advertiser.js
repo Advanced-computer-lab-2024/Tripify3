@@ -14,6 +14,6 @@ const advertiserSchema = new mongoose.Schema({
   // advertiserTaxCard: { type: String },
 });
 
-const advertiser = user.discriminator("Advertiser", advertiserSchema);
+const Advertiser = user.discriminator("Advertiser", advertiserSchema);
 
-export default advertiser;
+export default Advertiser;

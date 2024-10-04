@@ -27,6 +27,10 @@ const touristSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  loyaltyPoints: {
+    type: Number,
+    default: 0,
+  }, // Loyalty points earned by the user
   complaints: [
     {
       type: mongoose.Schema.Types.ObjectId,

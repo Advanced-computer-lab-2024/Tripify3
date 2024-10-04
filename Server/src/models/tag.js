@@ -7,6 +7,6 @@ const categorySchema = new mongoose.Schema({
   }
 });
 
-const tag = mongoose.model('Tag', categorySchema);
+const Tag = mongoose.model('Tag', categorySchema);
 
-export default tag;
+export default Tag;

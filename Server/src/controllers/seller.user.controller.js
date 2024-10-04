@@ -1,12 +1,12 @@
-import seller from "../models/seller.js"; // Adjust the path as necessary
-import product from "../models/product.js"; // Adjust the path as necessary
-import users from "../models/users.js";
+import Seller from "../models/seller.js"; // Adjust the path as necessary
+import Product from "../models/product.js"; // Adjust the path as necessary
+import User from "../models/users.js";
 import { sendEmailNotification } from "../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
 // Seller
 export const getSellers = async (req, res) => {
   try {
     // Retrieve all users with the type 'seller' from the database
-    const sellers = await seller.find({}).select("-__t -__v");
+    const sellers = await Seller.find({}).select("-__t -__v");
     res.status(200).json(sellers); // Send the sellers data as JSON response
   } catch (error) {
     // Handle any errors
@@ -17,16 +17,16 @@ export const signup = async (req, res) => {
   try {
     const { name, email, description, username, password } = req.body;
 
-    const existingUser = await users.findOne({ username });
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists." });
     }
-    const existingEmail = await users.findOne({ email });
+    const existingEmail = await User.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ message: "Email already exists." });
     }
     const type = "seller";
-    const newseller = new seller({
+    const newseller = new Seller({
       name,
       username,
       email,
@@ -50,7 +50,7 @@ export const signup = async (req, res) => {
 export const viewSeller = async (req, res) => {
   try {
     const { username } = req.query; // Get the username from query parameters
-    const user = await seller.findOne({ username }).select("-__t -__v"); // Find the user by username and type 'seller'
+    const user = await Seller.findOne({ username }).select("-__t -__v"); // Find the user by username and type 'seller'
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -65,7 +65,7 @@ export const updateSeller = async (req, res) => {
   const { username, name, description } = req.body; // Expecting the username in the request body
 
   try {
-    const user = await seller
+    const user = await Seller
       .findOneAndUpdate(
         { username: username }, // Search by username
         { name: name, description: description }, // Fields to update
@@ -87,7 +87,7 @@ export const updateSeller = async (req, res) => {
 export const deleteAllSellers = async (req, res) => {
   try {
     // Delete all sellers from the database
-    await seller.deleteMany({});
+    await Seller.deleteMany({});
     res.status(200).json({ message: "All sellers deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
@@ -102,19 +102,19 @@ export const createProduct = async (req, res) => {
       req.body;
 
     // Check if the product already exists
-    const existingProduct = await product.findOne({ name });
+    const existingProduct = await Product.findOne({ name });
     if (existingProduct) {
       return res.status(400).json({ message: "Product already exists." });
     }
 
     // Validate if the sellerId refers to a valid seller
-    const sellerUser = await seller.findById(sellerId);
+    const sellerUser = await Seller.findById(sellerId);
     if (!sellerUser || sellerUser.type !== "seller") {
       return res.status(400).json({ message: "Invalid seller." });
     }
 
     // Create a new product instance
-    const newProduct = new product({
+    const newProduct = new Product({
       name,
       price,
       details,
@@ -141,7 +141,7 @@ export const createProduct = async (req, res) => {
 export const searchAllProducts = async (req, res) => {
   try {
     // Find products by name
-    const product2 = await product.find({ archived: false }); // Using regex for case-insensitive search
+    const product2 = await Product.find({ archived: false }); // Using regex for case-insensitive search
     // Return the found product(s)
     return res.status(200).json(product2);
   } catch (err) {
@@ -155,14 +155,14 @@ export const editProduct = async (req, res) => {
 
   try {
     // Validate if the sellerId refers to a valid seller (if sellerId is provided)
-    const current = await product.findOne({ name: name });
+    const current = await Product.findOne({ name: name });
 
     if (!current.sellerId.equals(sellerId)) {
       return res.status(400).json({ message: "This seller is not the owner." });
     }
 
     // Find and update the product by name
-    const updatedProduct = await product.findOneAndUpdate(
+    const updatedProduct = await Product.findOneAndUpdate(
       { name: name },
       {
         price,
@@ -190,7 +190,7 @@ export const searchProduct = async (req, res) => {
     const { name } = req.query; // Extracting name from the query parameter
 
     // Find products by name using regex for case-insensitive search
-    const product2 = await product.find({ name: new RegExp(name, "i") });
+    const product2 = await Product.find({ name: new RegExp(name, "i") });
 
     // If no product is found
     if (product2.length === 0) {
@@ -210,7 +210,7 @@ export const deleteProduct = async (req, res) => {
 
   try {
     // Attempt to delete the product
-    const result = await product.deleteOne({ name });
+    const result = await Product.deleteOne({ name });
 
     // Check if the product was deleted
     if (result.deletedCount === 0) {
@@ -258,7 +258,7 @@ export const filterProduct = async (req, res) => {
       priceQuery = { price: { $ne: notEqual } }; // Not equal to the specified price
     }
     // Find products based on the constructed price query
-    const products = await product.find({ price: priceQuery });
+    const products = await Product.find({ price: priceQuery });
 
     if (products.length === 0) {
       return res
@@ -333,7 +333,7 @@ export const filterProductCondition = async (req, res) => {
     });
 
     // Find products based on the constructed price query
-    const products = await product.find({ price: priceQuery });
+    const products = await Product.find({ price: priceQuery });
 
     if (products.length === 0) {
       return res
@@ -354,7 +354,7 @@ export const sortByRating = async (req, res) => {
 
   try {
     const sortOrder = sortBy === "asc" ? 1 : -1;
-    const products = await product.find({}).sort({ rating: sortOrder });
+    const products = await Product.find({}).sort({ rating: sortOrder });
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -364,7 +364,7 @@ export const sortByRating = async (req, res) => {
 export const deleteAllProducts = async (req, res) => {
   try {
     // Delete all products from the database
-    await product.deleteMany({});
+    await Product.deleteMany({});
     res.status(200).json({ message: "All products deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -380,7 +380,7 @@ export const addProdImage = async (req, res) => {
     }
 
     // Find the product by id and update the imageUrl
-    const updatedProduct = await product.findById(id);
+    const updatedProduct = await Product.findById(id);
     console.log(updatedProduct);
     // Check if product was found and updated
     if (!updatedProduct) {
@@ -402,7 +402,7 @@ export const addProdImage = async (req, res) => {
 export const viewProductStockAndSales = async (req, res) => {
   try {
     // Retrieve all products with quantity and sales
-    const products = await product.find({}, "name quantity sales price");
+    const products = await Product.find({}, "name quantity sales price");
 
     // Check if products exist
     if (!products || products.length === 0) {
@@ -420,7 +420,7 @@ export const viewProductStockAndSales = async (req, res) => {
 export const archiveProduct = async (req, res) => {
   const { id } = req.body;
   try {
-    const product2 = await product.findOneAndUpdate(
+    const product2 = await Product.findOneAndUpdate(
       { _id: id }, // Query to find the product by _id
       { archived: true }, // Update the "archived" field to true
       { new: true } // Return the updated document
@@ -436,7 +436,7 @@ export const archiveProduct = async (req, res) => {
 export const unarchiveProduct = async (req, res) => {
   const { id } = req.body;
   try {
-    const product2 = await product.findOneAndUpdate(
+    const product2 = await Product.findOneAndUpdate(
       { _id: id }, // Query to find the product by _id
       { archived: false }, // Update the "archived" field to true
       { new: true } // Return the updated document
@@ -465,7 +465,7 @@ export const decrementProductQuantity = async (req, res) => {
         .status(400)
         .json({ message: "Quantity exceeds available stock" });
     }
-    const product2 = await product.findByIdAndUpdate(
+    const product2 = await Product.findByIdAndUpdate(
       productId,
       {
         quantity: product3.quantity - quantity,
@@ -511,7 +511,7 @@ export const filterSalesReport = async (req, res) => {
 
   try {
     console.log("ProductId:", productId);
-    const productRepo = await product.findById(productId); // Correct capitalization for the model
+    const productRepo = await Product.findById(productId); // Correct capitalization for the model
     if (!productRepo) {
       return res.status(404).json({ message: "Product not found." });
     }

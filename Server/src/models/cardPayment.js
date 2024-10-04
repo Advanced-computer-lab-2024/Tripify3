@@ -37,6 +37,6 @@ const cardPaymentSchema = new mongoose.Schema({
   },
 });
 
-const cardPayment = mongoose.model("CardPayment", cardPaymentSchema);
+const CardPayment = mongoose.model("CardPayment", cardPaymentSchema);
 
-export default cardPayment;
+export default CardPayment;

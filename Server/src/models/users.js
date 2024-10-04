@@ -11,10 +11,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   }, // Password of the user
-  loyaltyPoints: {
-    type: Number,
-    default: 0,
-  }, // Loyalty points earned by the user
   type: {
     type: String,
     enum: ["tourist", "tourGuide", "admin", "seller", "touristGovernor", "advertiser"], // Possible user roles
@@ -37,5 +33,5 @@ const userSchema = new mongoose.Schema({
 
 });
 
-const user = mongoose.model("User", userSchema);
-export default user;
+const User = mongoose.model("User", userSchema);
+export default User;

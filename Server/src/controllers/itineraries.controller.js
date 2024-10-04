@@ -1,8 +1,8 @@
-import  itinerary from "../models/itinerary.js";
+import Itinerary from "../models/itinerary.js";
 
 export const getAllItineraries = async (req, res) => {
   try {
-    const itineraries = await itinerary.find();
+    const itineraries = await Itinerary.find();
     res.json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -19,7 +19,7 @@ export const getSortedItineraries = async (req, res) => {
       sort[sortBy] = sortOrder === "desc" ? -1 : 1;
     }
 
-    const itineraries = await itinerary.find().sort(sort);
+    const itineraries = await Itinerary.find().sort(sort);
     res.json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -50,7 +50,7 @@ export const getFilteredItineraries = async (req, res) => {
       query.language = language;
     }
 
-    const itineraries = await itinerary.find(query);
+    const itineraries = await Itinerary.find(query);
     res.json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });

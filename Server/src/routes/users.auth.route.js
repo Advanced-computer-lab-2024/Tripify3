@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode } from "../controllers/users.auth.controller.js";
+import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode } from "../controllers/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
 import { validate } from "../middlewares/validation.middleware.js";
 

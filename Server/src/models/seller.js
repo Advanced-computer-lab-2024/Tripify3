@@ -10,6 +10,6 @@ const sellerSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
-const seller = user.discriminator("Seller", sellerSchema);
+const Seller = user.discriminator("Seller", sellerSchema);
 
-export default seller;
+export default Seller;
