@@ -1,6 +1,6 @@
-import User from "../models/user.js";
-import Advertiser from "../models/advertiser.js";
-import Activity from "../models/activity.js";
+import User from "../../models/user.js";
+import Advertiser from "../../models/advertiser.js";
+import Activity from "../../models/activity.js";
 
 export const createProfile = async (req, res) => {
   const { username, email, password, type, website, hotline, companyName, description } = req.body;

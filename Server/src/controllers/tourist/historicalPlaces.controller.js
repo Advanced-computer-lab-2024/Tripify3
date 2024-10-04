@@ -1,4 +1,4 @@
-// import historicalPlace from "../models/historicalPlace.js";
+// import HistoricalPlace from "../models/historicalPlace.js";
 
 // export const getAllHistoricalPlaces = async (req, res) => {
 //   try {

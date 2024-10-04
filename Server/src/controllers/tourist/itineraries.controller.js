@@ -1,9 +1,9 @@
-import Itinerary from "../models/itinerary.js";
+import Itinerary from "../../models/itinerary.js";
 
 export const getAllItineraries = async (req, res) => {
   try {
     const itineraries = await Itinerary.find();
-    res.json(itineraries);
+    res.status(200).json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

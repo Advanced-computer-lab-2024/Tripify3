@@ -1,7 +1,7 @@
-import Seller from "../models/seller.js"; // Adjust the path as necessary
-import Product from "../models/product.js"; // Adjust the path as necessary
-import User from "../models/user.js";
-import { sendEmailNotification } from "../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
+import Seller from "../../models/seller.js"; // Adjust the path as necessary
+import Product from "../../models/product.js"; // Adjust the path as necessary
+import User from "../../models/user.js";
+import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
 // Seller
 export const getSellers = async (req, res) => {
   try {
@@ -13,40 +13,8 @@ export const getSellers = async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 };
-export const signup = async (req, res) => {
-  try {
-    const { name, email, description, username, password } = req.body;
 
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists." });
-    }
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail) {
-      return res.status(400).json({ message: "Email already exists." });
-    }
-    const type = "seller";
-    const newseller = new Seller({
-      name,
-      username,
-      email,
-      password,
-      type: "seller",
-      description,
-    });
 
-    // Save the user to the database
-    await newseller.save();
-    // Respond with success message and user data
-    res.status(201).json({
-      message: "User created successfully",
-      user: newseller,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
-};
 export const viewSeller = async (req, res) => {
   try {
     const { username } = req.query; // Get the username from query parameters

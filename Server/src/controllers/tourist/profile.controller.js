@@ -1,4 +1,4 @@
-import Tourist from "../models/tourist.js";
+import Tourist from "../../models/tourist.js";
 import mongoose from "mongoose";
 
 export const getProfile = async (req, res) => {

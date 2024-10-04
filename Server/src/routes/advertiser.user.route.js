@@ -1,5 +1,5 @@
 import express from "express";
-import { createProfile, updateProfile, getProfile, deleteProfile, createActivity, updateActivity, getAllActivitiesByAdvertiser, deleteActivity } from "../controllers/advertiser.user.controller.js";
+import { createProfile, updateProfile, getProfile, deleteProfile, createActivity, updateActivity, getAllActivitiesByAdvertiser, deleteActivity } from "../controllers/advertiser/advertiser.user.controller.js";
 import { signupSchema } from "../validation/users.auth.validation.js";
 import { validate } from "../middlewares/validation.middleware.js";
 
