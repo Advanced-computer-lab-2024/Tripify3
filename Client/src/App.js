@@ -11,6 +11,7 @@ import EmailInput from "./pages/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
 import TourGuideProfile from "./pages/TourGuideProfile.js";
+import EditPlace from './pages/EditPlace';
 
 const App = () => {
   return (
