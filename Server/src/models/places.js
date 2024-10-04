@@ -84,6 +84,12 @@ const placeSchema = new Schema(
       type: Number,
       required: [true, "Historical period field is required"],
     },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag",
+      },
+    ], // Array of comments related to the activity
   },
   { timestamps: true }
 );
