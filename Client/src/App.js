@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage.js"; // Ensure this path is correct
 import UsernameInput from "./pages/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
+import TourGuideProfile from "./pages/TourGuideProfile.js";
 
 const App = () => {
   return (
@@ -19,6 +20,8 @@ const App = () => {
         <Route path="/username-input" element={<UsernameInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
+        <Route path="/TourGuideProfile/:id" element={<TourGuideProfile />} />
+
       </Routes>
     </Router>
   );

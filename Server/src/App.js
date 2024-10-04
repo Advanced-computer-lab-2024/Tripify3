@@ -4,15 +4,14 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import initializeRoutes from "./routes/routes.js";
 import cors from "cors";
-
 dotenv.config(); // Load environment variables
 
 class App {
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || 8000;
-    this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
-    this.env = process.env.NODE_ENV || "development";
+    this.port = 8000; // Set your desired port here
+    this.DB = "mongodb+srv://Ahmed:Ahmedhany1@tripify.cptnu.mongodb.net/?retryWrites=true&w=majority&appName=Tripify"; // Directly use your MongoDB URI
+    this.env = "development"; // You can set your environment directly
   }
 
   // Connect to MongoDB
