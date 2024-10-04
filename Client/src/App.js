@@ -2,9 +2,12 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.js";
 import SignupPage from "./pages/SignupPage.js";
-import Header from "./components/Header.js";
+import Navbar from "./components/Navbar.js";
 import LoginPage from "./pages/LoginPage.js"; // Ensure this path is correct
-import UsernameInput from "./pages/ResetPassword/EmailPage.js";
+import PlacesList from "./pages/PlacesList.js"; // Ensure this path is correct
+import PlaceDetails from "./pages/PlaceDetails.js"; // Ensure this path is correct
+import AddPlace from "./pages/AddPlace.js"; // Ensure this path is correct
+import EmailInput from "./pages/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
 import TourGuideProfile from "./pages/TourGuideProfile.js";
@@ -12,12 +15,16 @@ import TourGuideProfile from "./pages/TourGuideProfile.js";
 const App = () => {
   return (
     <Router>
-      <Header />
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/username-input" element={<UsernameInput />} />
+        <Route path="/governor" element={<PlacesList />} />
+        <Route path="/governor/:id" element={<PlaceDetails />} />
+        <Route path="/governor/addPlace" element={<AddPlace/>}></Route>
+        <Route path="/governor/edit/:id" element={<EditPlace/>}></Route>
+        <Route path="/username-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} />

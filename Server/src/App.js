@@ -16,9 +16,6 @@ class App {
 
   // Connect to MongoDB
   async connectToDatabase() {
-    if (this.env === "development") {
-      this.app.use(morgan("dev"));
-    }
     await mongoose
       .connect(this.DB)
       .then(() => {
@@ -31,6 +28,10 @@ class App {
 
   // Middlewares (CORS, JSON parsing, etc.)
   initializeMiddlewares() {
+    //Intialize morgan for logging
+    if (this.env === "development") {
+      this.app.use(morgan("dev"));
+    }
     // Enable CORS for all routes
     this.app.use(cors());
     this.app.use(express.json()); // Parse incoming JSON requests
