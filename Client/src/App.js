@@ -10,7 +10,8 @@ import AddPlace from "./pages/AddPlace.js"; // Ensure this path is correct
 import EmailInput from "./pages/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/TourGuideProfile.js";
+import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
+import Itinerary from './pages/TourGuide/TourGuide.C.R.U.D.Itinerary.js';
 import EditPlace from './pages/EditPlace';
 
 const App = () => {
@@ -23,13 +24,13 @@ const App = () => {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/governor" element={<PlacesList />} />
         <Route path="/governor/:id" element={<PlaceDetails />} />
-        <Route path="/governor/addPlace" element={<AddPlace/>}></Route>
-        <Route path="/governor/edit/:id" element={<EditPlace/>}></Route>
+        <Route path="/governor/addPlace" element={<AddPlace />} />
+        <Route path="/governor/edit/:id" element={<EditPlace />} />
         <Route path="/username-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} />
-
+        <Route path="/tourGuide/Itinerary" element={<Itinerary />} />
       </Routes>
     </Router>
   );

@@ -5,14 +5,14 @@ const activitySchema = new mongoose.Schema({
     type: String,
     required: true,
   }, // Name of the activity
-  booking:{
+  isBookable: {
     type: Boolean,
     required: true,
-    default: false
+    default: false,
   },
-  specialDiscount:{
-    type: String,
-    required: true
+  discount: {
+    type: Number, // Could be a percentage or fixed amount
+    default: 0,
   },
   rating: {
     type: Number,
@@ -22,9 +22,6 @@ const activitySchema = new mongoose.Schema({
     type: Date,
     required: true,
   }, // Date of the activity
-  time:{
-    type: String,
-  },
   category: {
     type: String,
     required: true,
