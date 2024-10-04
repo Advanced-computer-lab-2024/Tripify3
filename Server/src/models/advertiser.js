@@ -1,15 +1,19 @@
 import mongoose from "mongoose";
-import user from "./users.js";
+import user from "./user.js";
 
 const advertiserSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  }, // Email address of the user
   companyName: { type: String, required: true },
-  // adBudget: { type: Number, required: true },
   description: { type: String },
   website: { type: String },
   hotline: { type: String },
   // advertiserTaxCard: { type: String },
 });
 
-const advertiser = user.discriminator("Advertiser", advertiserSchema);
+const Advertiser = user.discriminator("Advertiser", advertiserSchema);
 
-export default advertiser;
+export default Advertiser;

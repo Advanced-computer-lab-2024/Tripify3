@@ -63,6 +63,6 @@ const activitySchema = new mongoose.Schema({
   }, // Reference to the advertiser who posted the activity
 });
 
-const activity = mongoose.model("Activity", activitySchema);
+const Activity = mongoose.model("Activity", activitySchema);
 
-export default activity;
+export default Activity;

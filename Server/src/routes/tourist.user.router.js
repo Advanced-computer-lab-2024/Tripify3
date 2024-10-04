@@ -1,8 +1,8 @@
 import express from "express";
 // import { getAllHistoricalPlaces, getFilteredHistoricalPlaces } from "../controllers/historicalPlacesController.js";
-import { getAllItineraries, getSortedItineraries, getFilteredItineraries } from "../controllers/itineraries.controller.js";
-import { getAllActivities, getFilteredActivities, getSortedActivities } from "../controllers/activities.controller.js";
-import { getProfile, editProfile } from "../controllers/tourist.controller.js";
+import { getAllItineraries, getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
+import { getAllActivities, getFilteredActivities, getSortedActivities } from "../controllers/tourist/activities.controller.js";
+import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
 const router = express.Router();
 
 router.get("/tourist/itinerary", getAllItineraries); // Get all itineraries

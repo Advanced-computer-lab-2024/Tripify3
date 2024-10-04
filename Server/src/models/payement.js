@@ -8,6 +8,6 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ["Success", "Failed"], default: "Success" },
 });
 
-const payment = mongoose.model("Payment", paymentSchema);
+const Payment = mongoose.model("Payment", paymentSchema);
 
-export default payment;
+export default Payment;

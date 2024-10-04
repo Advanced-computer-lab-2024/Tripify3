@@ -1,12 +1,6 @@
 //https://www.postman.com/supply-technologist-59501949/84b5b4b2-11af-4baa-9cb5-027a8688a59c
 import express from "express";
-import {
-  getSellers,
-  viewSeller,
-  signup,
-  updateSeller,
-  deleteAllSellers,
-} from "../controllers/seller.user.controller.js";
+import { getSellers, viewSeller, updateSeller, deleteAllSellers } from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
   searchAllProducts,
@@ -23,14 +17,12 @@ import {
   unarchiveProduct,
   decrementProductQuantity,
   filterSalesReport,
-} from "../controllers/seller.user.controller.js";
+} from "../controllers/seller/seller.controller.js";
 const router = express.Router();
 //view all sellers
 router.get("/access/seller/getSellers", getSellers);
 //search for a seller
 router.get("/access/seller/viewSeller", viewSeller);
-//signUp as a seller
-router.post("/access/seller/signup", signup); //validation and login
 //update seller
 router.put("/access/seller/updateSeller", updateSeller);
 //delete All seller
