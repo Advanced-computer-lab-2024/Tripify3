@@ -1,12 +1,6 @@
 //https://www.postman.com/supply-technologist-59501949/84b5b4b2-11af-4baa-9cb5-027a8688a59c
 import express from "express";
-import {
-  getSellers,
-  viewSeller,
-  signup,
-  updateSeller,
-  deleteAllSellers,
-} from "../controllers/seller/seller.controller.js";
+import { getSellers, viewSeller, updateSeller, deleteAllSellers } from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
   searchAllProducts,
@@ -30,7 +24,6 @@ router.get("/access/seller/getSellers", getSellers);
 //search for a seller
 router.get("/access/seller/viewSeller", viewSeller);
 //signUp as a seller
-router.post("/access/seller/signup", signup); //validation and login
 //update seller
 router.put("/access/seller/updateSeller", updateSeller);
 //delete All seller
@@ -40,10 +33,7 @@ router.post("/access/seller/createProduct", createProduct);
 //search all products
 router.get("/access/seller/searchAllProducts", searchAllProducts);
 //search all archived products
-router.get(
-  "/access/seller/searchAllArchivedProducts",
-  searchAllArchivedProducts
-);
+router.get("/access/seller/searchAllArchivedProducts", searchAllArchivedProducts);
 //edit product
 router.put("/access/seller/editProduct", editProduct);
 // search a product
