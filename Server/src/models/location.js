@@ -12,7 +12,6 @@ const locationSchema = new mongoose.Schema({
   }, // Description of the location
   pictures: {
     type: [String],
-    required: true,
   }, // Array of picture URLs
   location: {
     type: String,
@@ -22,11 +21,6 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: true,
   }, // Opening hours of the location
-  ticketPrices: {
-    foreigner: { type: Number, required: true },
-    student: { type: Number, required: true },
-    native: { type: Number, required: true },
-  }, // Ticket prices based on category
   tags: [
     {
       type: mongoose.Schema.Types.ObjectId,

@@ -70,3 +70,27 @@ export const deleteItinerary = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+export const addActivityToItinerary = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { activityId } = req.body; // Expecting activityId to be sent
+
+    // Find the itinerary by ID and push the activityId to the activities array
+    const updatedItinerary = await Itinerary.findByIdAndUpdate(
+        id,
+        { $push: { activities: activityId } }, // Ensure activities is an array of ObjectIds
+        { new: true }
+    );
+
+    if (!updatedItinerary) {
+        return res.status(404).send({ message: 'Itinerary not found' });
+    }
+
+    res.status(200).send(updatedItinerary);
+} catch (error) {
+    console.error(error);
+    res.status(500).send({ message: 'Server error', error: error.message });
+}
+};

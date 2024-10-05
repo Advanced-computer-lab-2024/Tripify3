@@ -1,4 +1,6 @@
 import Activity from '../../models/activity.js';
+import Itinerary  from "../../models/itinerary.js"; // Assuming you have an Itinerary model
+
 
 // Create a new activity
 export const createActivity = async (req, res) => {
@@ -62,3 +64,38 @@ export const deleteActivity = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const addActivityToItinerary = async (req, res) => {
+  const { id } = req.params; // Get the itinerary ID from the URL
+  const { name, description, category, price, rating } = req.body; // Get activity details from request body
+
+  try {
+      // Find the itinerary by ID
+      const itinerary = await Itinerary.findById(id);
+      if (!itinerary) {
+          return res.status(404).json({ message: 'Itinerary not found' });
+      }
+
+      // Create a new activity object
+      const newActivity = {
+          name,
+          description,
+          category,
+          price,
+          rating,
+      };
+
+      // Add the new activity to the itinerary's activities array
+      itinerary.activities.push(newActivity);
+      
+      // Save the updated itinerary
+      await itinerary.save();
+
+      return res.status(201).json({ message: 'Activity added successfully', activity: newActivity });
+  } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
