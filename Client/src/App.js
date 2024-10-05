@@ -10,8 +10,8 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
-import Itinerary from "./pages/TourGuide/TourGuide.C.R.U.D.Itinerary.js";
+import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
+import Itinerary from "./pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 import ASeller from "./pages/seller/aSeller.js";
 

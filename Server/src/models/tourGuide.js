@@ -1,12 +1,7 @@
 import mongoose from "mongoose";
-import user from "./user.js";
+import User from "./user.js";
 
 const tourGuideSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  }, // Email address of the user
   name:{
     type:String,
     required:true
@@ -71,6 +66,6 @@ const tourGuideSchema = new mongoose.Schema({
   ],
 });
 
-const TourGuide = user.discriminator("Tour Guide", tourGuideSchema);
+const TourGuide = User.discriminator("Tour Guide", tourGuideSchema);
 
 export default TourGuide;

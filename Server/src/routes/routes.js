@@ -1,6 +1,6 @@
 // import touristRoute from "./tourist.user.route.js"; // Default import
 // import testRoute from "./test_route.js";
-import tourismGovernor from "./tourism.governor.route.js";
+import tourismGovernor from "./tourismGovernor.route.js";
 import userRoute from "./users.auth.route.js"; // Default import
 import advertiserRoute from "./advertiser.user.route.js"; // Default import
 import touristRoute from "./tourist.user.router.js"; // Default import
