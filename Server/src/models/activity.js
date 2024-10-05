@@ -50,7 +50,6 @@ const activitySchema = new mongoose.Schema({
   advertiser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
-    required: true,
   }, // Reference to the advertiser who posted the activity
 });
 
