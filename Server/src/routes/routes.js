@@ -9,7 +9,7 @@ import tourGuide from "./tourGuide.user.route.js";
 import location from './location.route.js';
 import activity from './activity.route.js'
 import Itinerary  from "./itinerary.route.js";
-// import adminroute from "./admin.user.route.js";
+import adminroute from "./admin.user.route.js";
 
 
 export default (app) => {
@@ -24,10 +24,7 @@ export default (app) => {
   app.use(location)
   app.use(activity)
   app.use(Itinerary)
+  app.use(adminroute);
 
-
-
-  // app.use(adminroute);
-// import adminroute from "./admin.user.route.js";
 
 };

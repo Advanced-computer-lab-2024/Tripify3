@@ -73,11 +73,6 @@ export const signupSchema = Joi.object({
       experienceYears: Joi.number().min(1).required(),
       regionSpecialization: Joi.string().required(),
     }),
-    is: "admin",
-    then: Joi.object({
-      adminLevel: Joi.string().required(),
-      department: Joi.string().required(),
-    }),
     is: "advertiser",
     then: Joi.object({
       companyName: Joi.string().required(),
