@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams,Link } from "react-router-dom";
+import { useParams,Link,useNavigate } from "react-router-dom";
 
 function PlaceDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [place, setPlace] = useState(null);
 
   useEffect(() => {
@@ -14,6 +15,19 @@ function PlaceDetails() {
         console.log(response.data.data.place);
       });
   }, [id]);
+  const deletefun = (id) => {
+    axios
+      .delete(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`)
+      .then((response) => {
+        console.log(response.data);
+        navigate("/governor");
+        // setPlaces(places.filter((place) => place._id !== id));
+        // setFilteredPlaces(filteredPlaces.filter((place) => place._id !== id)); // Update filtered places
+      })
+      .catch((e) => {
+        console.error("Error deleting place:", e);
+      });
+  };
   if (!place) return <div>Loading...</div>;
 
   return (
@@ -59,28 +73,41 @@ function PlaceDetails() {
         <strong>Country:</strong> {place.location.country}
       </p>
 
-      {/* Opening Hours */}
-      <h3>Opening Hours:</h3>
+        {/* Opening Hours */}
+        <h3>Opening Hours:</h3>
       <ul>
-        <li>Monday: {place.openingHours.monday || "Closed"}</li>
-        <li>Tuesday: {place.openingHours.tuesday || "Closed"}</li>
-        <li>Wednesday: {place.openingHours.wednesday || "Closed"}</li>
-        <li>Thursday: {place.openingHours.thursday || "Closed"}</li>
-        <li>Friday: {place.openingHours.friday || "Closed"}</li>
-        <li>Saturday: {place.openingHours.saturday || "Closed"}</li>
-        <li>Sunday: {place.openingHours.sunday || "Closed"}</li>
+        {place.openingHours.length > 0 ? (
+          place.openingHours.map((hour, index) => (
+            <li key={index}>
+              {hour.day}: {hour.from} - {hour.to}
+            </li>
+          ))
+        ) : (
+          <li>Closed</li>
+        )}
       </ul>
 
-      {/* Type and Historical Period */}
-      <h3>Details:</h3>
+      <h3>Tags:</h3>
       <p>
-        <strong>Type:</strong> {place.type}
-        <br />
-        <strong>Historical Period:</strong> {place.historicalPeriod}
+        {place.tags.length > 0 ? (
+          place.tags.map((tag) => (
+            <span key={tag} style={{ marginRight: "10px", fontWeight: "bold" }}>
+              {tag.name}
+            </span>
+          ))
+        ) : (
+          <span>No tags available</span>
+        )}
       </p>
+
       <Link to={`/governor/edit/${place._id}`}>
         <button style={{ marginTop: "20px" }}>Edit Place</button>
       </Link>
+      <Link to={`/governor`}>
+        <button style={{ marginTop: "20px" }}>All Places</button>
+      </Link>
+      <button onClick={() => deletefun(place._id)}>Delete Place</button>
+
     </div>
   );
 }
