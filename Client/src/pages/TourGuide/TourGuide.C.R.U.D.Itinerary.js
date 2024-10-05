@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+<<<<<<< HEAD
 import Modal from 'react-modal';
 import '../TourGuide/styles/TourGuide.C.R.U.D.Itinerary.css';
+=======
+import Modal from './Modal'; // Import the modal component
+import './styles/TourGuide.C.R.U.D.Itinerary.css';
+>>>>>>> 159b7338cbc2efca2f171bfbcd9a9a6c5dd07c10
 
 const Itinerary = () => {
     const [itineraries, setItineraries] = useState([]);

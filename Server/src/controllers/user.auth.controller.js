@@ -108,14 +108,16 @@ export const signup = async (req, res) => {
     // Based on the user type, create the respective user
     let newUser;
 
-    if (type === "tourist") {
+    if (type === "Tourist") {
       newUser = new Tourist(req.body);
-    } else if (type === "tourGuide") {
+    } else if (type === "Tour Guide") {
       newUser = new TourGuide(req.body);
-    } else if (type === "seller") {
+    } else if (type === "Seller") {
       newUser = new Seller(req.body);
-    } else if (type === "advertiser") {
+    } else if (type === "Advertiser") {
       newUser = new Advertiser(req.body);
+    } else if (type === "Tourism Governor") {
+      newUser = new User(req.body);
     } else {
       return res.status(400).json({ message: "Invalid user type." });
     }

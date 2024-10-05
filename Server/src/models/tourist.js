@@ -2,24 +2,19 @@ import mongoose from "mongoose";
 import user from "./user.js";
 
 const touristSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   phoneNumber: {
     type: String,
     required: true,
+  },
+  name:{
+    type:String,
+    required:true
   },
   nationality: {
     type: String,
     required: true,
   },
-  dateOfBirth: {
+  birthDate: {
     type: String,
     required: true,
   },

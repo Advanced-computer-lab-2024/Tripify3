@@ -2,13 +2,7 @@ import mongoose from "mongoose";
 import user from "./user.js";
 
 const advertiserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  }, // Email address of the user
-  companyName: { type: String, required: true },
-  description: { type: String },
+  companyName: { type: String },
   website: { type: String },
   hotline: { type: String },
   // advertiserTaxCard: { type: String },

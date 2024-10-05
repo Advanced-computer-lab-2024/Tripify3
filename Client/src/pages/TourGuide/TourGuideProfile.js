@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // Import useParams
-import '../TourGuide/styles/TourGuideProfile.css';
+import './styles/TourGuideProfile.css';
 
 // Fetch the profile based on ID
 const fetchProfile = async (id) => {

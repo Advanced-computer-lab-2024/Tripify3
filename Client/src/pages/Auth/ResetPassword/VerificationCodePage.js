@@ -10,7 +10,7 @@ import {
   IconButton,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import backgroundImage from "../../assets/signup/CarouselLogin3.png"; // Import your image
+import backgroundImage from "../../../assets/signup/CarouselLogin3.png"; // Import your image
 
 const VerificationCode = () => {
   const { state } = useLocation();

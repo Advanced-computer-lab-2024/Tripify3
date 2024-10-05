@@ -1,39 +1,40 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Button, Container, TextField, Typography, Alert, IconButton, Link } from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Box, Button, Container, TextField, Typography, Alert, IconButton } from '@mui/material';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import backgroundImage from '../assets/signup/CarouselLogin1.png'; // Import your image
+import backgroundImage from '../../../assets/signup/CarouselLogin1.png'; // Import your image
 
-const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false); // Password visibility toggle
+const NewPassword = () => {
+    const { state } = useLocation();
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showNewPassword, setShowNewPassword] = useState(false); // Separate state for new password visibility
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Separate state for confirm password visibility
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
+    const email = state.email;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/access/user/login', {
+            if (newPassword !== confirmPassword) {
+                setErrorMessage("Passwords do not match.");
+                return;
+            }
+            await fetch('http://localhost:8000/access/user/resetPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ email, newPassword }),
             });
-
-            if (!response.ok) {
-                setErrorMessage("Invalid username or password.");
-                return;
-            }
-
-            alert('Login successful!');
-            navigate('/'); // Redirect to home page or dashboard
+            alert('Password has been reset successfully!');
+            navigate('/'); // Redirect to home or login page
         } catch (error) {
             console.error('Error:', error);
-            setErrorMessage("An error occurred while logging in.");
+            setErrorMessage("An error occurred while resetting your password.");
         }
     };
 
@@ -86,10 +87,10 @@ const Login = () => {
                 >
                     <Box sx={{ width: '100%', maxWidth: '500px' }}>
                         <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: 'black' }}>
-                            Login
+                            Create New Password
                         </Typography>
                         <Typography variant="body1" color="textSecondary" sx={{ marginBottom: '30px' }}>
-                            Please enter your username and password to log in.
+                            Your new password must be unique from those previously used.
                         </Typography>
 
                         {errorMessage && (
@@ -101,65 +102,55 @@ const Login = () => {
                         <form onSubmit={handleSubmit}>
                             <TextField
                                 fullWidth
-                                label="Username"
+                                label="New Password"
+                                type={showNewPassword ? 'text' : 'password'}
                                 variant="outlined"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                margin="normal"
-                                required
-                            />
-                            <TextField
-                                fullWidth
-                                label="Password"
-                                type={showPassword ? 'text' : 'password'}
-                                variant="outlined"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
                                 margin="normal"
                                 required
                                 InputProps={{
                                     endAdornment: (
                                         <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
                                             edge="end"
-                                            sx={{ color: 'orange' }} // Set icon color to orange
+                                            sx={{ color: 'orange' }} // Set color to orange
                                         >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            {showNewPassword ? <Visibility /> : <VisibilityOff />}
                                         </IconButton>
                                     ),
                                 }}
                             />
-
-                            {/* Forgot Password link under the password field */}
-                            <Box sx={{ textAlign: 'right', mt: 1 }}>
-                                <Link
-                                    href="/username-input"
-                                    underline="none"
-                                    sx={{ color: '#00695C', fontSize: '14px' }}
-                                >
-                                    Forgot Password?
-                                </Link>
-                            </Box>
-
+                            <TextField
+                                fullWidth
+                                label="Confirm Password"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                variant="outlined"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                margin="normal"
+                                required
+                                InputProps={{
+                                    endAdornment: (
+                                        <IconButton
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            edge="end"
+                                            sx={{ color: 'orange' }} // Set color to orange
+                                        >
+                                            {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    ),
+                                }}
+                            />
                             <Button
                                 fullWidth
                                 type="submit"
                                 variant="contained"
                                 color="primary"
-                                sx={{ marginTop: '20px', backgroundColor: '#00695C' }} // Set button color
+                                sx={{ marginTop: '20px', backgroundColor: '#00695C' }} // Set button color to blue
                             >
-                                Login
+                                Confirm
                             </Button>
-
-                            <Typography
-                                variant="body2"
-                                sx={{ marginTop: '20px', color: 'gray', textAlign: 'center' }}
-                            >
-                                Don't have an account?{' '}
-                                <Link href="/signup" underline="none" sx={{ color: '#00695C' }}>
-                                    Sign up
-                                </Link>
-                            </Typography>
                         </form>
                     </Box>
                 </Box>
@@ -178,4 +169,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default NewPassword;
