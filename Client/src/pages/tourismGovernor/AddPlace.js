@@ -1,39 +1,69 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const PlaceForm = () => {
+  const navigate = useNavigate();
+
   // State for each field in the place schema
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [pictures, setPictures] = useState([""]);
+  const [pictures, setPictures] = useState([""]); // Allow multiple pictures
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
   const [error, setError] = useState(null);
-
-  const [openingHours, setOpeningHours] = useState({
-    friday: "",
-    saturday: "",
-    sunday: "",
-    monday: "",
-    tuesday: "",
-    wednesday: "",
-    thursday: "",
-  });
-
+  const [newTag, setNewTag] = useState("");
   const [ticketPrices, setTicketPrices] = useState({
     foreigner: "",
     native: "",
     student: "",
   });
+  const [tags, setTags] = useState([]); // Initialize as an empty array
+  const [openingHours, setOpeningHours] = useState([]);
+  const [newOpeningHour, setNewOpeningHour] = useState({
+    day: "",
+    from: "",
+    to: "",
+  });
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
-  const [type, setType] = useState("");
-  const [historicalPeriod, setHistoricalPeriod] = useState("");
+  const handleOpeningHoursChange = (index, field, value) => {
+    const updatedOpeningHours = [...openingHours];
+    updatedOpeningHours[index][field] = value;
+    setOpeningHours(updatedOpeningHours);
+  };
+
+  const addOpeningHour = () => {
+    if (newOpeningHour.day && newOpeningHour.from && newOpeningHour.to) {
+      setOpeningHours([...openingHours, newOpeningHour]); // Add new opening hour
+      setNewOpeningHour({ day: "", from: "", to: "" }); // Clear the input for next entry
+    } else {
+      setError("Please fill in all fields for opening hours.");
+    }
+  };
+
+  const removeOpeningHour = (index) => {
+    const updatedOpeningHours = openingHours.filter((_, i) => i !== index);
+    setOpeningHours(updatedOpeningHours);
+  };
 
   // Handler functions for form submission, inputs, etc.
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (openingHours.length === 0) {
+      setError("Please add at least one opening hour.");
+      return;
+    }
 
     // Create an object that matches the schema structure
     const newPlace = {
@@ -47,21 +77,56 @@ const PlaceForm = () => {
       },
       openingHours,
       ticketPrices,
-      type,
-      historicalPeriod,
+      tags,
     };
-    axios
-      .post(`${process.env.REACT_APP_API_BASE_URL}/governor/addPlace`, newPlace)
-      .then((response) => {
-        console.log(response.data); // Check the backend response
-        setError("Successfully added"); // Clear error if successful
-      })
-      .catch((e) => {
-        console.error("Error submitting form:", e);
-        setError(e.response.data.message.message); // Set error if failed
-        console.log(error);
-      });
+    console.log("New Place Payload:", newPlace);
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}/governor/addPlace`,
+        newPlace
+      );
+      console.log("Backend Response:", response.data);
+      navigate('/governor')
+    } catch (e) {
+      console.error("Error submitting form:", e);
+    }
   };
+
+  const handleTagChange = (index, value) => {
+    const updatedTags = [...tags];
+    updatedTags[index] = value; // Update the specific tag
+    setTags(updatedTags);
+  };
+
+  const addTag = () => {
+    if (newTag.trim() !== "") {
+      setTags([...tags, newTag.trim()]); // Add the new tag to the array
+      setNewTag(""); // Clear the input field
+    }
+  };
+
+  const removeTag = (index) => {
+    const updatedTags = tags.filter((_, i) => i !== index); // Remove the tag by index
+    setTags(updatedTags);
+  };
+
+  const handlePictureChange = (index, value) => {
+    const updatedPictures = [...pictures];
+    updatedPictures[index] = value; // Update the specific picture URL
+    setPictures(updatedPictures);
+  };
+
+  const addPicture = () => {
+    setPictures([...pictures, ""]); // Add an empty string for a new picture URL input
+  };
+
+  const handleTicketPriceChange = (e) => {
+    setTicketPrices({
+      ...ticketPrices,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <div className="form-container">
       <h2>Add New Place</h2>
@@ -73,6 +138,7 @@ const PlaceForm = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter place name"
+            required
           />
         </div>
         <div className="form-group">
@@ -82,17 +148,23 @@ const PlaceForm = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter description"
+            required
           />
         </div>
-        <div className="form-group">
-          <label>Picture URL</label>
-          <input
-            type="text"
-            value={pictures[0]}
-            onChange={(e) => setPictures([e.target.value])}
-            placeholder="Enter picture URL"
-          />
-        </div>
+        {pictures.map((picture, index) => (
+          <div key={index} className="form-group">
+            <label>Picture URL</label>
+            <input
+              type="text"
+              value={picture}
+              onChange={(e) => handlePictureChange(index, e.target.value)}
+              placeholder="Enter picture URL"
+            />
+            <button type="button" onClick={addPicture}>
+              Add Another Picture
+            </button>
+          </div>
+        ))}
         <div className="form-group">
           <label>Address</label>
           <input
@@ -100,6 +172,7 @@ const PlaceForm = () => {
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             placeholder="Enter address"
+            required
           />
         </div>
         <div className="form-group">
@@ -109,6 +182,7 @@ const PlaceForm = () => {
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="Enter city"
+            required
           />
         </div>
         <div className="form-group">
@@ -118,148 +192,166 @@ const PlaceForm = () => {
             value={country}
             onChange={(e) => setCountry(e.target.value)}
             placeholder="Enter country"
-          />
-        </div>
-        <div className="form-group">
-          <label>Monday Hours</label>
-          <input
-            type="text"
-            value={openingHours.monday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, monday: e.target.value })
-            }
-            placeholder="Opening hours for Monday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Tuesday Hours</label>
-          <input
-            type="text"
-            value={openingHours.tuesday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, tuesday: e.target.value })
-            }
-            placeholder="Opening hours for Tuesday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Wednesday Hours</label>
-          <input
-            type="text"
-            value={openingHours.wednesday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, wednesday: e.target.value })
-            }
-            placeholder="Opening hours for Wednesday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Thursday Hours</label>
-          <input
-            type="text"
-            value={openingHours.thursday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, thursday: e.target.value })
-            }
-            placeholder="Opening hours for Thursday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Friday Hours</label>
-          <input
-            type="text"
-            value={openingHours.friday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, friday: e.target.value })
-            }
-            placeholder="Opening hours for Friday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Saturday Hours</label>
-          <input
-            type="text"
-            value={openingHours.saturday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, saturday: e.target.value })
-            }
-            placeholder="Opening hours for Saturday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Sunday Hours</label>
-          <input
-            type="text"
-            value={openingHours.sunday}
-            onChange={(e) =>
-              setOpeningHours({ ...openingHours, sunday: e.target.value })
-            }
-            placeholder="Opening hours for Sunday"
-          />
-        </div>
-        <div className="form-group">
-          <label>Foreigner Ticket Price</label>
-          <input
-            type="number"
-            value={ticketPrices.foreigner}
-            onChange={(e) =>
-              setTicketPrices({ ...ticketPrices, foreigner: e.target.value })
-            }
-            placeholder="Enter foreigner price"
-          />
-        </div>
-        <div className="form-group">
-          <label>Native Ticket Price</label>
-          <input
-            type="number"
-            value={ticketPrices.native}
-            onChange={(e) =>
-              setTicketPrices({ ...ticketPrices, native: e.target.value })
-            }
-            placeholder="Enter native price"
-          />
-        </div>{" "}
-        <div className="form-group">
-          <label>Student Ticket Price</label>
-          <input
-            type="number"
-            value={ticketPrices.student}
-            onChange={(e) =>
-              setTicketPrices({ ...ticketPrices, student: e.target.value })
-            }
-            placeholder="Enter student price"
-          />
-        </div>
-        <div className="form-group">
-          <label>Type</label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
             required
-          >
-            <option value="">Select Type</option> {/* Default option */}
-            <option value="Monument">Monument</option>
-            <option value="Religious Site">Religious Site</option>
-            <option value="Palace/Castle">Palace/Castle</option>
-            <option value="Museum">Museum</option>
-            <option value="Historical Place">Historical Place</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Historical Period</label>
-          <input
-            type="number"
-            value={historicalPeriod}
-            onChange={(e) => setHistoricalPeriod(e.target.value)}
-            placeholder="Enter historical period"
           />
         </div>
-        <div className="error-popup">
-          <p>{error}</p>
+        <div className="form-group">
+          <h3>Opening Hours</h3>
+          {openingHours.length > 0 &&
+            openingHours.map((hour, index) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "5px",
+                }}
+              >
+                <input
+                  type="text"
+                  value={hour.day}
+                  onChange={(e) =>
+                    handleOpeningHoursChange(index, "day", e.target.value)
+                  }
+                  placeholder="Day"
+                  style={{ marginRight: "5px" }}
+                />
+                <input
+                  type="time"
+                  value={hour.from}
+                  onChange={(e) =>
+                    handleOpeningHoursChange(index, "from", e.target.value)
+                  }
+                  placeholder="From"
+                  style={{ marginRight: "5px" }}
+                />
+                <input
+                  type="time"
+                  value={hour.to}
+                  onChange={(e) =>
+                    handleOpeningHoursChange(index, "to", e.target.value)
+                  }
+                  placeholder="To"
+                  style={{ marginRight: "5px" }}
+                />
+                <button type="button" onClick={() => removeOpeningHour(index)}>
+                  Remove
+                </button>
+              </div>
+            ))}
+          <div
+            style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
+          >
+            <select
+              value={newOpeningHour.day}
+              onChange={(e) =>
+                setNewOpeningHour({ ...newOpeningHour, day: e.target.value })
+              }
+              style={{ marginRight: "5px" }}
+            >
+              <option value="">Select day</option>
+              {daysOfWeek
+                .filter((day) => !openingHours.some((oh) => oh.day === day)) // Exclude already selected days
+                .map((day, index) => (
+                  <option key={index} value={day}>
+                    {day}
+                  </option>
+                ))}
+            </select>
+            <input
+              type="time"
+              value={newOpeningHour.from}
+              onChange={(e) =>
+                setNewOpeningHour({ ...newOpeningHour, from: e.target.value })
+              }
+              placeholder="From"
+              style={{ marginRight: "5px" }}
+            />
+            <input
+              type="time"
+              value={newOpeningHour.to}
+              onChange={(e) =>
+                setNewOpeningHour({ ...newOpeningHour, to: e.target.value })
+              }
+              placeholder="To"
+              style={{ marginRight: "5px" }}
+            />
+            <button type="button" onClick={addOpeningHour}>
+              Add Day
+            </button>
+          </div>
         </div>
-        <button type="submit" className="submit-btn">
-          Add Place
-        </button>
+
+        {/* Ticket Prices */}
+        <div className="form-group">
+          <label>Ticket Prices</label>
+          <div>
+            <label>Foreigner</label>
+            <input
+              type="number"
+              name="foreigner"
+              value={ticketPrices.foreigner}
+              onChange={handleTicketPriceChange}
+              placeholder="Enter price for foreigners"
+              required
+            />
+          </div>
+          <div>
+            <label>Native</label>
+            <input
+              type="number"
+              name="native"
+              value={ticketPrices.native}
+              onChange={handleTicketPriceChange}
+              placeholder="Enter price for natives"
+              required
+            />
+          </div>
+          <div>
+            <label>Student</label>
+            <input
+              type="number"
+              name="student"
+              value={ticketPrices.student}
+              onChange={handleTicketPriceChange}
+              placeholder="Enter price for students"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div className="form-group">
+          <label>Tags</label>
+          {tags.map((tag, index) => (
+            <div key={index} style={{ display: "flex", alignItems: "center" }}>
+              <input
+                type="text"
+                value={tag}
+                onChange={(e) => handleTagChange(index, e.target.value)}
+                placeholder="Enter tag"
+              />
+              <button type="button" onClick={() => removeTag(index)}>
+                Remove
+              </button>
+            </div>
+          ))}
+          <div>
+            <input
+              type="text"
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              placeholder="Enter a new tag"
+            />
+            <button type="button" onClick={addTag}>
+              Add Tag
+            </button>
+          </div>
+        </div>
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
+        <button type="submit">Submit</button>
       </form>
     </div>
   );

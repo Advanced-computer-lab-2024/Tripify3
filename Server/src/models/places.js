@@ -13,8 +13,8 @@ const placeSchema = new Schema(
     },
     pictures: [
       {
-        type: [String],
-        required: [true, "Pictures field is required at least one picture"],
+        type: String,  // Corrected type declaration for array elements
+        required: [true, "At least one picture is required"],
       },
     ],
     location: {
@@ -31,68 +31,45 @@ const placeSchema = new Schema(
         required: [true, "Country field is required"],
       },
     },
-    openingHours: {
-      friday: {
-        type: String,
-        default: "Closed",
+    openingHours: [
+      {
+        day: {
+          type: String,
+          required: true, // Day of the week (e.g., Monday, Tuesday)
+        },
+        from: {
+          type: String, // Opening time (e.g., 09:00)
+          required: true,
+        },
+        to: {
+          type: String, // Closing time (e.g., 18:00)
+          required: true,
+        },
       },
-      saturday: {
-        type: String,
-        default: "Closed",
-      },
-      sunday: {
-        type: String,
-        default: "Closed",
-      },
-      monday: {
-        type: String,
-        default: "Closed",
-      },
-      tuesday: {
-        type: String,
-        default: "Closed",
-      },
-      wednesday: {
-        type: String,
-        default: "Closed",
-      },
-      thursday: {
-        type: String,
-        default: "Closed",
-      },
-    },
+    ],
     ticketPrices: {
       foreigner: {
         type: Number,
-        required: [true, "Foreigner field is required"],
+        required: [true, "Foreigner price is required"],
       },
       native: {
         type: Number,
-        required: [true, "Native field is required"],
+        required: [true, "Native price is required"],
       },
       student: {
         type: Number,
-        required: [true, "Student field is required"],
+        required: [true, "Student price is required"],
       },
-    },
-    type: {
-      type: String,
-      enum: ["Monument", "Religious Site", "Palace/Castle", "Museum", "Historical Place"],
-      required: [true,"Please specify the type"],
-    },
-    historicalPeriod: {
-      type: Number,
-      required: [true, "Historical period field is required"],
     },
     tags: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Tag",
       },
-    ], // Array of comments related to the activity
+    ], // Array of tags related to the place
   },
   { timestamps: true }
 );
 
-const places = mongoose.model("places", placeSchema);
+const places = mongoose.model("Place", placeSchema);  // Capitalized model name
 export default places;
