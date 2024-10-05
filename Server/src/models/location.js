@@ -10,9 +10,6 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: true,
   }, // Description of the location
-  pictures: {
-    type: [String],
-  }, // Array of picture URLs
   location: {
     type: String,
     required: true,
