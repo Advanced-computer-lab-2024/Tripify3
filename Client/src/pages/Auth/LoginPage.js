@@ -34,16 +34,17 @@ const Login = () => {
       console.log(data);
       alert("Login successful!");
       setUser(data.user); // Store user info in the utility file
-      if(data.user.type === "Tourism Governor"){
+      if (data.user.type === "Tourism Governor") {
         navigate("/governor/placeslist"); // Redirect to home page or dashboard
-      } else if(data.user.type === "Tourist"){
+      } else if (data.user.type === "Tourist") {
         navigate("/"); // Redirect to home page or dashboard
-      }  else if(data.user.type === "Seller"){
-        navigate("/seller/homepage"); // Redirect to home page or dashboard
-      }  else if(data.user.type === "Admin"){
-        navigate("/admin/homepage"); // Redirect to home page or dashboard
-      } 
-      
+      } else if (data.user.type === "Seller") {
+        navigate("/"); // Redirect to home page or dashboard
+      } else if (data.user.type === "Admin") {
+        navigate("/"); // Redirect to home page or dashboard
+      }   else if (data.user.type === "Tour Guide") {
+        navigate("/tourGuide/profile/"); // Redirect to home page or dashboard
+      }
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("An error occurred while logging in.");
@@ -112,7 +113,17 @@ const Login = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              <TextField fullWidth label="Username" variant="outlined" value={username} onChange={(e) => setUsername(e.target.value)} margin="normal" required />
+              <TextField
+                fullWidth
+                label="Username"
+                type={showPassword ? "text" : "password"}
+                variant="outlined"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                margin="normal"
+                required
+              />
+
               <TextField
                 fullWidth
                 label="Password"
@@ -122,17 +133,6 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 margin="normal"
                 required
-                InputProps={{
-                  endAdornment: (
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      sx={{ color: "orange" }} // Set icon color to orange
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  ),
-                }}
               />
 
               {/* Forgot Password link under the password field */}

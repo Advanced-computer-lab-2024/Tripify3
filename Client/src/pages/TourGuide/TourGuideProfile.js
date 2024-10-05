@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // Import useParams
 import './styles/TourGuideProfile.css';
+import { getUserId } from "../../utils/authUtils.js"; // Adjust the path based on your project structure
+
+const userId = getUserId();
+
 
 // Fetch the profile based on ID
 const fetchProfile = async (id) => {
   try {
-    const response = await fetch(`http://localhost:8000/tourGuide/profile/${id}`); // Replace with your actual endpoint
+    const response = await fetch(`http://localhost:8000/tourGuide/profile/${userId}`); // Replace with your actual endpoint
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Failed to fetch profile:', errorData.message);
@@ -20,7 +24,7 @@ const fetchProfile = async (id) => {
 
 const updateProfile = async (id, updatedData) => {
   try {
-    const response = await fetch(`http://localhost:8000/tourGuide/profile/${id}`, {
+    const response = await fetch(`http://localhost:8000/tourGuide/profile/${userId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

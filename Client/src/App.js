@@ -9,11 +9,11 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-// import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
-// import Itinerary from "./pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js";
+import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
+import Itinerary from "./pages/tourGuide/TourGuideItinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/Admin/AdminHomepage.js";
+import AdminHomepage from "./pages/admin/AdminHomepage.js";
 
 
 const App = () => {
@@ -21,7 +21,7 @@ const App = () => {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<SignupPage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/governor" element={<PlacesList />} />
@@ -31,7 +31,7 @@ const App = () => {
         <Route path="/username-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
-        {/* <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} /> */}
+        <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} />
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
         { <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> }
