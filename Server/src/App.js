@@ -10,7 +10,7 @@ class App {
   constructor() {
     this.app = express();
     this.port = 8000; // Set your desired port here
-    this.DB = "mongodb+srv://Ahmed:Ahmedhany1@tripify.cptnu.mongodb.net/?retryWrites=true&w=majority&appName=Tripify"; // Directly use your MongoDB URI
+    this.DB = "mongodb+srv://ahmed:1hjIW2fvqI1VzdsR@tripify.wbf1o.mongodb.net/?retryWrites=true&w=majority&appName=Tripify"; // Directly use your MongoDB URI
     this.env = "development"; // You can set your environment directly
   }
 

@@ -11,7 +11,7 @@ import activity from './activity.route.js'
 import Itinerary  from "./itinerary.route.js";
 import Booking from "./booking.route.js"
 import Trip from "./trip.route.js"
-// import adminroute from "./admin.user.route.js";
+import adminroute from "./admin.user.route.js";
 
 
 export default (app) => {
@@ -26,14 +26,7 @@ export default (app) => {
   app.use(location)
   app.use(activity)
   app.use(Itinerary)
+  app.use(adminroute);
   app.use(Booking)
   app.use(Trip)
-
-
-
-
-
-  // app.use(adminroute);
-// import adminroute from "./admin.user.route.js";
-
 };

@@ -1,15 +1,11 @@
 import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema({
-  activities: [{  // Changed activity to activities (array of references)
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Activity',
-    required: true
-  }],  // Array of references to the Activity model
-  type: {
+  name: {
     type: String,
-    required: true
-  },  // Type of category
+    required: true,
+    unique: true
+  },  // Name of category
 });
 
 const Category = mongoose.model('Category', categorySchema);
