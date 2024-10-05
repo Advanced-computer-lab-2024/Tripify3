@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Container, TextField, Typography, Alert, IconButton, Link } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Alert,
+  IconButton,
+  Link,
+  InputAdornment,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import backgroundImage from "../../assets/signup/CarouselLogin1.png"; // Import your image
-import { setUser } from "../../utils/authUtils.js"; // Import the setUser fu
+import backgroundImage from "../../assets/signup/CarouselLogin1.png";
+import { setUser } from "../../utils/authUtils.js";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -31,19 +41,18 @@ const Login = () => {
       }
 
       const data = await response.json();
-      console.log(data);
       alert("Login successful!");
       setUser(data.user); // Store user info in the utility file
       if (data.user.type === "Tourism Governor") {
-        navigate("/governor/placeslist"); // Redirect to home page or dashboard
+        navigate("/governor/placeslist");
       } else if (data.user.type === "Tourist") {
-        navigate("/"); // Redirect to home page or dashboard
+        navigate("/");
       } else if (data.user.type === "Seller") {
-        navigate("/"); // Redirect to home page or dashboard
+        navigate("/");
       } else if (data.user.type === "Admin") {
-        navigate("/"); // Redirect to home page or dashboard
-      }   else if (data.user.type === "Tour Guide") {
-        navigate("/tourGuide/profile/"); // Redirect to home page or dashboard
+        navigate("/");
+      } else if (data.user.type === "Tour Guide") {
+        navigate("/tourGuide/profile/");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -73,21 +82,26 @@ const Login = () => {
           borderRadius: "20px",
           boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)",
           textAlign: "center",
-          position: "relative",
+          position: "relative", // Ensure the parent box is relatively positioned for arrow placement
         }}
       >
+        {/* Back Arrow */}
         <IconButton
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1)} // Navigate to previous page
           sx={{
             position: "absolute",
-            top: "20px",
-            left: "20px",
+            top: "10px",
+            left: "10px",
+            padding: 0, // Remove padding so the icon doesn't take up extra space
             color: "#00695C",
+            zIndex: 1, // Ensure the arrow stays on top
+          
           }}
         >
-          <ArrowBackIcon />
+          <ArrowBackIcon sx={{ fontSize: "30px" }} />
         </IconButton>
 
+        {/* Left Box - Form */}
         <Box
           sx={{
             width: "50%",
@@ -116,7 +130,6 @@ const Login = () => {
               <TextField
                 fullWidth
                 label="Username"
-                type={showPassword ? "text" : "password"}
                 variant="outlined"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -133,6 +146,18 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 margin="normal"
                 required
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        sx={{ color: "orange" }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
 
               {/* Forgot Password link under the password field */}
@@ -162,6 +187,7 @@ const Login = () => {
           </Box>
         </Box>
 
+        {/* Right Box - Background Image */}
         <Box
           sx={{
             width: "50%",

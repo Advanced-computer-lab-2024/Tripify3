@@ -2,15 +2,13 @@ import mongoose from "mongoose";
 import User from "./user.js";
 
 const tourGuideSchema = new mongoose.Schema({
-  licenseNumber: {
-    type: String,
-  },
   name: {
     type: String,
     required: true,
   },
-  experienceYears: {
+  yearsOfExperience: {
     type: Number,
+    required: true,
   },
   previousWork: [
     {

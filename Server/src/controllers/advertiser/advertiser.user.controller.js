@@ -2,38 +2,6 @@ import User from "../../models/user.js";
 import Advertiser from "../../models/advertiser.js";
 import Activity from "../../models/activity.js";
 
-export const createProfile = async (req, res) => {
-  const { username, email, password, type, website, hotline, companyName, description } = req.body;
-
-  try {
-    const existingProfile = await User.findOne({ username });
-
-    if (existingProfile) {
-      return res.status(409).json({ message: "Profile already exists." });
-    }
-
-    const newProfile = new Advertiser({
-      username,
-      email,
-      password,
-      type,
-      website,
-      hotline,
-      companyName,
-      description,
-    });
-
-    await newProfile.save();
-
-    res.status(201).json({
-      message: "Profile created successfully",
-      profile: newProfile,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating profile", error: error.message });
-  }
-};
-
 // Update an existing user profile
 export const updateProfile = async (req, res) => {
   const { advertiserId } = req.params;
@@ -65,8 +33,8 @@ export const getProfile = async (req, res) => {
     if (!profile) {
       return res.status(404).json({ message: "Profile not found." });
     }
-
-    res.json(profile);
+   // Successful response
+   res.status(200).json({ message: "Profile found successfully", profile });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error retrieving profile", error: error.message });

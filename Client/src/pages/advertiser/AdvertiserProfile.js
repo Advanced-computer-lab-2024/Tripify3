@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
-import './styles/TourGuideProfile.css';
+import './styles/AdvertiserProfile.css';
 import { getUserId } from "../../utils/authUtils.js";
 
-const TourGuideProfile = () => {
+const AdvertiserProfile = () => {
   const userId = getUserId();
   
   // State for profile data
@@ -14,9 +14,9 @@ const TourGuideProfile = () => {
 
   // Fetch profile data on component mount
   useEffect(() => {
-    const fetchTourGuideProfile = async () => {
+    const fetchAdvertiserProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/tourGuide/profile/${userId}`);
+        const response = await axios.get(`http://localhost:8000/advertiser/profile/${userId}`);
         setProfile(response.data);
         setUpdatedProfile(response.data);
       } catch (error) {
@@ -24,7 +24,7 @@ const TourGuideProfile = () => {
       }
     };
 
-    fetchTourGuideProfile();
+    fetchAdvertiserProfile();
   }, [userId]);
 
   // Handle form changes
@@ -39,7 +39,7 @@ const TourGuideProfile = () => {
   // Save changes
   const handleSave = async () => {
     try {
-      const response = await axios.put(`http://localhost:8000/tourGuide/profile/${userId}`, updatedProfile);
+      const response = await axios.put(`http://localhost:8000/advertiser/profile/:advertiserId/${userId}`, updatedProfile);
       setProfile(response.data);
       setIsEditing(false);
     } catch (error) {
@@ -51,7 +51,7 @@ const TourGuideProfile = () => {
 
   return (
     <div className="profile-container">
-      <h1>Tour Guide Profile</h1>
+      <h1>Advertiser Profile</h1>
       <div className="profile-info">
         {isEditing ? (
           <>
@@ -87,4 +87,4 @@ const TourGuideProfile = () => {
   );
 };
 
-export default TourGuideProfile;
+export default AdvertiserProfile;

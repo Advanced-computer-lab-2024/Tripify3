@@ -3,7 +3,7 @@ import user from "./user.js";
 
 const advertiserSchema = new mongoose.Schema({
   companyName: { type: String },
-  website: { type: String },
+  websiteLink: { type: String },
   hotline: { type: String },
   // advertiserTaxCard: { type: String },
 });
