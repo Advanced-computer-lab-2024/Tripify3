@@ -19,11 +19,12 @@ const Itinerary = () => {
         pickupLocation: '',
         dropoffLocation: '',
         accessibility: '',
-        preferences: []
+        preferences: [],
+        bookings: [] // Initialize bookings array
     });
     const [editMode, setEditMode] = useState(false);
     const [currentId, setCurrentId] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);  // Modal visibility state
+    const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
     const [availableDatesInput, setAvailableDatesInput] = useState({ date: '', times: '' }); // State for available dates input
 
     // Sample preferences list (you can replace this with dynamic data if needed)
@@ -40,7 +41,12 @@ const Itinerary = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            setItineraries(data);
+
+            // Assuming 'bookings' is returned from the API for each itinerary
+            setItineraries(data.map(itinerary => ({
+                ...itinerary,
+                bookingsCount: itinerary.bookings ? itinerary.bookings.length : 0 // Set bookings count based on bookings array
+            })));
         } catch (error) {
             console.error('Error fetching itineraries:', error);
         }
@@ -100,14 +106,30 @@ const Itinerary = () => {
                 console.error('Error creating itinerary:', error.response ? error.response.data : error.message);
             }
         }
-        closeModal();  // Close modal after submission
+        closeModal(); // Close modal after submission
     };
 
     const handleEdit = (itinerary) => {
         setNewItinerary(itinerary);
         setEditMode(true);
         setCurrentId(itinerary._id);
-        openModal();  // Open modal for editing
+        openModal(); // Open modal for editing
+    };
+
+    const handleDelete = async (id, hasBookings) => {
+        if (hasBookings) {
+            alert("This itinerary cannot be deleted because there are existing bookings.");
+            return;
+        }
+
+        if (window.confirm("Are you sure you want to delete this itinerary?")) {
+            try {
+                await axios.delete(`http://localhost:8000/itinerary/delete/${id}`);
+                fetchItineraries();
+            } catch (error) {
+                console.error('Error deleting itinerary:', error.response ? error.response.data : error.message);
+            }
+        }
     };
 
     const openModal = () => {
@@ -131,7 +153,8 @@ const Itinerary = () => {
             pickupLocation: '',
             dropoffLocation: '',
             accessibility: '',
-            preferences: []
+            preferences: [],
+            bookings: [] // Reset bookings array
         });
         setAvailableDatesInput({ date: '', times: '' }); // Reset available dates input
         setEditMode(false); // Ensure the form is in 'create' mode
@@ -141,7 +164,7 @@ const Itinerary = () => {
         <div>
             <h1>Itinerary Management</h1>
 
-            <button className="add-itinerary-btn" onClick={openModal}>Add New Itinerary</button> {/* Add new itinerary button */}
+            <button className="add-itinerary-btn" onClick={openModal}>Add New Itinerary</button>
 
             <h2>Existing Itineraries</h2>
             <ul>
@@ -161,7 +184,9 @@ const Itinerary = () => {
                                 {new Date(date.date).toLocaleDateString()} ({date.times.join(', ')})
                             </span>
                         ))}</p> {/* Display available dates */}
+                        <p>Number of Bookings: {itinerary.bookingsCount}</p> {/* Display bookings count */}
                         <button onClick={() => handleEdit(itinerary)}>Edit</button> {/* Edit Button */}
+                        <button onClick={() => handleDelete(itinerary._id, itinerary.bookings.length > 0)}>Delete</button> {/* Add delete button */}
                     </li>
                 ))}
             </ul>
@@ -235,24 +260,28 @@ const Itinerary = () => {
                         ))}
                     </select>
 
-                    {/* Available Dates input */}
-                    <div>
-                        <h4>Add Available Date</h4>
-                        <input
-                            type="date"
-                            value={availableDatesInput.date}
-                            onChange={(e) => setAvailableDatesInput({ ...availableDatesInput, date: e.target.value })}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Times (comma-separated)"
-                            value={availableDatesInput.times}
-                            onChange={(e) => setAvailableDatesInput({ ...availableDatesInput, times: e.target.value })}
-                        />
-                        <button type="button" onClick={handleAddAvailableDate}>Add Date</button>
-                    </div>
+                    {/* Available Dates section */}
+                    <h4>Available Dates</h4>
+                    {newItinerary.availableDates.map((date, index) => (
+                        <div key={index}>
+                            <span>{date.date} ({date.times})</span>
+                        </div>
+                    ))}
+                    <input
+                        type="date"
+                        value={availableDatesInput.date}
+                        onChange={(e) => setAvailableDatesInput({ ...availableDatesInput, date: e.target.value })}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Times (e.g., 10:00-12:00)"
+                        value={availableDatesInput.times}
+                        onChange={(e) => setAvailableDatesInput({ ...availableDatesInput, times: e.target.value })}
+                    />
+                    <button type="button" onClick={handleAddAvailableDate}>Add Available Date</button>
 
                     <button type="submit">{editMode ? 'Update Itinerary' : 'Create Itinerary'}</button>
+                    <button type="button" onClick={closeModal}>Cancel</button>
                 </form>
             </Modal>
         </div>
