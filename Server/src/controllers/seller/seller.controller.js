@@ -15,7 +15,7 @@ export const getSellers = async (req, res) => {
 };
 export const signup = async (req, res) => {
   try {
-    const { email, description, username, password } = req.body;
+    const { name, email, description, username, password } = req.body;
 
     const existingUser = await users.findOne({ username });
     if (existingUser) {
@@ -28,9 +28,10 @@ export const signup = async (req, res) => {
     const type = "seller";
     const newseller = new seller({
       username,
+      name,
       email,
       password,
-      type: "seller",
+      type: "Seller",
       description,
     });
 
@@ -62,20 +63,20 @@ export const viewSeller = async (req, res) => {
 };
 
 export const updateSeller = async (req, res) => {
-  const { username, description } = req.body; // Expecting the us in the request body
+  const { username, name, description } = req.body; // Expecting the us in the request body
 
   try {
     const user = await seller
       .findOneAndUpdate(
         { username: username }, // Search by username
-        { description: description }, // Fields to update
+        { name: name, description: description }, // Fields to update
         { new: true } // Return the updated document
       )
       .select("-__t -__v");
     if (!user) {
       return res.status(404).json({ message: "Seller not found." });
     }
-    if (user.type !== "seller") {
+    if (user.type !== "Seller") {
       return res.status(400).json({ message: "User is not a seller." });
     }
     res.status(200).json(user);
