@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 import User from "./user.js";
 
 const tourGuideSchema = new mongoose.Schema({
-  name:{
-    type:String,
-    required:true
-  },
   licenseNumber: {
     type: String,
   },
@@ -23,8 +19,9 @@ const tourGuideSchema = new mongoose.Schema({
   department: {
     type: String,
   },
-  mobile: {
+  phoneNumber: {
     type: String,
+    required: true,
   },
   companyName: {
     type: String,

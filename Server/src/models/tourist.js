@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 import user from "./user.js";
 
 const touristSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
   phoneNumber: {
     type: String,
     required: true,
