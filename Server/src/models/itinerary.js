@@ -18,8 +18,14 @@ const itinerarySchema = new mongoose.Schema({
     required: true // Ensure this is required
   },
   timeline: {
-    startTime: Date,
-    endTime: Date,
+    startTime: {
+      type: Date,
+      required: true // Ensure start time is required
+    },
+    endTime: {
+      type: Date,
+      required: true // Ensure end time is required
+    },
   },
   ratings: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -34,21 +40,31 @@ const itinerarySchema = new mongoose.Schema({
     required: true 
   },
   availableDates: [{
-    date: Date,
-    times: [String],
+    date: {
+      type: Date,
+      required: true // Ensure date is required
+    },
+    times: [{
+      type: String,
+      required: true // Ensure times are required
+    }],
   }],
   bookings: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Booking',
+    ref: 'Booking'
   }],
   pickupLocation: {
     type: String,
+    required: true // Ensure pickup location is required
   },
   dropoffLocation: {
     type: String,
+    required: true // Ensure dropoff location is required
   },
   accessibility: {
     type: String,
+    enum: ['Wheelchair Accessible', 'Limited Mobility', 'Not Accessible'], // Provide specific options
+    required: true // Ensure accessibility is required
   },
   preferences: { 
     type: [String], 

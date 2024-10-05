@@ -1,5 +1,5 @@
 import express from "express";
-import { createProfile, updateProfile, getProfile, deleteProfile, createActivity, updateActivity, getAllActivitiesByAdvertiser, deleteActivity } from "../controllers/advertiser/advertiser.user.controller.js";
+import { createProfile,getAdvertisers, updateProfile, getProfile, deleteProfile, createActivity, updateActivity, getAllActivitiesByAdvertiser, deleteActivity } from "../controllers/advertiser/advertiser.user.controller.js";
 import { signupSchema } from "../validation/users.auth.validation.js";
 import { validate } from "../middlewares/validation.middleware.js";
 
@@ -9,6 +9,8 @@ router.post("/advertiser/profile", validate(signupSchema, "body"), createProfile
 router.put("/advertiser/profile/:advertiserId", updateProfile);
 router.get("/advertiser/profile/:advertiserId", getProfile);
 router.delete("/advertiser/profile/:advertiserId", deleteProfile);
+router.get('/advertiser/get', getAdvertisers);
+
 
 router.post("/advertiser/activity", createActivity);
 router.put("/advertiser/activity/:advertiserId/:activityId", updateActivity);

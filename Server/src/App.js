@@ -11,14 +11,14 @@ class App {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8000;
-    this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
+    this.DB = "mongodb+srv://Ahmed:Ahmedhany1@tripify.cptnu.mongodb.net/?retryWrites=true&w=majority&appName=Tripify";
     this.env = process.env.NODE_ENV || "development";
   }
 
   // Connect to MongoDB
   async connectToDatabase() {
     await mongoose
-      .connect(this.DB)
+      .connect("mongodb+srv://Ahmed:Ahmedhany1@tripify.cptnu.mongodb.net/?retryWrites=true&w=majority&appName=Tripify")
       .then(() => {
         console.log("MongoDB connected successfully!");
       })

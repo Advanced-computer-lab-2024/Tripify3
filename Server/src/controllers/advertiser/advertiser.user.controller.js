@@ -172,3 +172,12 @@ export const deleteActivity = async (req, res) => {
     res.status(500).json({ message: "Error deleting activity", error: error.message });
   }
 };
+
+export const getAdvertisers = async (req, res) => {
+  try {
+      const advertisers = await Advertiser.find(); // Fetch all advertisers from the database
+      res.status(200).json(advertisers);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching advertisers', error });
+  }
+};

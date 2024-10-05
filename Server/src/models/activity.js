@@ -14,27 +14,21 @@ const activitySchema = new mongoose.Schema({
     type: Number, // Could be a percentage or fixed amount
     default: 0,
   },
+  duration: {
+    type: Number, // Duration in minutes
+    required: true,
+  }, // Duration of the activity
   rating: {
     type: Number,
     default: 0,
   }, // Average rating for the activity
-  date: {
-    type: Date,
-    required: true,
-  }, // Date of the activity
   category: {
     type: String,
-    required: true,
   }, // Category of the activity
   price: {
     type: Number,
-    required: true,
   }, // Price of the activity
-  location: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Location",
-    required: true,
-  }, // Price of the activity
+   // Price of the activity
   ratings: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -56,7 +50,6 @@ const activitySchema = new mongoose.Schema({
   advertiser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
-    required: true,
   }, // Reference to the advertiser who posted the activity
 });
 

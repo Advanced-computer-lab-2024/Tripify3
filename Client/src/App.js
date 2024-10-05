@@ -13,7 +13,8 @@ import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
 // import Itinerary from "./pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/admin/AdminHomepage.js";
+import AdminHomepage from "./pages/Admin/AdminHomepage.js";
+
 
 const App = () => {
   return (
@@ -33,7 +34,7 @@ const App = () => {
         {/* <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} /> */}
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
-        {/* <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> */}
+        { <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> }
       </Routes>
     </Router>
   );
