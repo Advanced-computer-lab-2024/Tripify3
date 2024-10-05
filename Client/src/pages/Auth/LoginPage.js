@@ -5,6 +5,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import backgroundImage from "../../assets/signup/CarouselLogin1.png"; // Import your image
+import { setUser } from "../../utils/authUtils.js"; // Import the setUser fu
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -29,8 +30,20 @@ const Login = () => {
         return;
       }
 
+      const data = await response.json();
+      console.log(data);
       alert("Login successful!");
-      navigate("/"); // Redirect to home page or dashboard
+      setUser(data.user); // Store user info in the utility file
+      if(data.user.type === "Tourism Governor"){
+        navigate("/governor/placeslist"); // Redirect to home page or dashboard
+      } else if(data.user.type === "Tourist"){
+        navigate("/"); // Redirect to home page or dashboard
+      }  else if(data.user.type === "Seller"){
+        navigate("/"); // Redirect to home page or dashboard
+      }  else if(data.user.type === "Admin"){
+        navigate("/"); // Redirect to home page or dashboard
+      }
+      
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("An error occurred while logging in.");
