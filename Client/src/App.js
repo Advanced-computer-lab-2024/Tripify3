@@ -10,8 +10,8 @@ import AddPlace from "./pages/AddPlace.js"; // Ensure this path is correct
 import EmailInput from "./pages/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
-import Itinerary from './pages/TourGuide/TourGuide.C.R.U.D.Itinerary.js';
+import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
+import Itinerary from './pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js';
 import EditPlace from './pages/EditPlace';
 
 const App = () => {
