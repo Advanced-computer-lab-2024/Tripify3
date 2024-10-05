@@ -63,11 +63,10 @@ const itinerarySchema = new mongoose.Schema({
   },
   accessibility: {
     type: String,
-    enum: ['Wheelchair Accessible', 'Limited Mobility', 'Not Accessible'], // Provide specific options
     required: true // Ensure accessibility is required
   },
   preferences: { 
-    type: [String], 
+    type: String, 
     enum: ['Historical Area', 'Beaches', 'Family Friendly', 'Shopping'], 
     required: true 
   } 

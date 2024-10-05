@@ -11,12 +11,15 @@ class App {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8000;
-    this.DB = "mongodb+srv://Ahmed:Ahmedhany1@tripify.cptnu.mongodb.net/?retryWrites=true&w=majority&appName=Tripify";
+    this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
     this.env = process.env.NODE_ENV || "development";
   }
 
   // Connect to MongoDB
   async connectToDatabase() {
+    if (this.env === "development") {
+      this.app.use(morgan("dev"));
+    }
     await mongoose
       .connect(this.DB)
       .then(() => {
@@ -29,10 +32,6 @@ class App {
 
   // Middlewares (CORS, JSON parsing, etc.)
   initializeMiddlewares() {
-    //Intialize morgan for logging
-    if (this.env === "development") {
-      this.app.use(morgan("dev"));
-    }
     // Enable CORS for all routes
     this.app.use(cors());
     this.app.use(express.json()); // Parse incoming JSON requests

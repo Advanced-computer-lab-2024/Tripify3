@@ -4,9 +4,11 @@ import Itinerary from '../../models/itinerary.js';
 export const createItinerary = async (req, res) => {
   try {
     const itinerary = new Itinerary(req.body);
+    console.log(req.body);
     await itinerary.save();
     res.status(201).json(itinerary);
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 };

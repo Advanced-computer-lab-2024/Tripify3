@@ -297,7 +297,6 @@ const Itinerary = () => {
                     />
                     <select
                         name="preferences"
-                        multiple
                         value={newItinerary.preferences}
                         onChange={handleChange}
                     >
