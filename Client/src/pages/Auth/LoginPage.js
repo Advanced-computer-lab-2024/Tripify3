@@ -39,10 +39,10 @@ const Login = () => {
       } else if(data.user.type === "Tourist"){
         navigate("/"); // Redirect to home page or dashboard
       }  else if(data.user.type === "Seller"){
-        navigate("/"); // Redirect to home page or dashboard
+        navigate("/seller/homepage"); // Redirect to home page or dashboard
       }  else if(data.user.type === "Admin"){
-        navigate("/"); // Redirect to home page or dashboard
-      }
+        navigate("/admin/homepage"); // Redirect to home page or dashboard
+      } 
       
     } catch (error) {
       console.error("Error:", error);

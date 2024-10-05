@@ -5,6 +5,8 @@ const AddAdminForm = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    name: "",
+    type: "Admin"
   });
   const [responseMessage, setResponseMessage] = useState(""); // State to store the response
 
@@ -42,6 +44,17 @@ const AddAdminForm = () => {
             type="text"
             name="username"
             value={formData.username}
+            onChange={handleChange}
+            placeholder="Enter username"
+            required
+          />
+        </div>
+        <div>
+          <label>Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             placeholder="Enter username"
             required

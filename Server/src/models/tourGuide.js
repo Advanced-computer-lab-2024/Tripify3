@@ -5,6 +5,10 @@ const tourGuideSchema = new mongoose.Schema({
   licenseNumber: {
     type: String,
   },
+  name:{
+    type:String,
+    required:true
+  },
   experienceYears: {
     type: Number,
   },

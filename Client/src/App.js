@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage.js";
 import SignupPage from "./pages/Auth/SignupPage.js";
 import Navbar from "./components/Navbar.js";
 import LoginPage from "./pages/Auth/LoginPage.js"; // Ensure this path is correct
@@ -10,11 +9,11 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
-// import Itinerary from "./pages/TourGuide/TourGuide.C.R.U.D.Itinerary.js";
+// import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
+// import Itinerary from "./pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
-import ASeller from "./pages/seller/aSeller.js";
-import Admin from "./pages/Admin/a_Admin.js";
+import SellerHomepage from "./pages/seller/SellerHomepage.js";
+import AdminHomepage from "./pages/admin/AdminHomepage.js";
 
 const App = () => {
   return (
@@ -31,11 +30,11 @@ const App = () => {
         <Route path="/username-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} />
+        {/* <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} /> */}
+        <Route path="/seller/homepage" element={<SellerHomepage />} />
+        <Route path="/admin/homepage" element={<AdminHomepage />} />
         {/* <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> */}
       </Routes>
-      <ASeller />
-      {/* <Admin /> */}
     </Router>
   );
 };

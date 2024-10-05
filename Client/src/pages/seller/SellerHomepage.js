@@ -8,7 +8,7 @@ import ProductList from "./ProductList.js";
 import SearchProduct from "./SearchProduct.js";
 import SortByRating from "./SortByRating.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
-import UpdateSellerForm from "./UpdateSellerForm";
+import UpdateSellerForm from "./UpdateSellerForm.js";
 import ViewProductStockAndSales from "./ViewProductStockAndSales.js";
 import ViewSellerPage from "./viewSeller.js"; // Ensure this path is correct
 import FilterSalesReport from "./filterSalesReport.js";

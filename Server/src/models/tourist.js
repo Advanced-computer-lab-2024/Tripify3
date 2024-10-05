@@ -6,6 +6,10 @@ const touristSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  name:{
+    type:String,
+    required:true
+  },
   nationality: {
     type: String,
     required: true,
