@@ -137,7 +137,7 @@ const SignupPage = () => {
     try {
       const response = await signup(signupData);
       console.log("Signup successful:", response);
-      // Handle success (e.g., redirect or show a success message)
+    
     } catch (error) {
       console.error("Signup failed:", error);
       // Handle error (e.g., show an error message)

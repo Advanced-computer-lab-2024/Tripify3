@@ -86,7 +86,7 @@ const PlaceForm = () => {
         newPlace
       );
       console.log("Backend Response:", response.data);
-      navigate('/governor')
+      navigate('/governor/placeslist')
     } catch (e) {
       console.error("Error submitting form:", e);
     }

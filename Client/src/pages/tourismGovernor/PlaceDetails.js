@@ -20,7 +20,7 @@ function PlaceDetails() {
       .delete(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`)
       .then((response) => {
         console.log(response.data);
-        navigate("/governor");
+        navigate("/governor/placeslist");
         // setPlaces(places.filter((place) => place._id !== id));
         // setFilteredPlaces(filteredPlaces.filter((place) => place._id !== id)); // Update filtered places
       })

@@ -70,7 +70,7 @@ function EditPlace() {
       .put(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`, place)
       .then((response) => {
         console.log("Place updated:", response.data);
-        navigate(`/governor/${id}`);
+        navigate(`/governor/placeslist`);
       })
       .catch((err) => {
         console.error("Error updating place:", err);

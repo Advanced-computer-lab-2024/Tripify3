@@ -116,6 +116,8 @@ export const signup = async (req, res) => {
       newUser = new Seller(req.body);
     } else if (type === "Advertiser") {
       newUser = new Advertiser(req.body);
+    } else if (type === "Tourism Governor") {
+      newUser = new User(req.body);
     } else {
       return res.status(400).json({ message: "Invalid user type." });
     }
