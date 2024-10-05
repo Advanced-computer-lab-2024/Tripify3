@@ -7,7 +7,11 @@ const sellerSchema = new mongoose.Schema({
     required: true,
     unique: true,
   }, // Email address of the user
-  description: { type: String, required: true },
+  name:{
+    type:String,
+    required:true
+  },
+  description: { type: String },
 });
 
 const Seller = user.discriminator("Seller", sellerSchema);

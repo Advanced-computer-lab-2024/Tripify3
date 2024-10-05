@@ -7,7 +7,7 @@ const advertiserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   }, // Email address of the user
-  companyName: { type: String, required: true },
+  companyName: { type: String },
   description: { type: String },
   website: { type: String },
   hotline: { type: String },

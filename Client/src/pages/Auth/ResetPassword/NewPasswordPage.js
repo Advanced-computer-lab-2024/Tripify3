@@ -4,7 +4,7 @@ import { Box, Button, Container, TextField, Typography, Alert, IconButton } from
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import backgroundImage from '../../assets/signup/CarouselLogin1.png'; // Import your image
+import backgroundImage from '../../../assets/signup/CarouselLogin1.png'; // Import your image
 
 const NewPassword = () => {
     const { state } = useLocation();

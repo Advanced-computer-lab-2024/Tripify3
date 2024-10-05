@@ -1,25 +1,25 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.js";
-import SignupPage from "./pages/SignupPage.js";
+import SignupPage from "./pages/Auth/SignupPage.js";
 import Navbar from "./components/Navbar.js";
-import LoginPage from "./pages/LoginPage.js"; // Ensure this path is correct
-import PlacesList from "./pages/PlacesList.js"; // Ensure this path is correct
-import PlaceDetails from "./pages/PlaceDetails.js"; // Ensure this path is correct
-import AddPlace from "./pages/AddPlace.js"; // Ensure this path is correct
-import EmailInput from "./pages/ResetPassword/EmailPage.js";
-import VerificationCode from "./pages/ResetPassword/VerificationCodePage.js";
-import NewPassword from "./pages/ResetPassword/NewPasswordPage.js";
+import LoginPage from "./pages/Auth/LoginPage.js"; // Ensure this path is correct
+import PlacesList from "./pages/tourismGovernor/PlacesList.js"; // Ensure this path is correct
+import PlaceDetails from "./pages/tourismGovernor/PlaceDetails.js"; // Ensure this path is correct
+import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path is correct
+import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
+import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
+import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
 import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
-import Itinerary from './pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js';
-import EditPlace from './pages/EditPlace';
+import Itinerary from "./pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js";
+import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 
 const App = () => {
   return (
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<SignupPage />} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/governor" element={<PlacesList />} />

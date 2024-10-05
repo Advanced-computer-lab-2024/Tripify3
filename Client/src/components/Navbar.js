@@ -4,16 +4,13 @@ import { Link } from "react-router-dom";
 const Header = () => {
   return (
     <header>
-      <div className="container">
+      {/* <div className="container">
         <ul>
           <li>
             <Link to="/Login">Login</Link>
           </li>
           <li>
-            <Link to="/governor">Signup as a Tourist</Link>
-          </li>
-          <li>
-            <Link to="/governor">Signup as a Tour Guide/ Advertiser/ Seller </Link>
+            <Link to="/governor">Signup</Link>
           </li> 
            <li>
             <Link to="/governor">Governor</Link>
@@ -31,7 +28,7 @@ const Header = () => {
             <Link to="/governor/addPlace">Add Place</Link>
           </li>
         </ul>
-      </div>
+      </div> */}
     </header>
   );
 };

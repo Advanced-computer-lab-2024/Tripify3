@@ -19,7 +19,7 @@ const touristSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  dateOfBirth: {
+  birthDate: {
     type: String,
     required: true,
   },

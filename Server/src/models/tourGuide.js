@@ -11,18 +11,14 @@ const tourGuideSchema = new mongoose.Schema({
     type:String,
     required:true
   },
-
   licenseNumber: {
     type: String,
-    required: true,
   },
   experienceYears: {
     type: Number,
-    required: true,
   },
   regionSpecialization: {
     type: String,
-    required: true,
   },
   previousWork: [
     {
@@ -53,11 +49,13 @@ const tourGuideSchema = new mongoose.Schema({
   tourGuideCertificate: {
     type: String,
   },
-  photos :[{
-    type:String
-  }],
-  revenue:{
-    type:Number
+  photos: [
+    {
+      type: String,
+    },
+  ],
+  revenue: {
+    type: Number,
   },
   ratings: [
     {
