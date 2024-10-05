@@ -60,8 +60,12 @@ export const deleteItinerary = async (req, res) => {
       return res.status(400).json({ message: 'Cannot delete an itinerary with existing bookings' });
     }
 
-    await itinerary.remove();
-    res.status(204).send();
+    // Use deleteOne or findByIdAndDelete instead of remove
+    await Itinerary.deleteOne({ _id: req.params.id });
+    // Or you could also use:
+    // await itinerary.deleteOne(); 
+
+    res.status(204).send(); // No Content
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

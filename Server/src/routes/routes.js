@@ -9,6 +9,8 @@ import tourGuide from "./tourGuide.user.route.js";
 import location from './location.route.js';
 import activity from './activity.route.js'
 import Itinerary  from "./itinerary.route.js";
+import Booking from "./booking.route.js"
+import Trip from "./trip.route.js"
 import adminroute from "./admin.user.route.js";
 
 
@@ -25,6 +27,6 @@ export default (app) => {
   app.use(activity)
   app.use(Itinerary)
   app.use(adminroute);
-
-
+  app.use(Booking)
+  app.use(Trip)
 };
