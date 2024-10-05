@@ -1,13 +1,19 @@
 import mongoose from "mongoose";
 import User from "./user.js";
+
 // Define the Admin schema, inheriting from User but omitting the 'email' field
 const adminSchema = new mongoose.Schema({});
 
-// Create the Admin model by using the discriminator and removing the 'email' field
+// Modify the User schema to make 'email' optional for Admin
 const Admin = User.discriminator(
   "Admin",
   adminSchema,
-  { email: false } // Omitting the email field for Admin
+  {
+    email: {
+      type: String,
+      required: [function() { return this.type !== 'Admin'; }, 'Email is required for non-admin users.'],
+    },
+  }
 );
 
 export default Admin;
