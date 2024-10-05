@@ -38,8 +38,9 @@ const ViewSellerPage = () => {
       {seller ? (
         <div>
           <h2>Seller Details</h2>
-          <li>Email: {seller.email}</li>
+          <li>Name:{seller.name}</li>
           <li>Username: {seller.username}</li>
+          <li>Email: {seller.email}</li>
           {/* Access nested field for description */}
           <li>Description: {seller.description}</li>
         </div>

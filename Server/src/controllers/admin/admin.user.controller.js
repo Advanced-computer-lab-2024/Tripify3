@@ -34,7 +34,7 @@ export const deleteUser = async (req, res) => {
 export const addTourismGovernor = async (req, res) => {
   const { username, password } = req.body;
   try {
-    const newtourismgovernor = await User.create({ username, password, type: "tourismGovernor" });
+    const newtourismgovernor = await User.create({ username, password, type: "Tourism Governor" });
     res.status(201).json(newtourismgovernor);
   } catch (error) {
     res.status(500).json({ message: error.message });

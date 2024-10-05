@@ -7,6 +7,7 @@ const UpdateSellerForm = () => {
     username: "",
     email: "",
     description: "",
+    name: "",
   });
 
   const [responseMessage, setResponseMessage] = useState("");
@@ -35,6 +36,7 @@ const UpdateSellerForm = () => {
       const seller = response.data;
       setFormData({
         username: seller.username,
+        name: seller.name,
         email: seller.email,
         description: seller.description,
       });
@@ -103,6 +105,16 @@ const UpdateSellerForm = () => {
               />
             </div>
             <div>
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
               <label>Description:</label>
               <input
                 type="text"
@@ -125,6 +137,7 @@ const UpdateSellerForm = () => {
           <h3>Updated Seller Details:</h3>
           <p>Username: {updatedSeller.username}</p>
           <p>Email: {updatedSeller.email}</p>
+          <p>Name: {updatedSeller.name}</p>
           <p>Description: {updatedSeller.description}</p>
         </div>
       )}

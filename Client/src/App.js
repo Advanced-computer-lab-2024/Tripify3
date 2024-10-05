@@ -10,10 +10,11 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
-import Itinerary from "./pages/tourGuide/TourGuide.C.R.U.D.Itinerary.js";
+import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
+// import Itinerary from "./pages/TourGuide/TourGuide.C.R.U.D.Itinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 import ASeller from "./pages/seller/aSeller.js";
+import Admin from "./pages/Admin/a_Admin.js";
 
 const App = () => {
   return (
@@ -23,7 +24,7 @@ const App = () => {
         <Route path="/" element={<SignupPage />} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-        <Route path="/governor/placeslist" element={<PlacesList />} />
+        <Route path="/governor" element={<PlacesList />} />
         <Route path="/governor/:id" element={<PlaceDetails />} />
         <Route path="/governor/addPlace" element={<AddPlace />} />
         <Route path="/governor/edit/:id" element={<EditPlace />} />
@@ -31,9 +32,10 @@ const App = () => {
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile/:id" element={<TourGuideProfile />} />
-        <Route path="/tourGuide/Itinerary" element={<Itinerary />} />
+        {/* <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> */}
       </Routes>
       <ASeller />
+      {/* <Admin /> */}
     </Router>
   );
 };
