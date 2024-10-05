@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   }, // Password of the user
   type: {
     type: String,
-    enum: ["Tourist", "Tour Guide", "Admin", "Seller", "Tourist Governor", "Advertiser"], // Possible user roles
+    enum: ["Tourist", "Tour Guide", "Admin", "Seller", "Tourism Governor", "Advertiser"], // Possible user roles
     required: true,
   },
 

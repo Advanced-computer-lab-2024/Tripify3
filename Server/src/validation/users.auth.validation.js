@@ -38,7 +38,7 @@ export const signupSchema = Joi.object({
     then: Joi.string().optional(), // Not required if type is admin
     otherwise: Joi.string().required(), // Required for other types
   }),
-  type: Joi.string().valid("Tourist", "Tour Guide", "Admin", "Advertiser", "Seller", "Tourist Governor").required(),
+  type: Joi.string().valid("Tourist", "Tour Guide", "Admin", "Advertiser", "Seller", "Tourism Governor").required(),
 
 
     // Directly validate birthDate for Tourist type
