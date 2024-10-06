@@ -114,6 +114,8 @@ export const updateActivity = async (req, res) => {
 // Get all activities for the advertiser
 export const getAllActivitiesByAdvertiser = async (req, res) => {
   const { advertiserId } = req.params;
+  console.log(advertiserId);
+  
 
   try {
     const activities = await Activity.find({ advertiser: advertiserId });

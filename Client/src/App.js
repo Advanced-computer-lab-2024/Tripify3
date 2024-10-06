@@ -15,6 +15,7 @@ import EditPlace from "./pages/tourGuide/TourGuideProfile.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
+import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 
 
 const App = () => {
@@ -34,9 +35,10 @@ const App = () => {
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
         <Route path="/advertiser/profile" element={<AdvertiserProfile />} />
+        <Route path="/advertiser/activities" element={<AdvertiserActivities />} />
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
-        <Route path="/tourist/homepage" element={<TouristHomepage />} />
+        {/* <Route path="/tourist/homepage" element={<TouristHomepage />} /> */}
         <Route path="/tourGuide/Itinerary" element={<Itinerary />} />
       </Routes>
     </Router>
