@@ -9,12 +9,12 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
-import Itinerary from "./pages/tourGuide/TourGuideItinerary.js";
-import EditPlace from "./pages/tourismGovernor/EditPlace.js";
+import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
+import Itinerary from "./pages/TourGuide/TourGuideItinerary.js";
+import EditPlace from "./pages/TourGuide/TourGuideProfile.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/admin/AdminHomepage.js";
-import TouristHomepage from "./pages/tourist/TouristHomepage.js";
+import AdminHomepage from "./pages/Admin/AdminHomepage.js";
+import TouristHomepage from "./pages/Tourist/TouristHomepage.js";
 
 const App = () => {
   return (
@@ -35,7 +35,7 @@ const App = () => {
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
         <Route path="/tourist/homepage" element={<TouristHomepage />} />
-        {<Route path="/tourGuide/Itinerary" element={<Itinerary />} />}
+        <Route path="/tourGuide/Itinerary" element={<Itinerary />} />
       </Routes>
     </Router>
   );
