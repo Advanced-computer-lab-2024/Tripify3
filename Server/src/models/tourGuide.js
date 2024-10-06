@@ -19,8 +19,12 @@ const tourGuideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  
-
+  status: {
+    type: String,
+    enum: ["Pending", "Rejected", "Accepted"],
+    required: true,
+    default: "Pending",
+  },
 });
 
 const TourGuide = User.discriminator("Tour Guide", tourGuideSchema);
