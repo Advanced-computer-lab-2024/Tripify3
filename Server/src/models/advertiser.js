@@ -6,6 +6,12 @@ const advertiserSchema = new mongoose.Schema({
   websiteLink: { type: String },
   hotline: { type: String },
   // advertiserTaxCard: { type: String },
+  status: {
+    type: String,
+    enum: ["Pending", "Rejected", "Accepted"],
+    required: true,
+    default: "Pending",
+  },
 });
 
 const Advertiser = user.discriminator("Advertiser", advertiserSchema);
