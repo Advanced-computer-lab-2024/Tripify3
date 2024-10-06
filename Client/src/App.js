@@ -13,10 +13,10 @@ import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
 import Itinerary from "./pages/TourGuide/TourGuideItinerary.js";
 import EditPlace from "./pages/TourGuide/TourGuideProfile.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/Admin/AdminHomepage.js";
+import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-import TouristHomePage from "./pages/Tourist/TouristHomepage.js";
+import TouristHomePage from "./pages/tourist/TouristHomepage.js";
 
 
 const App = () => {
