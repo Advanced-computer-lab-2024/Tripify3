@@ -14,7 +14,7 @@ import Itinerary from "./pages/tourGuide/TourGuideItinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/admin/AdminHomepage.js";
-
+import TouristHomepage from "./pages/tourist/TouristHomepage.js";
 
 const App = () => {
   return (
@@ -34,7 +34,8 @@ const App = () => {
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
-        { <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> }
+        <Route path="/tourist/homepage" element={<TouristHomepage />} />
+        {<Route path="/tourGuide/Itinerary" element={<Itinerary />} />}
       </Routes>
     </Router>
   );

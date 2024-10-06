@@ -8,9 +8,9 @@
 //     res.status(500).json({ message: error.message });
 //   }
 // };
-const Location = require("../models/location");
+import Location from "../../models/location.js";
 
-exports.getAllHistoricalPlaces = async (req, res) => {
+export const getAllHistoricalPlaces = async (req, res) => {
   try {
     const historicalPlaces = await Location.find();
     res.json(historicalPlaces);
@@ -35,7 +35,7 @@ exports.getAllHistoricalPlaces = async (req, res) => {
 //     res.status(500).json({ message: error.message });
 //   }
 // };
-exports.getFilteredHistoricalPlaces = async (req, res) => {
+export const getFilteredHistoricalPlaces = async (req, res) => {
   try {
     const { tag } = req.query;
 
@@ -46,7 +46,7 @@ exports.getFilteredHistoricalPlaces = async (req, res) => {
       query.tags = tag; // Assuming tags is an array field in the Location model
     }
 
-    const historicalPlaces = await Location.find(query).populate('tags');
+    const historicalPlaces = await Location.find(query).populate("tags");
     res.json(historicalPlaces);
   } catch (error) {
     res.status(500).json({ message: error.message });
