@@ -144,7 +144,7 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
   
 
   try {
-    const activities = await Activity.find({ advertiser: advertiserId });
+    const activities = await Activity.find({ advertiserId });
     res.status(200).json(activities);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving activities", error: error.message });
@@ -153,10 +153,12 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
 
 // Delete an activity
 export const deleteActivity = async (req, res) => {
-  const { advertiserId, activityId } = req.params;
+  const { advertiserId, activityId } = req.body;
+  console.log(advertiserId)
+  console.log(activityId)
 
   try {
-    const deletedActivity = await Activity.findOneAndDelete({ _id: activityId, advertiser: advertiserId });
+    const deletedActivity = await Activity.findOneAndDelete({ _id: activityId, advertiserId });
 
     if (!deletedActivity) {
       return res.status(404).json({ message: "Activity not found." });

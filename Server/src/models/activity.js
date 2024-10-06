@@ -10,6 +10,18 @@ const activitySchema = new mongoose.Schema({
     required: true,
     default: false,
   },
+  location: {
+    type: String,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: String,
+    required: true,
+  },
   specialDiscount: {
     type: Number, // Could be a percentage or fixed amount
     default: 0,

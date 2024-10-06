@@ -10,10 +10,10 @@ router.get('/advertiser/get', getAdvertisers);
 
 
 router.post("/advertiser/activity", createActivity);
-router.get("/advertiser/getTags", getTags);
-router.get("/advertiser/getCategories", getCategories);
+router.get("/getTags", getTags);
+router.get("/getCategories", getCategories);
 router.put("/advertiser/activity/:advertiserId/:activityId", updateActivity);
 router.get("/advertiser/activity/:advertiserId", getAllActivitiesByAdvertiser);
-router.delete("/advertiser/activity/:advertiserId/:activityId", deleteActivity);
+router.delete("/activity", deleteActivity);
 
 export default router;
