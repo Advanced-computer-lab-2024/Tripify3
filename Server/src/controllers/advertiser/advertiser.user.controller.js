@@ -52,7 +52,7 @@ export const deleteProfile = async (req, res) => {
       return res.status(404).json({ message: "Profile not found." });
     }
 
-    res.json({ message: "Profile deleted successfully." });
+    res.status(200).json({ message: "Profile deleted successfully." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting profile", error: error.message });
@@ -65,7 +65,6 @@ export const createActivity = async (req, res) => {
 
   try {
     const newActivity = new Activity({
-      advertiser: id, // Use consistent naming
       name,
       date,
       time,
@@ -118,7 +117,7 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
 
   try {
     const activities = await Activity.find({ advertiser: advertiserId });
-    res.json(activities);
+    res.status(200).json(activities);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving activities", error: error.message });
   }

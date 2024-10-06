@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import signupImage from "../../assets/signup/CarouselLogin1.png";
 import { TextField, Button, Checkbox, FormControlLabel, Grid, Box, Typography, Link, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { signup } from "../../services/Signup.js"; // Import the signup service
@@ -38,7 +39,9 @@ const SignupPage = () => {
     companyName: "", // New field for Advertiser
     websiteLink: "", // New field for Advertiser
     hotline: "", // New field for Advertiser
+    description: "",
   });
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState({}); // State for error messages
 
@@ -69,7 +72,7 @@ const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, name, email, password, phoneNumber, nationality, birthDate, occupation, yearsOfExperience, previousWork, type, companyName, websiteLink, hotline } = formData;
+    const { username, name, email, password, phoneNumber, nationality, birthDate, occupation, yearsOfExperience, previousWork, type, companyName, websiteLink, hotline, description } = formData;
 
     const newErrors = {};
     if (!username) newErrors.username = "Username is required";
@@ -97,6 +100,10 @@ const SignupPage = () => {
       if (!phoneNumber) newErrors.phoneNumber = "Mobile Number is required";
       if (!yearsOfExperience) newErrors.yearsOfExperience = "Years of experience is required";
       if (!previousWork) newErrors.previousWork = "Previous work experience is required";
+    }
+
+    if (type === "Seller") {
+      if (!description) newErrors.phoneNumber = "Description is required";
     }
 
     if (type === "Advertiser") {
@@ -150,6 +157,12 @@ const SignupPage = () => {
       };
     }
 
+    if (type === "Seller") {
+      signupData = {
+        ...signupData,
+        description,
+      };
+    }
     // If the user is an Advertiser, include additional fields
     if (type === "Advertiser") {
       signupData = {
@@ -163,7 +176,26 @@ const SignupPage = () => {
     try {
       const response = await signup(signupData);
       console.log("Signup successful:", response);
+      // If successful, navigate to the login page
+
+      navigate("/login");
     } catch (error) {
+      if (error.response.status === 400) {
+        const errorMessage = error.response.data.message;
+        console.log(errorMessage);
+
+        // Set errors based on the error message
+        if (errorMessage.includes("Username and Email")) {
+          newErrors.username = "Username already exists.";
+          newErrors.email = "Email already exists.";
+        } else if (errorMessage.includes("Username")) {
+          newErrors.username = "Username already exists.";
+        } else if (errorMessage.includes("Email")) {
+          newErrors.email = "Email already exists.";
+        }
+        // Update the errors state so that the errors appear above the fields
+        setErrors(newErrors);
+      }
       console.error("Signup failed:", error);
       // Handle error (e.g., show an error message)
     }
@@ -188,7 +220,7 @@ const SignupPage = () => {
             margin="normal"
             value={formData.phoneNumber}
             onChange={handleInputChange}
-            placeholder="+44"
+            placeholder="+20"
             error={!!errors.phoneNumber}
             helperText={errors.phoneNumber}
           />
@@ -224,6 +256,23 @@ const SignupPage = () => {
             onChange={handleInputChange}
             error={!!errors.occupation}
             helperText={errors.occupation}
+          />
+        </>
+      );
+    }
+
+    if (formData.type === "Seller") {
+      return (
+        <>
+          <TextField
+            label="Description"
+            name="description"
+            fullWidth
+            margin="normal"
+            value={formData.description}
+            onChange={handleInputChange}
+            error={!!errors.description}
+            helperText={errors.description}
           />
         </>
       );

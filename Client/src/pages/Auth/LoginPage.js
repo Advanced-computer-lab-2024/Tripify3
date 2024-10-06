@@ -52,8 +52,11 @@ const Login = () => {
       } else if (data.user.type === "Admin") {
         navigate("/");
       } else if (data.user.type === "Tour Guide") {
-        navigate("/tourGuide/profile/");
+        navigate("/tourGuide/profile");
+      } else if (data.user.type === "Advertiser") {
+        navigate("/advertiser/profile");
       }
+     
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("An error occurred while logging in.");

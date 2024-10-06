@@ -14,6 +14,7 @@ import Itinerary from "./pages/tourGuide/TourGuideItinerary.js";
 import EditPlace from "./pages/tourismGovernor/EditPlace.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/admin/AdminHomepage.js";
+import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 
 
 const App = () => {
@@ -22,7 +23,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/Login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/governor" element={<PlacesList />} />
         <Route path="/governor/:id" element={<PlaceDetails />} />
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
+        <Route path="/advertiser/profile" element={<AdvertiserProfile />} />
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
         { <Route path="/tourGuide/Itinerary" element={<Itinerary />} /> }

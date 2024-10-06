@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 import './styles/AdvertiserProfile.css';
 import { getUserId } from "../../utils/authUtils.js";
 
 const AdvertiserProfile = () => {
   const userId = getUserId();
-  
+
   // State for profile data
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -17,10 +16,10 @@ const AdvertiserProfile = () => {
     const fetchAdvertiserProfile = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/advertiser/profile/${userId}`);
-        setProfile(response.data);
-        setUpdatedProfile(response.data);
+        setProfile(response.data.profile); // Set profile data directly
+        setUpdatedProfile(response.data.profile); // Also set updated profile to the fetched profile
       } catch (error) {
-        console.error('Failed to fetch tour guide profile:', error.response?.data?.message || error.message);
+        console.error('Failed to fetch advertiser profile:', error.response?.data?.message || error.message);
       }
     };
 
@@ -32,15 +31,15 @@ const AdvertiserProfile = () => {
     const { name, value } = e.target;
     setUpdatedProfile((prev) => ({
       ...prev,
-      [name]: name === 'previousWork' ? value.split(',').map(item => item.trim()) : value,
+      [name]: value,
     }));
   };
 
   // Save changes
   const handleSave = async () => {
     try {
-      const response = await axios.put(`http://localhost:8000/advertiser/profile/:advertiserId/${userId}`, updatedProfile);
-      setProfile(response.data);
+      const response = await axios.put(`http://localhost:8000/advertiser/profile/${userId}`, updatedProfile);
+      setProfile(response.data.profile); // Update profile with response data
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to save profile changes:', error.response?.data?.message || error.message);
@@ -55,30 +54,32 @@ const AdvertiserProfile = () => {
       <div className="profile-info">
         {isEditing ? (
           <>
-            <label>Name:</label>
-            <input type="text" name="name" value={updatedProfile.name || ''} onChange={handleChange} />
+            {/* Read-only inputs for email and username */}
+            <label>Email:</label>
+            <input type="email" name="email" value={updatedProfile.email || ''} onChange={handleChange} readOnly />
 
-            <label>Mobile:</label>
-            <input type="text" name="phoneNumber" value={updatedProfile.phoneNumber || ''} onChange={handleChange} />
+            <label>Username:</label>
+            <input type="text" name="username" value={updatedProfile.username || ''} onChange={handleChange} readOnly />
 
-            <label>Years of Experience:</label>
-            <input type="number" name="yearsOfExperience" value={updatedProfile.yearsOfExperience || ''} onChange={handleChange} />
+            {/* Editable fields for the rest of the profile */}
+            <label>Company Name:</label>
+            <input type="text" name="companyName" value={updatedProfile.companyName || ''} onChange={handleChange} />
 
-            <label>Previous Work:</label>
-            <textarea name="previousWork" value={(updatedProfile.previousWork || []).join(', ')} onChange={handleChange} />
+            <label>Website Link:</label>
+            <input type="text" name="websiteLink" value={updatedProfile.websiteLink || ''} onChange={handleChange} />
 
-            <label>License Number:</label>
-            <input type="text" name="licenseNumber" value={updatedProfile.licenseNumber || ''} onChange={handleChange} />
+            <label>Hotline:</label>
+            <input type="text" name="hotline" value={updatedProfile.hotline || ''} onChange={handleChange} />
 
             <button onClick={handleSave}>Save</button>
           </>
         ) : (
           <>
-            <p><strong>Name:</strong> {profile.name}</p>
-            <p><strong>Mobile:</strong> {profile.phoneNumber}</p>
-            <p><strong>Years of Experience:</strong> {profile.yearsOfExperience}</p>
-            <p><strong>Previous Work:</strong> {profile.previousWork.join(', ')}</p>
-            <p><strong>License Number:</strong> {profile.licenseNumber}</p>
+            <p><strong>Email:</strong> {profile.email}</p>
+            <p><strong>Username:</strong> {profile.username}</p>
+            <p><strong>Company Name:</strong> {profile.companyName}</p>
+            <p><strong>Website Link:</strong> {profile.websiteLink}</p>
+            <p><strong>Hotline:</strong> {profile.hotline}</p>
             <button onClick={() => setIsEditing(true)}>Edit Profile</button>
           </>
         )}
