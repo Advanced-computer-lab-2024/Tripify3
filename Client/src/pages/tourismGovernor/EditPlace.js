@@ -21,37 +21,68 @@ function EditPlace() {
       student: "",
     },
     tags: [],
+    type: "", // New state to hold place type
   });
 
   const [newPicture, setNewPicture] = useState("");
   const [newOpeningHour, setNewOpeningHour] = useState({ day: "", from: "", to: "" });
-  const [newTag, setNewTag] = useState("");
+  const [newTagIds, setNewTagIds] = useState([]); // Store selected tag IDs
+  const [availableTags, setAvailableTags] = useState([]); // Store available tags
+  const [placeTypes, setPlaceTypes] = useState([]); // Store place types
 
   const [showAddOpeningHour, setShowAddOpeningHour] = useState(false);
-  const [showAddTag, setShowAddTag] = useState(false);
   const [showAddPicture, setShowAddPicture] = useState(false);
 
   const daysOfWeek = [
-    "Monday", 
-    "Tuesday", 
-    "Wednesday", 
-    "Thursday", 
-    "Friday", 
-    "Saturday", 
-    "Sunday"
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   // Fetch place data to edit
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/getPlace/${id}`)
       .then((response) => {
-        setPlace(response.data.data.place);
+        if (response.data.status === "succeeded") {
+          setPlace(response.data.data.place);
+          setNewTagIds(response.data.data.place.tags.map(tag => tag._id));
+          // Optionally set place type from the response
+          setPlace(prevPlace => ({
+            ...prevPlace,
+            type: response.data.data.place.type
+          }));
+        }
       })
       .catch((err) => {
         console.error("Error fetching place data:", err);
       });
   }, [id]);
+
+  // Fetch available tags
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/getTags")
+      .then((response) => {
+        if (response.data.message === "Tags retrieved successfully") {
+          setAvailableTags(response.data.tags);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching tags:", err);
+      });
+  }, []);
+
+  // Fetch available place types
+  useEffect(() => {
+    // Assuming you fetch place types from the same or another API
+    // Here we're assuming the types are hard-coded as per your request
+    setPlaceTypes(["Historical Place", "Museum"]);
+  }, []);
 
   // Handle input change
   const handleChange = (e) => {
@@ -65,12 +96,15 @@ function EditPlace() {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(place)
+    console.log(place);
     axios
-      .put(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`, place)
+      .put(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`, {
+        ...place,
+        tags: newTagIds, // Send the selected tag IDs
+      })
       .then((response) => {
         console.log("Place updated:", response.data);
-        navigate(`/governor/placeslist`);
+        navigate(`/governor`);
       })
       .catch((err) => {
         console.error("Error updating place:", err);
@@ -87,41 +121,6 @@ function EditPlace() {
     setShowAddPicture(false); // Hide the input field
   };
 
-  // Handle adding new opening hour
-  const handleAddOpeningHour = () => {
-    setPlace((prevPlace) => ({
-      ...prevPlace,
-      openingHours: [...prevPlace.openingHours, newOpeningHour],
-    }));
-    setNewOpeningHour({ day: "", from: "", to: "" }); // Clear input after adding
-    setShowAddOpeningHour(false); // Hide the input field
-  };
-
-  // Handle adding new tag
-  const handleAddTag = () => {
-    if (newTag.trim() !== "") { 
-      axios.post(`${process.env.REACT_APP_API_BASE_URL}/governor/createTag`, { name: newTag })
-        .then((response) => {
-          console.log("Tag created:", response);
-          if (response.data && response.data.data && response.data.data.tag) {
-            setPlace((prevPlace) => ({
-              ...prevPlace,
-              tags: [...prevPlace.tags, response.data.data.tag], // Use the tag from the response
-            }));
-            console.log("Place after adding tag:", place);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          // Optionally handle the error and provide user feedback
-        });
-        
-      // Clear input after adding
-      setNewTag(""); 
-      setShowAddTag(false); // Hide the input field
-    }
-  };
-
   // Handle removing a picture
   const handleRemovePicture = (index) => {
     setPlace((prevPlace) => ({
@@ -130,29 +129,15 @@ function EditPlace() {
     }));
   };
 
-  // Handle removing an opening hour
-  const handleRemoveOpeningHour = (index) => {
-    setPlace((prevPlace) => ({
-      ...prevPlace,
-      openingHours: prevPlace.openingHours.filter((_, i) => i !== index),
-    }));
-  };
-
-  // Handle removing a tag
-  const handleRemoveTag = (index) => {
-    setPlace((prevPlace) => ({
-      ...prevPlace,
-      tags: prevPlace.tags.filter((_, i) => i !== index),
-    }));
-  };
-
-  // Handle input change for new opening hour
-  const handleOpeningHourChange = (e) => {
-    const { name, value } = e.target;
-    setNewOpeningHour((prevHour) => ({
-      ...prevHour,
-      [name]: value,
-    }));
+  // Handle checkbox change for tags
+  const handleTagChange = (tagId) => {
+    setNewTagIds((prevIds) => {
+      if (prevIds.includes(tagId)) {
+        return prevIds.filter((id) => id !== tagId); // Remove tag ID if already selected
+      } else {
+        return [...prevIds, tagId]; // Add tag ID if not already selected
+      }
+    });
   };
 
   // Get available days for the dropdown
@@ -174,6 +159,7 @@ function EditPlace() {
             value={place.name}
             onChange={handleChange}
             required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
         </div>
 
@@ -186,7 +172,25 @@ function EditPlace() {
             value={place.description}
             onChange={handleChange}
             required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
+        </div>
+
+        {/* Place Type Dropdown */}
+        <div>
+          <label>Place Type</label>
+          <select
+            name="type"
+            value={place.type}
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
+          >
+            <option value="" disabled>Select Place Type</option>
+            {placeTypes.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
         </div>
 
         {/* Location */}
@@ -203,6 +207,7 @@ function EditPlace() {
               })
             }
             required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
           <label>City</label>
           <input
@@ -216,6 +221,7 @@ function EditPlace() {
               })
             }
             required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
           <label>Country</label>
           <input
@@ -229,6 +235,7 @@ function EditPlace() {
               })
             }
             required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
         </div>
 
@@ -287,117 +294,51 @@ function EditPlace() {
         {/* Ticket Prices */}
         <div>
           <h3>Ticket Prices</h3>
-          <label>Foreigner Ticket</label>
+          <label>Foreigner</label>
           <input
-            type="number"
+            type="text"
             name="ticketPrices.foreigner"
             value={place.ticketPrices.foreigner}
-            onChange={(e) =>
-              setPlace({
-                ...place,
-                ticketPrices: {
-                  ...place.ticketPrices,
-                  foreigner: e.target.value,
-                },
-              })
-            }
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
-          <label>Native Ticket</label>
+          <label>Native</label>
           <input
-            type="number"
+            type="text"
             name="ticketPrices.native"
             value={place.ticketPrices.native}
-            onChange={(e) =>
-              setPlace({
-                ...place,
-                ticketPrices: { ...place.ticketPrices, native: e.target.value },
-              })
-            }
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
-          <label>Student Ticket</label>
+          <label>Student</label>
           <input
-            type="number"
+            type="text"
             name="ticketPrices.student"
             value={place.ticketPrices.student}
-            onChange={(e) =>
-              setPlace({
-                ...place,
-                ticketPrices: { ...place.ticketPrices, student: e.target.value },
-              })
-            }
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }} // Style changes
           />
         </div>
 
         {/* Tags */}
         <div>
           <h3>Tags</h3>
-          {place.tags.length > 0 ? (
-            <ul>
-              {place.tags.map((tag, index) => (
-                <li key={index}>
-                  <span>{tag.name}</span>
-                  <button type="button" onClick={() => handleRemoveTag(index)}>Remove</button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No tags added.</p>
-          )}
-          {showAddTag ? (
-            <div>
+          {availableTags.map((tag) => (
+            <div key={tag._id}>
               <input
-                type="text"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="New Tag"
+                type="checkbox"
+                checked={newTagIds.includes(tag._id)}
+                onChange={() => handleTagChange(tag._id)}
               />
-              <button type="button" onClick={handleAddTag}>Add Tag</button>
-              <button type="button" onClick={() => setShowAddTag(false)}>Cancel</button>
+              <label>{tag.name}</label>
             </div>
-          ) : (
-            <button type="button" onClick={() => setShowAddTag(true)}>Add Tag</button>
-          )}
+          ))}
         </div>
 
-        {/* Pictures */}
-        <div>
-          <h3>Pictures</h3>
-          {place.pictures.length > 0 ? (
-            <ul>
-              {place.pictures.map((picture, index) => (
-                <li key={index}>
-                  <input
-                    type="text"
-                    value={picture}
-                    onChange={(e) => {
-                      const updatedPictures = [...place.pictures];
-                      updatedPictures[index] = e.target.value;
-                      setPlace({ ...place, pictures: updatedPictures });
-                    }}
-                  />
-                  <button type="button" onClick={() => handleRemovePicture(index)}>Remove</button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No pictures added.</p>
-          )}
-          {showAddPicture ? (
-            <div>
-              <input
-                type="text"
-                value={newPicture}
-                onChange={(e) => setNewPicture(e.target.value)}
-                placeholder="New Picture URL"
-              />
-              <button type="button" onClick={handleAddPicture}>Add Picture</button>
-              <button type="button" onClick={() => setShowAddPicture(false)}>Cancel</button>
-            </div>
-          ) : (
-            <button type="button" onClick={() => setShowAddPicture(true)}>Add Picture</button>
-          )}
-        </div>
-
+        {/* Submit Button */}
         <button type="submit">Update Place</button>
       </form>
     </div>

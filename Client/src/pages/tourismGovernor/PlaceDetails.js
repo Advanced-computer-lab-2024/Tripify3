@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams,Link,useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
 function PlaceDetails() {
   const { id } = useParams();
@@ -9,31 +9,38 @@ function PlaceDetails() {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/getPlace/${id}`)
       .then((response) => {
-        setPlace(response.data.data.place);
-        console.log(response.data.data.place);
+        // Adjust to access the right place from the response structure
+        const places = response.data.data.place;
+        // const placeDetails = places.find(place => place._id === id); // find the specific place by id
+        setPlace(places);
+        console.log(places);
+      })
+      .catch((error) => {
+        console.error("Error fetching place details:", error);
       });
   }, [id]);
+
   const deletefun = (id) => {
     axios
       .delete(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`)
       .then((response) => {
         console.log(response.data);
         navigate("/governor/placeslist");
-        // setPlaces(places.filter((place) => place._id !== id));
-        // setFilteredPlaces(filteredPlaces.filter((place) => place._id !== id)); // Update filtered places
       })
       .catch((e) => {
         console.error("Error deleting place:", e);
       });
   };
+
   if (!place) return <div>Loading...</div>;
 
   return (
     <div style={{ padding: "20px" }}>
       {/* Place Name */}
       <h2>{place.name}</h2>
+      <p><strong>Type:</strong> {place.type}</p>
 
       {/* Images */}
       <div>
@@ -73,12 +80,12 @@ function PlaceDetails() {
         <strong>Country:</strong> {place.location.country}
       </p>
 
-        {/* Opening Hours */}
-        <h3>Opening Hours:</h3>
+      {/* Opening Hours */}
+      <h3>Opening Hours:</h3>
       <ul>
         {place.openingHours.length > 0 ? (
-          place.openingHours.map((hour, index) => (
-            <li key={index}>
+          place.openingHours.map((hour) => (
+            <li key={hour._id}>
               {hour.day}: {hour.from} - {hour.to}
             </li>
           ))
@@ -87,12 +94,13 @@ function PlaceDetails() {
         )}
       </ul>
 
+      {/* Tags */}
       <h3>Tags:</h3>
       <p>
         {place.tags.length > 0 ? (
-          place.tags.map((tag) => (
-            <span key={tag} style={{ marginRight: "10px", fontWeight: "bold" }}>
-              {tag.name}
+          place.tags.map((tags) => (
+            <span key={tags._id} style={{ marginRight: "10px", fontWeight: "bold" }}>
+              {tags.name}
             </span>
           ))
         ) : (
@@ -106,7 +114,6 @@ function PlaceDetails() {
       <Link to={`/governor`}>
         <button style={{ marginTop: "20px" }}>All Places</button>
       </Link>
-      <button onClick={() => deletefun(place._id)}>Delete Place</button>
 
     </div>
   );
