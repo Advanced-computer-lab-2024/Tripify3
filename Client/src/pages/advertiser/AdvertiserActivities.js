@@ -1,13 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createActivity, deleteActivity, getAllActivitiesByAdvertiser, updateActivity, getAllTags, getAllCategories } from "../../services/advertiser.js";
 import { getUserId } from "../../utils/authUtils.js";
 import { useNavigate } from "react-router-dom";
+import { Box, TextField, Button, Modal, Typography } from "@mui/material";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
+
+// Set default icon URLs
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 
 const AdvertiserActivities = () => {
+  const [location, setLocation] = useState("");
   const [activities, setActivities] = useState([]);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
+
+  const [loadingAddress, setLoadingAddress] = useState(false);
   const [newActivity, setNewActivity] = useState({
     name: "",
     date: "",
@@ -19,11 +34,11 @@ const AdvertiserActivities = () => {
     booking: false,
     duration: "",
   });
-  const [editingActivityId, setEditingActivityId] = useState(null); // Track the activity being edited
 
+  const [editingActivityId, setEditingActivityId] = useState(null); // Track the activity being edited
+  const mapRef = useRef(null);
   const userId = getUserId();
   const navigate = useNavigate();
-
 
   // Fetch activities
   const fetchActivities = async () => {
@@ -103,6 +118,16 @@ const AdvertiserActivities = () => {
     }
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    window.location.href = "../homePage.html"; // Change to your desired action
+  };
+
   const handleDeleteActivity = async (activityId) => {
     try {
       await deleteActivity(userId, activityId);
@@ -144,7 +169,50 @@ const AdvertiserActivities = () => {
 
   const handleLocationClick = () => {
     // Navigate to the location selection page
-    navigate('/location-selection');
+    navigate("/location-selection");
+  };
+
+  useEffect(() => {
+    const cairoCoordinates = { lat: 30.0444, lng: 31.2357 }; // Cairo, Egypt
+    map = L.map(mapRef.current).setView([cairoCoordinates.lat, cairoCoordinates.lng], 12);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    map.on("click", function (e) {
+      if (marker) {
+        map.removeLayer(marker);
+      }
+      marker = L.marker(e.latlng).addTo(map); // Use default marker icon here
+      setLocation("Fetching address...");
+      reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    return () => {
+      if (map) {
+        map.remove();
+      }
+    };
+  }, []);
+
+  let map;
+  let marker;
+
+  const reverseGeocode = (lat, lng) => {
+    setLoadingAddress(true);
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setLocation(data.display_name);
+        setNewActivity((prevActivity) => ({
+          ...prevActivity,
+          location: data.display_name, // Update the newActivity with the selected location
+        }));
+        setClinicArea(data.address.suburb || data.address.village || data.address.town || "");
+        setClinicGovernorate(data.address.county || data.address.state || "");
+      })
+      .catch((error) => console.error("Error:", error))
+      .finally(() => setLoadingAddress(false));
   };
 
   return (
@@ -155,15 +223,50 @@ const AdvertiserActivities = () => {
         <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="text" name="name" placeholder="Name" value={newActivity.name} onChange={handleInputChange} />
         <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="date" name="date" value={newActivity.date} onChange={handleInputChange} />
         <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="time" name="time" value={newActivity.time} onChange={handleInputChange} />
-        <input
+
+        <Box className="container3" sx={{ mt: 10, px: 5, pb: 10 }}>
+          <Typography variant="h4" gutterBottom>
+            Pin your activity's location on the map
+          </Typography>
+          <Box
+            ref={mapRef}
+            sx={{
+              height: 500,
+              width: "100%",
+              mb: 2,
+              bgcolor: "#e0e0e0",
+            }}
+          />
+
+          <form id="doctorForm" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <TextField
+                fullWidth
+                label="Address"
+                value={location} // Bound to the location state
+                onChange={(e) => {
+                  setLocation(e.target.value); // Update location state
+                  setNewActivity({ ...newActivity, location: e.target.value }); // Update newActivity.location
+                }}
+                required
+                sx={{ mb: 2 }}
+              />
+            </div>
+          </form>
+
+          {/* <form id="doctorForm" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <TextField fullWidth label="Address" value={location} onChange={(e) => setLocation(e.target.value)} required sx={{ mb: 2 }} />
+            </div>
+          </form> */}
+        </Box>
+        {/* <input
           style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
           type="text"
           name="location"
           placeholder="Location"
           value={newActivity.location}
-          onClick={handleLocationClick} // Navigate on click
-          readOnly // Make it read-only since it opens a new page
-        />
+        /> */}
         <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="text" name="price" placeholder="Price" value={newActivity.price} onChange={handleInputChange} />
 
         <label style={{ display: "block", marginBottom: "10px" }}>

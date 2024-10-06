@@ -12,9 +12,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const DoctorInformation = () => {
-  const [clinicAddress, setClinicAddress] = useState("");
-  const [clinicArea, setClinicArea] = useState("");
-  const [clinicGovernorate, setClinicGovernorate] = useState("");
+  const [location, setLocation] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [loadingAddress, setLoadingAddress] = useState(false);
   const mapRef = useRef(null);
@@ -26,7 +24,7 @@ const DoctorInformation = () => {
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
       .then((response) => response.json())
       .then((data) => {
-        setClinicAddress(data.display_name);
+        setLocation(data.display_name);
         setClinicArea(data.address.suburb || data.address.village || data.address.town || "");
         setClinicGovernorate(data.address.county || data.address.state || "");
       })
@@ -56,7 +54,7 @@ const DoctorInformation = () => {
         map.removeLayer(marker);
       }
       marker = L.marker(e.latlng).addTo(map); // Use default marker icon here
-      setClinicAddress("Fetching address...");
+      setLocation("Fetching address...");
       reverseGeocode(e.latlng.lat, e.latlng.lng);
     });
 
@@ -84,13 +82,7 @@ const DoctorInformation = () => {
 
       <form id="doctorForm" onSubmit={handleSubmit}>
         <div className="form-group">
-          <TextField fullWidth label="Address" value={clinicAddress} onChange={(e) => setClinicAddress(e.target.value)} required sx={{ mb: 2 }} />
-        </div>
-        <div className="form-group">
-          <TextField fullWidth label="Area" value={clinicArea} onChange={(e) => setClinicArea(e.target.value)} required sx={{ mb: 2 }} />
-        </div>
-        <div className="form-group">
-          <TextField fullWidth label="Governorate" value={clinicGovernorate} onChange={(e) => setClinicGovernorate(e.target.value)} required sx={{ mb: 2 }} />
+          <TextField fullWidth label="Address" value={location} onChange={(e) => setLocation(e.target.value)} required sx={{ mb: 2 }} />
         </div>
         <Button type="submit" variant="contained" color="primary" className="btn-primary2">
           Submit
