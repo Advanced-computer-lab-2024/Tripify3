@@ -26,6 +26,16 @@ export default (app) => {
   app.use(location)
   app.use(activity)
   app.use(Itinerary)
+  app.use(Itinerary)
+  app.use(adminroute);
+  app.use(Booking)
+  app.use(Trip)
+  app.use(touristRoutes)
+  app.use(Itinerary)
+  app.use(adminroute);
+  app.use(Booking)
+  app.use(Trip)
+  app.use(touristRoutes)
   app.use(adminroute);
   app.use(Booking)
   app.use(Trip)

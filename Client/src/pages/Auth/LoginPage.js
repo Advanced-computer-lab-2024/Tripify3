@@ -46,7 +46,7 @@ const Login = () => {
       if (data.user.type === "Tourism Governor") {
         navigate("/governor/placeslist");
       } else if (data.user.type === "Tourist") {
-        navigate("/");
+        navigate("/tourist/homepage");
       } else if (data.user.type === "Seller") {
         navigate("/");
       } else if (data.user.type === "Admin") {
@@ -98,7 +98,6 @@ const Login = () => {
             padding: 0, // Remove padding so the icon doesn't take up extra space
             color: "#00695C",
             zIndex: 1, // Ensure the arrow stays on top
-          
           }}
         >
           <ArrowBackIcon sx={{ fontSize: "30px" }} />
@@ -116,10 +115,18 @@ const Login = () => {
           }}
         >
           <Box sx={{ width: "100%", maxWidth: "500px" }}>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "black" }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{ fontWeight: "bold", color: "black" }}
+            >
               Login
             </Typography>
-            <Typography variant="body1" color="textSecondary" sx={{ marginBottom: "30px" }}>
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              sx={{ marginBottom: "30px" }}
+            >
               Please enter your username and password to log in.
             </Typography>
 
@@ -165,7 +172,11 @@ const Login = () => {
 
               {/* Forgot Password link under the password field */}
               <Box sx={{ textAlign: "right", mt: 1 }}>
-                <Link href="/username-input" underline="none" sx={{ color: "#00695C", fontSize: "14px" }}>
+                <Link
+                  href="/username-input"
+                  underline="none"
+                  sx={{ color: "#00695C", fontSize: "14px" }}
+                >
                   Forgot Password?
                 </Link>
               </Box>
@@ -180,7 +191,10 @@ const Login = () => {
                 Login
               </Button>
 
-              <Typography variant="body2" sx={{ marginTop: "20px", color: "gray", textAlign: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ marginTop: "20px", color: "gray", textAlign: "center" }}
+              >
                 Don't have an account?{" "}
                 <Link href="/signup" underline="none" sx={{ color: "#00695C" }}>
                   Sign up

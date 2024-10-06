@@ -18,7 +18,7 @@ const Header = () => {
             display: "inline-flex",
             alignItems: "center",
             marginBottom: "20px", // Add margin to separate it from other elements
-            backgroundColor: "#000000" // Add background color for visibility
+            backgroundColor: "#fffff", // Add background color for visibility
           }}
         >
           &#8592; Back
