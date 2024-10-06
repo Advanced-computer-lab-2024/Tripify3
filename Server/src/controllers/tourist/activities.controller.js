@@ -28,7 +28,7 @@ export const getFilteredActivities = async (req, res) => {
       query.rating = { $gte: rating }; // Assuming rating is a min value
     }
 
-    const activities = await Activity.find(query);
+    const activities = await Activity.find(query).populate("categoryId","name");
     res.status(200).json({ activities: activities });
   } catch (error) {
     res.status(500).json({ message: error.message });
