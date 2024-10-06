@@ -9,14 +9,13 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/tourGuide/TourGuideProfile.js";
-import Itinerary from "./pages/tourGuide/TourGuideItinerary.js";
-import EditPlace from "./pages/tourGuide/TourGuideProfile.js";
+import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
+import Itinerary from "./pages/TourGuide/TourGuideItinerary.js";
+import EditPlace from "./pages/TourGuide/TourGuideProfile.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/admin/AdminHomepage.js";
+import AdminHomepage from "./pages/Admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-
 
 const App = () => {
   return (
