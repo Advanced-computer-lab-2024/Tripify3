@@ -1,18 +1,6 @@
 import Activity from '../../models/activity.js';
 import Itinerary  from "../../models/itinerary.js"; // Assuming you have an Itinerary model
 
-
-// Create a new activity
-export const createActivity = async (req, res) => {
-  try {
-    const activity = new Activity(req.body);
-    await activity.save();
-    res.status(201).json(activity);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
 // Get all activities
 export const getActivities = async (req, res) => {
   try {

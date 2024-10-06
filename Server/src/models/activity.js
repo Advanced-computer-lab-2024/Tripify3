@@ -34,7 +34,7 @@ const activitySchema = new mongoose.Schema({
     type: Number,
     default: 0,
   }, // Average rating for the activity
-  category: {
+  categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
   }, // Category of the activity

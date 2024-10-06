@@ -17,6 +17,7 @@ import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/TouristHomepage.js";
+import DoctorInformation from "./pages/advertiser/addLocation.js";
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/advertiser/activities" element={<AdvertiserActivities />} />
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
+        <Route path="/location-selection" element={<DoctorInformation />} />
         {/* <Route path="/tourist/homepage" element={<TouristHomepage />} /> */}
         <Route path="/tourGuide/Itinerary" element={<Itinerary />} />
       </Routes>
