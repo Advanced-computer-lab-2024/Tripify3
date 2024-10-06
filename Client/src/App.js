@@ -18,6 +18,7 @@ import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/Tourist/TouristHomepage.js";
 
+
 const App = () => {
   return (
     <Router>
