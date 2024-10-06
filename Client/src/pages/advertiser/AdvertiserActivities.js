@@ -96,7 +96,7 @@ const AdvertiserActivities = () => {
 
   const handleUpdateActivity = async (activityId) => {
     try {
-      const response = await updateActivity(userId, activityId, newActivity);
+      const response = await updateActivity(activityId, userId, newActivity);
       setActivities(activities.map((activity) => (activity._id === activityId ? response.data.activity : activity)));
     } catch (error) {
       console.error("Failed to update activity:", error);
