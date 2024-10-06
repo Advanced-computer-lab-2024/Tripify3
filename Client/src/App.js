@@ -19,6 +19,7 @@ import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/TouristHomepage.js";
 import DoctorInformation from "./pages/advertiser/addLocation.js";
 
+
 const App = () => {
   return (
     <Router>
