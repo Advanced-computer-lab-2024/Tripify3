@@ -1,6 +1,8 @@
 import User from "../../models/user.js";
 import Advertiser from "../../models/advertiser.js";
 import Activity from "../../models/activity.js";
+import Tag from "../../models/tag.js";
+import Category from "../../models/category.js";
 
 // Update an existing user profile
 export const updateProfile = async (req, res) => {
@@ -20,6 +22,30 @@ export const updateProfile = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error updating profile", error: error.message });
+  }
+};
+
+export const getTags = async (req, res) => {
+  try {
+    const tags = await Tag.find(); // Fetch all tags from the database
+    res.status(200).json({
+      message: "Tags retrieved successfully",
+      tags: tags,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving tags", error: error.message });
+  }
+};
+
+export const getCategories = async (req, res) => {
+  try {
+    const categories = await Category.find(); // Fetch all categories from the database
+    res.status(200).json({
+      message: "Categories retrieved successfully",
+      categories: categories,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving categories", error: error.message });
   }
 };
 
@@ -61,19 +87,20 @@ export const deleteProfile = async (req, res) => {
 
 // Create a new activity for the advertiser
 export const createActivity = async (req, res) => {
-  const { id, name, date, time, location, price, category, tags, specialDiscount, booking } = req.body;
+  const { advertiserId, categoryId, name, date, time, location, price, tags, specialDiscount, isbooking } = req.body;
 
   try {
     const newActivity = new Activity({
+      advertiserId,
       name,
       date,
       time,
       location,
       price,
-      category,
+      categoryId,
       tags,
       specialDiscount,
-      booking,
+      isbooking,
     });
 
     await newActivity.save();
@@ -111,7 +138,6 @@ export const updateActivity = async (req, res) => {
   }
 };
 
-// Get all activities for the advertiser
 export const getAllActivitiesByAdvertiser = async (req, res) => {
   const { advertiserId } = req.params;
   console.log(advertiserId);

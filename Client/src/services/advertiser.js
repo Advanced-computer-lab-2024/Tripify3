@@ -10,6 +10,14 @@ export const updateActivity = async (advertiserId, activityId, activity) => {
   return await axios.put(`${API_URL}/activities/${advertiserId}/${activityId}`, activity);
 };
 
+export const getAllTags = async () => {
+  return await axios.get(`${API_URL}/advertiser/getTags`);
+};
+
+export const getAllCategories = async () => {
+  return await axios.get(`${API_URL}/advertiser/getCategories`);
+};
+
 export const getAllActivitiesByAdvertiser = async (advertiserId) => {
   return await axios.get(`${API_URL}/advertiser/activity/${advertiserId}`);
 };

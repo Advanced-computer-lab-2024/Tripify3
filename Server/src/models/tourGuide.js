@@ -19,6 +19,7 @@ const tourGuideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  
 
 });
 

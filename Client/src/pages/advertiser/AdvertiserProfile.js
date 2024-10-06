@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './styles/AdvertiserProfile.css';
 import { getUserId } from "../../utils/authUtils.js";
 
 const AdvertiserProfile = () => {
   const userId = getUserId();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // State for profile data
   const [profile, setProfile] = useState(null);
@@ -46,6 +48,11 @@ const AdvertiserProfile = () => {
     }
   };
 
+  // Navigate to another page
+  const handleNavigate = () => {
+    navigate("/advertiser/activities"); // Use navigate to change the route
+  };
+
   if (!profile) return <p>Loading...</p>;
 
   return (
@@ -84,6 +91,7 @@ const AdvertiserProfile = () => {
           </>
         )}
       </div>
+      <button onClick={handleNavigate}>Go to Activities</button> {/* New button to navigate */}
     </div>
   );
 };

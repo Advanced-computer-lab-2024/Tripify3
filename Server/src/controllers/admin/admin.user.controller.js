@@ -94,7 +94,7 @@ export const addTag = async (req, res) => {
   const { name } = req.body;
   try {
     const newtag = await Tag.create({ name });
-    res.status(201).json(newtag);
+    res.status(201).json({ message: "Tag created successfully" , newtag});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

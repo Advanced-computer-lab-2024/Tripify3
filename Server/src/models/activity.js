@@ -5,12 +5,12 @@ const activitySchema = new mongoose.Schema({
     type: String,
     required: true,
   }, // Name of the activity
-  isBookable: {
+  isBooking: {
     type: Boolean,
     required: true,
     default: false,
   },
-  discount: {
+  specialDiscount: {
     type: Number, // Could be a percentage or fixed amount
     default: 0,
   },
@@ -23,7 +23,8 @@ const activitySchema = new mongoose.Schema({
     default: 0,
   }, // Average rating for the activity
   category: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
   }, // Category of the activity
   price: {
     type: Number,
@@ -47,7 +48,7 @@ const activitySchema = new mongoose.Schema({
       ref: "Tag",
     },
   ], // Array of comments related to the activity
-  advertiser: {
+  advertiserId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
   }, // Reference to the advertiser who posted the activity
