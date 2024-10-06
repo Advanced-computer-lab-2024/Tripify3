@@ -16,6 +16,7 @@ import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/Admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
+import TouristHomePage from "./pages/Tourist/TouristHomepage.js";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/governor/addPlace" element={<AddPlace />} />
         <Route path="/governor/edit/:id" element={<EditPlace />} />
         <Route path="/username-input" element={<EmailInput />} />
+        <Route path="/tourist/homepage" element={<TouristHomePage />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />

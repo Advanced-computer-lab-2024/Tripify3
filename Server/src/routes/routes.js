@@ -3,7 +3,7 @@
 import tourismGovernorRoute from "./tourismGovernor.route.js";
 import userRoute from "./users.auth.route.js"; // Default import
 import advertiserRoute from "./advertiser.user.route.js"; // Default import
-import touristRoute from "./tourist.user.router.js"; // Default import
+import touristRoute from "./tourist.user.route.js"; // Default import
 import sellerRoute from "./seller.user.route.js"; // Default import
 import tourGuideRoute from "./tourGuide.user.route.js";
 import locationRoute from './location.route.js';
