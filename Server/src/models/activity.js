@@ -19,7 +19,7 @@ const activitySchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String,
+    type: Date,
     required: true,
   },
   specialDiscount: {
@@ -41,7 +41,7 @@ const activitySchema = new mongoose.Schema({
   price: {
     type: Number,
   }, // Price of the activity
-   // Price of the activity
+  // Price of the activity
   ratings: [
     {
       type: mongoose.Schema.Types.ObjectId,
