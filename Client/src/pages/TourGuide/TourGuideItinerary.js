@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const ItineraryManager = () => {
   const [itineraries, setItineraries] = useState([]);
   const [activities, setActivities] = useState([]); // To store activities for dropdown
   const [locations, setLocations] = useState([]);
   const [formData, setFormData] = useState({
-    language: '',
+    language: "",
+    name: "",
     price: 0,
-    startTime: '',
-    endTime: '',
+    startTime: "",
+    endTime: "",
     budget: 0,
-    pickupLocation: '',
-    dropoffLocation: '',
-    accessibility: '',
-    preferences: '',
+    pickupLocation: "",
+    dropoffLocation: "",
+    accessibility: "",
+    preferences: "",
     availableDates: [],
-    bookings: []
+    bookings: [],
   });
   const [editingId, setEditingId] = useState(null);
-  const [newAvailableDate, setNewAvailableDate] = useState({ date: '', startTime: '', endTime: '' });
+  const [newAvailableDate, setNewAvailableDate] = useState({ date: "", startTime: "", endTime: "" });
   const [selectedActivities, setSelectedActivities] = useState([]); // To hold selected activities
   const [selectedLocations, setSelectedLocations] = useState([]); // To hold selected locations
 
@@ -31,29 +32,29 @@ const ItineraryManager = () => {
 
   const fetchItineraries = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/itinerary/get');
+      const response = await axios.get("http://localhost:8000/itinerary/get");
       console.log(response.data);
       setItineraries(response.data);
     } catch (error) {
-      console.error('Error fetching itineraries:', error);
+      console.error("Error fetching itineraries:", error);
     }
   };
 
   const fetchActivities = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/activity/get'); // Adjust the URL based on your backend endpoint
+      const response = await axios.get("http://localhost:8000/activity/get"); // Adjust the URL based on your backend endpoint
       setActivities(response.data);
     } catch (error) {
-      console.error('Error fetching activities:', error);
+      console.error("Error fetching activities:", error);
     }
   };
 
   const fetchLocations = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/location/get'); // Adjust the URL based on your backend endpoint
+      const response = await axios.get("http://localhost:8000/location/get"); // Adjust the URL based on your backend endpoint
       setLocations(response.data);
     } catch (error) {
-      console.error('Error fetching locations:', error);
+      console.error("Error fetching locations:", error);
     }
   };
 
@@ -76,45 +77,48 @@ const ItineraryManager = () => {
       },
     };
 
-    console.log('Data to Submit:', dataToSubmit);
+    console.log("Data to Submit:", dataToSubmit);
 
     if (editingId) {
-      axios.put(`http://localhost:8000/itinerary/update/${editingId}`, dataToSubmit)
+      axios
+        .put(`http://localhost:8000/itinerary/update/${editingId}`, dataToSubmit)
         .then(() => {
           setEditingId(null);
           resetForm();
           fetchItineraries();
         })
-        .catch(error => {
-          console.error('Error updating itinerary:', error.response?.data || error.message);
+        .catch((error) => {
+          console.error("Error updating itinerary:", error.response?.data || error.message);
         });
     } else {
-      axios.post('http://localhost:8000/itinerary/create', dataToSubmit)
+      axios
+        .post("http://localhost:8000/itinerary/create", dataToSubmit)
         .then(() => {
           resetForm();
           fetchItineraries();
         })
-        .catch(error => {
-          console.error('Error adding itinerary:', error.response?.data || error.message);
+        .catch((error) => {
+          console.error("Error adding itinerary:", error.response?.data || error.message);
         });
     }
   };
 
   const resetForm = () => {
     setFormData({
-      language: '',
+      language: "",
+      name: "",
       price: 0,
-      startTime: '',
-      endTime: '',
+      startTime: "",
+      endTime: "",
       budget: 0,
-      pickupLocation: '',
-      dropoffLocation: '',
-      accessibility: '',
-      preferences: '',
+      pickupLocation: "",
+      dropoffLocation: "",
+      accessibility: "",
+      preferences: "",
       availableDates: [],
-      bookings: [] // Reset bookings if needed
+      bookings: [], // Reset bookings if needed
     });
-    setNewAvailableDate({ date: '', startTime: '', endTime: '' });
+    setNewAvailableDate({ date: "", startTime: "", endTime: "" });
     setSelectedActivities([]); // Reset selected activities to an empty array
     setSelectedLocations([]); // Reset selected locations to an empty array
   };
@@ -123,6 +127,7 @@ const ItineraryManager = () => {
     setEditingId(itinerary._id);
     setFormData({
       language: itinerary.language,
+      name: itinerary.name,
       price: itinerary.price,
       startTime: itinerary.timeline.startTime,
       endTime: itinerary.timeline.endTime,
@@ -132,7 +137,7 @@ const ItineraryManager = () => {
       accessibility: itinerary.accessibility,
       preferences: itinerary.preferences,
       availableDates: itinerary.availableDates,
-      bookings: itinerary.bookings // Include bookings if needed
+      bookings: itinerary.bookings, // Include bookings if needed
     });
     setSelectedActivities(itinerary.activities); // Set selected activities for editing
     setSelectedLocations(itinerary.locations); // Set selected locations for editing
@@ -149,7 +154,7 @@ const ItineraryManager = () => {
         await axios.delete(`http://localhost:8000/itinerary/delete/${id}`);
         fetchItineraries();
       } catch (error) {
-        console.error('Error deleting itinerary:', error.response ? error.response.data : error.message);
+        console.error("Error deleting itinerary:", error.response ? error.response.data : error.message);
       }
     }
   };
@@ -164,14 +169,17 @@ const ItineraryManager = () => {
 
   const handleAddAvailableDate = () => {
     if (newAvailableDate.date) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        availableDates: [...prev.availableDates, {
-          date: newAvailableDate.date,
-          times: [newAvailableDate.startTime, newAvailableDate.endTime]
-        }]
+        availableDates: [
+          ...prev.availableDates,
+          {
+            date: newAvailableDate.date,
+            times: [newAvailableDate.startTime, newAvailableDate.endTime],
+          },
+        ],
       }));
-      setNewAvailableDate({ date: '', startTime: '', endTime: '' });
+      setNewAvailableDate({ date: "", startTime: "", endTime: "" });
     } else {
       alert("Please enter a valid date before adding.");
     }
@@ -181,27 +189,20 @@ const ItineraryManager = () => {
     if (e.target.checked) {
       setSelectedActivities([...selectedActivities, activityId]); // Add to selected activities
     } else {
-      setSelectedActivities(selectedActivities.filter(id => id !== activityId)); // Remove from selected activities
+      setSelectedActivities(selectedActivities.filter((id) => id !== activityId)); // Remove from selected activities
     }
   };
-  
 
   const handleLocationChange = (e, locationId) => {
     if (e.target.checked) {
       setSelectedLocations([...selectedLocations, locationId]); // Add to selected locations
     } else {
-      setSelectedLocations(selectedLocations.filter(id => id !== locationId)); // Remove from selected locations
+      setSelectedLocations(selectedLocations.filter((id) => id !== locationId)); // Remove from selected locations
     }
   };
   return (
-
-    
-
-
-      
     <div>
-
-<style>
+      <style>
         {`
           /* styles/TourGuideItinerary.css */
 
@@ -352,32 +353,36 @@ li button {
   
         `}
       </style>
-      
+
       <h1>Itinerary Manager</h1>
 
       <form onSubmit={handleSubmit}>
         <label>
           Language:
-            <select name="language" value={formData.language} onChange={handleChange} required>
-                <option value="">Select Language</option>
-                <option value="English">English</option>
-                <option value="Spanish">Spanish</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Arabic">Arabic</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Portuguese">Portuguese</option>
-                <option value="Russian">Russian</option>
-                <option value="Japanese">Japanese</option>
-                <option value="Korean">Korean</option>
-                <option value="Italian">Italian</option>
-                <option value="Turkish">Turkish</option>
-                <option value="Vietnamese">Vietnamese</option>
-                <option value="Dutch">Dutch</option>
-                <option value="Thai">Thai</option>
-                <option value="Swedish">Swedish</option>
-                <option value="Filipino">Filipino</option>
+          <select name="language" value={formData.language} onChange={handleChange} required>
+            <option value="">Select Language</option>
+            <option value="English">English</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="German">German</option>
+            <option value="Arabic">Arabic</option>
+            <option value="Hindi">Hindi</option>
+            <option value="Portuguese">Portuguese</option>
+            <option value="Russian">Russian</option>
+            <option value="Japanese">Japanese</option>
+            <option value="Korean">Korean</option>
+            <option value="Italian">Italian</option>
+            <option value="Turkish">Turkish</option>
+            <option value="Vietnamese">Vietnamese</option>
+            <option value="Dutch">Dutch</option>
+            <option value="Thai">Thai</option>
+            <option value="Swedish">Swedish</option>
+            <option value="Filipino">Filipino</option>
           </select>
+        </label>
+        <label>
+          Name:
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
         </label>
         <label>
           Price:
@@ -425,23 +430,15 @@ li button {
         </label>
         <label>
           Start Time:
-          <input
-            type="time"
-            name="startTime"
-            value={newAvailableDate.startTime}
-            onChange={handleAvailableDateChange}
-          />
+          <input type="time" name="startTime" value={newAvailableDate.startTime} onChange={handleAvailableDateChange} />
         </label>
         <label>
           End Time:
-          <input
-            type="time"
-            name="endTime"
-            value={newAvailableDate.endTime}
-            onChange={handleAvailableDateChange}
-          />
+          <input type="time" name="endTime" value={newAvailableDate.endTime} onChange={handleAvailableDateChange} />
         </label>
-        <button type="button" onClick={handleAddAvailableDate}>Add Available Date</button>
+        <button type="button" onClick={handleAddAvailableDate}>
+          Add Available Date
+        </button>
 
         <h4>Select Activities:</h4>
         {activities.map((activity) => (
@@ -473,17 +470,19 @@ li button {
           </div>
         ))}
 
-
-        <button type="submit">{editingId ? 'Update Itinerary' : 'Add Itinerary'}</button>
+        <button type="submit">{editingId ? "Update Itinerary" : "Add Itinerary"}</button>
       </form>
 
       <h2>All Itineraries</h2>
       <ul>
-        {itineraries.map(itinerary => (
+        {itineraries.map((itinerary) => (
           <li key={itinerary._id}>
             <h3>Language: {itinerary.language}</h3>
+            <p>Name: {itinerary.name}</p>
             <p>Price: ${itinerary.price}</p>
-            <p>Timeline: {itinerary.timeline.startTime} to {itinerary.timeline.endTime}</p>
+            <p>
+              Timeline: {itinerary.timeline.startTime} to {itinerary.timeline.endTime}
+            </p>
             <p>Budget: ${itinerary.budget}</p>
             <p>Pickup Location: {itinerary.pickupLocation}</p>
             <p>Dropoff Location: {itinerary.dropoffLocation}</p>
@@ -493,22 +492,27 @@ li button {
             <h4>Available Dates:</h4>
             <ul>
               {itinerary.availableDates.map((date, index) => (
-                <li key={index}>{new Date(date.date).toISOString().split('T')[0]} (from {date.times[0]} to {date.times[1]})</li>
+                <li key={index}>
+                  {new Date(date.date).toISOString().split("T")[0]} (from {date.times[0]} to {date.times[1]})
+                </li>
               ))}
             </ul>
 
-            
             <h4>Activities:</h4>
             <ul>
               {itinerary.activities.map((activity, index) => (
                 <li key={index} className="activity-item">
-                <p><strong>Name:</strong> {activity.name}</p>
-                <p><strong>Duration:</strong> {activity.duration} minutes</p>
-                <p><strong>Rating:</strong> {activity.rating}</p>
-              </li>
-
+                  <p>
+                    <strong>Name:</strong> {activity.name}
+                  </p>
+                  <p>
+                    <strong>Duration:</strong> {activity.duration} minutes
+                  </p>
+                  <p>
+                    <strong>Rating:</strong> {activity.rating}
+                  </p>
+                </li>
               ))}
-
             </ul>
 
             <h4>Locations:</h4>
@@ -527,10 +531,6 @@ li button {
               ))}
             </ul>
 
-
-              
-
-            
             <button onClick={() => handleEdit(itinerary)}>Edit</button>
             <button onClick={() => handleDelete(itinerary._id, itinerary.bookings.length > 0)}>Delete</button>
           </li>

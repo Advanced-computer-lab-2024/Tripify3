@@ -253,7 +253,7 @@ const TouristHomePage = () => {
         {[
           { path: "/tourist/activities", text: "Activities" },
           { path: "/tourist/itineraries", text: "Itineraries" },
-          { path: "/tourist/historical-places", text: "Historical Places" },
+          { path: "/tourist/historicalplaces", text: "Historical Places" },
           { path: "/tourist/ProductList", text: "ProductList" },
           { path: "/tourist/SearchProduct", text: "Search Product" },
           { path: "/tourist/FilterProduct", text: "Filter Product" },

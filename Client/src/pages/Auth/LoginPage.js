@@ -41,7 +41,6 @@ const Login = () => {
       }
 
       const data = await response.json();
-      alert("Login successful!");
       setUser(data.user); // Store user info in the utility file
       if (data.user.type === "Tourism Governor") {
         navigate("/governor");

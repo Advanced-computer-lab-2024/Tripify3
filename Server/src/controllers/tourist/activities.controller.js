@@ -25,6 +25,7 @@ export const getFilteredActivities = async (req, res) => {
   try {
     const currentDate = new Date();
     const { minPrice, maxPrice, category, rating } = req.query; // Accepting minPrice and maxPrice
+    consol.log(rating);
 
     // Build the query object
     let query = { date: { $gt: currentDate } };
