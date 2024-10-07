@@ -1,5 +1,8 @@
 import Itinerary from "../../models/itinerary.js";
 
+// Import your models
+import Itinerary from "../models/Itinerary"; // Adjust the import path as necessary
+
 export const getAllItineraries = async (req, res) => {
   try {
     const itineraries = await Itinerary.find({}).populate({
