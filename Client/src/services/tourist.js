@@ -11,7 +11,16 @@ export const getAllCategories = async () => {
 };
 
 export const getAllPlaces = async () => {
-  return await axios.get(`${API_URL}/location/get`);
+  return await axios.get(`${API_URL}/places/get`);
+};
+
+export const getFilteredPlaces = async (filters) => {
+  return await axios.get(`${API_URL}/places/filter`, {
+    params: filters, // Pass filters directly here
+    paramsSerializer: (params) => {
+      return `tags=${encodeURIComponent(params.tags)}`; // Ensure it's serialized as a proper query string
+    },
+  });
 };
 
 export const getAllIteneraries = async () => {
@@ -20,6 +29,14 @@ export const getAllIteneraries = async () => {
 
 export const getAllActivities = async () => {
   return await axios.get(`${API_URL}/tourist/activity`);
+};
+
+export const getProfile = async (userId) => {
+  return await axios.get(`${API_URL}/tourist/profile/${userId}`);
+};
+
+export const updateProfile = async (userId, formData) => {
+  return await axios.put(`${API_URL}/tourist/profile/${userId}`, formData);
 };
 
 export const filterActivities = async (filters) => {

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const TourGuideProfile = () => {
   const userId = getUserId();
+  const navigate = useNavigate();
 
   // State for profile data
   const [profile, setProfile] = useState(null);
@@ -42,6 +43,10 @@ const TourGuideProfile = () => {
           ? value.split(",").map((item) => item.trim())
           : value,
     }));
+  };
+
+  const handlenextpage =  () => {
+    navigate("/tourGuide/Itinerary");
   };
 
   // Save changes
@@ -148,6 +153,7 @@ const TourGuideProfile = () => {
               <button className="button" onClick={handleSave}>
                 Save
               </button>
+           
             </>
           ) : (
             <>
@@ -168,6 +174,9 @@ const TourGuideProfile = () => {
               </p>
               <button className="button" onClick={() => setIsEditing(true)}>
                 Edit Profile
+              </button>
+              <button className="button" onClick={handlenextpage}>
+                Itineraries
               </button>
             </>
           )}
