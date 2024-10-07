@@ -6,7 +6,7 @@ import EditProductForm from "./EditProductForm.js";
 import FilterProductCondition from "./FilterProductCondition.js";
 import ProductList from "./ProductList.js";
 import MyProduct from "./MyProductList.js";
-import SearchProduct from "./SearchProduct.js";
+import SearchProduct from "./SearchMyProduct.js";
 import SortByRating from "./SortByRating.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
 import UpdateSellerForm from "./UpdateSellerForm.js";

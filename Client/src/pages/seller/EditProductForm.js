@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
+
 const EditProductForm = () => {
   const userId = getUserId(); // Get the user ID from local storage
   const userType = getUserType(); // Get the user type from local storage
@@ -10,20 +11,43 @@ const EditProductForm = () => {
   const [quantity, setQuantity] = useState("");
   const [imageUrl, setImageUrl] = useState([]); // Array to store fetched images
   const [category, setCategory] = useState("");
-  const [sellerId, setSellerId] = useState("");
+  const [sellerName, setSellerName] = useState(""); // Input for Seller Name (for Admin)
+  const [sellerId, setSellerId] = useState(userId); // If Seller, default to userId
   const [responseMessage, setResponseMessage] = useState("");
   const [productId, setProductId] = useState(""); // Store productId
 
-  // Fetch product details and images based on the product name
-  const fetchProduct = async () => {
+  // Fetch sellerId based on sellerName (for admins)
+  const fetchSellerId = async (sellerName) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/access/seller/searchProduct?name=${name}`
+        `http://localhost:8000/access/seller/getSellerByUserName?username=${sellerName}`
       );
-      const filteredProducts = response.data.filter(
-        (product) => product.sellerId === userId
+      const seller = response.data; // Assuming the response contains the seller object
+      return seller._id; // Return the seller's id
+    } catch (error) {
+      console.error("Error fetching seller ID:", error);
+      setResponseMessage("Failed to fetch seller by username.");
+      throw error;
+    }
+  };
+
+  // Fetch product details based on product name and sellerId
+  const fetchProduct = async () => {
+    try {
+      let currentSellerId = sellerId;
+
+      // If admin, fetch sellerId from sellerName
+      if (userType !== "Seller" && sellerName) {
+        currentSellerId = await fetchSellerId(sellerName); // Fetch sellerId from sellerName
+        setSellerId(currentSellerId); // Set sellerId state for later use
+      }
+
+      const query = `?name=${name}&sellerId=${currentSellerId}`;
+      const response = await axios.get(
+        `http://localhost:8000/access/seller/searchProduct${query}`
       );
-      const product = filteredProducts[0]; // Assuming the first product is the correct one
+
+      const product = response.data[0]; // Assuming the first product is the correct one
 
       // Set product details and images
       setProductId(product._id);
@@ -31,16 +55,15 @@ const EditProductForm = () => {
       setDetails(product.details);
       setQuantity(product.quantity);
       setCategory(product.category);
-      setSellerId(product.sellerId);
       setImageUrl(product.imageUrl || []); // Assuming imageUrl is part of product details
-      console.log("Product details:");
+      console.log("Product details:", product);
     } catch (error) {
       setProductId("");
       setPrice("");
       setDetails("");
       setQuantity("");
       setCategory("");
-      setSellerId("");
+      setSellerId(userType === "Seller" ? userId : "");
       setImageUrl([]);
       console.error("Error fetching product details:", error);
       setResponseMessage(error.response?.data?.message || "Product not found.");
@@ -80,7 +103,6 @@ const EditProductForm = () => {
       }, 1000);
     } catch (error) {
       // Handle any errors
-      set;
       console.error("Error:", error.response?.data || error.message); // Log the backend error message
       setResponseMessage("Failed to update product.");
     }
@@ -104,6 +126,20 @@ const EditProductForm = () => {
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter product name"
         />
+
+        {/* If the user is not a Seller, allow them to input a Seller Name */}
+        {userType !== "Seller" && (
+          <div>
+            <label>Seller Username (to search): </label>
+            <input
+              type="text"
+              value={sellerName}
+              onChange={(e) => setSellerName(e.target.value)}
+              placeholder="Enter seller username"
+            />
+          </div>
+        )}
+
         <button type="button" onClick={fetchProduct}>
           Fetch Product
         </button>
@@ -152,20 +188,6 @@ const EditProductForm = () => {
             />
           </div>
 
-          {userType === "Admin" ? (
-            <div>
-              <label>Seller ID: </label>
-              <input
-                type="text"
-                value={sellerId}
-                onChange={(e) => setSellerId(e.target.value)}
-                placeholder="Enter seller ID"
-              />
-            </div>
-          ) : (
-            <></>
-          )}
-
           {/* Display existing images as editable text inputs */}
           <div>
             <h4>Product Images</h4>
@@ -184,7 +206,6 @@ const EditProductForm = () => {
                       const updatedImages = imageUrl.filter(
                         (_, i) => i !== index
                       );
-                      console.log(imageUrl);
                       setImageUrl(updatedImages);
                     }}
                   >

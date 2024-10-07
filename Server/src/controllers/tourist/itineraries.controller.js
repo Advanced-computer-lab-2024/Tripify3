@@ -31,7 +31,7 @@ export const getFilteredItineraries = async (req, res) => {
   try {
     const { language, tags, date, budget } = req.query; // Get language, tags, date, and budget from query parameters
     console.log(req.query);
-    
+
     // Create the filter object
     const filter = {};
 
@@ -83,7 +83,7 @@ export const getFilteredItineraries = async (req, res) => {
     // Check if any itineraries were found
 
     console.log(itineraries);
-    
+
     // Return the filtered itineraries
     return res.status(200).json(itineraries);
   } catch (error) {

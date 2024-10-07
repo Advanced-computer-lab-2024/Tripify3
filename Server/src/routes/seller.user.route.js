@@ -6,6 +6,8 @@ import {
   updateSeller,
   deleteAllSellers,
   signup,
+  findSeller,
+  getSellerByUserName,
 } from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
@@ -24,12 +26,17 @@ import {
   unarchiveProduct,
   decrementProductQuantity,
   getSalesHistory,
+  searchaProduct,
 } from "../controllers/seller/seller.controller.js";
 const router = express.Router();
+//search for a seller by username
+router.get("/access/seller/getSellerByUserName", getSellerByUserName);
 // view all sellers
 router.get("/access/seller/getSellers", getSellers);
 //signUp as a seller
 router.post("/access/seller/signup", signup);
+//search for a seller
+router.get("/access/seller/findSeller", findSeller);
 //search for a seller
 router.get("/access/seller/viewSeller", viewSeller);
 //signUp as a seller
@@ -72,4 +79,6 @@ router.put("/access/seller/unarchiveProduct", unarchiveProduct);
 router.put("/access/seller/decrementProductQuantity", decrementProductQuantity);
 //get sales history
 router.get("/access/seller/getSalesHistory", getSalesHistory);
+//search for a product
+router.get("/access/seller/searchaProduct", searchaProduct);
 export default router;

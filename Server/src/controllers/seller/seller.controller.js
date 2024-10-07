@@ -14,6 +14,18 @@ export const getSellers = async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 };
+export const findSeller = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const seller2 = await seller.findById(id);
+    if (!seller2) {
+      return res.status(404).json({ message: "Seller not found." });
+    }
+    return res.status(200).json(seller2);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 export const signup = async (req, res) => {
   try {
     const { name, email, description, username, password } = req.body;
@@ -110,7 +122,7 @@ export const createProduct = async (req, res) => {
 
     // Validate if the sellerId refers to a valid seller
     const sellerUser = await seller.findById(sellerId);
-    if (!sellerUser || sellerUser.type !== "seller") {
+    if (!sellerUser || sellerUser.type !== "Seller") {
       return res.status(400).json({ message: "Invalid seller." });
     }
 
@@ -223,11 +235,43 @@ export const editProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+export const getSellerByUserName = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const seller2 = await seller.findOne({ username });
+    if (!seller2) {
+      return res.status(404).json({ message: "Seller not found." });
+    }
+    return res.status(200).json(seller2);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const searchProduct = async (req, res) => {
   try {
-    const { name } = req.query; // Extracting name from the query parameter
+    const { name, sellerId } = req.query; // Extracting name from the query parameter
+    // Find product by name using case-insensitive exact match
+    const product2 = await product.find({
+      name: { $regex: `^${name}$`, $options: "i" },
+      sellerId: sellerId,
+    });
 
+    // If no product is found
+    if (product2.length === 0) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    // Return the found product(s)
+    return res.status(200).json(product2);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+export const searchaProduct = async (req, res) => {
+  try {
+    const { name } = req.query; // Extracting name from the query parameter
     // Find product by name using case-insensitive exact match
     const product2 = await product.find({
       name: { $regex: `^${name}$`, $options: "i" },
