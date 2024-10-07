@@ -1,145 +1,147 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Modal from "react-modal";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './TourGuideItinerary.css';
 
-const Itinerary = () => {
+const ItineraryManager = () => {
   const [itineraries, setItineraries] = useState([]);
-  const [newItinerary, setNewItinerary] = useState({
-    activities: [],
-    locations: [],
-    price: "",
-    budget: "",
-    language: "",
-    timeline: {
-      startTime: "",
-      endTime: "",
-    },
+  const [activities, setActivities] = useState([]); // To store activities for dropdown
+  const [locations, setLocations] = useState([]);
+  const [formData, setFormData] = useState({
+    language: '',
+    price: 0,
+    startTime: '',
+    endTime: '',
+    budget: 0,
+    pickupLocation: '',
+    dropoffLocation: '',
+    accessibility: '',
+    preferences: '',
     availableDates: [],
-    pickupLocation: "",
-    dropoffLocation: "",
-    accessibility: "",
-    preferences: [],
-    bookings: [],
+    activities: [], // To hold selected activities
+    locations: [],
+    bookings: []
   });
-  const [editMode, setEditMode] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
-  const [availableDatesInput, setAvailableDatesInput] = useState({
-    date: "",
-    times: "",
-  });
-  const [newActivity, setNewActivity] = useState({
-    name: "",
-    description: "",
-    duration: "",
-    date: "",
-  });
-  const [selectedItineraryId, setSelectedItineraryId] = useState([]);
-
-  const preferencesOptions = [
-    "Historical Area",
-    "Beaches",
-    "Family Friendly",
-    "Shopping",
-  ];
+  const [editingId, setEditingId] = useState(null);
+  const [newAvailableDate, setNewAvailableDate] = useState({ date: '', startTime: '', endTime: '' });
+  const [selectedActivity, setSelectedActivity] = useState(''); // State for selected activity
+  const [selectedLocation, setSelectedLocation] = useState(''); // State for selected location
 
   useEffect(() => {
     fetchItineraries();
+    fetchActivities(); // Fetch activities when component mounts
+    fetchLocations();
   }, []);
 
   const fetchItineraries = async () => {
     try {
-      const response = await fetch("http://localhost:8000/itinerary/get");
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setItineraries(
-        data.map((itinerary) => ({
-          ...itinerary,
-          bookingsCount: itinerary.bookings ? itinerary.bookings.length : 0,
-        }))
-      );
+      const response = await axios.get('http://localhost:8000/itinerary/get');
+      console.log(response.data);
+      setItineraries(response.data);
     } catch (error) {
-      console.error("Error fetching itineraries:", error);
+      console.error('Error fetching itineraries:', error);
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "startTime" || name === "endTime") {
-      setNewItinerary((prevState) => ({
-        ...prevState,
-        timeline: {
-          ...prevState.timeline,
-          [name]: value,
-        },
-      }));
-    } else if (name === "preferences") {
-      const selectedPreferences = Array.from(
-        e.target.selectedOptions,
-        (option) => option.value
-      );
-      setNewItinerary((prevState) => ({
-        ...prevState,
-        preferences: selectedPreferences,
-      }));
-    } else {
-      setNewItinerary((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleAddAvailableDate = () => {
-    if (availableDatesInput.date && availableDatesInput.times) {
-      setNewItinerary((prevState) => ({
-        ...prevState,
-        availableDates: [...prevState.availableDates, availableDatesInput],
-      }));
-      setAvailableDatesInput({ date: "", times: "" });
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchActivities = async () => {
     try {
-      if (editMode && currentId) {
-        await axios.put(
-          `http://localhost:8000/itinerary/update/${currentId}`,
-          newItinerary
-        );
-      } else {
-        await axios.post(
-          "http://localhost:8000/itinerary/create",
-          newItinerary
-        );
-      }
-      fetchItineraries();
-      closeModal();
+      const response = await axios.get('http://localhost:8000/activity/get'); // Adjust the URL based on your backend endpoint
+      setActivities(response.data);
     } catch (error) {
-      console.error(
-        "Error saving itinerary:",
-        error.response ? error.response.data : error.message
-      );
+      console.error('Error fetching activities:', error);
     }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/location/get'); // Adjust the URL based on your backend endpoint
+      setLocations(response.data);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  
+    // Ensure at least one available date is selected
+    if (formData.availableDates.length === 0) {
+      alert("Please add at least one available date before submitting.");
+      return;
+    }
+  
+    const dataToSubmit = {
+      ...formData,
+      timeline: {
+        startTime: formData.startTime,
+        endTime: formData.endTime
+      }
+    };
+  
+    console.log('Data to Submit:', dataToSubmit);
+  
+    if (editingId) {
+      axios.put(`http://localhost:8000/itinerary/update/${editingId}`, dataToSubmit)
+        .then(() => {
+          setEditingId(null);
+          resetForm();
+          fetchItineraries();
+        })
+        .catch(error => {
+          console.error('Error updating itinerary:', error.response?.data || error.message);
+        });
+    } else {
+      axios.post('http://localhost:8000/itinerary/create', dataToSubmit)
+        .then(() => {
+          resetForm();
+          fetchItineraries();
+        })
+        .catch(error => {
+          console.error('Error adding itinerary:', error.response?.data || error.message);
+        });
+    }
+  };
+  
+  const resetForm = () => {
+    setFormData({
+      language: '',
+      price: 0,
+      startTime: '',
+      endTime: '',
+      budget: 0,
+      pickupLocation: '',
+      dropoffLocation: '',
+      accessibility: '',
+      preferences: '',
+      availableDates: [],
+      activities: [],
+      locations: []
+    });
+    setNewAvailableDate({ date: '', startTime: '', endTime: '' });
+    setSelectedActivity(''); // Reset selected activity
+    setSelectedLocation(''); // Reset selected location
   };
 
   const handleEdit = (itinerary) => {
-    setNewItinerary(itinerary);
-    setEditMode(true);
-    setCurrentId(itinerary._id);
-    openModal();
+    setEditingId(itinerary._id);
+    setFormData({
+      language: itinerary.language,
+      price: itinerary.price,
+      startTime: itinerary.timeline.startTime,
+      endTime: itinerary.timeline.endTime,
+      budget: itinerary.budget,
+      pickupLocation: itinerary.pickupLocation,
+      dropoffLocation: itinerary.dropoffLocation,
+      accessibility: itinerary.accessibility,
+      preferences: itinerary.preferences,
+      availableDates: itinerary.availableDates,
+      activities: itinerary.activities,
+      locations: itinerary.locations
+    });
   };
 
   const handleDelete = async (id, hasBookings) => {
     if (hasBookings) {
-      alert(
-        "This itinerary cannot be deleted because there are existing bookings."
-      );
+      alert("This itinerary cannot be deleted because there are existing bookings.");
       return;
     }
 
@@ -148,383 +150,216 @@ const Itinerary = () => {
         await axios.delete(`http://localhost:8000/itinerary/delete/${id}`);
         fetchItineraries();
       } catch (error) {
-        console.error(
-          "Error deleting itinerary:",
-          error.response ? error.response.data : error.message
-        );
+        console.error('Error deleting itinerary:', error.response ? error.response.data : error.message);
       }
     }
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    resetForm();
+  const handleAvailableDateChange = (e) => {
+    setNewAvailableDate({ ...newAvailableDate, [e.target.name]: e.target.value });
   };
 
-  const resetForm = () => {
-    setNewItinerary({
-      activities: [],
-      locations: [],
-      price: "",
-      budget: "",
-      language: "",
-      timeline: { startTime: "", endTime: "" },
-      availableDates: [],
-      pickupLocation: "",
-      dropoffLocation: "",
-      accessibility: "",
-      preferences: [],
-      bookings: [],
-    });
-    setAvailableDatesInput({ date: "", times: "" });
-    setEditMode(false);
-  };
-
-  const openActivityModal = (itineraryId) => {
-    setSelectedItineraryId(itineraryId);
-    setNewActivity({ name: "", description: "", duration: "", date: "" });
-    setIsActivityModalOpen(true);
-  };
-
-  const closeActivityModal = () => {
-    setIsActivityModalOpen(false);
-    setNewActivity({ name: "", description: "", duration: "", date: "" });
-  };
-
-  const handleSubmitActivity = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(
-        `http://localhost:8000/itinerary/${selectedItineraryId}/addActivity`,
-        newActivity
-      );
-      closeActivityModal();
-      fetchItineraries();
-    } catch (error) {
-      console.error(
-        "Error adding activity:",
-        error.response ? error.response.data : error.message
-      );
+  const handleAddAvailableDate = () => {
+    if (newAvailableDate.date) {
+      setFormData(prev => ({
+        ...prev,
+        availableDates: [...prev.availableDates, {
+          date: newAvailableDate.date,
+          times: [newAvailableDate.startTime, newAvailableDate.endTime]
+        }]
+      }));
+      setNewAvailableDate({ date: '', startTime: '', endTime: '' });
+    } else {
+      alert("Please enter a valid date before adding.");
     }
   };
 
+  const handleAddActivity = () => {
+    if (selectedActivity) {
+      setFormData(prev => ({
+        ...prev,
+        activities: [...prev.activities, selectedActivity] // Add the selected activity to the activities array
+      }));
+      setSelectedActivity(''); // Reset selected activity
+    } else {
+      alert("Please select an activity before adding.");
+    }
+  };
+
+  const handleAddLocation = () => {
+    if (selectedLocation) {
+      setFormData(prev => ({
+        ...prev,
+        locations: [...prev.locations, selectedLocation] // Add the selected location to the locations array
+      }));
+      setSelectedLocation(''); // Reset selected location
+    } else {
+      alert("Please select a location before adding.");
+    }
+  };
   return (
     <div>
-      <style>
-        {`
-          /* General styles */
-          body {
-              font-family: Arial, sans-serif;
-              background-color: #f4f4f4;
-              margin: 0;
-              padding: 20px;
-          }
+      <h1>Itinerary Manager</h1>
 
-          h1, h2 {
-              color: #333;
-          }
+      <form onSubmit={handleSubmit}>
+        <label>
+          Language:
+          <input type="text" name="language" value={formData.language} onChange={handleChange} required />
+        </label>
+        <label>
+          Price:
+          <input type="number" name="price" value={formData.price} onChange={handleChange} required />
+        </label>
+        <label>
+          Start Time:
+          <input type="datetime-local" name="startTime" value={formData.startTime} onChange={handleChange} required />
+        </label>
+        <label>
+          End Time:
+          <input type="datetime-local" name="endTime" value={formData.endTime} onChange={handleChange} required />
+        </label>
+        <label>
+          Budget:
+          <input type="number" name="budget" value={formData.budget} onChange={handleChange} required />
+        </label>
+        <label>
+          Pickup Location:
+          <input type="text" name="pickupLocation" value={formData.pickupLocation} onChange={handleChange} required />
+        </label>
+        <label>
+          Dropoff Location:
+          <input type="text" name="dropoffLocation" value={formData.dropoffLocation} onChange={handleChange} required />
+        </label>
+        <label>
+          Accessibility:
+          <input type="text" name="accessibility" value={formData.accessibility} onChange={handleChange} required />
+        </label>
+        <label>
+          Preferences:
+          <select name="preferences" value={formData.preferences} onChange={handleChange} required>
+            <option value="">Select Preference</option>
+            <option value="Historical Area">Historical Area</option>
+            <option value="Beaches">Beaches</option>
+            <option value="Family Friendly">Family Friendly</option>
+            <option value="Shopping">Shopping</option>
+          </select>
+        </label>
 
-          /* Itinerary management styles */
-          .add-itinerary-btn {
-              background-color: #4CAF50; /* Green */
-              color: white;
-              padding: 10px 15px;
-              border: none;
-              border-radius: 5px;
-              cursor: pointer;
-              margin-bottom: 20px;
-              font-size: 16px;
-          }
+        <h4>Add Available Dates</h4>
+        <label>
+          Date:
+          <input type="date" name="date" value={newAvailableDate.date} onChange={handleAvailableDateChange} />
+        </label>
+        <label>
+          Start Time:
+          <input
+            type="time"
+            name="startTime"
+            value={newAvailableDate.startTime}
+            onChange={handleAvailableDateChange}
+          />
+        </label>
+        <label>
+          End Time:
+          <input
+            type="time"
+            name="endTime"
+            value={newAvailableDate.endTime}
+            onChange={handleAvailableDateChange}
+          />
+        </label>
+        <button type="button" onClick={handleAddAvailableDate}>Add Available Date</button>
 
-          .add-itinerary-btn:hover {
-              background-color: #45a049;
-          }
+        <h4>Add Activities</h4>
+        <label>
+          Select Activity:
+          <select value={selectedActivity} onChange={(e) => setSelectedActivity(e.target.value)} required>
+            <option value="">Select Activity</option>
+            {activities.map((activity) => (
+              <option key={activity._id} value={activity._id}>{activity.name}</option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={handleAddActivity}>Add Activity</button>
 
-          /* Itinerary list styles */
-          ul {
-              list-style-type: none;
-              padding: 0;
-          }
+        <h4>Add Locations</h4>
+        <label>
+          Select Location:
+          <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} required>
+            <option value="">Select Location</option>
+            {locations.map((location) => (
+              <option key={location._id} value={location._id}>{location.location}</option>
+            ))}
+          </select>
+        </label>
+        <button type="button" onClick={handleAddLocation}>Add Location</button>
 
-          li {
-              background-color: white;
-              margin: 10px 0;
-              padding: 15px;
-              border-radius: 5px;
-              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          }
+        <button type="submit">{editingId ? 'Update Itinerary' : 'Add Itinerary'}</button>
+      </form>
 
-          h3 {
-              margin: 0 0 10px 0;
-          }
-
-          /* Button styles for edit and delete */
-          button {
-              background-color: #007BFF; /* Blue */
-              color: white;
-              padding: 8px 12px;
-              border: none;
-              border-radius: 5px;
-              cursor: pointer;
-              margin-right: 10px;
-          }
-
-          button:hover {
-              background-color: #0056b3;
-          }
-
-          /* Modal styles */
-          .ReactModal__Overlay {
-              background: rgba(0, 0, 0, 0.75);
-          }
-
-          .ReactModal__Content {
-              background: white;
-              border-radius: 8px;
-              padding: 20px;
-              max-width: 600px;
-              margin: auto;
-          }
-
-          input[type="text"],
-          input[type="number"],
-          input[type="datetime-local"],
-          select {
-              width: 100%;
-              padding: 10px;
-              margin: 10px 0;
-              border: 1px solid #ccc;
-              border-radius: 5px;
-          }
-
-          input[type="text"]:focus,
-          input[type="number"]:focus,
-          input[type="datetime-local"]:focus,
-          select:focus {
-              border-color: #007BFF;
-              outline: none;
-          }
-
-          button[type="submit"],
-          button[type="button"] {
-              width: 100%;
-              margin-top: 10px;
-          }
-        `}
-      </style>
-
-      <h1>Itinerary Management</h1>
-
-      <button className="add-itinerary-btn" onClick={openModal}>
-        Add New Itinerary
-      </button>
-
-      <h2>Existing Itineraries</h2>
+      <h2>All Itineraries</h2>
       <ul>
-        {itineraries.map((itinerary) => (
+        {itineraries.map(itinerary => (
           <li key={itinerary._id}>
             <h3>Language: {itinerary.language}</h3>
             <p>Price: ${itinerary.price}</p>
+            <p>Timeline: {itinerary.timeline.startTime} to {itinerary.timeline.endTime}</p>
             <p>Budget: ${itinerary.budget}</p>
             <p>Pickup Location: {itinerary.pickupLocation}</p>
             <p>Dropoff Location: {itinerary.dropoffLocation}</p>
             <p>Accessibility: {itinerary.accessibility}</p>
-            <p>Bookings Count: {itinerary.bookingsCount}</p>
+            <p>Preferences: {itinerary.preferences}</p>
+            <p>bookings: {itinerary.bookings.length}</p>
+            <h4>Available Dates:</h4>
+            <ul>
+              {itinerary.availableDates.map((date, index) => (
+                <li key={index}>{new Date(date.date).toISOString().split('T')[0]} (from {date.times[0]} to {date.times[1]})</li>
+              ))}
+            </ul>
+
+            
+            <h4>Activities:</h4>
+            <ul>
+              {itinerary.activities.map((activity, index) => (
+                <li key={index} className="activity-item">
+                <p><strong>Name:</strong> {activity.name}</p>
+                <p><strong>Duration:</strong> {activity.duration} minutes</p>
+                <p><strong>Rating:</strong> {activity.rating}</p>
+              </li>
+
+              ))}
+
+            </ul>
+
+            <h4>Locations:</h4>
+<ul>
+  {itinerary.locations.map((location, index) => (
+    <li key={index}>
+      <strong>Location:</strong> {location.location}
+      <div>
+        <strong>Tags:</strong>
+        <ul>
+          {location.tags.map((tag, tagIndex) => (
+            <li key={tagIndex}>{tag}</li>
+          ))}
+        </ul>
+      </div>
+    </li>
+  ))}
+</ul>
+
+            
             <button onClick={() => handleEdit(itinerary)}>Edit</button>
             <button onClick={() => handleDelete(itinerary._id, itinerary.bookings.length > 0)}>Delete</button>
-            <button onClick={() => openActivityModal(itinerary._id)}>Add Activity</button>
           </li>
         ))}
       </ul>
-
-      {/* Modal for adding/editing itineraries */}
-      <Modal isOpen={isModalOpen} onRequestClose={closeModal}>
-        <h2>{editMode ? "Edit Itinerary" : "Add Itinerary"}</h2>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Language:
-            <input
-              type="text"
-              name="language"
-              value={newItinerary.language}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Price:
-            <input
-              type="number"
-              name="price"
-              value={newItinerary.price}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Budget:
-            <input
-              type="number"
-              name="budget"
-              value={newItinerary.budget}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Pickup Location:
-            <input
-              type="text"
-              name="pickupLocation"
-              value={newItinerary.pickupLocation}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Dropoff Location:
-            <input
-              type="text"
-              name="dropoffLocation"
-              value={newItinerary.dropoffLocation}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Accessibility:
-            <input
-              type="text"
-              name="accessibility"
-              value={newItinerary.accessibility}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Start Time:
-            <input
-              type="datetime-local"
-              name="startTime"
-              value={newItinerary.timeline.startTime}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            End Time:
-            <input
-              type="datetime-local"
-              name="endTime"
-              value={newItinerary.timeline.endTime}
-              onChange={handleChange}
-              required
-            />
-          </label>
-          <label>
-            Preferences:
-            <select
-              name="preferences"
-              multiple
-              value={newItinerary.preferences}
-              onChange={handleChange}
-            >
-              {preferencesOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div>
-            <h3>Available Dates</h3>
-            <input
-              type="date"
-              value={availableDatesInput.date}
-              onChange={(e) =>
-                setAvailableDatesInput({
-                  ...availableDatesInput,
-                  date: e.target.value,
-                })
-              }
-            />
-            <input
-              type="text"
-              placeholder="Times (comma separated)"
-              value={availableDatesInput.times}
-              onChange={(e) =>
-                setAvailableDatesInput({
-                  ...availableDatesInput,
-                  times: e.target.value,
-                })
-              }
-            />
-            <button type="button" onClick={handleAddAvailableDate}>
-              Add Available Date
-            </button>
-            <ul>
-              {newItinerary.availableDates.map((dateObj, index) => (
-                <li key={index}>
-                  {dateObj.date} - {dateObj.times}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button type="submit">{editMode ? "Update" : "Create"}</button>
-          <button type="button" onClick={closeModal}>Cancel</button>
-        </form>
-      </Modal>
-
-      {/* Modal for adding activities */}
-      <Modal isOpen={isActivityModalOpen} onRequestClose={closeActivityModal}>
-        <h2>Add Activity</h2>
-        <form onSubmit={handleSubmitActivity}>
-          <label>
-            Name:
-            <input
-              type="text"
-              value={newActivity.name}
-              onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
-              required
-            />
-          </label>
-          <label>
-            Description:
-            <input
-              type="text"
-              value={newActivity.description}
-              onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
-              required
-            />
-          </label>
-          <label>
-            Duration:
-            <input
-              type="text"
-              value={newActivity.duration}
-              onChange={(e) => setNewActivity({ ...newActivity, duration: e.target.value })}
-              required
-            />
-          </label>
-          <label>
-            Date:
-            <input
-              type="date"
-              value={newActivity.date}
-              onChange={(e) => setNewActivity({ ...newActivity, date: e.target.value })}
-              required
-            />
-          </label>
-          <button type="submit">Add Activity</button>
-          <button type="button" onClick={closeActivityModal}>Cancel</button>
-        </form>
-      </Modal>
     </div>
   );
 };
 
-export default Itinerary;
+export default ItineraryManager;

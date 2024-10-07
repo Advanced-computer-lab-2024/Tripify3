@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const locationSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["Monument", "Religious Site", "Palace/Castle", "Museum", "Historical Place"],
+    enum: ["Monument", "Religious Site", "Palace", "Castle", "Museum", "Historical Place"],
     required: true,
   }, // Type of location
   description: {

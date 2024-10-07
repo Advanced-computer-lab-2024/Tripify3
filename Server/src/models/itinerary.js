@@ -65,11 +65,12 @@ const itinerarySchema = new mongoose.Schema({
     type: String,
     required: true // Ensure accessibility is required
   },
-  preferences: { 
-    type: String, 
-    enum: ['Historical Area', 'Beaches', 'Family Friendly', 'Shopping'], 
-    required: true 
-  } 
+  tags: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tag",
+    },
+  ], // Array of comments related to the activity
 });
 
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);
