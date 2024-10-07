@@ -15,7 +15,7 @@ export const getAllPlaces = async () => {
 };
 
 export const getAllIteneraries = async () => {
-  return await axios.get(`${API_URL}/tourist/itinerary`);
+  return await axios.get(`${API_URL}/itinerary/get`);
 };
 
 export const getAllActivities = async () => {
