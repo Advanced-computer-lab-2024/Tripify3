@@ -34,7 +34,7 @@ const activitySchema = new mongoose.Schema({
     type: Number,
     default: 0,
   }, // Average rating for the activity
-  categoryId: {
+  category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
   }, // Category of the activity
@@ -60,7 +60,7 @@ const activitySchema = new mongoose.Schema({
       ref: "Tag",
     },
   ], // Array of comments related to the activity
-  advertiserId: {
+  advertiser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
   }, // Reference to the advertiser who posted the activity

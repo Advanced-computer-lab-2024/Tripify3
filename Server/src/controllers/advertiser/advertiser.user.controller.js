@@ -51,10 +51,10 @@ export const getCategories = async (req, res) => {
 
 // Get the user profile
 export const getProfile = async (req, res) => {
-  const { advertiserId } = req.params;
+  const { advertiser } = req.params;
 
   try {
-    const profile = await Advertiser.findById(advertiserId);
+    const profile = await Advertiser.findById(advertiser);
 
     if (!profile) {
       return res.status(404).json({ message: "Profile not found." });
@@ -69,10 +69,10 @@ export const getProfile = async (req, res) => {
 
 // Delete the user profile
 export const deleteProfile = async (req, res) => {
-  const { advertiserId } = req.params;
+  const { advertiser } = req.params;
 
   try {
-    const deletedProfile = await Advertiser.findByIdAndDelete(advertiserId);
+    const deletedProfile = await Advertiser.findByIdAndDelete(advertiser);
 
     if (!deletedProfile) {
       return res.status(404).json({ message: "Profile not found." });
@@ -107,14 +107,14 @@ export const createActivity = async (req, res) => {
 
 // Update an activity
 export const updateActivity = async (req, res) => {
-  const { advertiserId, activityId } = req.params;
+  const { advertiser, activityId } = req.params;
   console.log(req.body);
-  console.log(advertiserId);
+  console.log(advertiser);
   console.log(activityId);
 
   try {
     const updatedActivity = await Activity.findOneAndUpdate(
-      { _id: activityId, advertiserId }, // Ensure consistency with "advertiser"
+      { _id: activityId, advertiser }, // Ensure consistency with "advertiser"
       { $set: req.body },
       { new: true }
     );
@@ -133,13 +133,13 @@ export const updateActivity = async (req, res) => {
 };
 
 export const getAllActivitiesByAdvertiser = async (req, res) => {
-  const { advertiserId } = req.params;
+  const { advertiser} = req.params;
 
   try {
     // Find activities and populate category and tag details
-    const activities = await Activity.find({ advertiserId })
+    const activities = await Activity.find({ advertiser })
       .populate({
-        path: "categoryId",
+        path: "category",
         select: "name", // Only fetch the category name
       })
       .populate({
@@ -149,17 +149,17 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
 
     // Map activities and format the output
     const activitiesWithDetails = activities.map((activity) => {
-      const categoryName = activity.categoryId?.name || "Uncategorized"; // Handle missing category
+      const categoryName = activity.category?.name || "Uncategorized"; // Handle missing category
       return {
         ...activity.toObject(), // Convert mongoose object to plain object
-        category: activity.categoryId, // Rename categoryId to category
+        category: activity.category, // Rename categoryId to category
         tags: activity.tags || [], // Add populated tags
       };
     });
 
     // Optionally delete the old categoryId field if it exists
     activitiesWithDetails.forEach((activity) => {
-      delete activity.categoryId;
+      delete activity.category;
     });
 
     res.status(200).json(activitiesWithDetails);
@@ -170,12 +170,12 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
 
 // Delete an activity
 export const deleteActivity = async (req, res) => {
-  const { advertiserId, activityId } = req.query;
-  console.log(advertiserId);
+  const { advertiser, activityId } = req.query;
+  console.log(advertiser);
   console.log(activityId);
 
   try {
-    const deletedActivity = await Activity.findOneAndDelete({ _id: activityId, advertiserId });
+    const deletedActivity = await Activity.findOneAndDelete({ _id: activityId, advertiser });
 
     if (!deletedActivity) {
       return res.status(404).json({ message: "Activity not found." });

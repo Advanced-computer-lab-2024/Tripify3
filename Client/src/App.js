@@ -16,8 +16,11 @@ import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-import TouristHomePage from "./pages/tourist/TouristHomepage.js";
-import DoctorInformation from "./pages/advertiser/addLocation.js";
+import TouristHomePage from "./pages/tourist/touristHomepage.js";
+// import DoctorInformation from "./pages/advertiser/addLocation.js";
+import AllActivities from "./pages/tourist/allActivities.js";
+import AllItineraries from "./pages/tourist/allItineraries.js";
+import AllHistoricalPlaces from "./pages/tourist/allPlces.js";
 
 
 const App = () => {
@@ -33,7 +36,10 @@ const App = () => {
         <Route path="/governor/addPlace" element={<AddPlace />} />
         <Route path="/governor/edit/:id" element={<EditPlacTourismGovernor />} />
         <Route path="/username-input" element={<EmailInput />} />
-        <Route path="/tourist/homepage" element={<TouristHomePage />} />
+        <Route path="/tourist" element={<TouristHomePage />} />
+        <Route path="/tourist/activities" element={<AllActivities />} />
+        <Route path="/tourist/itineraries" element={<AllItineraries />} />
+        <Route path="/tourist/historical-places" element={<AllHistoricalPlaces />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
@@ -41,8 +47,7 @@ const App = () => {
         <Route path="/advertiser/activities" element={<AdvertiserActivities />} />
         <Route path="/seller/homepage" element={<SellerHomepage />} />
         <Route path="/admin/homepage" element={<AdminHomepage />} />
-        <Route path="/location-selection" element={<DoctorInformation />} />
-        {/* <Route path="/tourist/homepage" element={<TouristHomepage />} /> */}
+        {/* <Route path="/location-selection" element={<DoctorInformation />} /> */}
         <Route path="/tourGuide/Itinerary" element={<Itinerary />} />
       </Routes>
     </Router>

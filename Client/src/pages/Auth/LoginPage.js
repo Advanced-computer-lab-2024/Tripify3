@@ -46,7 +46,7 @@ const Login = () => {
       if (data.user.type === "Tourism Governor") {
         navigate("/governor");
       } else if (data.user.type === "Tourist") {
-        navigate("/tourist/homepage");
+        navigate("/tourist");
       } else if (data.user.type === "Seller") {
         navigate("/");
       } else if (data.user.type === "Admin") {

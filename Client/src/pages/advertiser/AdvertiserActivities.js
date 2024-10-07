@@ -221,7 +221,14 @@ const AdvertiserActivities = () => {
       <div style={{ marginBottom: "40px" }}>
         <h2 style={{ fontSize: "1.5em" }}>{editingActivityId ? "Edit Activity" : "Add New Activity"}</h2>
         <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="text" name="name" placeholder="Name" value={newActivity.name} onChange={handleInputChange} />
-        <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="date" name="date" value={newActivity.date} onChange={handleInputChange} />
+        <input
+          style={{ width: "100%", padding: "10px", marginBottom: "10px" }}
+          type="date"
+          name="date"
+          value={newActivity.date}
+          min={new Date().toISOString().split("T")[0]}
+          onChange={handleInputChange}
+        />
         <input style={{ width: "100%", padding: "10px", marginBottom: "10px" }} type="time" name="time" value={newActivity.time} onChange={handleInputChange} />
 
         <Box className="container3" sx={{ mt: 10, px: 5, pb: 10 }}>
