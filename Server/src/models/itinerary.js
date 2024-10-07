@@ -18,7 +18,6 @@ const itinerarySchema = new mongoose.Schema({
     enum: [
       'English', 
       'Spanish', 
-      'Mandarin', 
       'French', 
       'German', 
       'Arabic', 
@@ -33,12 +32,6 @@ const itinerarySchema = new mongoose.Schema({
       'Dutch',
       'Thai',
       'Swedish',
-      'Danish',
-      'Norwegian',
-      'Finnish',
-      'Hebrew',
-      'Indonesian',
-      'Malay',
       'Filipino'
     ], // Expanded list of popular languages
     required: true // Ensure this is required
