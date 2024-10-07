@@ -21,6 +21,12 @@ const UpdateCategoryForm = () => {
       );
 
       setResponseMessage(`Category updated: ${response.data.name}`);
+
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 1000);
+      setOldName("");
+      setNewName("");
     } catch (error) {
       setResponseMessage(
         error.response?.data?.message || "Error updating category."

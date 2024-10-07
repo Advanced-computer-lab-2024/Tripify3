@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { getUsername } from "../../utils/authUtils.js";
 
 const UpdateSellerForm = () => {
-  const [searchUsername, setSearchUsername] = useState(""); // Username to search
+  const userN = getUsername(); // Get the username from local storage
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -14,38 +15,35 @@ const UpdateSellerForm = () => {
   const [sellerFound, setSellerFound] = useState(false); // Track if seller was found
   const [updatedSeller, setUpdatedSeller] = useState(null); // To store updated seller info
 
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    setSearchUsername(e.target.value);
-  };
+  // Fetch the seller data as soon as the component loads
+  useEffect(() => {
+    const fetchSeller = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/access/seller/viewSeller?username=${userN}` // Adjust to your API endpoint
+        );
+        const seller = response.data;
+        setFormData({
+          username: seller.username,
+          name: seller.name,
+          email: seller.email,
+          description: seller.description,
+        });
+        setSellerFound(true);
+        setResponseMessage("");
+      } catch (error) {
+        setSellerFound(false);
+        setResponseMessage("Seller not found.");
+      }
+    };
+
+    fetchSeller(); // Call the fetchSeller function on component mount
+  }, [userN]); // Dependency array includes userN to ensure it only runs once
 
   // Handle form input change for editing
   const handleChange = (e) => {
     const { name, value } = e.target; // Use name to identify the field
     setFormData({ ...formData, [name]: value });
-  };
-
-  // Search for seller by username
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/access/seller/viewSeller?username=${searchUsername}` // Adjust to your API endpoint
-      );
-      const seller = response.data;
-      setFormData({
-        username: seller.username,
-        name: seller.name,
-        email: seller.email,
-        description: seller.description,
-      });
-      setSellerFound(true);
-      setResponseMessage("");
-    } catch (error) {
-      setSellerFound(false);
-      setResponseMessage("Seller not found.");
-    }
   };
 
   // Handle submit for updating seller details
@@ -55,7 +53,7 @@ const UpdateSellerForm = () => {
     try {
       const response = await axios.put(
         "http://localhost:8000/access/seller/updateSeller", // Adjust to your API endpoint
-        formData // Only send the description for updating
+        formData // Only send the data for updating
       );
       setUpdatedSeller(response.data); // Set updated seller data
       setResponseMessage("Seller updated successfully!");
@@ -68,19 +66,7 @@ const UpdateSellerForm = () => {
 
   return (
     <div>
-      <h2>Search for Seller</h2>
-      <form onSubmit={handleSearchSubmit}>
-        <div>
-          <label>Enter Username:</label>
-          <input
-            type="text"
-            value={searchUsername}
-            onChange={handleSearchChange}
-            required
-          />
-        </div>
-        <button type="submit">Search Seller</button>
-      </form>
+      <h2>Seller Username: {userN}</h2>
 
       {sellerFound ? (
         <>

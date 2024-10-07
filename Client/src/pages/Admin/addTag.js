@@ -20,6 +20,9 @@ const AddTagForm = () => {
       
       
       setResponseMessage(`Tag added: ${response.data.newtag.name}`);
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 1000);
       setTagName(""); // Clear the input field after submission
     } catch (error) {
       setResponseMessage(error.response?.data?.message || "Error adding tag.");

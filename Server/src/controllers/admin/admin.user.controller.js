@@ -44,6 +44,7 @@ export const addAdmin = async (req, res) => {
   const { username, password } = req.body;
   try {
     const newadmin = await User.create({ username, password, type: "Admin" });
+    //email:"tripify.authority@gmail.com"
     res.status(201).json(newadmin);
   } catch (error) {
     res.status(500).json({ message: error.message });
