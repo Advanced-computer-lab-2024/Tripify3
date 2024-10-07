@@ -18,7 +18,7 @@ import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/touristHomepage.js";
 // import DoctorInformation from "./pages/advertiser/addLocation.js";
-import AllActivities from "./pages/tourist/allActivities.js";
+import AllActivities from "./pages/tourist/AllActivites.js";
 import AllItineraries from "./pages/tourist/allItineraries.js";
 import AllHistoricalPlaces from "./pages/tourist/allHistoricalPlaces.js";
 import ActivitySearchPage from "./pages/tourist/searchActivities.js";
