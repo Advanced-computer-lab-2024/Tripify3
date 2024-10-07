@@ -56,7 +56,6 @@ const Login = () => {
       } else if (data.user.type === "Advertiser") {
         navigate("/advertiser/profile");
       }
-     
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("An error occurred while logging in.");
@@ -198,6 +197,19 @@ const Login = () => {
                 Don't have an account?{" "}
                 <Link href="/signup" underline="none" sx={{ color: "#00695C" }}>
                   Sign up
+                </Link>
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ marginTop: "5px", color: "gray", textAlign: "center" }}
+              >
+                continue as{" "}
+                <Link
+                  href="/tourist"
+                  underline="none"
+                  sx={{ color: "#00695C" }}
+                >
+                  Guest
                 </Link>
               </Typography>
             </form>

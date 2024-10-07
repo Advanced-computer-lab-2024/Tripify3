@@ -14,9 +14,8 @@ router.get("/tourist/activity/filter", getFilteredActivities); // Get filtered a
 router.get("/tourist/profile/:userId", getProfile); // Get filtered activities
 router.put("/tourist/profile/:userId", editProfile); // Get filtered activities
 
-
-router.post('/places/search', searchPlaces); // Search places
-router.post('/activities/search', searchActivities); // Search activities
+router.post("/places/search", searchPlaces); // Search places
+router.post("/activities/search", searchActivities); // Search activities
 // router.post('/itineraries/search', searchItineraries); // Search itineraries
 
 export default router;
