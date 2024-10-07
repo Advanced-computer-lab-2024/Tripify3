@@ -1,5 +1,7 @@
 import Location from '../../models/location.js'; // Import the Location model
 
+
+
 // Create a new location   tested
 export const createLocation = async (req, res) => {
   try {
@@ -13,11 +15,22 @@ export const createLocation = async (req, res) => {
 
 // Get all locations untested
 export const getLocations = async (req, res) => {
-  try {
-    const locations = await Location.find();
-    res.status(200).json(locations);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching locations', error });
+  try{
+    // Fetch all places from the location collection
+    const places = await Location.find().populate({ path: "tags", select: "name" }); // Populate tag names
+    
+
+    // Send response with the fetched places
+    res.status(200).json({
+      success: true,
+      data: places,
+    });
+  } catch (err) {
+    console.error("Error fetching places:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error, could not retrieve places.",
+    });
   }
 };
 

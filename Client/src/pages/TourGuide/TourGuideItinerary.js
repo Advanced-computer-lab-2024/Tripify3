@@ -16,14 +16,12 @@ const ItineraryManager = () => {
     accessibility: '',
     preferences: '',
     availableDates: [],
-    activities: [], // To hold selected activities
-    locations: [],
     bookings: []
   });
   const [editingId, setEditingId] = useState(null);
   const [newAvailableDate, setNewAvailableDate] = useState({ date: '', startTime: '', endTime: '' });
-  const [selectedActivity, setSelectedActivity] = useState(''); // State for selected activity
-  const [selectedLocation, setSelectedLocation] = useState(''); // State for selected location
+  const [selectedActivities, setSelectedActivities] = useState([]); // To hold selected activities
+  const [selectedLocations, setSelectedLocations] = useState([]); // To hold selected locations
 
   useEffect(() => {
     fetchItineraries();
@@ -61,23 +59,25 @@ const ItineraryManager = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     // Ensure at least one available date is selected
     if (formData.availableDates.length === 0) {
       alert("Please add at least one available date before submitting.");
       return;
     }
-  
+
     const dataToSubmit = {
       ...formData,
+      activities: selectedActivities, // Add selected activities
+      locations: selectedLocations, // Add selected locations
       timeline: {
         startTime: formData.startTime,
-        endTime: formData.endTime
-      }
+        endTime: formData.endTime,
+      },
     };
-  
+
     console.log('Data to Submit:', dataToSubmit);
-  
+
     if (editingId) {
       axios.put(`http://localhost:8000/itinerary/update/${editingId}`, dataToSubmit)
         .then(() => {
@@ -99,7 +99,7 @@ const ItineraryManager = () => {
         });
     }
   };
-  
+
   const resetForm = () => {
     setFormData({
       language: '',
@@ -112,12 +112,11 @@ const ItineraryManager = () => {
       accessibility: '',
       preferences: '',
       availableDates: [],
-      activities: [],
-      locations: []
+      bookings: [] // Reset bookings if needed
     });
     setNewAvailableDate({ date: '', startTime: '', endTime: '' });
-    setSelectedActivity(''); // Reset selected activity
-    setSelectedLocation(''); // Reset selected location
+    setSelectedActivities([]); // Reset selected activities to an empty array
+    setSelectedLocations([]); // Reset selected locations to an empty array
   };
 
   const handleEdit = (itinerary) => {
@@ -133,9 +132,10 @@ const ItineraryManager = () => {
       accessibility: itinerary.accessibility,
       preferences: itinerary.preferences,
       availableDates: itinerary.availableDates,
-      activities: itinerary.activities,
-      locations: itinerary.locations
+      bookings: itinerary.bookings // Include bookings if needed
     });
+    setSelectedActivities(itinerary.activities); // Set selected activities for editing
+    setSelectedLocations(itinerary.locations); // Set selected locations for editing
   };
 
   const handleDelete = async (id, hasBookings) => {
@@ -177,37 +177,207 @@ const ItineraryManager = () => {
     }
   };
 
-  const handleAddActivity = () => {
-    if (selectedActivity) {
-      setFormData(prev => ({
-        ...prev,
-        activities: [...prev.activities, selectedActivity] // Add the selected activity to the activities array
-      }));
-      setSelectedActivity(''); // Reset selected activity
+  const handleActivityChange = (e, activityId) => {
+    if (e.target.checked) {
+      setSelectedActivities([...selectedActivities, activityId]); // Add to selected activities
     } else {
-      alert("Please select an activity before adding.");
+      setSelectedActivities(selectedActivities.filter(id => id !== activityId)); // Remove from selected activities
     }
   };
+  
 
-  const handleAddLocation = () => {
-    if (selectedLocation) {
-      setFormData(prev => ({
-        ...prev,
-        locations: [...prev.locations, selectedLocation] // Add the selected location to the locations array
-      }));
-      setSelectedLocation(''); // Reset selected location
+  const handleLocationChange = (e, locationId) => {
+    if (e.target.checked) {
+      setSelectedLocations([...selectedLocations, locationId]); // Add to selected locations
     } else {
-      alert("Please select a location before adding.");
+      setSelectedLocations(selectedLocations.filter(id => id !== locationId)); // Remove from selected locations
     }
   };
   return (
+
+    
+
+
+      
     <div>
+
+<style>
+        {`
+          /* styles/TourGuideItinerary.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4 {
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+}
+
+form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensures padding is included in total width */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+select:focus {
+    border-color: #007BFF; /* Highlight on focus */
+    outline: none;
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3; /* Darken on hover */
+}
+
+h2 {
+    text-align: center;
+    margin: 30px 0 20px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+li h3 {
+    margin: 0;
+}
+
+li button {
+    margin-right: 10px;
+}
+
+
+/* Container for each checkbox and label */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Custom checkbox styling */
+.custom-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #007bff; /* Border color */
+  border-radius: 4px; /* Rounded corners */
+  margin-right: 8px;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  background-color: white;
+}
+
+/* Checkmark for the custom checkbox */
+.custom-checkbox:checked::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  background-color: #007bff;
+}
+
+/* Change background color on checked */
+.custom-checkbox:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* Label styling */
+.checkbox-container label {
+  cursor: pointer;
+  font-size: 16px;
+}
+
+  
+  
+  
+  
+        `}
+      </style>
+      
       <h1>Itinerary Manager</h1>
 
       <form onSubmit={handleSubmit}>
         <label>
           Language:
-          <input type="text" name="language" value={formData.language} onChange={handleChange} required />
+            <select name="language" value={formData.language} onChange={handleChange} required>
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Russian">Russian</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Korean">Korean</option>
+                <option value="Italian">Italian</option>
+                <option value="Turkish">Turkish</option>
+                <option value="Vietnamese">Vietnamese</option>
+                <option value="Dutch">Dutch</option>
+                <option value="Thai">Thai</option>
+                <option value="Swedish">Swedish</option>
+                <option value="Filipino">Filipino</option>
+          </select>
         </label>
         <label>
           Price:
@@ -273,29 +443,36 @@ const ItineraryManager = () => {
         </label>
         <button type="button" onClick={handleAddAvailableDate}>Add Available Date</button>
 
-        <h4>Add Activities</h4>
-        <label>
-          Select Activity:
-          <select value={selectedActivity} onChange={(e) => setSelectedActivity(e.target.value)} required>
-            <option value="">Select Activity</option>
-            {activities.map((activity) => (
-              <option key={activity._id} value={activity._id}>{activity.name}</option>
-            ))}
-          </select>
-        </label>
-        <button type="button" onClick={handleAddActivity}>Add Activity</button>
+        <h4>Select Activities:</h4>
+        {activities.map((activity) => (
+          <div key={activity._id} className="checkbox-container">
+            <input
+              type="checkbox"
+              id={activity._id}
+              className="custom-checkbox"
+              value={activity._id}
+              checked={selectedActivities.includes(activity._id)} // Checks if the activity is already selected
+              onChange={(e) => handleActivityChange(e, activity._id)} // Handles the checkbox change
+            />
+            <label htmlFor={activity._id}>{activity.name}</label>
+          </div>
+        ))}
 
-        <h4>Add Locations</h4>
-        <label>
-          Select Location:
-          <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} required>
-            <option value="">Select Location</option>
-            {locations.map((location) => (
-              <option key={location._id} value={location._id}>{location.location}</option>
-            ))}
-          </select>
-        </label>
-        <button type="button" onClick={handleAddLocation}>Add Location</button>
+        <h4>Select Locations:</h4>
+        {locations.map((location) => (
+          <div key={location._id} className="checkbox-container">
+            <input
+              type="checkbox"
+              id={location._id}
+              className="custom-checkbox"
+              value={location._id}
+              checked={selectedLocations.includes(location._id)} // Checks if the location is already selected
+              onChange={(e) => handleLocationChange(e, location._id)} // Handles the checkbox change
+            />
+            <label htmlFor={location._id}>{location.location}</label>
+          </div>
+        ))}
+
 
         <button type="submit">{editingId ? 'Update Itinerary' : 'Add Itinerary'}</button>
       </form>
@@ -335,21 +512,23 @@ const ItineraryManager = () => {
             </ul>
 
             <h4>Locations:</h4>
-<ul>
-  {itinerary.locations.map((location, index) => (
-    <li key={index}>
-      <strong>Location:</strong> {location.location}
-      <div>
-        <strong>Tags:</strong>
-        <ul>
-          {location.tags.map((tag, tagIndex) => (
-            <li key={tagIndex}>{tag}</li>
-          ))}
-        </ul>
-      </div>
-    </li>
-  ))}
-</ul>
+            <ul>
+              {itinerary.locations.map((location, index) => (
+                <li key={index} className="activity-item">
+                  <p><strong>Location: </strong> {location.location}</p>
+                  <p><strong>Tags: </strong>  {location.tags.map((tag, tagIndex) => (
+                        <span key={tagIndex}>#
+                          {tag.name}
+                          {tagIndex < location.tags.length - 1 ? ' , ' : ''}
+                        </span>
+                        
+                      ))}</p>
+                </li>
+              ))}
+            </ul>
+
+
+              
 
             
             <button onClick={() => handleEdit(itinerary)}>Edit</button>

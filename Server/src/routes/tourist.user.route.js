@@ -10,7 +10,7 @@ router.get("/tourist/itinerary/filter", getFilteredItineraries); // Get filtered
 router.get("/tourist/activity", getAllActivities); // Get all activities
 router.get("/tourist/activity/sort", getSortedActivities); // Get sorted activities
 router.get("/tourist/activity/filter", getFilteredActivities); // Get filtered activities
-router.get("/tourist/profile/:username", getProfile); // Get filtered activities
-router.put("/tourist/profile/:username", editProfile); // Get filtered activities
+router.get("/tourist/profile/:userId", getProfile); // Get filtered activities
+router.put("/tourist/profile/:userId", editProfile); // Get filtered activities
 
 export default router;

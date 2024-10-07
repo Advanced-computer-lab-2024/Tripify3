@@ -16,7 +16,7 @@ import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-import TouristHomePage from "./pages/tourist/TouristHomepage.js";
+import TouristHomePage from "./pages/tourist/touristHomepage.js";
 // import DoctorInformation from "./pages/advertiser/addLocation.js";
 import AllActivities from "./pages/tourist/AllActivites.js";
 import AllItineraries from "./pages/tourist/allItineraries.js";
@@ -26,6 +26,9 @@ import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import SearchProduct from "./pages/seller/SearchProduct.js";
 import FilterProduct from "./pages/seller/FilterProductCondition.js";
 import SortBy from "./pages/seller/SortByRating.js";
+
+
+
 const App = () => {
   return (
     <Router>
@@ -45,10 +48,9 @@ const App = () => {
         <Route path="/tourist" element={<TouristHomePage />} />
         <Route path="/tourist/activities" element={<AllActivities />} />
         <Route path="/tourist/itineraries" element={<AllItineraries />} />
-        <Route
-          path="/tourist/historical-places"
-          element={<AllHistoricalPlaces />}
-        />
+
+        <Route path="/tourist/historicalplaces" element={<AllHistoricalPlaces />} />
+
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
@@ -66,6 +68,8 @@ const App = () => {
         <Route path="/tourist/FilterProduct" element={<FilterProduct />} />
         <Route path="/tourist/SortBy" element={<SortBy />} />
         <Route path="/seller/:id" element={<ViewSellerprofile />} />
+        <Route path="/tourGuide/itinerary" element={<Itinerary />} />
+
       </Routes>
     </Router>
   );

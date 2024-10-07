@@ -3,6 +3,7 @@ import http_code from "../../enumerations/http_code.js";
 import response_status from "../../enumerations/response_status.js";
 import APIFeatures from "../../utils/APIFeatures.js";
 import Tag from "../../models/tag.js";
+import Location from "../../models/location.js";
 import User from "../../models/user.js";
 
 export const addPlace = async (req, res) => {
@@ -59,22 +60,23 @@ export const createTag = async (req, res) => {
   }
 };
 
+
 export const getAllPlaces = async (req, res) => {
   try {
-    const features = new APIFeatures(Place.find(), req.query).filter();
+    // Fetch all places from the location collection
+    const places = await Location.find().populate({ path: "tags", select: "name" }); // Populate tag names
+    ;
 
-    const allPlaces = await features.query;
-
-    res.status(http_code.OK).json({
-      status: response_status.POSITIVE,
-      data: {
-        places: allPlaces,
-      },
+    // Send response with the fetched places
+    res.status(200).json({
+      success: true,
+      data: places,
     });
   } catch (err) {
-    res.status(http_code.BAD_REQUEST).json({
-      status: response_status.NEGATIVE,
-      message: err,
+    console.error("Error fetching places:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error, could not retrieve places.",
     });
   }
 };
