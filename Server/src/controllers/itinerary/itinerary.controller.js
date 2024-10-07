@@ -16,7 +16,8 @@ export const createItinerary = async (req, res) => {
 // Get all itineraries
 export const getItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find().populate('activities').populate('locations');
+    const itineraries = await Itinerary.find().populate('activities').populate('locations').populate({ path: "tags", select: "location" }).populate({ path: "tags", select: "name" }); // Populate tag names
+
     res.status(200).json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
