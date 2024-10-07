@@ -1,38 +1,8 @@
-// import React from "react";
-// import AllActivities from "./AllActivities";
-// import GetAllHistoricalPlaces from "./getAllHistoricalPlaces";
-// import GetAllItineraries from "./getAllItineraries";
-// import GetFilteredActivities from "./getFilteredActivities";
-// import GetFilteredHistoricalPlaces from "./getFilteredHistoricalPlaces";
-// import GetFilteredItineraries from "./getFilteredItineraries";
-// import GetSortedActivities from "./getSortedActivities";
-// import GetSortedItineraries from "./getSortedItineraries";
-// import ProfileEdit from "./ProfileEdit";
-// import ProfileView from "./ProfileView";
-
-// const App = () => {
-//   return (
-//     <div>
-//       <GetAllHistoricalPlaces />
-//       <AllActivities />
-//       <GetAllItineraries />
-//       <GetFilteredActivities />
-//       <GetFilteredHistoricalPlaces />
-//       <GetFilteredItineraries />
-//       <GetSortedActivities />
-//       <GetSortedItineraries />
-//       <ProfileEdit />
-//       <ProfileView />
-//     </div>
-//   );
-// };
-
-// export default App;
-
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
 import { getUserId } from "../../utils/authUtils.js";
+
 const TouristHomePage = () => {
   const userId = getUserId(); // Replace with dynamic user ID as necessary
   const [userProfile, setUserProfile] = useState(null);
@@ -132,19 +102,21 @@ const TouristHomePage = () => {
     }
   };
 
-
-
-
-
-
-
-  // Render profile card and edit form
   return (
     <div>
       <h1>Tourist Homepage</h1>
       {/* Profile Card */}
       {userProfile && (
-        <div className="profile-card" style={{ border: "1px solid #ccc", padding: "20px", margin: "20px 0", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
+        <div
+          className="profile-card"
+          style={{
+            border: "1px solid #ccc",
+            padding: "20px",
+            margin: "20px 0",
+            borderRadius: "8px",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           <h2>Profile</h2>
           <p>
             <strong>Username:</strong> {userProfile.username}
@@ -160,7 +132,13 @@ const TouristHomePage = () => {
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "10px", margin: "5px 0", borderRadius: "4px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  margin: "5px 0",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
               />
             ) : (
               userProfile.phoneNumber
@@ -173,7 +151,13 @@ const TouristHomePage = () => {
                 name="nationality"
                 value={formData.nationality}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "10px", margin: "5px 0", borderRadius: "4px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  margin: "5px 0",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
               >
                 <option value="">Select your nationality</option>
                 {countries.map((country) => (
@@ -194,7 +178,13 @@ const TouristHomePage = () => {
                 name="birthDate"
                 value={formData.birthDate}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "10px", margin: "5px 0", borderRadius: "4px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  margin: "5px 0",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
               />
             ) : (
               userProfile.birthDate
@@ -208,18 +198,44 @@ const TouristHomePage = () => {
                 name="occupation"
                 value={formData.occupation}
                 onChange={handleChange}
-                style={{ width: "100%", padding: "10px", margin: "5px 0", borderRadius: "4px", border: "1px solid #ccc" }}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  margin: "5px 0",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
               />
             ) : (
               userProfile.occupation
             )}
           </p>
           {isEditing ? (
-            <button onClick={handleSubmit} style={{ padding: "10px 20px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+            <button
+              onClick={handleSubmit}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#4CAF50",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
               Save
             </button>
           ) : (
-            <button onClick={() => setIsEditing(true)} style={{ padding: "10px 20px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+            <button
+              onClick={() => setIsEditing(true)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#007BFF",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
               Edit Profile
             </button>
           )}
@@ -227,51 +243,62 @@ const TouristHomePage = () => {
       )}
 
       {/* Navigation Buttons */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "20px 0" }}>
-
-
-
-    
-      <div style={{ display: "flex", justifyContent: "space-around", margin: "20px 0" }}>
-        {["Activities", "Itineraries", "HistoricalPlaces", "Products"].map((text) => (
-          <button key={text} style={{ padding: "15px 30px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", margin: "5px" }}>
-            <Link to={`/tourist/${text.toLowerCase().replace(" ", "/")}`} style={{ textDecoration: "none", color: "white" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          margin: "20px 0",
+        }}
+      >
+        {[
+          { path: "/tourist/activities", text: "Activities" },
+          { path: "/tourist/itineraries", text: "Itineraries" },
+          { path: "/tourist/historical-places", text: "Historical Places" },
+          { path: "/tourist/ProductList", text: "ProductList" },
+          { path: "/tourist/SearchProduct", text: "Search Product" },
+          { path: "/tourist/FilterProduct", text: "Filter Product" },
+          { path: "/tourist/SortBy", text: "Sort by Rating" },
+        ].map(({ path, text }) => (
+          <button
+            key={path}
+            style={{
+              padding: "15px 30px",
+              backgroundColor: "#007BFF",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              margin: "5px",
+            }}
+          >
+            <Link to={path} style={{ textDecoration: "none", color: "white" }}>
               {text}
             </Link>
           </button>
-          
-      <button>
-        <Link to="/tourist/activities">Activities</Link>
-      </button>
-      <button>
-        <Link to="/tourist/itineraries">Itineraries</Link>
-      </button>
-      <button>
-        <Link to="/tourist/historical-places">Historical Places</Link>
-      </button>
-      <button>
-        <Link to="/tourist/ProductList">ProductList</Link>
-      </button>
-      <button>
-        <Link to="/tourist/SearchProduct">Search product</Link>
-      </button>
-      <button>
-        <Link to="/tourist/FilterProduct">Filter product</Link>
-      </button>
-      <button>
-        <Link to="/tourist/SortBy">sortByRating</Link>
-      </button>
         ))}
         {/* New buttons for search functionality */}
         {["Activities", "Places", "Itinerary"].map((text) => (
-          <button key={`search-${text}`} style={{ padding: "15px 30px", backgroundColor: "#28A745", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", margin: "5px" }}>
-            <Link to={`/search/${text.toLowerCase()}`} style={{ textDecoration: "none", color: "white" }}>
+          <button
+            key={`search-${text}`}
+            style={{
+              padding: "15px 30px",
+              backgroundColor: "#28A745",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              margin: "5px",
+            }}
+          >
+            <Link
+              to={`/search/${text.toLowerCase()}`}
+              style={{ textDecoration: "none", color: "white" }}
+            >
               Search {text}
             </Link>
           </button>
         ))}
       </div>
-
     </div>
   );
 };

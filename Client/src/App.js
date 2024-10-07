@@ -23,6 +23,11 @@ import AllItineraries from "./pages/tourist/allItineraries.js";
 import AllHistoricalPlaces from "./pages/tourist/allHistoricalPlaces.js";
 import ActivitySearchPage from "./pages/tourist/searchActivities.js";
 import PlaceSearchPage from "./pages/tourist/searchPlaces.js";
+import ProductList from "./pages/seller/ProductList.js";
+import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
+import SearchProduct from "./pages/seller/SearchProduct.js";
+import FilterProduct from "./pages/seller/FilterProductCondition.js";
+import SortBy from "./pages/seller/SortByRating.js";
 
 
 const App = () => {
@@ -41,7 +46,9 @@ const App = () => {
         <Route path="/tourist" element={<TouristHomePage />} />
         <Route path="/tourist/activities" element={<AllActivities />} />
         <Route path="/tourist/itineraries" element={<AllItineraries />} />
+
         <Route path="/tourist/historicalplaces" element={<AllHistoricalPlaces />} />
+
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
@@ -51,9 +58,11 @@ const App = () => {
         <Route path="/admin/homepage" element={<AdminHomepage />} />
         {/* <Route path="/location-selection" element={<DoctorInformation />} /> */}
         <Route path="/tourGuide/itinerary" element={<Itinerary />} />
+
         <Route path="/search/activities/" element={<ActivitySearchPage />} />
         <Route path="/search/places/" element={<PlaceSearchPage />} />
         {/* <Route path="/search/itineraries/" element={<ActivitySearchPage />} /> */}
+
       </Routes>
     </Router>
   );

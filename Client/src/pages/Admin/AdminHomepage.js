@@ -9,12 +9,12 @@ import UpdateCategory from "./updateCategory.js";
 import UpdateTag from "./updateTag.js";
 import ViewCategory from "./viewCategories.js";
 import ViewTag from "./viewTags.js";
-import ProductList from "../seller/ProductList";
-import SearchProduct from "../seller/SearchProduct";
-import FilterProduct from "../seller/FilterProductCondition";
-import SortBy from "../seller/SortByRating";
-import CreateProduct from "../seller/CreateProductForm";
-import EditProduct from "../seller/EditProductForm";
+import ProductList from "../seller/ProductList.js";
+import SearchProduct from "../seller/SearchProduct.js";
+import FilterProduct from "../seller/FilterProductCondition.js";
+import SortBy from "../seller/SortByRating.js";
+import CreateProduct from "../seller/CreateProductForm.js";
+import EditProduct from "../seller/EditProductForm.js";
 const Admin = () => {
   return (
     <div>
