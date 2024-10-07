@@ -9,6 +9,9 @@ const itinerarySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location'
   }],
+  name:{
+    type: String
+  },
   price: { 
     type: Number, 
     required: true // Ensure this is required

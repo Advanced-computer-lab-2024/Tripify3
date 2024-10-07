@@ -268,10 +268,33 @@ const TouristHomePage = () => {
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
+              margin: "5px",
             }}
           >
             <Link to={path} style={{ textDecoration: "none", color: "white" }}>
               {text}
+            </Link>
+          </button>
+        ))}
+        {/* New buttons for search functionality */}
+        {["Activities", "Places", "Itinerary"].map((text) => (
+          <button
+            key={`search-${text}`}
+            style={{
+              padding: "15px 30px",
+              backgroundColor: "#28A745",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              margin: "5px",
+            }}
+          >
+            <Link
+              to={`/search/${text.toLowerCase()}`}
+              style={{ textDecoration: "none", color: "white" }}
+            >
+              Search {text}
             </Link>
           </button>
         ))}

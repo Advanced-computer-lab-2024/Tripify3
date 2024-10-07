@@ -2,14 +2,7 @@ import Itinerary from "../../models/itinerary.js";
 
 export const getAllItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find({}).populate({
-      path: "activities",
-      populate: {
-        path: "tags",
-        select: "name",
-      },
-    });
-
+    const itineraries = await Itinerary.find().populate('activities').populate('locations').populate({ path: "tags", select: "location" }).populate({ path: "tags", select: "name" }); // Populate tag names
     res.status(200).json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
