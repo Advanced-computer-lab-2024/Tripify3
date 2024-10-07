@@ -2,13 +2,14 @@ import express from "express";
 // import {addTourismGovern,addAdmin,addCategory,viewCategory,updateCategory,deleteCategory,addTag,deleteTag,viewTag,updateTag} from "../controllers/admin.user.controller.js";
 import {findUser,deleteUser, addAdmin, addTourismGovernor,addCategory,viewCategory,updateCategory,deleteCategory,addTag,deleteTag,viewTag,updateTag } from "../controllers/admin/admin.user.controller.js";
 // import { validate } from "../middlewares/validation.middleware.js";
-// import { createschema,adminManipulateSchema,adminUpdateSchema } from "../validation/admin.auth.validation.js";
+ import { PasswordSchema } from "../validation/users.auth.validation.js";
+import { validate } from "../middlewares/validation.middleware.js";
  const router = express.Router();
 
 router.get("/access/admin/findUser", findUser);
 router.delete("/access/admin/deleteUser", deleteUser);
-router.post("/access/admin/addTourismGovern", addTourismGovernor);
-router.post("/access/admin/addAdmin",  addAdmin);
+router.post("/access/admin/addTourismGovern",validate(PasswordSchema,"body"), addTourismGovernor);
+router.post("/access/admin/addAdmin",validate(PasswordSchema,"body") , addAdmin);
 router.post("/access/admin/addCategory",  addCategory);
 router.get("/access/admin/viewCategory", viewCategory);
 router.put("/access/admin/updateCategory" ,updateCategory);

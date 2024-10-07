@@ -19,6 +19,11 @@ const DeleteTagForm = () => {
       );
 
       setResponseMessage(`Tag deleted: ${response.data.name}`);
+
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 1000);
+      
       setTagName(""); // Clear input field after submission
     } catch (error) {
       setResponseMessage(

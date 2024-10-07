@@ -1,14 +1,14 @@
-import AddAdmin from "./addAdmin";
-import AddCategory from "./addCategory";
-import AddTag from "./addTag";
-import AddTourismGovernForm from "./addTourismGovernorForm";
-import DeleteCategory from "./deleteCategory";
-import DeleteTag from "./deleteTag";
-import DeleteUserForm from "./deleteUserForm";
-import UpdateCategory from "./updateCategory";
-import UpdateTag from "./updateTag";
-import ViewCategory from "./viewCategories";
-import ViewTag from "./viewTags";
+import AddAdmin from "./addAdmin.js";
+import AddCategory from "./addCategory.js";
+import AddTag from "./addTag.js";
+import AddTourismGovernForm from "./addTourismGovernorForm.js";
+import DeleteCategory from "./deleteCategory.js";
+import DeleteTag from "./deleteTag.js";
+import DeleteUserForm from "./DeleteUserForm.js";
+import UpdateCategory from "./updateCategory.js";
+import UpdateTag from "./updateTag.js";
+import ViewCategory from "./viewCategories.js";
+import ViewTag from "./viewTags.js";
 import ProductList from "../seller/ProductList";
 const Admin = () => {
   return (

@@ -23,6 +23,11 @@ const AddCategoryForm = () => {
 
   
       setResponseMessage(`Category added: ${response.data.newcategory.name}`);
+
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 1000);
+      setCategoryName(""); 
     } catch (error) {
       // Set error response
       setResponseMessage(

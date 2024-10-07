@@ -19,6 +19,11 @@ const DeleteCategoryForm = () => {
       );
 
       setResponseMessage(`Category deleted: ${response.data.name}`);
+
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 1000);
+
     } catch (error) {
       setResponseMessage(
         error.response?.data?.message || "Error deleting category."
