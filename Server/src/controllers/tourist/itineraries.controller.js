@@ -1,44 +1,13 @@
 import Itinerary from "../../models/itinerary.js";
 
-// Import your models
-import Itinerary from '../models/Itinerary'; // Adjust the import path as necessary
-import Tag from '../models/Tag'; // Adjust the import path as necessary
-
 export const getAllItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find();
-    
-    // Prepare an array to hold the itineraries with tag names
-    const itinerariesWithTagNames = await Promise.all(itineraries.map(async (itinerary) => {
-      // Get the activities for the itinerary
-      const activitiesWithTagNames = await Promise.all(itinerary.activities.map(async (activity) => {
-        // Fetch the tags based on their IDs
-        const tagNames = await Promise.all(activity.tags.map(async (tagId) => {
-          const tag = await Tag.findById(tagId);
-          return tag ? { id: tag._id, name: tag.name } : null; // Return tag name or null if not found
-        }));
-
-        // Filter out any null values (in case a tag wasn't found)
-        const validTagNames = tagNames.filter(tag => tag !== null);
-
-        return {
-          ...activity.toObject(), // Convert activity to a plain object
-          tags: validTagNames // Replace tags with the name and id
-        };
-      }));
-
-      return {
-        ...itinerary.toObject(), // Convert itinerary to a plain object
-        activities: activitiesWithTagNames // Replace activities with updated ones
-      };
-    }));
-
-    res.status(200).json(itinerariesWithTagNames);
+    const itineraries = await Itinerary.find().populate('activities').populate('locations').populate({ path: "tags", select: "location" }).populate({ path: "tags", select: "name" }); // Populate tag names
+    res.status(200).json(itineraries);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const getSortedItineraries = async (req, res) => {
   try {

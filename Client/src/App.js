@@ -21,6 +21,8 @@ import TouristHomePage from "./pages/tourist/touristHomepage.js";
 import AllActivities from "./pages/tourist/allActivities.js";
 import AllItineraries from "./pages/tourist/allItineraries.js";
 import AllHistoricalPlaces from "./pages/tourist/allHistoricalPlaces.js";
+import ActivitySearchPage from "./pages/tourist/searchActivities.js";
+import PlaceSearchPage from "./pages/tourist/searchPlaces.js";
 
 
 const App = () => {
@@ -49,6 +51,9 @@ const App = () => {
         <Route path="/admin/homepage" element={<AdminHomepage />} />
         {/* <Route path="/location-selection" element={<DoctorInformation />} /> */}
         <Route path="/tourGuide/itinerary" element={<Itinerary />} />
+        <Route path="/search/activities/" element={<ActivitySearchPage />} />
+        <Route path="/search/places/" element={<PlaceSearchPage />} />
+        {/* <Route path="/search/itineraries/" element={<ActivitySearchPage />} /> */}
       </Routes>
     </Router>
   );

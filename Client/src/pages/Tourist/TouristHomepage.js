@@ -61,7 +61,6 @@ const TouristHomePage = () => {
     "Honduras",
     "El Salvador",
     "Paraguay",
-    
   ];
 
   // Fetch user profile on component mount
@@ -193,11 +192,19 @@ const TouristHomePage = () => {
       )}
 
       {/* Navigation Buttons */}
-      <div style={{ display: "flex", justifyContent: "space-around", margin: "20px 0" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "20px 0" }}>
         {["Activities", "Itineraries", "HistoricalPlaces", "Products"].map((text) => (
-          <button key={text} style={{ padding: "15px 30px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
-            <Link to={`/tourist/${text.toLowerCase().replace(" ", "-")}`} style={{ textDecoration: "none", color: "white" }}>
+          <button key={text} style={{ padding: "15px 30px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", margin: "5px" }}>
+            <Link to={`/tourist/${text.toLowerCase().replace(" ", "/")}`} style={{ textDecoration: "none", color: "white" }}>
               {text}
+            </Link>
+          </button>
+        ))}
+        {/* New buttons for search functionality */}
+        {["Activities", "Places", "Itinerary"].map((text) => (
+          <button key={`search-${text}`} style={{ padding: "15px 30px", backgroundColor: "#28A745", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", margin: "5px" }}>
+            <Link to={`/search/${text.toLowerCase()}`} style={{ textDecoration: "none", color: "white" }}>
+              Search {text}
             </Link>
           </button>
         ))}
