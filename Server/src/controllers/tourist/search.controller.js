@@ -59,3 +59,43 @@ export const searchPlaces = async (req, res) => {
   };
 
   
+
+
+  export const searchItineraries = async (req, res) => {
+    try {
+        const { searchField } = req.body;
+
+        // Retrieve itineraries with lookup for locations and activities
+        const filteredItineraries = await Itinerary.aggregate([
+            {
+                $match: {
+                    name: { $regex: `^${searchField}`, $options: 'i' } // Case-insensitive search
+                }
+            },
+            {
+                $lookup: {
+                    from: 'locations', // Name of the locations collection
+                    localField: 'locations',
+                    foreignField: '_id',
+                    as: 'locationDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'activities', // Name of the activities collection
+                    localField: 'activities',
+                    foreignField: '_id',
+                    as: 'activityDetails'
+                }
+            }
+        ]);
+
+        res.status(200).json({
+            itineraries: filteredItineraries,
+        });
+    } catch (error) {
+        res.status(400).json({
+            error: error.message,
+        });
+    }
+};

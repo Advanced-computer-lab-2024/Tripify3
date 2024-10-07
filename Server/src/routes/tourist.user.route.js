@@ -2,7 +2,7 @@ import express from "express";
 import { getAllItineraries, getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
 import { getAllActivities, getFilteredActivities, getSortedActivities } from "../controllers/tourist/activities.controller.js";
 import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
-import { searchPlaces, searchActivities } from "../controllers/tourist/search.controller.js";
+import { searchPlaces, searchActivities, searchItineraries } from "../controllers/tourist/search.controller.js";
 const router = express.Router();
 
 router.get("/tourist/itinerary", getAllItineraries); // Get all itineraries
@@ -16,6 +16,6 @@ router.put("/tourist/profile/:userId", editProfile); // Get filtered activities
 
 router.post("/places/search", searchPlaces); // Search places
 router.post("/activities/search", searchActivities); // Search activities
-// router.post('/itineraries/search', searchItineraries); // Search itineraries
+router.post("/itineraries/search", searchItineraries); // Search itineraries
 
 export default router;

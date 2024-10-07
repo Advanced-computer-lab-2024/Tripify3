@@ -28,6 +28,7 @@ import SearchProduct from "./pages/seller/SearchProduct.js";
 import FilterProduct from "./pages/seller/FilterProductCondition.js";
 import SortBy from "./pages/seller/SortByRating.js";
 import AllActivities from "./pages/tourist/allActivites.js";
+import SearchItineraries from "./pages/tourist/searchItineraries.js";
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
 
         <Route path="/search/activities/" element={<ActivitySearchPage />} />
         <Route path="/search/places/" element={<PlaceSearchPage />} />
+        <Route path="/search/itinerary" element={<SearchItineraries />} />
         <Route path="/tourist/ProductList" element={<ProductList />} />
         <Route path="/tourist/searchProduct" element={<SearchProduct />} />
         <Route path="/tourist/FilterProduct" element={<FilterProduct />} />
