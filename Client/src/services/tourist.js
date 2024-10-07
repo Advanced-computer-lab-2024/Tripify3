@@ -11,7 +11,7 @@ export const getAllCategories = async () => {
 };
 
 export const getAllPlaces = async () => {
-  return await axios.get(`${API_URL}/tourist/historicalPlaces`);
+  return await axios.get(`${API_URL}/location/get`);
 };
 
 export const getAllIteneraries = async () => {

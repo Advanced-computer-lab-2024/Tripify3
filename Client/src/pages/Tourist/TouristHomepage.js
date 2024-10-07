@@ -39,9 +39,6 @@
 
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import AllActivities from "./allActivities";
-import GetAllHistoricalPlaces from "./getAllHistoricalPlaces";
-import GetAllItineraries from "./getAllItineraries";
 
 const TouristHomePage = () => {
   return (

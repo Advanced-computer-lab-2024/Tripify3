@@ -17,8 +17,9 @@ const AddTagForm = () => {
           name: tagName,
         }
       );
-
-      setResponseMessage(`Tag added: ${response.data.name}`);
+      
+      
+      setResponseMessage(`Tag added: ${response.data.newtag.name}`);
       setTagName(""); // Clear the input field after submission
     } catch (error) {
       setResponseMessage(error.response?.data?.message || "Error adding tag.");

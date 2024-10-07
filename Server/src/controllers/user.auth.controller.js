@@ -102,9 +102,11 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Username and Email already exists." });
     } else if (existingUsername) {
       return res.status(400).json({ message: "Username already exists." });
-    }  else if (existingEmail) {
+    } else if (existingEmail) {
       return res.status(400).json({ message: "Email already exists." });
     }
+
+
 
     // Based on the user type, create the respective user
     let newUser;
@@ -117,9 +119,7 @@ export const signup = async (req, res) => {
       newUser = new Seller(req.body);
     } else if (type === "Advertiser") {
       newUser = new Advertiser(req.body);
-    } else if (type === "Tourism Governor") {
-      newUser = new User(req.body);
-    } else {
+    }  else {
       return res.status(400).json({ message: "Invalid user type." });
     }
 

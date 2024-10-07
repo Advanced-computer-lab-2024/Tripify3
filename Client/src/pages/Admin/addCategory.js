@@ -21,8 +21,8 @@ const AddCategoryForm = () => {
         { name: categoryName }
       );
 
-      // Set success response
-      setResponseMessage(`Category added: ${response.data.name}`);
+  
+      setResponseMessage(`Category added: ${response.data.newcategory.name}`);
     } catch (error) {
       // Set error response
       setResponseMessage(

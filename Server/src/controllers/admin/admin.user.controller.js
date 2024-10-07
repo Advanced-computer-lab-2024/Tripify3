@@ -1,7 +1,6 @@
 import User from "../../models/user.js";
 import Tourist from "../../models/tourist.js";
 import Category from "../../models/category.js";
-import Admin from "../../models/admin.js";
 import Seller from "../../models/seller.js";
 import Advertiser from "../../models/advertiser.js";
 import TourGuide from "../../models/tourGuide.js"; // Adjust the path as necessary
@@ -22,7 +21,6 @@ export const findUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const { username } = req.body;
   try {
-
     const deletedUser = await User.findOneAndDelete({ username });
     res.status(200).json(deletedUser);
   } catch (error) {
@@ -43,9 +41,9 @@ export const addTourismGovernor = async (req, res) => {
 
 // // requirement 18
 export const addAdmin = async (req, res) => {
-  const { username,name, password } = req.body;
+  const { username, password } = req.body;
   try {
-    const newadmin = await User.create({ username,name, password, type: "Admin" });
+    const newadmin = await User.create({ username, password, type: "Admin" });
     res.status(201).json(newadmin);
   } catch (error) {
     res.status(500).json({ message: error.message });
