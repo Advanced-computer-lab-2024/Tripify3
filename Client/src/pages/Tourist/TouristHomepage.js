@@ -29,14 +29,6 @@
 
 // export default App;
 
-
-
-
-
-
-
-
-
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
@@ -53,9 +45,20 @@ const TouristHomePage = () => {
       <button>
         <Link to="/tourist/historical-places">Historical Places</Link>
       </button>
+      <button>
+        <Link to="/tourist/ProductList">ProductList</Link>
+      </button>
+      <button>
+        <Link to="/tourist/SearchProduct">Search product</Link>
+      </button>
+      <button>
+        <Link to="/tourist/FilterProduct">Filter product</Link>
+      </button>
+      <button>
+        <Link to="/tourist/SortBy">sortByRating</Link>
+      </button>
     </div>
   );
 };
-
 
 export default TouristHomePage;

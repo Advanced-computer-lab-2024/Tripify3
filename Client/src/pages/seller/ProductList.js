@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [sellerNames, setSellerNames] = useState({}); // To store seller names by sellerId
 
   const fetchProducts = async () => {
     try {
@@ -11,8 +13,31 @@ const ProductList = () => {
         "http://localhost:8000/access/seller/searchAllProducts"
       );
       setProducts(response.data);
+      fetchSellerNames(response.data); // Fetch seller names after getting products
     } catch (error) {
       setErrorMessage("Error fetching products: " + error.message);
+    }
+  };
+
+  const fetchSellerNames = async (products) => {
+    try {
+      const sellerIds = [
+        ...new Set(products.map((product) => product.sellerId)),
+      ]; // Get unique seller IDs
+      const sellerPromises = sellerIds.map((sellerId) =>
+        axios.get(
+          `http://localhost:8000/access/seller/findSeller?id=${sellerId}`
+        )
+      );
+      const sellerResponses = await Promise.all(sellerPromises);
+      const sellerData = sellerResponses.reduce((acc, response) => {
+        const { _id, name } = response.data;
+        acc[_id] = name; // Map sellerId to seller name
+        return acc;
+      }, {});
+      setSellerNames(sellerData); // Store seller names
+    } catch (error) {
+      setErrorMessage("Error fetching seller names: " + error.message);
     }
   };
 
@@ -52,22 +77,6 @@ const ProductList = () => {
               <p>Category: {product.category}</p>
               <p>Sales: {product.sales}</p>
 
-              {/* Map over salesHistory */}
-              {/* {product.salesHistory && product.salesHistory.length > 0 ? (
-                <div>
-                  <h4>Sales History</h4>
-                  <ul>
-                    {product.salesHistory.map((sale, index) => (
-                      <li key={index}>
-                        Quantity Sold: {sale.quantity}, Date:{" "}
-                        {new Date(sale.date).toLocaleString()}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <p>No sales history available.</p>
-              )} */}
               {product.reviews && product.reviews.length > 0 ? (
                 <div>
                   <h4>Sales History</h4>
@@ -81,9 +90,20 @@ const ProductList = () => {
                   </ul>
                 </div>
               ) : (
-                <p>No review be the first one to give feedback.</p>
+                <p>No review, be the first one to give feedback.</p>
               )}
-              <p>Seller ID: {product.sellerId}</p>
+
+              {/* Display seller name as a clickable link */}
+              <p>
+                Seller:{" "}
+                {sellerNames[product.sellerId] ? (
+                  <Link to={`/seller/${product.sellerId}`}>
+                    {sellerNames[product.sellerId]}
+                  </Link>
+                ) : (
+                  "Loading seller name..."
+                )}
+              </p>
             </li>
           ))}
         </ul>

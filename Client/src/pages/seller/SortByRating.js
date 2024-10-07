@@ -1,16 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
+
 const SortByRating = () => {
   const userId = getUserId(); // Get the user ID from local storage
   const userType = getUserType(); // Get the user type from local storage
   const [sortBy, setSortBy] = useState("asc"); // Default sort order is ascending
   const [products, setProducts] = useState([]); // State to store the sorted products
+  const [sellerNames, setSellerNames] = useState({}); // State to store seller names
   const [responseMessage, setResponseMessage] = useState(""); // State to store any response messages
 
   // Function to toggle sort order between "asc" and "desc"
   const toggleSortOrder = () => {
     setSortBy((prevSortBy) => (prevSortBy === "asc" ? "desc" : "asc"));
+  };
+
+  // Function to fetch the seller names
+  const fetchSellerNames = async (products) => {
+    try {
+      const sellerIds = [
+        ...new Set(products.map((product) => product.sellerId)),
+      ]; // Get unique seller IDs
+      const sellerPromises = sellerIds.map((sellerId) =>
+        axios.get(
+          `http://localhost:8000/access/seller/findSeller?id=${sellerId}`
+        )
+      );
+      const sellerResponses = await Promise.all(sellerPromises);
+      const sellerData = sellerResponses.reduce((acc, response) => {
+        const { _id, name } = response.data;
+        acc[_id] = name; // Map sellerId to seller name
+        return acc;
+      }, {});
+      setSellerNames(sellerData); // Store seller names
+    } catch (error) {
+      console.error("Error fetching seller names:", error);
+    }
   };
 
   // Function to fetch and sort products based on the current sort order
@@ -31,6 +57,9 @@ const SortByRating = () => {
       } else {
         setProducts(response.data);
       }
+
+      // Fetch seller names based on the products
+      await fetchSellerNames(response.data);
       setResponseMessage("");
     } catch (error) {
       // Handle any errors
@@ -54,7 +83,7 @@ const SortByRating = () => {
   };
 
   // Call handleSort or localSort depending on whether we already have products
-  React.useEffect(() => {
+  useEffect(() => {
     if (products.length > 0) {
       // Sort locally if products are already present
       localSort();
@@ -100,6 +129,22 @@ const SortByRating = () => {
                     style={{ maxWidth: "40px", marginRight: "10px" }}
                   />
                 ))}
+
+                {/* Display seller name with a link to seller's page */}
+                {userType != "Seller" ? (
+                  <p>
+                    <strong>Seller Name:</strong>{" "}
+                    {sellerNames[product.sellerId] ? (
+                      <Link to={`/seller/${product.sellerId}`}>
+                        {sellerNames[product.sellerId]}
+                      </Link>
+                    ) : (
+                      "Loading seller name..."
+                    )}
+                  </p>
+                ) : (
+                  <></>
+                )}
               </li>
             ))}
           </ul>
