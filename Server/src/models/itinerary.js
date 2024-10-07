@@ -21,18 +21,10 @@ const itinerarySchema = new mongoose.Schema({
       'French', 
       'German', 
       'Arabic', 
-      'Hindi', 
-      'Portuguese', 
       'Russian', 
       'Japanese',
       'Korean',
-      'Italian',
-      'Turkish',
-      'Vietnamese',
-      'Dutch',
-      'Thai',
-      'Swedish',
-      'Filipino'
+      'Italian'
     ], // Expanded list of popular languages
     required: true // Ensure this is required
   },

@@ -34,16 +34,25 @@ export const filterActivities = async (filters) => {
   });
 };
 
-export const sortActivities = async (filters) => {
-    const { price, rating, date } = filters;
-    return await axios.get(`${API_URL}/tourist/activity/sort`, {
-      params: {
-        price,
-        rating,
-        date,
-        
-      },
-    });
-  };
-  
+export const filterItineraries = async (filters) => {
+  const { budget, date, language, tags } = filters;
+  return await axios.get(`${API_URL}/tourist/itinerary/filter`, {
+    params: {
+      budget,
+      date,
+      language,
+      tags,
+    },
+  });
+};
 
+export const sortActivities = async (filters) => {
+  const { price, rating, date } = filters;
+  return await axios.get(`${API_URL}/tourist/activity/sort`, {
+    params: {
+      price,
+      rating,
+      date,
+    },
+  });
+};
