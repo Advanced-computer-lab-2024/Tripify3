@@ -10,7 +10,7 @@ const sellerSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["Pending", "Rejected", "Accepted"],
-    required: true,
+    required: false,
     default: "Pending",
   },
 });

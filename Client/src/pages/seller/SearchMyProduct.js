@@ -15,11 +15,10 @@ const SearchProduct = () => {
     try {
       console.log("Searching for product:", name);
       const response = await axios.get(
-        `http://localhost:8000/access/seller/searchaProduct?name=${name}`
+        `http://localhost:8000/access/seller/searchProduct?name=${name}&sellerId=${userId}`
       );
 
       // Set the search results
-      console.log("Response:", response.data); // Log response data
       if (userType === "Seller") {
         const filteredProducts = response.data.filter(
           (product) => product.sellerId === userId // Explicitly return the comparison result

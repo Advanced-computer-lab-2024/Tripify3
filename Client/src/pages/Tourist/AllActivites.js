@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { getAllActivities, getAllCategories, filterActivities } from "../../services/tourist.js"; // Import the API function
+import {
+  getAllActivities,
+  getAllCategories,
+  filterActivities,
+} from "../../services/tourist.js"; // Import the API function
 
 const AllActivities = () => {
   const [activities, setActivities] = useState([]); // Store the activities
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const [categories, setCategories] = useState([]); // Store categories
-  const [filters, setFilters] = useState({ minPrice: "", maxPrice: "", category: "", rating: "" }); // Store filter values
+  const [filters, setFilters] = useState({
+    minPrice: "",
+    maxPrice: "",
+    category: "",
+    rating: "",
+  }); // Store filter values
   const [validationError, setValidationError] = useState(""); // Validation error message
-  const [sortCriteria, setSortCriteria] = useState({ attribute: "", order: "" }); // Store sort criteria
+  const [sortCriteria, setSortCriteria] = useState({
+    attribute: "",
+    order: "",
+  }); // Store sort criteria
 
   // Fetch activities from the backend
   const fetchActivities = async () => {
@@ -47,7 +59,12 @@ const AllActivities = () => {
 
   // Handle filter submission
   const handleFilter = async () => {
-    if (!filters.minPrice && !filters.maxPrice && !filters.category && !filters.rating) {
+    if (
+      !filters.minPrice &&
+      !filters.maxPrice &&
+      !filters.category &&
+      !filters.rating
+    ) {
       setValidationError("Please fill at least one filter field.");
       return; // Do not proceed if all fields are empty
     }
@@ -117,12 +134,24 @@ const AllActivities = () => {
     <div style={styles.container}>
       <h2 style={styles.heading}>Upcoming Activities</h2>
       <div style={styles.sortContainer}>
-        <select value={sortCriteria.attribute} onChange={(e) => setSortCriteria({ ...sortCriteria, attribute: e.target.value })} style={styles.select}>
+        <select
+          value={sortCriteria.attribute}
+          onChange={(e) =>
+            setSortCriteria({ ...sortCriteria, attribute: e.target.value })
+          }
+          style={styles.select}
+        >
           <option value="">Sort by</option>
           <option value="price">Price</option>
           <option value="rating">Rating</option>
         </select>
-        <select value={sortCriteria.order} onChange={(e) => setSortCriteria({ ...sortCriteria, order: e.target.value })} style={styles.select}>
+        <select
+          value={sortCriteria.order}
+          onChange={(e) =>
+            setSortCriteria({ ...sortCriteria, order: e.target.value })
+          }
+          style={styles.select}
+        >
           <option value="">Order</option>
           <option value="ascen">Ascending</option>
           <option value="desc">Descending</option>
@@ -135,9 +164,27 @@ const AllActivities = () => {
         </button>
       </div>
       <div style={styles.filterContainer}>
-        <input type="number" placeholder="Min Price" min="0" value={filters.minPrice} onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })} style={styles.input} />
-        <input type="number" placeholder="Max Price" min="0" value={filters.maxPrice} onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })} style={styles.input} />
-        <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} style={styles.select}>
+        <input
+          type="number"
+          placeholder="Min Price"
+          min="0"
+          value={filters.minPrice}
+          onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+          style={styles.input}
+        />
+        <input
+          type="number"
+          placeholder="Max Price"
+          min="0"
+          value={filters.maxPrice}
+          onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+          style={styles.input}
+        />
+        <select
+          value={filters.category}
+          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+          style={styles.select}
+        >
           <option value="">Select Category</option>
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
@@ -145,7 +192,13 @@ const AllActivities = () => {
             </option>
           ))}
         </select>
-        <input type="number" placeholder="Rating (1-5)" value={filters.rating} onChange={(e) => setFilters({ ...filters, rating: e.target.value })} style={styles.input} />
+        <input
+          type="number"
+          placeholder="Rating (1-5)"
+          value={filters.rating}
+          onChange={(e) => setFilters({ ...filters, rating: e.target.value })}
+          style={styles.input}
+        />
         <button onClick={handleFilter} style={styles.button}>
           Filter
         </button>
@@ -153,7 +206,8 @@ const AllActivities = () => {
           Reset Filters
         </button>
       </div>
-      {validationError && <p style={styles.error}>{validationError}</p>} {/* Display validation error */}
+      {validationError && <p style={styles.error}>{validationError}</p>}{" "}
+      {/* Display validation error */}
       {activities.length === 0 ? (
         <p style={styles.noActivities}>No upcoming activities available.</p>
       ) : (
@@ -162,7 +216,8 @@ const AllActivities = () => {
             <div key={activity._id} style={styles.card}>
               <h3 style={styles.cardHeading}>{activity.name}</h3>
               <p>
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                <strong>Date:</strong>{" "}
+                {new Date(activity.date).toLocaleDateString()}
               </p>
               <p>
                 <strong>Time:</strong> {activity.time}
@@ -171,7 +226,10 @@ const AllActivities = () => {
                 <strong>Category:</strong> {activity.category.name}
               </p>
               <p>
-                <strong>Tags:</strong> {activity.tags.length > 0 ? activity.tags.map((tag) => tag.name).join(", ") : "No tags available"}
+                <strong>Tags:</strong>{" "}
+                {activity.tags.length > 0
+                  ? activity.tags.map((tag) => tag.name).join(", ")
+                  : "No tags available"}
               </p>
               <p>
                 <strong>Price:</strong> ${activity.price}

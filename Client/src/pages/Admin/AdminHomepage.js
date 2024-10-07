@@ -10,6 +10,11 @@ import UpdateTag from "./updateTag.js";
 import ViewCategory from "./viewCategories.js";
 import ViewTag from "./viewTags.js";
 import ProductList from "../seller/ProductList";
+import SearchProduct from "../seller/SearchProduct";
+import FilterProduct from "../seller/FilterProductCondition";
+import SortBy from "../seller/SortByRating";
+import CreateProduct from "../seller/CreateProductForm";
+import EditProduct from "../seller/EditProductForm";
 const Admin = () => {
   return (
     <div>
@@ -25,6 +30,11 @@ const Admin = () => {
       <ViewCategory />
       <ViewTag />
       <ProductList />
+      <SearchProduct />
+      <FilterProduct />
+      <SortBy />
+      <CreateProduct />
+      <EditProduct />
     </div>
   );
 };

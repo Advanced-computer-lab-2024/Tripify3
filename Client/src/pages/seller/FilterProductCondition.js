@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { getUserType, getUserId } from "../../utils/authUtils.js";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
+
 const FilterProductCondition = () => {
   const userId = getUserId(); // Get the user ID from local storage
   const userType = getUserType(); // Get the user type from local storage
@@ -8,6 +10,7 @@ const FilterProductCondition = () => {
     { operator: ">=", value: "" }, // Default condition
   ]); // To hold multiple conditions
   const [products, setProducts] = useState([]); // State to store the filtered products
+  const [sellerNames, setSellerNames] = useState({}); // State to store seller names
   const [responseMessage, setResponseMessage] = useState(""); // State to store the response message
 
   // Handle adding new condition
@@ -29,6 +32,28 @@ const FilterProductCondition = () => {
     setConditions(newConditions);
   };
 
+  const fetchSellerNames = async (products) => {
+    try {
+      const sellerIds = [
+        ...new Set(products.map((product) => product.sellerId)),
+      ]; // Get unique seller IDs
+      const sellerPromises = sellerIds.map((sellerId) =>
+        axios.get(
+          `http://localhost:8000/access/seller/findSeller?id=${sellerId}`
+        )
+      );
+      const sellerResponses = await Promise.all(sellerPromises);
+      const sellerData = sellerResponses.reduce((acc, response) => {
+        const { _id, name } = response.data;
+        acc[_id] = name; // Map sellerId to seller name
+        return acc;
+      }, {});
+      setSellerNames(sellerData); // Store seller names
+    } catch (error) {
+      console.error("Error fetching seller names:", error);
+    }
+  };
+
   const handleFilter = async (e) => {
     e.preventDefault(); // Prevent default form behavior
 
@@ -38,7 +63,7 @@ const FilterProductCondition = () => {
       .join(" and "); // Join conditions with "and"
 
     try {
-      // Send a POST request with the priceCondition in the body
+      // Send a GET request with the priceCondition in the body
       const response = await axios.get(
         "http://localhost:8000/access/seller/filterProductCondition",
         {
@@ -47,7 +72,6 @@ const FilterProductCondition = () => {
       );
 
       // If successful, store the products in the state
-      console.log(response.data);
       if (userType === "Seller") {
         const filteredProducts = response.data.filter(
           (product) => product.sellerId === userId
@@ -56,6 +80,9 @@ const FilterProductCondition = () => {
       } else {
         setProducts(response.data);
       }
+
+      // Fetch the seller names based on the filtered products
+      await fetchSellerNames(response.data);
       setResponseMessage("");
     } catch (error) {
       // Handle any errors and display appropriate message
@@ -146,12 +173,25 @@ const FilterProductCondition = () => {
                     key={index}
                     src={image}
                     alt={product.name}
-                    style={{ maxWidth: "40px" }}
+                    style={{ maxWidth: "50px" }}
                   />
                 ))}
-                <p>
-                  <strong>sellerId:</strong> {product.sellerId}
-                </p>
+
+                {/* Display seller name with a link to seller's page */}
+                {userType != "Seller" ? (
+                  <p>
+                    <strong>Seller Name:</strong>{" "}
+                    {sellerNames[product.sellerId] ? (
+                      <Link to={`/seller/${product.sellerId}`}>
+                        {sellerNames[product.sellerId]}
+                      </Link>
+                    ) : (
+                      "Loading seller name..."
+                    )}
+                  </p>
+                ) : (
+                  <></>
+                )}
               </li>
             ))}
           </ul>

@@ -1,8 +1,38 @@
+// import React from "react";
+// import AllActivities from "./AllActivities";
+// import GetAllHistoricalPlaces from "./getAllHistoricalPlaces";
+// import GetAllItineraries from "./getAllItineraries";
+// import GetFilteredActivities from "./getFilteredActivities";
+// import GetFilteredHistoricalPlaces from "./getFilteredHistoricalPlaces";
+// import GetFilteredItineraries from "./getFilteredItineraries";
+// import GetSortedActivities from "./getSortedActivities";
+// import GetSortedItineraries from "./getSortedItineraries";
+// import ProfileEdit from "./ProfileEdit";
+// import ProfileView from "./ProfileView";
+
+// const App = () => {
+//   return (
+//     <div>
+//       <GetAllHistoricalPlaces />
+//       <AllActivities />
+//       <GetAllItineraries />
+//       <GetFilteredActivities />
+//       <GetFilteredHistoricalPlaces />
+//       <GetFilteredItineraries />
+//       <GetSortedActivities />
+//       <GetSortedItineraries />
+//       <ProfileEdit />
+//       <ProfileView />
+//     </div>
+//   );
+// };
+
+// export default App;
+
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
 import { getUserId } from "../../utils/authUtils.js";
-
 const TouristHomePage = () => {
   const userId = getUserId(); // Replace with dynamic user ID as necessary
   const [userProfile, setUserProfile] = useState(null);
@@ -103,11 +133,16 @@ const TouristHomePage = () => {
     }
   };
 
+
+
+
+
+
+
   // Render profile card and edit form
   return (
     <div>
       <h1>Tourist Homepage</h1>
-
       {/* Profile Card */}
       {userProfile && (
         <div className="profile-card" style={{ border: "1px solid #ccc", padding: "20px", margin: "20px 0", borderRadius: "8px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
@@ -193,6 +228,10 @@ const TouristHomePage = () => {
       )}
 
       {/* Navigation Buttons */}
+
+
+
+    
       <div style={{ display: "flex", justifyContent: "space-around", margin: "20px 0" }}>
         {["Activities", "Itineraries", "HistoricalPlaces", "Products"].map((text) => (
           <button key={text} style={{ padding: "15px 30px", backgroundColor: "#007BFF", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
@@ -200,8 +239,31 @@ const TouristHomePage = () => {
               {text}
             </Link>
           </button>
+          
+      <button>
+        <Link to="/tourist/activities">Activities</Link>
+      </button>
+      <button>
+        <Link to="/tourist/itineraries">Itineraries</Link>
+      </button>
+      <button>
+        <Link to="/tourist/historical-places">Historical Places</Link>
+      </button>
+      <button>
+        <Link to="/tourist/ProductList">ProductList</Link>
+      </button>
+      <button>
+        <Link to="/tourist/SearchProduct">Search product</Link>
+      </button>
+      <button>
+        <Link to="/tourist/FilterProduct">Filter product</Link>
+      </button>
+      <button>
+        <Link to="/tourist/SortBy">sortByRating</Link>
+      </button>
         ))}
       </div>
+
     </div>
   );
 };

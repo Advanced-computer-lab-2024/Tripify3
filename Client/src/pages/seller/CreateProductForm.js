@@ -15,7 +15,6 @@ const CreateProductForm = () => {
     imageUrl: [], // Now this is an array
     category: "",
     sellerId: userType === "Seller" ? userId : "", // Default to logged-in user for Seller
-    type: userType,
   });
 
   const [responseMessage, setResponseMessage] = useState("");
@@ -55,6 +54,9 @@ const CreateProductForm = () => {
       );
       setCreatedProduct(response.data.product); // Store the created product data
       setErrorMessage(""); // Success message
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       setResponseMessage("Error: " + error.response.data.message);
       setCreatedProduct(null);
