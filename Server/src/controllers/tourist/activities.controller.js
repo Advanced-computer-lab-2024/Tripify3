@@ -1,4 +1,6 @@
 import Activity from "../../models/activity.js";
+import Place from '../../models/place.js'; // Make sure the path is correct
+
 
 export const getAllActivities = async (req, res) => {
   try {
@@ -89,5 +91,45 @@ export const getSortedActivities = async (req, res) => {
     res.json(activities);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+// Function to filter places by type and/or tags
+export const filterPlaces = async (req, res) => {
+  try {
+    const { type, tags } = req.query;
+
+    // Build the query object
+    const query = {};
+
+    // Add 'type' to query if it's provided
+    if (type) {
+      query.type = type;
+    }
+
+    // Add 'tags' to query if it's provided
+    if (tags) {
+      // Convert 'tags' from a string of comma-separated values to an array
+      const tagsArray = tags.split(',');
+      query.tags = { $in: tagsArray }; // Filter places where any of the tags match
+    }
+
+    // Fetch filtered places based on the query
+    const places = await Place.find(query).populate('tags tourismGovernor');
+
+    // Return the filtered places
+    res.status(200).json({
+      success: true,
+      data: places,
+    });
+  } catch (error) {
+    // Handle any errors
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message,
+    });
   }
 };

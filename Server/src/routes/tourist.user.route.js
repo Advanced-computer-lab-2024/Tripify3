@@ -1,11 +1,12 @@
 import express from "express";
-import { getAllItineraries, getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
-import { getAllActivities, getFilteredActivities, getSortedActivities } from "../controllers/tourist/activities.controller.js";
+import { getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
+import { getAllActivities, getFilteredActivities, getSortedActivities, filterPlaces} from "../controllers/tourist/activities.controller.js";
 import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
 import { searchPlaces, searchActivities, searchItineraries } from "../controllers/tourist/search.controller.js";
 const router = express.Router();
 
-router.get("/tourist/itinerary", getAllItineraries); // Get all itineraries
+// GET request to filter places by type and/or tags
+router.get('/places/filter', filterPlaces);
 router.get("/tourist/itinerary/sort", getSortedItineraries); // Get sorted itineraries
 router.get("/tourist/itinerary/filter", getFilteredItineraries); // Get filtered itineraries
 router.get("/tourist/activity", getAllActivities); // Get all activities

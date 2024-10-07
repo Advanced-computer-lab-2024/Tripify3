@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const SearchItineraries = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [itineraries, setItineraries] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Handle form submission to search for itineraries
   const handleSearch = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/itineraries/search', {
+      const response = await axios.post("http://localhost:8000/itineraries/search", {
         searchField: searchTerm,
       });
+      console.log(response.data);
+      
 
       setItineraries(response.data.itineraries); // Store the fetched itineraries
-      setErrorMessage(''); // Clear any previous error message
+      setErrorMessage(""); // Clear any previous error message
     } catch (error) {
-      setErrorMessage('Error fetching itineraries. Please try again.');
+      setErrorMessage("Error fetching itineraries. Please try again.");
       setItineraries([]); // Clear previous results
     }
   };
@@ -27,13 +29,7 @@ const SearchItineraries = () => {
 
       {/* Search Field and Button */}
       <div style={styles.searchContainer}>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Enter search term"
-          style={styles.input}
-        />
+        <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Enter search term" style={styles.input} />
         <button onClick={handleSearch} style={styles.button}>
           Search
         </button>
@@ -48,19 +44,31 @@ const SearchItineraries = () => {
           {itineraries.map((itinerary) => (
             <div key={itinerary._id} style={styles.itineraryCard}>
               <h2 style={styles.itineraryName}>{itinerary.name}</h2>
-              <p><strong>Price:</strong> ${itinerary.price}</p>
-              <p><strong>Language:</strong> {itinerary.language}</p>
-              <p><strong>Budget:</strong> ${itinerary.budget}</p>
-              <p><strong>Pickup Location:</strong> {itinerary.pickupLocation}</p>
-              <p><strong>Dropoff Location:</strong> {itinerary.dropoffLocation}</p>
-              <p><strong>Accessibility:</strong> {itinerary.accessibility}</p>
+              <p>
+                <strong>Price:</strong> ${itinerary.price}
+              </p>
+              <p>
+                <strong>Language:</strong> {itinerary.language}
+              </p>
+              <p>
+                <strong>Price:</strong> {itinerary.price}
+              </p>
+              <p>
+                <strong>Pickup Location:</strong> {itinerary.pickupLocation}
+              </p>
+              <p>
+                <strong>Dropoff Location:</strong> {itinerary.dropoffLocation}
+              </p>
+              <p>
+                <strong>Accessibility:</strong> {itinerary.accessibility}
+              </p>
 
               {/* Available Dates */}
               <h4>Available Dates:</h4>
               <ul>
                 {itinerary.availableDates.map((date) => (
                   <li key={date._id}>
-                    {new Date(date.date).toLocaleDateString()} (Times: {date.times.join(', ')})
+                    {new Date(date.date).toLocaleDateString()} (Times: {date.times.join(", ")})
                   </li>
                 ))}
               </ul>
@@ -74,6 +82,7 @@ const SearchItineraries = () => {
                   </li>
                 ))}
               </ul>
+
             </div>
           ))}
         </div>
@@ -87,54 +96,54 @@ const SearchItineraries = () => {
 // Styles for the component
 const styles = {
   container: {
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
   },
   header: {
-    textAlign: 'center',
-    color: '#333',
+    textAlign: "center",
+    color: "#333",
   },
   searchContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginBottom: '20px',
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: "20px",
   },
   input: {
-    padding: '10px',
-    fontSize: '16px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    width: '300px',
-    marginRight: '10px',
+    padding: "10px",
+    fontSize: "16px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    width: "300px",
+    marginRight: "10px",
   },
   button: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    backgroundColor: '#00695c',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+    padding: "10px 20px",
+    fontSize: "16px",
+    backgroundColor: "#00695c",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
   errorMessage: {
-    color: 'red',
-    textAlign: 'center',
+    color: "red",
+    textAlign: "center",
   },
   itineraryContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '20px',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "20px",
   },
   itineraryCard: {
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    border: '1px solid #ccc',
-    borderRadius: '10px',
-    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+    padding: "20px",
+    backgroundColor: "#f9f9f9",
+    border: "1px solid #ccc",
+    borderRadius: "10px",
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
   },
   itineraryName: {
-    fontSize: '22px',
-    color: '#00695c',
+    fontSize: "22px",
+    color: "#00695c",
   },
 };
 

@@ -60,7 +60,7 @@ function AddPlace() {
 
   // Fetch available place types
   useEffect(() => {
-    setPlaceTypes(["Museum", "Historical Place"]);
+    setPlaceTypes(["Monument", "Religious Site", "Palace", "Historical Place", "Museum"]);
   }, []);
 
   // Handle input change

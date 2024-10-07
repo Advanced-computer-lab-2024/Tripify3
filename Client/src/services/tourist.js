@@ -24,7 +24,7 @@ export const getFilteredPlaces = async (filters) => {
 };
 
 export const getAllIteneraries = async () => {
-  return await axios.get(`${API_URL}/tourist/itinerary`);
+  return await axios.get(`${API_URL}/itinerary/get`);
 };
 
 export const getAllActivities = async () => {
@@ -53,13 +53,20 @@ export const filterActivities = async (filters) => {
 
 export const filterItineraries = async (filters) => {
   const { budget, date, language, tags } = filters;
+
+  const params = {
+    budget,
+    date,
+    language,
+  };
+
+  // Add tags as a stringified array only if they exist and are not empty
+  if (tags && tags.length > 0) {
+    params.tags = JSON.stringify(tags); // Convert tags to a JSON string
+  }
+
   return await axios.get(`${API_URL}/tourist/itinerary/filter`, {
-    params: {
-      budget,
-      date,
-      language,
-      tags,
-    },
+    params,
   });
 };
 

@@ -15,20 +15,41 @@ export const createItinerary = async (req, res) => {
 };
 
 // Get all itineraries
-export const getItineraries = async (req, res) => {
+export const getAllItineraries = async (req, res) => {
   try {
     const itineraries = await Itinerary.find()
-      .populate("activities") // Populate activities
       .populate({
-        path: "locations", // Populate locations
+        path: 'activities',
         populate: {
-          // Populate tags inside locations
-          path: "tags", // Populate the tags field in locations
-          select: "name", // Only select the name field of tags
-        },
+          path: 'tags', // Populate the tags within activities
+          select: 'name' // Select only the 'name' field of the tags
+        }
+      })
+      .populate({
+        path: 'places',
+        populate: {
+          path: 'tags', // Populate the tags within locations
+          select: 'name' // Select only the 'name' field of the tags
+        }
       });
 
-    res.status(200).json(itineraries);
+    // Transform the itineraries to include a combined tags array
+    const response = itineraries.map(itinerary => {
+      // Extract tags from activities
+      const activityTags = itinerary.activities.flatMap(activity => activity.tags.map(tag => tag.name));
+      // Extract tags from locations
+      const locationTags = itinerary.places.flatMap(location => location.tags.map(tag => tag.name));
+
+      // Combine activity and location tags into one array
+      const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
+
+      return {
+        ...itinerary.toObject(), // Convert Mongoose document to plain object
+        tags: combinedTags // Add combined tags array to the itinerary
+      };
+    });
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

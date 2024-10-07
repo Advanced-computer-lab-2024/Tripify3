@@ -58,9 +58,6 @@ export const searchPlaces = async (req, res) => {
     }
   };
 
-  
-
-
   export const searchItineraries = async (req, res) => {
     try {
         const { searchField } = req.body;

@@ -5,9 +5,9 @@ const itinerarySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Activity'
   }],
-  locations: [{
+  places: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Location'
+    ref: 'Place'
   }],
   name:{
     type: String
@@ -49,10 +49,6 @@ const itinerarySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment'
   }],
-  budget: { 
-    type: Number, 
-    required: true 
-  },
   availableDates: [{
     date: {
       type: Date,

@@ -4,14 +4,13 @@ import axios from "axios";
 const ItineraryManager = () => {
   const [itineraries, setItineraries] = useState([]);
   const [activities, setActivities] = useState([]); // To store activities for dropdown
-  const [locations, setLocations] = useState([]);
+  const [places, setPlaces] = useState([]);
   const [formData, setFormData] = useState({
     language: "",
     name: "",
     price: 0,
     startTime: "",
     endTime: "",
-    budget: 0,
     pickupLocation: "",
     dropoffLocation: "",
     accessibility: "",
@@ -22,12 +21,12 @@ const ItineraryManager = () => {
   const [editingId, setEditingId] = useState(null);
   const [newAvailableDate, setNewAvailableDate] = useState({ date: "", startTime: "", endTime: "" });
   const [selectedActivities, setSelectedActivities] = useState([]); // To hold selected activities
-  const [selectedLocations, setSelectedLocations] = useState([]); // To hold selected locations
+  const [selectedPlaces, setSelectedPlaces] = useState([]); // To hold selected locations
 
   useEffect(() => {
     fetchItineraries();
     fetchActivities(); // Fetch activities when component mounts
-    fetchLocations();
+    fetchPlaces();
   }, []);
 
   const fetchItineraries = async () => {
@@ -49,10 +48,10 @@ const ItineraryManager = () => {
     }
   };
 
-  const fetchLocations = async () => {
+  const fetchPlaces = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/location/get"); // Adjust the URL based on your backend endpoint
-      setLocations(response.data);
+      const response = await axios.get("http://localhost:8000/places/get"); // Adjust the URL based on your backend endpoint
+      setPlaces(response.data.data);
     } catch (error) {
       console.error("Error fetching locations:", error);
     }
@@ -60,6 +59,12 @@ const ItineraryManager = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validation for start and end time
+    if (new Date(formData.startTime) >= new Date(formData.endTime)) {
+      alert("Start time must be before the end time.");
+      return;
+    }
 
     // Ensure at least one available date is selected
     if (formData.availableDates.length === 0) {
@@ -70,7 +75,7 @@ const ItineraryManager = () => {
     const dataToSubmit = {
       ...formData,
       activities: selectedActivities, // Add selected activities
-      locations: selectedLocations, // Add selected locations
+      places: selectedPlaces, // Add selected locations
       timeline: {
         startTime: formData.startTime,
         endTime: formData.endTime,
@@ -110,7 +115,6 @@ const ItineraryManager = () => {
       price: 0,
       startTime: "",
       endTime: "",
-      budget: 0,
       pickupLocation: "",
       dropoffLocation: "",
       accessibility: "",
@@ -120,18 +124,23 @@ const ItineraryManager = () => {
     });
     setNewAvailableDate({ date: "", startTime: "", endTime: "" });
     setSelectedActivities([]); // Reset selected activities to an empty array
-    setSelectedLocations([]); // Reset selected locations to an empty array
+    setSelectedPlaces([]); // Reset selected locations to an empty array
   };
 
   const handleEdit = (itinerary) => {
     setEditingId(itinerary._id);
+    const formatDateForInput = (dateString) => {
+      const date = new Date(dateString);
+      return date.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:mm'
+    };
+    console.log(itinerary.timeline.startTime);
+    console.log(itinerary.timeline.endTime);
     setFormData({
       language: itinerary.language,
       name: itinerary.name,
       price: itinerary.price,
-      startTime: itinerary.timeline.startTime,
-      endTime: itinerary.timeline.endTime,
-      budget: itinerary.budget,
+      startTime: formatDateForInput(itinerary.timeline.startTime), // Format startTime
+      endTime: formatDateForInput(itinerary.timeline.endTime), // Format endTime
       pickupLocation: itinerary.pickupLocation,
       dropoffLocation: itinerary.dropoffLocation,
       accessibility: itinerary.accessibility,
@@ -139,8 +148,8 @@ const ItineraryManager = () => {
       availableDates: itinerary.availableDates,
       bookings: itinerary.bookings, // Include bookings if needed
     });
-    setSelectedActivities(itinerary.activities); // Set selected activities for editing
-    setSelectedLocations(itinerary.locations); // Set selected locations for editing
+    setSelectedActivities(itinerary.activities.map((activity) => activity._id)); // Set selected activities for editing
+    setSelectedPlaces(itinerary.places.map((place) => place._id)); // Set selected locations for editing
   };
 
   const handleDelete = async (id, hasBookings) => {
@@ -168,6 +177,12 @@ const ItineraryManager = () => {
   };
 
   const handleAddAvailableDate = () => {
+    // Validation to ensure start time is before end time in available dates
+    if (newAvailableDate.startTime >= newAvailableDate.endTime) {
+      alert("Available date start time must be before the end time.");
+      return;
+    }
+
     if (newAvailableDate.date) {
       setFormData((prev) => ({
         ...prev,
@@ -185,6 +200,15 @@ const ItineraryManager = () => {
     }
   };
 
+  const handleDeleteAvailableDate = (index) => {
+    const updatedAvailableDates = [...formData.availableDates];
+    updatedAvailableDates.splice(index, 1);
+    setFormData((prev) => ({
+      ...prev,
+      availableDates: updatedAvailableDates,
+    }));
+  };
+
   const handleActivityChange = (e, activityId) => {
     if (e.target.checked) {
       setSelectedActivities([...selectedActivities, activityId]); // Add to selected activities
@@ -193,13 +217,14 @@ const ItineraryManager = () => {
     }
   };
 
-  const handleLocationChange = (e, locationId) => {
+  const handlePlaceChange = (e, placeId) => {
     if (e.target.checked) {
-      setSelectedLocations([...selectedLocations, locationId]); // Add to selected locations
+      setSelectedPlaces([...selectedPlaces, placeId]); // Add to selected locations
     } else {
-      setSelectedLocations(selectedLocations.filter((id) => id !== locationId)); // Remove from selected locations
+      setSelectedPlaces(selectedPlaces.filter((id) => id !== placeId)); // Remove from selected locations
     }
   };
+
   return (
     <div>
       <style>
@@ -348,8 +373,7 @@ li button {
 }
 
   
-  
-  
+
   
         `}
       </style>
@@ -366,18 +390,10 @@ li button {
             <option value="French">French</option>
             <option value="German">German</option>
             <option value="Arabic">Arabic</option>
-            <option value="Hindi">Hindi</option>
-            <option value="Portuguese">Portuguese</option>
             <option value="Russian">Russian</option>
             <option value="Japanese">Japanese</option>
             <option value="Korean">Korean</option>
             <option value="Italian">Italian</option>
-            <option value="Turkish">Turkish</option>
-            <option value="Vietnamese">Vietnamese</option>
-            <option value="Dutch">Dutch</option>
-            <option value="Thai">Thai</option>
-            <option value="Swedish">Swedish</option>
-            <option value="Filipino">Filipino</option>
           </select>
         </label>
         <label>
@@ -396,10 +412,7 @@ li button {
           End Time:
           <input type="datetime-local" name="endTime" value={formData.endTime} onChange={handleChange} required />
         </label>
-        <label>
-          Budget:
-          <input type="number" name="budget" value={formData.budget} onChange={handleChange} required />
-        </label>
+
         <label>
           Pickup Location:
           <input type="text" name="pickupLocation" value={formData.pickupLocation} onChange={handleChange} required />
@@ -412,7 +425,7 @@ li button {
           Accessibility:
           <input type="text" name="accessibility" value={formData.accessibility} onChange={handleChange} required />
         </label>
-        <label>
+        {/* <label>
           Preferences:
           <select name="preferences" value={formData.preferences} onChange={handleChange} required>
             <option value="">Select Preference</option>
@@ -421,7 +434,7 @@ li button {
             <option value="Family Friendly">Family Friendly</option>
             <option value="Shopping">Shopping</option>
           </select>
-        </label>
+        </label> */}
 
         <h4>Add Available Dates</h4>
         <label>
@@ -440,6 +453,18 @@ li button {
           Add Available Date
         </button>
 
+        <h4>Current Available Dates:</h4>
+        <ul>
+          {formData.availableDates.map((date, index) => (
+            <li key={index}>
+              {new Date(date.date).toISOString().split("T")[0]} (from {date.times[0]} to {date.times[1]})
+              <button type="button" onClick={() => handleDeleteAvailableDate(index)}>
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+
         <h4>Select Activities:</h4>
         {activities.map((activity) => (
           <div key={activity._id} className="checkbox-container">
@@ -455,18 +480,18 @@ li button {
           </div>
         ))}
 
-        <h4>Select Locations:</h4>
-        {locations.map((location) => (
-          <div key={location._id} className="checkbox-container">
+        <h4>Select Places:</h4>
+        {places.map((place) => (
+          <div key={place._id} className="checkbox-container">
             <input
               type="checkbox"
-              id={location._id}
+              id={place._id}
               className="custom-checkbox"
-              value={location._id}
-              checked={selectedLocations.includes(location._id)} // Checks if the location is already selected
-              onChange={(e) => handleLocationChange(e, location._id)} // Handles the checkbox change
+              value={place._id}
+              checked={selectedPlaces.includes(place._id)} // Check if the location is already selected
+              onChange={(e) => handlePlaceChange(e, place._id)} // Handle the checkbox change
             />
-            <label htmlFor={location._id}>{location.location}</label>
+            <label htmlFor={place._id}>{place.name}</label>
           </div>
         ))}
 
@@ -479,16 +504,17 @@ li button {
           <li key={itinerary._id}>
             <h3>Language: {itinerary.language}</h3>
             <p>Name: {itinerary.name}</p>
-            <p>Price: ${itinerary.price}</p>
+            <p>Price: {itinerary.price}$</p>
             <p>
               Timeline: {itinerary.timeline.startTime} to {itinerary.timeline.endTime}
             </p>
-            <p>Budget: ${itinerary.budget}</p>
+
             <p>Pickup Location: {itinerary.pickupLocation}</p>
             <p>Dropoff Location: {itinerary.dropoffLocation}</p>
             <p>Accessibility: {itinerary.accessibility}</p>
             <p>Preferences: {itinerary.preferences}</p>
-            <p>bookings: {itinerary.bookings.length}</p>
+            <p>Bookings: {itinerary.bookings.length}</p>
+
             <h4>Available Dates:</h4>
             <ul>
               {itinerary.availableDates.map((date, index) => (
@@ -511,22 +537,33 @@ li button {
                   <p>
                     <strong>Rating:</strong> {activity.rating}
                   </p>
+                  <p>
+                    <strong>Price:</strong> {activity.price}
+                  </p>
                 </li>
               ))}
             </ul>
 
-            <h4>Locations:</h4>
+            <h4>Tags:</h4>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              {itinerary.tags.map((tag, index) => (
+                <li key={index} style={{ display: "inline", marginRight: "10px" }}>
+                  #{tag}
+                </li>
+              ))}
+            </ul>
+
+            <h4>Places:</h4>
             <ul>
-              {itinerary.locations.map((location, index) => (
+              {itinerary.places.map((place, index) => (
                 <li key={index} className="activity-item">
-                  <p><strong>Location: </strong> {location.location}</p>
-                  <p><strong>Tags: </strong>  {location.tags.map((tag, tagIndex) => (
-                        <span key={tagIndex}>#
-                          {tag.name}
-                          {tagIndex < location.tags.length - 1 ? ' , ' : ''}
-                        </span>
-                        
-                      ))}</p>
+                  <p>
+                    <strong>Name: </strong> {place.name}
+                  </p>
+                  <p>
+                    {" "}
+                    <strong> Description: </strong> {place.description}
+                  </p>
                 </li>
               ))}
             </ul>

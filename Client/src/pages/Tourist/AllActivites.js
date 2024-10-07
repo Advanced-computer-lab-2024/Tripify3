@@ -1,32 +1,27 @@
 import React, { useState, useEffect } from "react";
-import {
-  getAllActivities,
-  getAllCategories,
-  filterActivities,
-} from "../../services/tourist.js"; // Import the API function
+import { getAllActivities, getAllCategories } from "../../services/tourist.js"; // Import the API function
 
 const AllActivities = () => {
-  const [activities, setActivities] = useState([]); // Store the activities
+  const [activities, setActivities] = useState([]); // Store the filtered activities
+  const [originalActivities, setOriginalActivities] = useState([]); // Store the original activities
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const [categories, setCategories] = useState([]); // Store categories
   const [filters, setFilters] = useState({
-    minPrice: "",
-    maxPrice: "",
-    category: "",
+    budget: "",
+    selectedCategories: [],
     rating: "",
+    date: "",
   }); // Store filter values
+  const [sort, setSort] = useState({ field: "date", order: "asc" }); // Store sort values
   const [validationError, setValidationError] = useState(""); // Validation error message
-  const [sortCriteria, setSortCriteria] = useState({
-    attribute: "",
-    order: "",
-  }); // Store sort criteria
 
   // Fetch activities from the backend
   const fetchActivities = async () => {
     try {
       const response = await getAllActivities();
       setActivities(response.data.activities); // Set activities data
+      setOriginalActivities(response.data.activities); // Store the original activities
       setLoading(false);
     } catch (error) {
       setError("Error fetching activities");
@@ -44,76 +39,94 @@ const AllActivities = () => {
     }
   };
 
+  // Handle category checkbox change
+  const handleCategoryChange = (categoryId) => {
+    setFilters((prevFilters) => {
+      const { selectedCategories } = prevFilters;
+      if (selectedCategories.includes(categoryId)) {
+        return {
+          ...prevFilters,
+          selectedCategories: selectedCategories.filter((id) => id !== categoryId),
+        };
+      } else {
+        return {
+          ...prevFilters,
+          selectedCategories: [...selectedCategories, categoryId],
+        };
+      }
+    });
+  };
+
   // Validate filter inputs
   const validateFilters = () => {
-    const minPrice = parseFloat(filters.minPrice);
-    const maxPrice = parseFloat(filters.maxPrice);
-
-    if (maxPrice < minPrice) {
-      setValidationError("Max Price must be greater than Min Price.");
+    if (!filters.budget && !filters.selectedCategories.length && !filters.rating && !filters.date) {
+      setValidationError("Please fill at least one filter field.");
       return false;
     }
     setValidationError(""); // Clear error message if validation passes
     return true;
   };
 
-  // Handle filter submission
-  const handleFilter = async () => {
-    if (
-      !filters.minPrice &&
-      !filters.maxPrice &&
-      !filters.category &&
-      !filters.rating
-    ) {
-      setValidationError("Please fill at least one filter field.");
-      return; // Do not proceed if all fields are empty
-    }
-
+  // Handle filter submission (all filtering logic on frontend)
+  const handleFilter = () => {
     if (!validateFilters()) return; // Only proceed if validation passes
 
-    try {
-      const response = await filterActivities({
-        minPrice: filters.minPrice,
-        maxPrice: filters.maxPrice,
-        category: filters.category,
-        rating: filters.rating,
-      });
-      setActivities(response.data.activities); // Set filtered activities
-    } catch (error) {
-      setError("Error fetching filtered activities");
+    let filteredActivities = [...originalActivities]; // Always filter from the original list
+
+    // Filter by category
+    if (filters.selectedCategories.length > 0) {
+      filteredActivities = filteredActivities.filter((activity) => filters.selectedCategories.includes(activity.category._id));
     }
+
+    // Filter by budget
+    if (filters.budget) {
+      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(filters.budget));
+    }
+
+    // Filter by rating
+    if (filters.rating) {
+      filteredActivities = filteredActivities.filter((activity) => {
+        const activityRating = parseFloat(activity.rating) || 0;
+        return activityRating === parseFloat(filters.rating);
+      });
+    }
+
+    // Filter by date
+    if (filters.date) {
+      filteredActivities = filteredActivities.filter((activity) => {
+        const activityDate = new Date(activity.date).toISOString().split("T")[0];
+        return activityDate === filters.date;
+      });
+    }
+
+    setActivities(filteredActivities); // Set filtered activities
+  };
+
+  // Sorting logic
+  const handleSort = () => {
+    let sortedActivities = [...activities]; // Create a copy of activities
+
+    // Sorting logic
+    sortedActivities.sort((a, b) => {
+      if (sort.field === "date") {
+        return sort.order === "asc"
+          ? new Date(a.date) - new Date(b.date)
+          : new Date(b.date) - new Date(a.date);
+      } else if (sort.field === "price") {
+        return sort.order === "asc" ? a.price - b.price : b.price - a.price;
+      } else {
+        return 0; // Default case, no sorting applied
+      }
+    });
+
+    setActivities(sortedActivities); // Set sorted activities
   };
 
   // Reset filters and fetch all activities again
   const handleResetFilters = () => {
-    setFilters({ minPrice: "", maxPrice: "", category: "", rating: "" }); // Reset filter values
+    setFilters({ budget: "", selectedCategories: [], rating: "", date: "" }); // Reset filter values
     setValidationError(""); // Clear validation error
-    fetchActivities(); // Fetch all activities
-  };
-
-  // Sorting functionality
-  const handleSort = () => {
-    let sortedActivities = [...activities];
-    if (sortCriteria.attribute && sortCriteria.order) {
-      sortedActivities.sort((a, b) => {
-        const aValue = a[sortCriteria.attribute];
-        const bValue = b[sortCriteria.attribute];
-
-        if (sortCriteria.order === "ascen") {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else if (sortCriteria.order === "desc") {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-        }
-        return 0;
-      });
-      setActivities(sortedActivities); // Update activities with sorted data
-    }
-  };
-
-  // Reset sorting to the original activities
-  const handleResetSort = () => {
-    fetchActivities(); // Fetch all activities again to reset sorting
-    setSortCriteria({ attribute: "", order: "" }); // Reset sort criteria
+    setActivities(originalActivities); // Reset activities to original list
   };
 
   // useEffect to call fetchActivities and fetchCategories when component mounts
@@ -133,72 +146,79 @@ const AllActivities = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Upcoming Activities</h2>
+
+      {/* Sort Dropdown */}
       <div style={styles.sortContainer}>
-        <select
-          value={sortCriteria.attribute}
-          onChange={(e) =>
-            setSortCriteria({ ...sortCriteria, attribute: e.target.value })
-          }
-          style={styles.select}
-        >
-          <option value="">Sort by</option>
-          <option value="price">Price</option>
-          <option value="rating">Rating</option>
-        </select>
-        <select
-          value={sortCriteria.order}
-          onChange={(e) =>
-            setSortCriteria({ ...sortCriteria, order: e.target.value })
-          }
-          style={styles.select}
-        >
-          <option value="">Order</option>
-          <option value="ascen">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
+        <label style={styles.label}>
+          Sort by:
+          <select
+            value={sort.field}
+            onChange={(e) => setSort({ ...sort, field: e.target.value })}
+            style={styles.select}
+          >
+            <option value="date">Date</option>
+            <option value="price">Price</option>
+          </select>
+        </label>
+        <label style={styles.label}>
+          Order:
+          <select
+            value={sort.order}
+            onChange={(e) => setSort({ ...sort, order: e.target.value })}
+            style={styles.select}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </label>
+        {/* Sort Button */}
         <button onClick={handleSort} style={styles.button}>
           Sort
         </button>
-        <button onClick={handleResetSort} style={styles.button}>
-          Reset Sort
-        </button>
       </div>
+
       <div style={styles.filterContainer}>
-        <input
-          type="number"
-          placeholder="Min Price"
-          min="0"
-          value={filters.minPrice}
-          onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-          style={styles.input}
-        />
-        <input
-          type="number"
-          placeholder="Max Price"
-          min="0"
-          value={filters.maxPrice}
-          onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-          style={styles.input}
-        />
-        <select
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-          style={styles.select}
-        >
-          <option value="">Select Category</option>
+        <h4>Filter by Category:</h4>
+        <div style={styles.checkboxContainer}>
           {categories.map((category) => (
-            <option key={category._id} value={category._id}>
+            <label key={category._id} style={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                value={category._id}
+                checked={filters.selectedCategories.includes(category._id)}
+                onChange={() => handleCategoryChange(category._id)}
+              />
               {category.name}
-            </option>
+            </label>
           ))}
-        </select>
+        </div>
+
+        <input
+          type="number"
+          placeholder="Budget"
+          min="0"
+          value={filters.budget}
+          onChange={(e) => setFilters({ ...filters, budget: e.target.value })}
+          style={styles.input}
+        />
+
         <input
           type="number"
           placeholder="Rating (1-5)"
           value={filters.rating}
+          min="1"
+          max="5"
           onChange={(e) => setFilters({ ...filters, rating: e.target.value })}
           style={styles.input}
         />
+
+        <input
+          type="date"
+          value={filters.date}
+          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+          style={styles.input}
+        />
+
         <button onClick={handleFilter} style={styles.button}>
           Filter
         </button>
@@ -206,8 +226,7 @@ const AllActivities = () => {
           Reset Filters
         </button>
       </div>
-      {validationError && <p style={styles.error}>{validationError}</p>}{" "}
-      {/* Display validation error */}
+      {validationError && <p style={styles.error}>{validationError}</p>} {/* Display validation error */}
       {activities.length === 0 ? (
         <p style={styles.noActivities}>No upcoming activities available.</p>
       ) : (
@@ -216,8 +235,7 @@ const AllActivities = () => {
             <div key={activity._id} style={styles.card}>
               <h3 style={styles.cardHeading}>{activity.name}</h3>
               <p>
-                <strong>Date:</strong>{" "}
-                {new Date(activity.date).toLocaleDateString()}
+                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
               </p>
               <p>
                 <strong>Time:</strong> {activity.time}
@@ -226,10 +244,7 @@ const AllActivities = () => {
                 <strong>Category:</strong> {activity.category.name}
               </p>
               <p>
-                <strong>Tags:</strong>{" "}
-                {activity.tags.length > 0
-                  ? activity.tags.map((tag) => tag.name).join(", ")
-                  : "No tags available"}
+                <strong>Tags:</strong> {activity.tags.length > 0 ? activity.tags.map((tag) => tag.name).join(", ") : "No tags available"}
               </p>
               <p>
                 <strong>Price:</strong> ${activity.price}
@@ -247,7 +262,7 @@ const AllActivities = () => {
                 <strong>Location:</strong> {activity.location}
               </p>
               <p>
-                <strong>Bookable:</strong> {activity.isBooking ? "Yes" : "No"}
+                <strong>Bookable:</strong> {activity.isBookable ? "Yes" : "No"}
               </p>
             </div>
           ))}

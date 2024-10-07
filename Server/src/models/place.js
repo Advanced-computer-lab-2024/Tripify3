@@ -9,7 +9,7 @@ const placeSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["Monument", "Religious Site", "Palace", "Castle","Historical Place", "Museum"], // Possible user roles
+      enum: ["Monument", "Religious Site", "Palace", "Historical Place", "Museum"], // Possible user roles
       required: true,
     },
     description: {

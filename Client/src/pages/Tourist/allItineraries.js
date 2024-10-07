@@ -1,35 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { getAllIteneraries, filterItineraries, getAllTags } from "../../services/tourist.js"; // Updated API functions
+import { getAllIteneraries, getAllTags } from "../../services/tourist.js"; // Updated API functions
 
 const AllItineraries = () => {
   const [itineraries, setItineraries] = useState([]); // Store the itineraries
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
-  const [categories, setCategories] = useState([]); // Store categories
   const [tags, setTags] = useState([]); // Store all tags
   const [selectedTags, setSelectedTags] = useState([]); // Store selected tag IDs
-  const [filters, setFilters] = useState({ budget: "", date: "", language: "" }); // Store filter values
+  const [selectedLanguages, setSelectedLanguages] = useState([]); // Store selected languages
+  const [sortOrder, setSortOrder] = useState(""); // Sorting by price
   const [validationError, setValidationError] = useState(""); // Validation error message
+  const [budget, setBudget] = useState(""); // Budget input state
 
   // Language options
   const languageOptions = [
-    { value: "", label: "Select a language" }, // Placeholder option
     { value: "English", label: "English" },
     { value: "Spanish", label: "Spanish" },
     { value: "French", label: "French" },
     { value: "German", label: "German" },
-    { value: "Italian", label: "Italian" },
-    { value: "Chinese", label: "Chinese" },
     { value: "Arabic", label: "Arabic" },
     { value: "Russian", label: "Russian" },
-    // Add more languages as needed
+    { value: "Japanese", label: "Japanese" },
+    { value: "Korean", label: "Korean" },
+    { value: "Italian", label: "Italian" },
   ];
 
   // Fetch itineraries from the backend
   const fetchItineraries = async () => {
     try {
       const response = await getAllIteneraries();
-      setItineraries(response.data); // Set itineraries data
+      // Ensure the itineraries have the new tags field
+      const itinerariesWithTags = response.data.map((itinerary) => ({
+        ...itinerary,
+        tags: itinerary.tags || [], // Initialize tags if not present
+      }));
+      console.log(itinerariesWithTags);
+
+      setItineraries(itinerariesWithTags); // Set itineraries data
       setLoading(false);
     } catch (error) {
       setError("Error fetching itineraries");
@@ -57,53 +64,62 @@ const AllItineraries = () => {
     );
   };
 
+  // Handle checkbox change for languages
+  const handleLanguageChange = (language) => {
+    setSelectedLanguages(
+      (prevSelectedLanguages) =>
+        prevSelectedLanguages.includes(language)
+          ? prevSelectedLanguages.filter((lang) => lang !== language) // Uncheck language
+          : [...prevSelectedLanguages, language] // Check language
+    );
+  };
+
   // Validate filter inputs
   const validateFilters = () => {
-    if (!filters.budget && !filters.date && selectedTags.length === 0 && !filters.language) {
-      setValidationError("Please fill at least one filter field.");
+    if (selectedTags.length === 0 && selectedLanguages.length === 0 && !budget) {
+      setValidationError("Please select at least one filter or set a budget.");
       return false;
     }
     setValidationError(""); // Clear error message if validation passes
     return true;
   };
 
-  // Handle filter submission
-  const handleFilter = async () => {
+  // Filter itineraries based on selected languages, tags, and budget
+  // Filter itineraries based on selected languages, tags, and budget
+  const handleFilter = () => {
     if (!validateFilters()) return; // Only proceed if validation passes
 
-    // Create a filters object to hold only the selected fields
-    const filterParams = {};
+    const filteredItineraries = itineraries.filter((itinerary) => {
+      const hasSelectedTags = selectedTags.length === 0 || itinerary.tags.some((tag) => selectedTags.includes(tag._id));
 
-    // Add fields to filterParams only if they are not empty
-    if (filters.budget) {
-      filterParams.budget = filters.budget;
-    }
-    if (filters.date) {
-      filterParams.date = filters.date;
-    }
-    if (filters.language) {
-      filterParams.language = filters.language;
-    }
-    if (selectedTags.length > 0) {
-      filterParams.tags = JSON.stringify(selectedTags); // Send selected tags as an array
-    }
+      // Update the hasSelectedLanguages logic to check if itinerary.language is included in selectedLanguages
+      const hasSelectedLanguages = selectedLanguages.length === 0 || selectedLanguages.includes(itinerary.language);
 
-    try {
-      const response = await filterItineraries(filterParams); // Use the dynamic filterParams object
-      console.log(response.data);
+      const isWithinBudget = budget ? itinerary.price <= budget : true;
 
-      setItineraries(response.data); // Set filtered itineraries
-    } catch (error) {
-      setError("Error fetching filtered itineraries");
-    }
+      return hasSelectedTags && hasSelectedLanguages && isWithinBudget;
+    });
+
+    setItineraries(filteredItineraries); // Update the itineraries with filtered results
+  };
+
+  // Handle sorting by price
+  const handleSortByPrice = () => {
+    const sortedItineraries = [...itineraries].sort((a, b) => {
+      if (sortOrder === "asc") return a.price - b.price;
+      if (sortOrder === "desc") return b.price - a.price;
+      return 0;
+    });
+    setItineraries(sortedItineraries);
   };
 
   // Reset filters and fetch all itineraries again
   const handleResetFilters = () => {
-    setFilters({ budget: "", date: "", language: "" }); // Reset filter values
     setSelectedTags([]); // Reset selected tags
+    setSelectedLanguages([]); // Reset selected languages
+    setBudget(""); // Reset budget input
     setValidationError(""); // Clear validation error
-    fetchItineraries(); // Fetch all itineraries
+    fetchItineraries(); // Fetch all itineraries again
   };
 
   // Fetch itineraries and tags when component mounts
@@ -122,25 +138,26 @@ const AllItineraries = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>Upcoming Itineraries</h2>
-      <div style={styles.filterContainer}>
-        {/* Date input */}
-        <input type="date" value={filters.date} onChange={(e) => setFilters({ ...filters, date: e.target.value })} style={styles.input} />
-
-        {/* Budget input */}
-        <input type="number" placeholder="Budget" value={filters.budget} onChange={(e) => setFilters({ ...filters, budget: e.target.value })} style={styles.input} />
-
-        {/* Language dropdown */}
-        <select value={filters.language} onChange={(e) => setFilters({ ...filters, language: e.target.value })} style={styles.input}>
-          {languageOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        {/* Tag checkboxes */}
+    <h2 style={styles.heading}>Upcoming Itineraries</h2>
+    
+    {/* Sorting input */}
+    <div style={styles.sortContainer}>
+      <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={styles.input}>
+        <option value="">Sort by Price</option>
+        <option value="asc">Price: Low to High</option>
+        <option value="desc">Price: High to Low</option>
+      </select>
+      <button onClick={handleSortByPrice} style={styles.button}>
+        Sort
+      </button>
+    </div>
+    
+    {/* Filters - Languages, Tags, Budget, Filter/Reset Buttons */}
+    <div style={styles.filterContainer}>
+      <div style={styles.checkboxRow}>
+        {/* Tags */}
         <div style={styles.tagsContainer}>
+          Tags:
           {tags.map((tag) => (
             <label key={tag._id} style={styles.tagLabel}>
               <input type="checkbox" value={tag._id} checked={selectedTags.includes(tag._id)} onChange={() => handleTagChange(tag._id)} />
@@ -149,6 +166,31 @@ const AllItineraries = () => {
           ))}
         </div>
 
+      
+  
+        {/* Languages */}
+        <div style={styles.languageContainer}>
+        Languages:
+          {languageOptions.map((option) => (
+            
+            <label key={option.value} style={styles.languageLabel}>
+              <input type="checkbox" checked={selectedLanguages.includes(option.value)} onChange={() => handleLanguageChange(option.value)} />
+              {option.label}
+            </label>
+          ))}
+        </div>
+  
+        {/* Budget */}
+        <div style={styles.budgetContainer}>
+          <label style={styles.budgetLabel}>
+            Budget:
+            <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} style={styles.budgetInput} placeholder="Enter your budget" />
+          </label>
+        </div>
+      </div>
+  
+      {/* Filter/Reset Buttons */}
+      <div style={styles.buttonGroup}>
         <button onClick={handleFilter} style={styles.button}>
           Filter
         </button>
@@ -156,6 +198,7 @@ const AllItineraries = () => {
           Reset Filters
         </button>
       </div>
+    </div>
       {validationError && <p style={styles.error}>{validationError}</p>} {/* Display validation error */}
       {itineraries.length === 0 ? (
         <p style={styles.noActivities}>No upcoming itineraries available.</p>
@@ -185,14 +228,24 @@ const AllItineraries = () => {
               )}
 
               {/* Locations */}
-              {itinerary.locations.length > 0 && (
-                <div>
-                  <strong>Locations:</strong>
-                  <ul>
-                    {itinerary.locations.map((location) => (
-                      <li key={location._id}>
-                        {location.type} - {location.location}
-                        <p>{location.description}</p>
+              {itinerary.places.length > 0 && (
+                <div style={{ padding: "20px", backgroundColor: "#f9f9f9", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}>
+                  <h2 style={{ color: "#333", marginBottom: "15px" }}>Places to Visit:</h2>
+                  <ul style={{ listStyleType: "none", padding: "0" }}>
+                    {itinerary.places.map((place) => (
+                      <li
+                        key={place._id}
+                        style={{ marginBottom: "15px", padding: "10px", backgroundColor: "#fff", borderRadius: "5px", border: "1px solid #ddd", transition: "transform 0.2s", cursor: "pointer" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      >
+                        <h4 style={{ margin: "5px 0", color: "#007BFF" }}>{place.type}</h4>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <span style={{ fontWeight: "bold" }}>{place.location.address}</span>
+                          <span style={{ margin: "0 10px" }}>-</span>
+                          <span>{place.location.city}</span>
+                        </div>
+                        <p style={{ marginTop: "5px", color: "#666", fontSize: "0.9em" }}>{place.description}</p>
                       </li>
                     ))}
                   </ul>
@@ -204,9 +257,6 @@ const AllItineraries = () => {
                 <strong>Price:</strong> ${itinerary.price}
               </p>
               <p>
-                <strong>Budget:</strong> ${itinerary.budget}
-              </p>
-              <p>
                 <strong>Language:</strong> {itinerary.language}
               </p>
 
@@ -214,26 +264,13 @@ const AllItineraries = () => {
               {itinerary.tags.length > 0 && (
                 <div>
                   <strong>Tags:</strong>
-                  {itinerary.tags.map((tag) => (
-                    <span key={tag._id} style={styles.tag}>
-                      {tag.name}
-                    </span>
-                  ))}
+                  <ul>
+                    {itinerary.tags.map((tag, index) => (
+                      <li key={index}>{tag}</li> // Render each tag
+                    ))}
+                  </ul>
                 </div>
               )}
-
-              {/* Pickup and Dropoff Locations */}
-              <p>
-                <strong>Pickup Location:</strong> {itinerary.pickupLocation}
-              </p>
-              <p>
-                <strong>Dropoff Location:</strong> {itinerary.dropoffLocation}
-              </p>
-
-              {/* Accessibility */}
-              <p>
-                <strong>Accessibility:</strong> {itinerary.accessibility}
-              </p>
             </div>
           ))}
         </div>
@@ -252,23 +289,55 @@ const styles = {
   heading: {
     fontSize: "24px",
     marginBottom: "20px",
-    color: "#00695c",
+    color: "#00695C",
   },
   loading: {
     fontSize: "18px",
-    textAlign: "center",
-    margin: "20px 0",
+    color: "#555",
   },
   error: {
-    fontSize: "18px",
     color: "red",
-    textAlign: "center",
-    margin: "20px 0",
+    marginBottom: "20px",
   },
-  noActivities: {
-    fontSize: "18px",
-    textAlign: "center",
-    margin: "20px 0",
+  sortContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    marginBottom: "20px",
+  },
+  filterContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: "10px",
+    marginBottom: "20px",
+  },
+  input: {
+    padding: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    minWidth: "150px",
+  },
+  tagsContainer: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+  },
+  tagLabel: {
+    display: "flex",
+    alignItems: "center",
+  },
+  buttonGroup: {
+    display: "flex",
+    gap: "10px",
+  },
+  button: {
+    padding: "10px 20px",
+    backgroundColor: "#00695C",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
   grid: {
     display: "grid",
@@ -276,45 +345,19 @@ const styles = {
     gap: "20px",
   },
   card: {
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    padding: "15px",
+    padding: "20px",
     backgroundColor: "#fff",
-    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
   },
   cardHeading: {
     fontSize: "20px",
     marginBottom: "10px",
+    color: "#00695C",
   },
-  filterContainer: {
-    display: "flex", // Change to flexbox layout
-    flexDirection: "row", // Make the items align in a row
-    gap: "10px", // Add spacing between each filter field
-    alignItems: "center", // Align the items vertically
-    marginBottom: "20px",
-  },
-  input: {
-    padding: "10px",
-    marginBottom: "0", // Remove bottom margin for horizontal alignment
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    minWidth: "150px", // Set a minimum width for each input field
-  },
-  button: {
-    padding: "10px 15px",
-    backgroundColor: "#00695c",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  tagsContainer: {
-    display: "flex", // Make the tags align horizontally
-    flexWrap: "wrap", // Allow tags to wrap to the next line if needed
-    gap: "10px",
-  },
-  tagLabel: {
-    marginRight: "10px",
+  noActivities: {
+    fontSize: "16px",
+    color: "#666",
   },
 };
 

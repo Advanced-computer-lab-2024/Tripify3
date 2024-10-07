@@ -81,17 +81,63 @@ function EditPlace() {
   useEffect(() => {
     // Assuming you fetch place types from the same or another API
     // Here we're assuming the types are hard-coded as per your request
-    setPlaceTypes(["Historical Place", "Museum"]);
+    setPlaceTypes(["Monument", "Religious Site", "Palace", "Historical Place", "Museum"]);
   }, []);
 
   // Handle input change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  // Handle input change
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  
+  if (name.startsWith("ticketPrices.")) {
+    // Handle ticketPrices nested object update
+    const ticketType = name.split(".")[1];
+    setPlace((prevPlace) => ({
+      ...prevPlace,
+      ticketPrices: {
+        ...prevPlace.ticketPrices,
+        [ticketType]: value,
+      },
+    }));
+  } else {
+    // Handle other fields normally
     setPlace((prevPlace) => ({
       ...prevPlace,
       [name]: value,
     }));
-  };
+  }
+};
+
+const handleAddOpeningHour = () => {
+  if (newOpeningHour.day && newOpeningHour.from && newOpeningHour.to) {
+    setPlace((prevPlace) => ({
+      ...prevPlace,
+      openingHours: [...prevPlace.openingHours, newOpeningHour],
+    }));
+    setNewOpeningHour({ day: "", from: "", to: "" }); // Reset the new opening hour
+    setShowAddOpeningHour(false);
+  } else {
+    alert("Please fill out all fields for the opening hour.");
+  }
+};
+
+ // *Handle changes for new opening hour*
+ const handleOpeningHourChange = (e) => {
+  const { name, value } = e.target;
+  setNewOpeningHour((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+  // Handle removing an opening hour
+const handleRemoveOpeningHour = (index) => {
+  setPlace((prevPlace) => ({
+    ...prevPlace,
+    openingHours: prevPlace.openingHours.filter((_, i) => i !== index),
+  }));
+};
+
 
   // Handle form submission
   const handleSubmit = (e) => {
@@ -249,6 +295,7 @@ function EditPlace() {
                   <span>{hour.day}:</span>
                   <span>{hour.from} - {hour.to}</span>
                   <button type="button" onClick={() => handleRemoveOpeningHour(index)}>Remove</button>
+                  <button type="button" onClick={() => handleRemoveOpeningHour(index)}>Edit Date&Time</button>
                 </li>
               ))}
             </ul>
@@ -256,21 +303,21 @@ function EditPlace() {
             <p>No opening hours added.</p>
           )}
           {showAddOpeningHour ? (
-            <div>
+              <div>
               <select
                 name="day"
                 value={newOpeningHour.day}
                 onChange={handleOpeningHourChange}
+                required
               >
                 <option value="" disabled>Select Day</option>
-                {getAvailableDays().map((day) => (
+                {daysOfWeek.map((day) => (
                   <option key={day} value={day}>{day}</option>
                 ))}
               </select>
               <input
                 type="time"
                 name="from"
-                placeholder="From"
                 value={newOpeningHour.from}
                 onChange={handleOpeningHourChange}
                 required
@@ -278,7 +325,6 @@ function EditPlace() {
               <input
                 type="time"
                 name="to"
-                placeholder="To"
                 value={newOpeningHour.to}
                 onChange={handleOpeningHourChange}
                 required

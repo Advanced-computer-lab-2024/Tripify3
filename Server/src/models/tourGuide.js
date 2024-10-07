@@ -19,6 +19,9 @@ const tourGuideSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  licenseNumber: {
+    type: String,
+  },
   status: {
     type: String,
     enum: ["Pending", "Rejected", "Accepted"],
