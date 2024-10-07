@@ -5,6 +5,7 @@ import DeleteProduct from "./DeleteProduct.js";
 import EditProductForm from "./EditProductForm.js";
 import FilterProductCondition from "./FilterProductCondition.js";
 import ProductList from "./ProductList.js";
+import MyProduct from "./MyProductList.js";
 import SearchProduct from "./SearchProduct.js";
 import SortByRating from "./SortByRating.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
@@ -16,20 +17,24 @@ import FilterSalesReport from "./filterSalesReport.js";
 const aSeller = () => {
   return (
     <>
-      <FilterSalesReport />
       <ViewSellerPage />
       <CreateProductForm />
       <UpdateSellerForm />
-      <ProductList />
+      {/* <ProductList /> */}
+      <MyProduct />
       <EditProductForm />
       <SearchProduct />
-      <DeleteProduct />
       <FilterProductCondition />
       <SortByRating />
+
+      {/* instead of seller id i want to make it seller username that links ti another tab with the seller info */}
+      {/* <DeleteProduct /> 
       <ViewProductStockAndSales />
       <ArchiveProduct />
       <UnarchiveProduct />
       <DecrementProductQuantity />
+      <FilterSalesReport />
+      */}
     </>
   );
 };

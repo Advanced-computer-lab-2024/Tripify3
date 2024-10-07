@@ -2,6 +2,7 @@ import seller from "../../models/seller.js"; // Adjust the path as necessary
 import product from "../../models/product.js"; // Adjust the path as necessary
 import users from "../../models/user.js";
 import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
+// import { getUserType } from "../../../../Client/src/utils/authUtils.js";
 // Seller
 export const getSellers = async (req, res) => {
   try {
@@ -13,7 +14,40 @@ export const getSellers = async (req, res) => {
     res.status(500).json({ message: "Server Error", error });
   }
 };
-//DONE IN FRONTEND
+export const signup = async (req, res) => {
+  try {
+    const { name, email, description, username, password } = req.body;
+
+    const existingUser = await users.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists." });
+    }
+    const existingEmail = await users.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists." });
+    }
+
+    const newseller = new seller({
+      username,
+      name,
+      email,
+      password,
+      type: "Seller",
+      description,
+    });
+
+    // Save the user to the database
+    await newseller.save();
+    // Respond with success message and user data
+    res.status(201).json({
+      message: "User created successfully",
+      user: newseller,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
 export const viewSeller = async (req, res) => {
   try {
     const { username } = req.query; // Get the username from query parameters
@@ -69,14 +103,14 @@ export const createProduct = async (req, res) => {
       req.body;
 
     // Check if the product already exists
-    const existingProduct = await product.findOne({ name });
+    const existingProduct = await product.findOne({ name, sellerId });
     if (existingProduct) {
       return res.status(400).json({ message: "Product already exists." });
     }
 
     // Validate if the sellerId refers to a valid seller
     const sellerUser = await seller.findById(sellerId);
-    if (!sellerUser || sellerUser.type !== "Seller") {
+    if (!sellerUser || sellerUser.type !== "seller") {
       return res.status(400).json({ message: "Invalid seller." });
     }
 
@@ -112,11 +146,27 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 //need to change in FE to loop over the images need to be changed
 export const searchAllProducts = async (req, res) => {
   try {
     // Find products by name
     const product2 = await product.find({ archived: false }); // Using regex for case-insensitive search
+    // Return the found product(s)
+    return res.status(200).json(product2);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+export const searchMyProducts = async (req, res) => {
+  try {
+    // Find products by name
+    const { sellerId } = req.query;
+    const product2 = await product.find({
+      archived: false,
+      sellerId: sellerId,
+    }); // Using regex for case-insensitive search
     // Return the found product(s)
     return res.status(200).json(product2);
   } catch (err) {
@@ -141,7 +191,7 @@ export const editProduct = async (req, res) => {
 
   try {
     // Validate if the sellerId refers to a valid seller (if sellerId is provided)
-    const current = await product.findOne({ name: name });
+    const current = await product.findOne({ name: name, sellerId: sellerId });
 
     if (!current) {
       return res.status(404).json({ message: "Product not found." });
@@ -160,7 +210,6 @@ export const editProduct = async (req, res) => {
         quantity,
         // If the product has existing images, push the new one, otherwise, create an array with the new one
         imageUrl,
-        // $push: { imageUrl: imageUrl }, // Pushing new image to the existing array
         category,
       },
       { new: true } // Return the updated document
@@ -173,7 +222,7 @@ export const editProduct = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}; // Search by name need to be changed
+};
 
 export const searchProduct = async (req, res) => {
   try {

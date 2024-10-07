@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { getUserType, getUserId } from "../../utils/authUtils.js";
 const FilterProductCondition = () => {
+  const userId = getUserId(); // Get the user ID from local storage
+  const userType = getUserType(); // Get the user type from local storage
   const [conditions, setConditions] = useState([
     { operator: ">=", value: "" }, // Default condition
   ]); // To hold multiple conditions
@@ -45,7 +47,15 @@ const FilterProductCondition = () => {
       );
 
       // If successful, store the products in the state
-      setProducts(response.data);
+      console.log(response.data);
+      if (userType === "Seller") {
+        const filteredProducts = response.data.filter(
+          (product) => product.sellerId === userId
+        );
+        setProducts(filteredProducts);
+      } else {
+        setProducts(response.data);
+      }
       setResponseMessage("");
     } catch (error) {
       // Handle any errors and display appropriate message
@@ -139,6 +149,9 @@ const FilterProductCondition = () => {
                     style={{ maxWidth: "40px" }}
                   />
                 ))}
+                <p>
+                  <strong>sellerId:</strong> {product.sellerId}
+                </p>
               </li>
             ))}
           </ul>

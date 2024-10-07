@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { getUserId, getUserType } from "../../utils/authUtils.js";
 const SortByRating = () => {
+  const userId = getUserId(); // Get the user ID from local storage
+  const userType = getUserType(); // Get the user type from local storage
   const [sortBy, setSortBy] = useState("asc"); // Default sort order is ascending
   const [products, setProducts] = useState([]); // State to store the sorted products
   const [responseMessage, setResponseMessage] = useState(""); // State to store any response messages
@@ -21,9 +23,14 @@ const SortByRating = () => {
           params: { sortBy },
         } // Sending the current sort order
       );
-
-      // Store the sorted products in the state
-      setProducts(response.data);
+      if (userType === "Seller") {
+        const filteredProducts = response.data.filter(
+          (product) => product.sellerId === userId
+        );
+        setProducts(filteredProducts);
+      } else {
+        setProducts(response.data);
+      }
       setResponseMessage("");
     } catch (error) {
       // Handle any errors

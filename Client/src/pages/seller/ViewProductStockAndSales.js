@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import { getUserId, getUserType } from "../../utils/authUtils.js";
 const ViewProductStockAndSales = () => {
+  const userId = getUserId(); // Get the user ID from local storage
+  const userType = getUserType(); // Get the user type from local storage
   const [products, setProducts] = useState([]); // State to store products
   const [loading, setLoading] = useState(true); // Loading state
   const [errorMessage, setErrorMessage] = useState(""); // Error message state
@@ -14,9 +16,15 @@ const ViewProductStockAndSales = () => {
         const response = await axios.get(
           "http://localhost:8000/access/seller/viewProductStockAndSales"
         );
+        if (userType === "Seller") {
+          const filteredProducts = response.data.filter(
+            (product) => product.sellerId === userId
+          );
+          setProducts(filteredProducts);
+        } else {
+          setProducts(response.data);
+        }
 
-        // Set the products in the state
-        setProducts(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { getUserId, getUserType } from "../../utils/authUtils.js";
 const EditProductForm = () => {
+  const userId = getUserId(); // Get the user ID from local storage
+  const userType = getUserType(); // Get the user type from local storage
   const [name, setName] = useState(""); // Product name (to search)
   const [price, setPrice] = useState("");
   const [details, setDetails] = useState("");
@@ -18,7 +20,10 @@ const EditProductForm = () => {
       const response = await axios.get(
         `http://localhost:8000/access/seller/searchProduct?name=${name}`
       );
-      const product = response.data[0]; // Assuming response is an array
+      const filteredProducts = response.data.filter(
+        (product) => product.sellerId === userId
+      );
+      const product = filteredProducts[0]; // Assuming the first product is the correct one
 
       // Set product details and images
       setProductId(product._id);
@@ -70,6 +75,9 @@ const EditProductForm = () => {
       // Set response message on success
       setResponseMessage("Product updated successfully.");
       console.log("Response:", response.data);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       // Handle any errors
       set;
@@ -144,16 +152,19 @@ const EditProductForm = () => {
             />
           </div>
 
-          <div>
-            <label>Seller ID: </label>
-            <input
-              type="text"
-              value={sellerId}
-              onChange={(e) => setSellerId(e.target.value)}
-              placeholder="Enter seller ID"
-              readOnly
-            />
-          </div>
+          {userType === "Admin" ? (
+            <div>
+              <label>Seller ID: </label>
+              <input
+                type="text"
+                value={sellerId}
+                onChange={(e) => setSellerId(e.target.value)}
+                placeholder="Enter seller ID"
+              />
+            </div>
+          ) : (
+            <></>
+          )}
 
           {/* Display existing images as editable text inputs */}
           <div>

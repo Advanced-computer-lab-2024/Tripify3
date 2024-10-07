@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { getUserId, getUserType } from "../../utils/authUtils.js";
 
 const CreateProductForm = () => {
+  const userId = getUserId(); // Get the user ID from local storage
+  const userType = getUserType(); // Get the user type from local storage
+  const [sellerId, setSellerId] = useState(userType === "Seller" ? userId : ""); // Handle sellerId input for Admin
   const [formData, setFormData] = useState({
     name: "",
     price: 0,
@@ -10,7 +14,8 @@ const CreateProductForm = () => {
     rating: 0,
     imageUrl: [], // Now this is an array
     category: "",
-    sellerId: "",
+    sellerId: userType === "Seller" ? userId : "", // Default to logged-in user for Seller
+    type: userType,
   });
 
   const [responseMessage, setResponseMessage] = useState("");
@@ -37,6 +42,12 @@ const CreateProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // For Admin, ensure sellerId is included in formData
+    if (userType === "Admin" && sellerId) {
+      formData.sellerId = sellerId;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:8000/access/seller/createProduct", // Replace with your API endpoint
@@ -104,16 +115,22 @@ const CreateProductForm = () => {
             required
           />
         </div>
-        <div>
-          <label>Seller ID:</label>
-          <input
-            type="text"
-            name="sellerId"
-            value={formData.sellerId}
-            onChange={handleChange}
-            required
-          />
-        </div>
+
+        {/* Only show seller ID input for Admin */}
+        {userType === "Admin" ? (
+          <div>
+            <label>Seller ID: </label>
+            <input
+              type="text"
+              value={sellerId}
+              onChange={(e) => setSellerId(e.target.value)}
+              placeholder="Enter seller ID"
+              required
+            />
+          </div>
+        ) : (
+          <></>
+        )}
 
         {/* Image URL inputs */}
         {formData.imageUrl.map((url, index) => (
