@@ -20,14 +20,12 @@ import TouristHomePage from "./pages/tourist/touristHomepage.js";
 // import DoctorInformation from "./pages/advertiser/addLocation.js";
 import AllActivities from "./pages/tourist/AllActivites.js";
 import AllItineraries from "./pages/tourist/allItineraries.js";
-import AllHistoricalPlaces from "./pages/tourist/allPlces.js";
+import AllHistoricalPlaces from "./pages/tourist/allHistoricalPlaces.js";
 import ProductList from "./pages/seller/ProductList.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import SearchProduct from "./pages/seller/SearchProduct.js";
 import FilterProduct from "./pages/seller/FilterProductCondition.js";
 import SortBy from "./pages/seller/SortByRating.js";
-
-
 
 const App = () => {
   return (
@@ -49,7 +47,10 @@ const App = () => {
         <Route path="/tourist/activities" element={<AllActivities />} />
         <Route path="/tourist/itineraries" element={<AllItineraries />} />
 
-        <Route path="/tourist/historicalplaces" element={<AllHistoricalPlaces />} />
+        <Route
+          path="/tourist/historicalplaces"
+          element={<AllHistoricalPlaces />}
+        />
 
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
@@ -69,7 +70,6 @@ const App = () => {
         <Route path="/tourist/SortBy" element={<SortBy />} />
         <Route path="/seller/:id" element={<ViewSellerprofile />} />
         <Route path="/tourGuide/itinerary" element={<Itinerary />} />
-
       </Routes>
     </Router>
   );
