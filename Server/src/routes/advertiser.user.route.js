@@ -3,8 +3,8 @@ import {getTags, getCategories, getAdvertisers, updateProfile, getProfile, delet
 
 const router = express.Router();
 
-router.put("/advertiser/profile/:advertiserId", updateProfile);
-router.get("/advertiser/profile/:advertiserId", getProfile);
+router.put("/advertiser/updateProfile/:advertiserId", updateProfile);
+router.get("/advertiser/getProfile/:advertiserId", getProfile);
 router.delete("/advertiser/profile/:advertiserId", deleteProfile);
 router.get('/advertiser/get', getAdvertisers);
 

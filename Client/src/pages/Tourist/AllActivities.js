@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { getAllActivities } from "../../services/tourist.js"; // Import the API function
+import { getAllActivities, getAllCategories, filterActivities } from "../../services/tourist.js"; // Import the API function
 
 const AllActivities = () => {
   const [activities, setActivities] = useState([]); // Store the activities
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
+  const [categories, setCategories] = useState([]); // Store categories
+  const [filters, setFilters] = useState({ minPrice: "", maxPrice: "", category: "", rating: "" }); // Store filter values
+  const [validationError, setValidationError] = useState(""); // Validation error message
+  const [sortCriteria, setSortCriteria] = useState({ attribute: "", order: "" }); // Store sort criteria
 
   // Fetch activities from the backend
   const fetchActivities = async () => {
@@ -18,9 +22,87 @@ const AllActivities = () => {
     }
   };
 
-  // useEffect to call fetchActivities when component mounts
+  // Fetch categories for the dropdown
+  const fetchCategories = async () => {
+    try {
+      const response = await getAllCategories();
+      setCategories(response.data.categories); // Set categories data
+    } catch (error) {
+      setError("Error fetching categories");
+    }
+  };
+
+  // Validate filter inputs
+  const validateFilters = () => {
+    const minPrice = parseFloat(filters.minPrice);
+    const maxPrice = parseFloat(filters.maxPrice);
+
+    if (maxPrice < minPrice) {
+      setValidationError("Max Price must be greater than Min Price.");
+      return false;
+    }
+    setValidationError(""); // Clear error message if validation passes
+    return true;
+  };
+
+  // Handle filter submission
+  const handleFilter = async () => {
+    if (!filters.minPrice && !filters.maxPrice && !filters.category && !filters.rating) {
+      setValidationError("Please fill at least one filter field.");
+      return; // Do not proceed if all fields are empty
+    }
+
+    if (!validateFilters()) return; // Only proceed if validation passes
+
+    try {
+      const response = await filterActivities({
+        minPrice: filters.minPrice,
+        maxPrice: filters.maxPrice,
+        category: filters.category,
+        rating: filters.rating,
+      });
+      setActivities(response.data.activities); // Set filtered activities
+    } catch (error) {
+      setError("Error fetching filtered activities");
+    }
+  };
+
+  // Reset filters and fetch all activities again
+  const handleResetFilters = () => {
+    setFilters({ minPrice: "", maxPrice: "", category: "", rating: "" }); // Reset filter values
+    setValidationError(""); // Clear validation error
+    fetchActivities(); // Fetch all activities
+  };
+
+  // Sorting functionality
+  const handleSort = () => {
+    let sortedActivities = [...activities];
+    if (sortCriteria.attribute && sortCriteria.order) {
+      sortedActivities.sort((a, b) => {
+        const aValue = a[sortCriteria.attribute];
+        const bValue = b[sortCriteria.attribute];
+
+        if (sortCriteria.order === "ascen") {
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        } else if (sortCriteria.order === "desc") {
+          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+        }
+        return 0;
+      });
+      setActivities(sortedActivities); // Update activities with sorted data
+    }
+  };
+
+  // Reset sorting to the original activities
+  const handleResetSort = () => {
+    fetchActivities(); // Fetch all activities again to reset sorting
+    setSortCriteria({ attribute: "", order: "" }); // Reset sort criteria
+  };
+
+  // useEffect to call fetchActivities and fetchCategories when component mounts
   useEffect(() => {
     fetchActivities();
+    fetchCategories();
   }, []);
 
   if (loading) {
@@ -34,6 +116,44 @@ const AllActivities = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.heading}>Upcoming Activities</h2>
+      <div style={styles.sortContainer}>
+        <select value={sortCriteria.attribute} onChange={(e) => setSortCriteria({ ...sortCriteria, attribute: e.target.value })} style={styles.select}>
+          <option value="">Sort by</option>
+          <option value="price">Price</option>
+          <option value="rating">Rating</option>
+        </select>
+        <select value={sortCriteria.order} onChange={(e) => setSortCriteria({ ...sortCriteria, order: e.target.value })} style={styles.select}>
+          <option value="">Order</option>
+          <option value="ascen">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+        <button onClick={handleSort} style={styles.button}>
+          Sort
+        </button>
+        <button onClick={handleResetSort} style={styles.button}>
+          Reset Sort
+        </button>
+      </div>
+      <div style={styles.filterContainer}>
+        <input type="number" placeholder="Min Price" min="0" value={filters.minPrice} onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })} style={styles.input} />
+        <input type="number" placeholder="Max Price" min="0" value={filters.maxPrice} onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })} style={styles.input} />
+        <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} style={styles.select}>
+          <option value="">Select Category</option>
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        <input type="number" placeholder="Rating (1-5)" value={filters.rating} onChange={(e) => setFilters({ ...filters, rating: e.target.value })} style={styles.input} />
+        <button onClick={handleFilter} style={styles.button}>
+          Filter
+        </button>
+        <button onClick={handleResetFilters} style={styles.button}>
+          Reset Filters
+        </button>
+      </div>
+      {validationError && <p style={styles.error}>{validationError}</p>} {/* Display validation error */}
       {activities.length === 0 ? (
         <p style={styles.noActivities}>No upcoming activities available.</p>
       ) : (
@@ -42,14 +162,16 @@ const AllActivities = () => {
             <div key={activity._id} style={styles.card}>
               <h3 style={styles.cardHeading}>{activity.name}</h3>
               <p>
-                <strong>Date:</strong>{" "}
-                {new Date(activity.date).toLocaleDateString()}
+                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
               </p>
               <p>
                 <strong>Time:</strong> {activity.time}
               </p>
               <p>
-                <strong>Category:</strong> {activity.categoryId}
+                <strong>Category:</strong> {activity.category.name}
+              </p>
+              <p>
+                <strong>Tags:</strong> {activity.tags.length > 0 ? activity.tags.map((tag) => tag.name).join(", ") : "No tags available"}
               </p>
               <p>
                 <strong>Price:</strong> ${activity.price}
@@ -111,20 +233,43 @@ const styles = {
     gap: "20px",
   },
   card: {
-    backgroundColor: "white",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    padding: "20px",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-    transition: "transform 0.2s",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    padding: "15px",
+    backgroundColor: "#fff",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
   },
   cardHeading: {
     fontSize: "20px",
-    color: "#333",
     marginBottom: "10px",
   },
-  cardHover: {
-    transform: "translateY(-5px)",
+  sortContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  filterContainer: {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  input: {
+    marginRight: "10px",
+    padding: "5px",
+    width: "100px",
+  },
+  select: {
+    marginRight: "10px",
+    padding: "5px",
+  },
+  button: {
+    marginRight: "10px",
+    padding: "5px 10px",
+    backgroundColor: "#00695c",
+    color: "#fff",
+    border: "none",
+    borderRadius: "3px",
+    cursor: "pointer",
   },
 };
 

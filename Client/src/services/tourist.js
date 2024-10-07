@@ -19,6 +19,31 @@ export const getAllIteneraries = async () => {
 };
 
 export const getAllActivities = async () => {
-    return await axios.get(`${API_URL}/tourist/activity`);
+  return await axios.get(`${API_URL}/tourist/activity`);
+};
+
+export const filterActivities = async (filters) => {
+  const { minPrice, maxPrice, category, rating } = filters;
+  return await axios.get(`${API_URL}/tourist/activity/filter`, {
+    params: {
+      minPrice,
+      maxPrice,
+      category,
+      rating,
+    },
+  });
+};
+
+export const sortActivities = async (filters) => {
+    const { price, rating, date } = filters;
+    return await axios.get(`${API_URL}/tourist/activity/sort`, {
+      params: {
+        price,
+        rating,
+        date,
+        
+      },
+    });
   };
   
+

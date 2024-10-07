@@ -29,7 +29,7 @@ const AdvertiserActivities = () => {
     time: "",
     location: "",
     price: "",
-    categoryId: "",
+    category: "",
     specialDiscount: "",
     booking: false,
     duration: "",
@@ -95,7 +95,7 @@ const AdvertiserActivities = () => {
     try {
       await createActivity({
         ...newActivity,
-        advertiserId: userId,
+        advertiser: userId,
         tags: selectedTags,
         duration: parseInt(newActivity.duration),
       });
@@ -107,7 +107,7 @@ const AdvertiserActivities = () => {
         time: "",
         location: "",
         price: "",
-        categoryId: "",
+        category: "",
         specialDiscount: "",
         booking: false,
         duration: "",
@@ -145,7 +145,7 @@ const AdvertiserActivities = () => {
       time: activity.time,
       location: activity.location,
       price: activity.price,
-      categoryId: activity.category._id || "",
+      category: activity.category._id || "",
       specialDiscount: activity.specialDiscount,
       booking: activity.booking,
       duration: activity.duration,
@@ -280,9 +280,9 @@ const AdvertiserActivities = () => {
           Category:
           <select
             style={{ width: "100%", padding: "10px", marginTop: "5px" }}
-            name="categoryId"
-            value={newActivity.categoryId}
-            onChange={(e) => setNewActivity({ ...newActivity, categoryId: e.target.value })}
+            name="category"
+            value={newActivity.category}
+            onChange={(e) => setNewActivity({ ...newActivity, category: e.target.value })}
           >
             <option value="">Select a category</option>
             {categories.map((category) => (
