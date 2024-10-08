@@ -3,7 +3,7 @@ import http_code from "../../enumerations/http_code.js";
 import response_status from "../../enumerations/response_status.js";
 import APIFeatures from "../../utils/APIFeatures.js";
 import Tag from "../../models/tag.js";
-import Location from "../../models/location.js";
+// import Location from "../../models/location.js";
 import User from "../../models/user.js";
 
 export const addPlace = async (req, res) => {
