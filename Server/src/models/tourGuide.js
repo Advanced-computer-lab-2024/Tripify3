@@ -1,76 +1,35 @@
 import mongoose from "mongoose";
-import user from "./user.js";
+import User from "./user.js";
 
 const tourGuideSchema = new mongoose.Schema({
-  email: {
+  name: {
     type: String,
     required: true,
-    unique: true,
-  }, // Email address of the user
-  name:{
-    type:String,
-    required:true
   },
-  licenseNumber: {
-    type: String,
-  },
-  experienceYears: {
+  yearsOfExperience: {
     type: Number,
-  },
-  regionSpecialization: {
-    type: String,
+    required: true,
   },
   previousWork: [
     {
       type: String,
     },
   ],
-  department: {
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  licenseNumber: {
     type: String,
   },
-  mobile: {
+  status: {
     type: String,
+    enum: ["Pending", "Rejected", "Accepted"],
+    required: true,
+    default: "Pending",
   },
-  companyName: {
-    type: String,
-  },
-  adBudget: {
-    type: Number,
-  },
-  description: {
-    type: String,
-  },
-  website: {
-    type: String,
-  },
-  hotline: {
-    type: String,
-  },
-  tourGuideCertificate: {
-    type: String,
-  },
-  photos: [
-    {
-      type: String,
-    },
-  ],
-  revenue: {
-    type: Number,
-  },
-  ratings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Rating",
-    },
-  ], // Array of ratings for the tour guide
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
-  ],
 });
 
-const TourGuide = user.discriminator("Tour Guide", tourGuideSchema);
+const TourGuide = User.discriminator("Tour Guide", tourGuideSchema);
 
 export default TourGuide;

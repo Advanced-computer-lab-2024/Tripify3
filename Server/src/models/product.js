@@ -41,7 +41,7 @@ const productSchema = new Schema(
     },
     sellerId: {
       type: mongoose.Schema.Types.ObjectId, // Reference to the User who is a seller
-      ref: "Users", // Referencing the Users model
+      ref: "Seller", // Referencing the Users model
       required: true,
     },
     sales: {

@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Container, TextField, Typography, Alert, IconButton, Link } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Alert,
+  IconButton,
+  Link,
+  InputAdornment,
+} from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import backgroundImage from "../../assets/signup/CarouselLogin1.png"; // Import your image
-import { setUser } from "../../utils/authUtils.js"; // Import the setUser fu
+import backgroundImage from "../../assets/signup/CarouselLogin1.png";
+import { setUser } from "../../utils/authUtils.js";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -31,19 +41,20 @@ const Login = () => {
       }
 
       const data = await response.json();
-      console.log(data);
-      alert("Login successful!");
       setUser(data.user); // Store user info in the utility file
-      if(data.user.type === "Tourism Governor"){
-        navigate("/governor/placeslist"); // Redirect to home page or dashboard
-      } else if(data.user.type === "Tourist"){
-        navigate("/"); // Redirect to home page or dashboard
-      }  else if(data.user.type === "Seller"){
-        navigate("/"); // Redirect to home page or dashboard
-      }  else if(data.user.type === "Admin"){
-        navigate("/"); // Redirect to home page or dashboard
+      if (data.user.type === "Tourism Governor") {
+        navigate("/governor");
+      } else if (data.user.type === "Tourist") {
+        navigate("/tourist");
+      } else if (data.user.type === "Seller") {
+        navigate("/seller/homepage");
+      } else if (data.user.type === "Admin") {
+        navigate("/admin/homepage");
+      } else if (data.user.type === "Tour Guide") {
+        navigate("/tourGuide/profile");
+      } else if (data.user.type === "Advertiser") {
+        navigate("/advertiser/profile");
       }
-      
     } catch (error) {
       console.error("Error:", error);
       setErrorMessage("An error occurred while logging in.");
@@ -72,21 +83,25 @@ const Login = () => {
           borderRadius: "20px",
           boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.15)",
           textAlign: "center",
-          position: "relative",
+          position: "relative", // Ensure the parent box is relatively positioned for arrow placement
         }}
       >
+        {/* Back Arrow */}
         <IconButton
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1)} // Navigate to previous page
           sx={{
             position: "absolute",
-            top: "20px",
-            left: "20px",
+            top: "10px",
+            left: "10px",
+            padding: 0, // Remove padding so the icon doesn't take up extra space
             color: "#00695C",
+            zIndex: 1, // Ensure the arrow stays on top
           }}
         >
-          <ArrowBackIcon />
+          <ArrowBackIcon sx={{ fontSize: "30px" }} />
         </IconButton>
 
+        {/* Left Box - Form */}
         <Box
           sx={{
             width: "50%",
@@ -98,10 +113,18 @@ const Login = () => {
           }}
         >
           <Box sx={{ width: "100%", maxWidth: "500px" }}>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "black" }}>
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{ fontWeight: "bold", color: "black" }}
+            >
               Login
             </Typography>
-            <Typography variant="body1" color="textSecondary" sx={{ marginBottom: "30px" }}>
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              sx={{ marginBottom: "30px" }}
+            >
               Please enter your username and password to log in.
             </Typography>
 
@@ -112,7 +135,16 @@ const Login = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              <TextField fullWidth label="Username" variant="outlined" value={username} onChange={(e) => setUsername(e.target.value)} margin="normal" required />
+              <TextField
+                fullWidth
+                label="Username"
+                variant="outlined"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                margin="normal"
+                required
+              />
+
               <TextField
                 fullWidth
                 label="Password"
@@ -124,20 +156,25 @@ const Login = () => {
                 required
                 InputProps={{
                   endAdornment: (
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      sx={{ color: "orange" }} // Set icon color to orange
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        sx={{ color: "orange" }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
                   ),
                 }}
               />
 
               {/* Forgot Password link under the password field */}
               <Box sx={{ textAlign: "right", mt: 1 }}>
-                <Link href="/username-input" underline="none" sx={{ color: "#00695C", fontSize: "14px" }}>
+                <Link
+                  href="/username-input"
+                  underline="none"
+                  sx={{ color: "#00695C", fontSize: "14px" }}
+                >
                   Forgot Password?
                 </Link>
               </Box>
@@ -152,16 +189,33 @@ const Login = () => {
                 Login
               </Button>
 
-              <Typography variant="body2" sx={{ marginTop: "20px", color: "gray", textAlign: "center" }}>
+              <Typography
+                variant="body2"
+                sx={{ marginTop: "20px", color: "gray", textAlign: "center" }}
+              >
                 Don't have an account?{" "}
                 <Link href="/signup" underline="none" sx={{ color: "#00695C" }}>
                   Sign up
+                </Link>
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ marginTop: "5px", color: "gray", textAlign: "center" }}
+              >
+                continue as{" "}
+                <Link
+                  href="/tourist"
+                  underline="none"
+                  sx={{ color: "#00695C" }}
+                >
+                  Guest
                 </Link>
               </Typography>
             </form>
           </Box>
         </Box>
 
+        {/* Right Box - Background Image */}
         <Box
           sx={{
             width: "50%",

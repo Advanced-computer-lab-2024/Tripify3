@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 export const getProfile = async (req, res) => {
   try {
-    const { username } = req.params;
+    const { userId } = req.params;
 
-    const userProfile = await Tourist.find({ username });
+    const userProfile = await Tourist.findById(userId );
 
     if (!userProfile) {
       return res.status(404).json({ message: "User not found" });
@@ -25,21 +25,20 @@ export const getProfile = async (req, res) => {
 
 export const editProfile = async (req, res) => {
     try {
-      const { username } = req.params; // Assuming username is passed as a route parameter
-      const { phoneNumber, dateOfBirth, occupation, email, nationality, name } = req.body;
+      const { userId } = req.params; // Assuming username is passed as a route parameter
+      const { phoneNumber, birthDate, occupation,  nationality, name } = req.body;
   
       // Create an update object and only include fields that are provided in the request body
       const updateData = {};
       if (phoneNumber) updateData.phoneNumber = phoneNumber;
-      if (dateOfBirth) updateData.dateOfBirth = dateOfBirth;
+      if (birthDate) updateData.birthDate = birthDate;
       if (occupation) updateData.occupation = occupation;
-      if (email) updateData.email = email;
       if (nationality) updateData.nationality = nationality;
       if (name) updateData.name = name;
   
       // Find the user by username and update only the fields provided in updateData
       const updatedUserProfile = await Tourist.findOneAndUpdate(
-        { username }, // Query by username
+        { _id: userId }, // Query by username
         { $set: updateData }, // Update only the fields that are in updateData
         { new: true, runValidators: true } // Return the updated document and run schema validations
       );

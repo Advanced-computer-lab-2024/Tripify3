@@ -2,16 +2,17 @@ import mongoose from "mongoose";
 import user from "./user.js";
 
 const sellerSchema = new mongoose.Schema({
-  email: {
+  description: { type: String, required: true },
+  name: {
     type: String,
     required: true,
-    unique: true,
-  }, // Email address of the user
-  name:{
-    type:String,
-    required:true
   },
-  description: { type: String },
+  status: {
+    type: String,
+    enum: ["Pending", "Rejected", "Accepted"],
+    required: false,
+    default: "Pending",
+  },
 });
 
 const Seller = user.discriminator("Seller", sellerSchema);

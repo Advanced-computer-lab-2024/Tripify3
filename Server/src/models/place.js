@@ -5,30 +5,34 @@ const placeSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Name field is required"],
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["Monument", "Religious Site", "Palace", "Historical Place", "Museum"], // Possible user roles
+      required: true,
     },
     description: {
       type: String,
-      required: [true, "Description field is required"],
+      required: true,
     },
     pictures: [
       {
         type: String,  // Corrected type declaration for array elements
-        required: [true, "At least one picture is required"],
       },
     ],
     location: {
       address: {
         type: String,
-        required: [true, "Address field is required"],
+        required: true
       },
       city: {
         type: String,
-        required: [true, "City field is required"],
+        required: true
       },
       country: {
         type: String,
-        required: [true, "Country field is required"],
+        required: true
       },
     },
     openingHours: [
@@ -50,15 +54,15 @@ const placeSchema = new Schema(
     ticketPrices: {
       foreigner: {
         type: Number,
-        required: [true, "Foreigner price is required"],
+        required: true
       },
       native: {
         type: Number,
-        required: [true, "Native price is required"],
+        required: true
       },
       student: {
         type: Number,
-        required: [true, "Student price is required"],
+        required: true
       },
     },
     tags: [
@@ -67,9 +71,15 @@ const placeSchema = new Schema(
         ref: "Tag",
       },
     ], // Array of tags related to the place
+    tourismGovernor: 
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+     // Array of tags related to the place
   },
   { timestamps: true }
 );
 
-const places = mongoose.model("Place", placeSchema);  // Capitalized model name
-export default places;
+const Place = mongoose.model("Place", placeSchema);  // Capitalized model name
+export default Place;

@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css"; // Optional global CSS (if you have any)
 import App from "./App.js"; // Import the main App component
+import 'leaflet/dist/leaflet.css';
+
 
 // Find the root DOM node and render the App component into it
 const root = ReactDOM.createRoot(document.getElementById("root"));
