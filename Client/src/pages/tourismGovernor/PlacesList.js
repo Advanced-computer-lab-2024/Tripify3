@@ -43,7 +43,7 @@ function PlacesList() {
   const handleTagSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/governor/createTag", {
+      const response = await axios.post("http://localhost:8000/governor/tag/create", {
         name: tagName,
       });
       

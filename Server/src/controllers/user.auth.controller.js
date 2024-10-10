@@ -106,8 +106,6 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Email already exists." });
     }
 
-
-
     // Based on the user type, create the respective user
     let newUser;
 
