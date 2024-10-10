@@ -10,7 +10,7 @@ const ViewTags = () => {
     const fetchTags = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/access/admin/viewTags"
+          "http://localhost:8000/admin/viewTags"
         );
         setTags(response.data); // Set the fetched tags in the state
         setResponseMessage("");

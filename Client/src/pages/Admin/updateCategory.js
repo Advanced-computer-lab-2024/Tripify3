@@ -13,7 +13,7 @@ const UpdateCategoryForm = () => {
     try {
       // Send the update request
       const response = await axios.put(
-        "http://localhost:8000/access/admin/updateCategory",
+        "http://localhost:8000/admin/updateCategory",
         {
           oldName,
           newName,

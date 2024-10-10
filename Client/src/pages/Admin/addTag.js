@@ -12,7 +12,7 @@ const AddTagForm = () => {
     try {
       // Send POST request to add a new tag
       const response = await axios.post(
-        "http://localhost:8000/access/admin/addTag",
+        "http://localhost:8000/admin/addTag",
         {
           name: tagName,
         }

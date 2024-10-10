@@ -12,7 +12,7 @@ const DeleteCategoryForm = () => {
     try {
       // Send the delete request
       const response = await axios.delete(
-        "http://localhost:8000/access/admin/deleteCategory",
+        "http://localhost:8000/admin/deleteCategory",
         {
           data: { name: categoryName },
         }
