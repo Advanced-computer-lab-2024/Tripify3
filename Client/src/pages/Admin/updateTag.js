@@ -13,7 +13,7 @@ const UpdateTagForm = () => {
     try {
       // Send PUT request to update the tag
       const response = await axios.put(
-        "http://localhost:8000/access/admin/updateTag",
+        "http://localhost:8000/admin/updateTag",
         {
           oldName,
           newName,

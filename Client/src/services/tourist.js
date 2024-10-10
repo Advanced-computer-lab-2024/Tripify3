@@ -3,11 +3,11 @@ import axios from "axios";
 const API_URL = "http://localhost:8000"; // Replace with your API URL
 
 export const getAllTags = async () => {
-  return await axios.get(`${API_URL}/getTags`);
+  return await axios.get(`${API_URL}/tag/get`);
 };
 
 export const getAllCategories = async () => {
-  return await axios.get(`${API_URL}/getCategories`);
+  return await axios.get(`${API_URL}/category/get`);
 };
 
 export const getAllPlaces = async () => {

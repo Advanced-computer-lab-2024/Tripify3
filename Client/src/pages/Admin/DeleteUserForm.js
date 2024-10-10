@@ -17,7 +17,7 @@ const DeleteUserForm = () => {
 
     try {
       const response = await axios.delete(
-        "http://localhost:8000/access/admin/deleteUser", // Adjust to your API endpoint
+        "http://localhost:8000/admin/deleteUser", // Adjust to your API endpoint
         {
           data: { username }, // Pass the username in the body
         }

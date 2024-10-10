@@ -46,7 +46,7 @@ function EditPlace() {
   // Fetch place data to edit
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/getPlace/${id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/place/get/${id}`)
       .then((response) => {
         if (response.data.status === "succeeded") {
           setPlace(response.data.data.place);
@@ -66,7 +66,7 @@ function EditPlace() {
   // Fetch available tags
   useEffect(() => {
     axios
-      .get("http://localhost:8000/getTags")
+      .get("http://localhost:8000/tag/get")
       .then((response) => {
         if (response.data.message === "Tags retrieved successfully") {
           setAvailableTags(response.data.tags);

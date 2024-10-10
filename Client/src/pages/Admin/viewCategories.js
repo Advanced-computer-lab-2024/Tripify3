@@ -10,7 +10,7 @@ const ViewCategories = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/access/admin/viewCategory"
+          "http://localhost:8000/admin/viewCategory"
         );
         setCategories(response.data); // Set the categories in the state
         setResponseMessage("");

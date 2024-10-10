@@ -9,11 +9,11 @@ router.delete("/advertiser/profile/:advertiserId", deleteProfile);
 router.get('/advertiser/get', getAdvertisers);
 
 
-router.post("/advertiser/activity", createActivity);
-router.get("/getTags", getTags);
-router.get("/getCategories", getCategories);
+router.post("/activity/create", createActivity);
+router.get("/tag/get", getTags);
+router.get("/category/get", getCategories);
 router.put("/advertiser/activity/:advertiserId/:activityId", updateActivity);
 router.get("/advertiser/activity/:advertiserId", getAllActivitiesByAdvertiser);
-router.delete("/activity", deleteActivity);
+router.delete("/activity/delete", deleteActivity);
 
 export default router;

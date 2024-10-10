@@ -12,7 +12,7 @@ const DeleteTagForm = () => {
     try {
       // Send DELETE request to remove the tag
       const response = await axios.delete(
-        "http://localhost:8000/access/admin/deleteTag",
+        "http://localhost:8000/admin/deleteTag",
         {
           data: { name: tagName },
         }

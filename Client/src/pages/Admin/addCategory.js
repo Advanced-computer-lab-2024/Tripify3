@@ -17,7 +17,7 @@ const AddCategoryForm = () => {
     try {
       // Send POST request to add a new category
       const response = await axios.post(
-        "http://localhost:8000/access/admin/addCategory", // Replace with your actual API endpoint
+        "http://localhost:8000/admin/addCategory", // Replace with your actual API endpoint
         { name: categoryName }
       );
 

@@ -22,7 +22,7 @@ const AddAdminForm = () => {
     try {
       // Send the post request to the backend API
       const response = await axios.post(
-        "http://localhost:8000/access/admin/addAdmin", // Adjust API endpoint as necessary
+        "http://localhost:8000/admin/addAdmin", // Adjust API endpoint as necessary
         formData
       );
       setResponseMessage(`Admin added: ${response.data.username}`);

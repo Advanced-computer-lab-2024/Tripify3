@@ -21,7 +21,7 @@ const AddTourismGovernForm = () => {
     try {
       // Send the post request to the backend API
       const response = await axios.post(
-        "http://localhost:8000/access/admin/addTourismGovern", // Adjust API endpoint as necessary
+        "http://localhost:8000/admin/addTourismGovern", // Adjust API endpoint as necessary
         formData
       );
       setResponseMessage(`Tourism Governor added: ${response.data.username}`);

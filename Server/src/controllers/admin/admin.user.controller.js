@@ -3,9 +3,8 @@ import Tourist from "../../models/tourist.js";
 import Category from "../../models/category.js";
 import Seller from "../../models/seller.js";
 import Advertiser from "../../models/advertiser.js";
-import TourGuide from "../../models/tourGuide.js"; // Adjust the path as necessary
-import Tag from "../../models/tag.js"; // Adjust the path as necessary
-// import tourismgovernor from "../models/TourismGoverner.js"; // Adjust the path as necessary
+import TourGuide from "../../models/tourGuide.js"; 
+import Tag from "../../models/tag.js"; 
 
 export const findUser = async (req, res) => {
   const { username } = req.body;
@@ -17,7 +16,7 @@ export const findUser = async (req, res) => {
   }
 };
 
-// // Requirment 16 i think we can searchh for the user using his type in each table and that we can take it from the front end through the body
+
 export const deleteUser = async (req, res) => {
   const { username } = req.body;
   try {
@@ -28,7 +27,7 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-// // Requirment 17
+
 export const addTourismGovernor = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -39,19 +38,16 @@ export const addTourismGovernor = async (req, res) => {
   }
 };
 
-// // requirement 18
 export const addAdmin = async (req, res) => {
   const { username, password } = req.body;
   try {
     const newadmin = await User.create({ username, password, type: "Admin" });
-    //email:"tripify.authority@gmail.com"
     res.status(201).json(newadmin);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// // requirement 19
 export const addCategory = async (req, res) => {
   const { name } = req.body;
   try {

@@ -1,9 +1,7 @@
 import Place from "../../models/place.js";
 import http_code from "../../enumerations/http_code.js";
 import response_status from "../../enumerations/response_status.js";
-import APIFeatures from "../../utils/APIFeatures.js";
 import Tag from "../../models/tag.js";
-// import Location from "../../models/location.js";
 import User from "../../models/user.js";
 
 export const addPlace = async (req, res) => {
@@ -61,25 +59,25 @@ export const createTag = async (req, res) => {
 };
 
 
-export const getAllPlaces = async (req, res) => {
-  try {
-    // Fetch all places from the location collection
-    const places = await Location.find().populate({ path: "tags", select: "name" }); // Populate tag names
-    ;
+// export const getAllPlaces = async (req, res) => {
+//   try {
+//     // Fetch all places from the location collection
+//     const places = await Location.find().populate({ path: "tags", select: "name" }); // Populate tag names
+//     ;
 
-    // Send response with the fetched places
-    res.status(200).json({
-      success: true,
-      data: places,
-    });
-  } catch (err) {
-    console.error("Error fetching places:", err);
-    res.status(500).json({
-      success: false,
-      message: "Server error, could not retrieve places.",
-    });
-  }
-};
+//     // Send response with the fetched places
+//     res.status(200).json({
+//       success: true,
+//       data: places,
+//     });
+//   } catch (err) {
+//     console.error("Error fetching places:", err);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error, could not retrieve places.",
+//     });
+//   }
+// };
 
 export const getPlace = async (req, res) => {
   try {

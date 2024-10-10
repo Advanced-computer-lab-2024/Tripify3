@@ -47,7 +47,7 @@ function AddPlace() {
   // Fetch available tags
   useEffect(() => {
     axios
-      .get("http://localhost:8000/getTags")
+      .get("http://localhost:8000/tag/get")
       .then((response) => {
         if (response.data.message === "Tags retrieved successfully") {
           setAvailableTags(response.data.tags);
@@ -87,7 +87,7 @@ function AddPlace() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post(`${process.env.REACT_APP_API_BASE_URL}/governor/addPlace`, {
+      .post(`${process.env.REACT_APP_API_BASE_URL}/governor/place/create`, {
         ...place,
         tags: newTagIds,
         tourismGovernor: userId
