@@ -5,8 +5,7 @@ const SearchItineraries = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-
-  // Handle form submission to search for itineraries
+  
   const handleSearch = async () => {
     try {
       const response = await axios.post("http://localhost:8000/itineraries/search", {
