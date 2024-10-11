@@ -9,14 +9,14 @@ const TouristSidebar = () => {
   return (
     <Box
       sx={{
-        width: 200, // Decreased width
-        backgroundColor: "#003366", // Dark blue background
+        width: 240,
+        backgroundColor: "#003366",
         padding: 2,
         color: "#fff",
         height: "100vh",
       }}
     >
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+      <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
         Tourist Menu
       </Typography>
 
@@ -39,24 +39,25 @@ const TouristSidebar = () => {
             {showItineraries ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
+
         <Collapse in={showItineraries} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/all" sx={subLinkStyle}>
+              <ListItemButton component={Link} to="/tourist/itineraries" sx={subLinkStyle}>
                 All Itineraries
               </ListItemButton>
             </ListItem>
             <ListItem sx={{ pl: 4 }}>
               <ListItemButton component={Link} to="/tourist/itineraries/my" sx={subLinkStyle}>
-                My Itineraries
+                Booked Itineraries
               </ListItemButton>
             </ListItem>
           </List>
         </Collapse>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/bookings" sx={linkStyle}>
-            Bookings
+          <ListItemButton component={Link} to="/tourist/historical-places" sx={linkStyle}>
+            Historical Places
           </ListItemButton>
         </ListItem>
 
@@ -70,7 +71,6 @@ const TouristSidebar = () => {
   );
 };
 
-// Styles for the links
 const linkStyle = {
   color: "#fff",
   padding: "10px",

@@ -9,12 +9,14 @@ import activityRoute from './activity.route.js'
 import ItineraryRoute  from "./itinerary.route.js";
 import BookingRoute from "./booking.route.js"
 import TripRoute from "./trip.route.js"
-import adminroute from "./admin.route.js";
+import adminRoute from "./admin.route.js";
+import tagRoute from "./tag.route.js";
 
 
 export default (app) => {
   app.use(tourismGovernorRoute);
   app.use(userRoute);
+  app.use(tagRoute);
   app.use(advertiserRoute);
   app.use(touristRoute);
   app.use(sellerRoute);
@@ -22,12 +24,10 @@ export default (app) => {
   app.use(placeRoute)
   app.use(activityRoute)
   app.use(ItineraryRoute)
-  app.use(adminroute);
   app.use(BookingRoute)
   app.use(TripRoute)
   app.use(ItineraryRoute)
-  app.use(adminroute);
+  app.use(adminRoute);
   app.use(BookingRoute)
   app.use(TripRoute)
-  app.use(adminroute);
 };
