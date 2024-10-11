@@ -28,42 +28,33 @@ const AdminSidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/activities" sx={linkStyle}>
+          <ListItemButton component={Link} to="/admin/home" sx={linkStyle}>
+            Users
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/admin/activities" sx={linkStyle}>
             Activities
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => setShowItineraries(!showItineraries)} sx={linkStyle}>
+          <ListItemButton component={Link} to="/admin/itineraries" sx={linkStyle}>
             Itineraries
-            {showItineraries ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
 
-        <Collapse in={showItineraries} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries" sx={subLinkStyle}>
-                All Itineraries
-              </ListItemButton>
-            </ListItem>
-            <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/my" sx={subLinkStyle}>
-                Booked Itineraries
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Collapse>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/historical-places" sx={linkStyle}>
-            Historical Places
+          <ListItemButton component={Link} to="/admin/historical-places" sx={linkStyle}>
+            Products
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Reviews
+          <ListItemButton component={Link} to="/admin/tags" sx={linkStyle}>
+            Tags
           </ListItemButton>
         </ListItem>
       </List>

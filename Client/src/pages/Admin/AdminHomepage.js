@@ -9,10 +9,11 @@ import UpdateCategory from "./updateCategory.js";
 import UpdateTag from "./updateTag.js";
 import ViewCategory from "./viewCategories.js";
 import ViewTag from "./viewTags.js";
-import ProductList from "../seller/ProductList.js";
-import SearchProduct from "../seller/SearchProduct.js";
-import FilterProduct from "../seller/FilterProductCondition.js";
-import SortBy from "../seller/SortByRating.js";
+import Products from "../seller/products.js";
+// import ProductList from "../seller/products.js";
+// import SearchProduct from "../seller/SearchProduct.js";
+// import FilterProduct from "../seller/FilterProductCondition.js";
+// import SortBy from "../seller/SortByRating.js";
 import CreateProduct from "../seller/CreateProductForm.js";
 import EditProduct from "../seller/EditProductForm.js";
 const Admin = () => {
@@ -29,9 +30,9 @@ const Admin = () => {
       <UpdateTag />
       <ViewCategory />
       <ViewTag />
-      <ProductList />
-      <SearchProduct />
-      <FilterProduct />
+      <Products />
+      {/* <SearchProduct />
+      <FilterProduct /> */}
       <SortBy />
       <CreateProduct />
       <EditProduct />

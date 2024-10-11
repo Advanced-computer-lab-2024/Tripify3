@@ -43,17 +43,17 @@ const Login = () => {
       const data = await response.json();
       setUser(data.user); // Store user info in the utility file
       if (data.user.type === "Tourism Governor") {
-        navigate("/governor");
+        navigate("/tourism-governor/tourism-governor");
       } else if (data.user.type === "Tourist") {
-        navigate("/tourist");
+        navigate("/tourist/tourist");
       } else if (data.user.type === "Seller") {
-        navigate("/seller/homepage");
+        navigate("/seller/seller");
       } else if (data.user.type === "Admin") {
-        navigate("/admin/homepage");
+        navigate("/admin");
       } else if (data.user.type === "Tour Guide") {
-        navigate("/tourGuide/profile");
+        navigate("/tour-guide/tour-guide");
       } else if (data.user.type === "Advertiser") {
-        navigate("/advertiser/profile");
+        navigate("/advertiser/advertiser");
       }
     } catch (error) {
       console.error("Error:", error);

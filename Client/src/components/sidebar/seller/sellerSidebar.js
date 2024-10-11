@@ -22,50 +22,25 @@ const SellerSidebar = () => {
 
       <List>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/home" sx={linkStyle}>
+          <ListItemButton component={Link} to="/seller/seller" sx={linkStyle}>
             Home
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/activities" sx={linkStyle}>
+          <ListItemButton component={Link} to="/seller/activities" sx={linkStyle}>
             Activities
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => setShowItineraries(!showItineraries)} sx={linkStyle}>
+        <ListItemButton component={Link} to="/seller/itineraries" sx={linkStyle}>
             Itineraries
-            {showItineraries ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
 
-        <Collapse in={showItineraries} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/all" sx={subLinkStyle}>
-                All Itineraries
-              </ListItemButton>
-            </ListItem>
-            <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/my" sx={subLinkStyle}>
-                Booked Itineraries
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Collapse>
-
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/bookings" sx={linkStyle}>
-            Historical Places
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Reviews
-          </ListItemButton>
-        </ListItem>
+       
+        
       </List>
     </Box>
   );

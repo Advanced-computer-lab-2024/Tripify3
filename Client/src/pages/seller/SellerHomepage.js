@@ -4,10 +4,10 @@ import DecrementProductQuantity from "./DecrementProductQuantity.js";
 import DeleteProduct from "./DeleteProduct.js";
 import EditProductForm from "./EditProductForm.js";
 import FilterProductCondition from "./FilterProductCondition.js";
-import ProductList from "./ProductList.js";
-import MyProduct from "./MyProductList.js";
-import SearchProduct from "./SearchMyProduct.js";
-import SortByRating from "./SortByRating.js";
+import Products from "./products.js";
+import MyProducts from "./myProducts.js";
+// import SearchProduct from "./SearchMyProduct.js";
+// import SortByRating from "./SortByRating.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
 import UpdateSellerForm from "./UpdateSellerForm.js";
 import ViewProductStockAndSales from "./ViewProductStockAndSales.js";
@@ -21,9 +21,9 @@ const aSeller = () => {
       <CreateProductForm />
       <UpdateSellerForm />
       {/* <ProductList /> */}
-      <MyProduct />
+      <MyProducts />
       <EditProductForm />
-      <SearchProduct />
+      <Products />
       <FilterProductCondition />
       <SortByRating />
 

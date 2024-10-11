@@ -15,16 +15,14 @@ import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/touristHomepage.js";
-import ActivitySearchPage from "./pages/tourist/searchActivities.js";
-import ProductList from "./pages/seller/ProductList.js";
+
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
-import SearchProduct from "./pages/seller/SearchProduct.js";
-import FilterProduct from "./pages/seller/FilterProductCondition.js";
-import SortBy from "./pages/seller/SortByRating.js";
+import MyProducts from "./pages/seller/myProducts.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
+import Products from "./pages/seller/products.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -46,6 +44,9 @@ const App = () => {
 
   // Function to return layout based on role
   const getLayoutForRole = (role, children) => {
+    console.log(role);
+    console.log("=======================");
+
     switch (role) {
       case "Tourist":
         return <TouristLayout>{children}</TouristLayout>;
@@ -97,31 +98,32 @@ const App = () => {
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
         {/* Tourist Routes */}
-        <Route path={`${basePath}`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
+        <Route path={`${basePath}/tourist`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} />
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
+        <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <Products />)} />
 
         {/* Tour Guide Routes */}
-        <Route path={`${basePath}/profile`} element={<TourGuideProfile />} />
-        <Route path={`${basePath}/tourGuide/itinerary`} element={<Itinerary />} />
+        <Route path={`${basePath}/tour-guide`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />
+        <Route path={`${basePath}/itinerary`} element={getLayoutForRole(userRole, <Itinerary />)} />
 
         {/* Advertiser Routes */}
-        <Route path={`${basePath}/profile`} element={<AdvertiserProfile />} />
+        <Route path={`${basePath}/advertiser`} element={<AdvertiserProfile />} />
         <Route path={`${basePath}/activities`} element={<AdvertiserActivities />} />
 
         {/* Seller Routes */}
         <Route path={`${basePath}/homepage`} element={<SellerHomepage />} />
+        <Route path={`${basePath}/my-products`} element={getLayoutForRole(userRole, <MyProducts />)} />
         <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
-        <Route path={`${basePath}/products`} element={<ProductList />} />
         <Route path={`${basePath}/searchProduct`} element={<SearchProduct />} />
         <Route path={`${basePath}/filterProduct`} element={<FilterProduct />} />
         <Route path={`${basePath}/sortBy`} element={<SortBy />} />
 
         {/* Admin Routes */}
-        <Route path={`${basePath}/homepage`} element={<AdminHomepage />} />
+        <Route path={`${basePath}`} element={getLayoutForRole(userRole, <AdminHomepage />)} />
       </Routes>
     </Router>
   );

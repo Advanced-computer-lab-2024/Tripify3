@@ -17,55 +17,41 @@ const AdvertiserSidebar = () => {
       }}
     >
       <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
-        Tourist Menu
+        Advertiser Menu
       </Typography>
 
       <List>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/home" sx={linkStyle}>
+          <ListItemButton component={Link} to="/advertiser/home" sx={linkStyle}>
             Home
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/activities" sx={linkStyle}>
+          <ListItemButton component={Link} to="/advertiser/activities" sx={linkStyle}>
             Activities
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton onClick={() => setShowItineraries(!showItineraries)} sx={linkStyle}>
-            Itineraries
-            {showItineraries ? <ExpandLess /> : <ExpandMore />}
+          <ListItemButton component={Link} to="/advertiser/products" sx={linkStyle}>
+            Products
           </ListItemButton>
         </ListItem>
 
-        <Collapse in={showItineraries} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/all" sx={subLinkStyle}>
-                All Itineraries
-              </ListItemButton>
-            </ListItem>
-            <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/my" sx={subLinkStyle}>
-                Booked Itineraries
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Collapse>
+        <ListItem disablePadding>
+        <ListItemButton component={Link} to="/advertiser/itineraries" sx={linkStyle}>
+            Itineraries
+          </ListItemButton>
+        </ListItem>
+
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/bookings" sx={linkStyle}>
+          <ListItemButton component={Link} to="/advertiser/historical-places" sx={linkStyle}>
             Historical Places
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Reviews
-          </ListItemButton>
-        </ListItem>
       </List>
     </Box>
   );
