@@ -9,8 +9,8 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
-import Itinerary from "./pages/TourGuide/TourGuideItinerary.js";
+import TourGuideProfile from "./pages/tourGuide/tourGuideProfile.js";
+import Itinerary from "./pages/tourGuide/tourGuideItinerary.js";
 import EditPlacTourismGovernor from "./pages/tourismGovernor/EditPlace.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdminHomepage from "./pages/admin/AdminHomepage.js";
@@ -29,58 +29,58 @@ import FilterProduct from "./pages/seller/FilterProductCondition.js";
 import SortBy from "./pages/seller/SortByRating.js";
 import AllActivities from "./pages/tourist/allActivites.js";
 import SearchItineraries from "./pages/tourist/searchItineraries.js";
+import TouristSidebar from "./components/sidebar/touristsidebar.js";
+
 
 const App = () => {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/governor" element={<PlacesList />} />
-        <Route path="/governor/:id" element={<PlaceDetails />} />
-        <Route path="/governor/addPlace" element={<AddPlace />} />
-        <Route
-          path="/governor/edit/:id"
-          element={<EditPlacTourismGovernor />}
-        />
-        <Route path="/username-input" element={<EmailInput />} />
-        <Route path="/tourist" element={<TouristHomePage />} />
-        <Route path="/tourist/activities" element={<AllActivities />} />
-        <Route path="/tourist/itineraries" element={<AllItineraries />} />
+      <div style={{ display: "flex", minHeight: "100vh" }}>
+        {/* Sidebar */}
+        <div style={{ width: "250px", backgroundColor: "#f8f9fa", borderRight: "1px solid #ccc", height: "100vh" }}>
+          <Routes>
+            <Route path="/tourist/*" element={<TouristSidebar />} />
+            {/* Add other sidebars like SellerSidebar, AdminSidebar, etc., here */}
+          </Routes>
+        </div>
 
-        <Route
-          path="/tourist/historicalplaces"
-          element={<AllHistoricalPlaces />}
-        />
-
-        <Route path="/verify-code" element={<VerificationCode />} />
-        <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
-        <Route path="/advertiser/profile" element={<AdvertiserProfile />} />
-        <Route
-          path="/advertiser/activities"
-          element={<AdvertiserActivities />}
-        />
-        <Route path="/seller/homepage" element={<SellerHomepage />} />
-        <Route path="/admin/homepage" element={<AdminHomepage />} />
-        {/* <Route path="/location-selection" element={<DoctorInformation />} /> */}
-        <Route path="/tourGuide/itinerary" element={<Itinerary />} />
-
-        <Route path="/search/activities/" element={<ActivitySearchPage />} />
-        <Route path="/search/places/" element={<PlaceSearchPage />} />
-        <Route path="/search/itinerary" element={<SearchItineraries />} />
-        <Route path="/tourist/ProductList" element={<ProductList />} />
-        <Route path="/tourist/searchProduct" element={<SearchProduct />} />
-        <Route path="/tourist/FilterProduct" element={<FilterProduct />} />
-        <Route path="/tourist/SortBy" element={<SortBy />} />
-        <Route path="/seller/:id" element={<ViewSellerprofile />} />
-        {/* <Route path="/search/itineraries/" element={<ActivitySearchPage />} /> */}
-      </Routes>
+        {/* Main content */}
+        <div style={{ flex: 1, padding: "20px" }}>
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/governor" element={<PlacesList />} />
+            <Route path="/governor/:id" element={<PlaceDetails />} />
+            <Route path="/governor/addPlace" element={<AddPlace />} />
+            <Route path="/governor/edit/:id" element={<EditPlacTourismGovernor />} />
+            <Route path="/username-input" element={<EmailInput />} />
+            <Route path="/tourist" element={<TouristHomePage />} />
+            <Route path="/tourist/activities" element={<AllActivities />} />
+            <Route path="/tourist/itineraries" element={<AllItineraries />} />
+            <Route path="/tourist/historicalplaces" element={<AllHistoricalPlaces />} />
+            <Route path="/verify-code" element={<VerificationCode />} />
+            <Route path="/new-password" element={<NewPassword />} />
+            <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
+            <Route path="/advertiser/profile" element={<AdvertiserProfile />} />
+            <Route path="/advertiser/activities" element={<AdvertiserActivities />} />
+            <Route path="/seller/homepage" element={<SellerHomepage />} />
+            <Route path="/admin/homepage" element={<AdminHomepage />} />
+            <Route path="/tourGuide/itinerary" element={<Itinerary />} />
+            <Route path="/search/activities/" element={<ActivitySearchPage />} />
+            <Route path="/search/places/" element={<PlaceSearchPage />} />
+            <Route path="/search/itinerary" element={<SearchItineraries />} />
+            <Route path="/tourist/ProductList" element={<ProductList />} />
+            <Route path="/tourist/searchProduct" element={<SearchProduct />} />
+            <Route path="/tourist/FilterProduct" element={<FilterProduct />} />
+            <Route path="/tourist/SortBy" element={<SortBy />} />
+            <Route path="/seller/:id" element={<ViewSellerprofile />} />
+          </Routes>
+        </div>
+      </div>
     </Router>
   );
 };
 
+
 export default App;
-//App.js is the main component of your application where you define the structure of your app, including pages, routes, and other components
