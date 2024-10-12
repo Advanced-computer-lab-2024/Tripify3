@@ -10,7 +10,7 @@ router.get("/users/pending", getAllPendingUsers);
 router.delete("/admin/user/delete/:id", deleteUser);
 router.post("/admin/user/add", addUser);
 router.post("/admin/category/create",  addCategory);
-router.get("/categories/get", getAllCategories);
+router.get("/category/get", getAllCategories);
 router.put("/admin/category/update" ,updateCategory);
 router.delete("/admin/category/delete",  deleteCategory);
 
