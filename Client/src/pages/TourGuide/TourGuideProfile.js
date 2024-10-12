@@ -46,7 +46,7 @@ const TourGuideProfile = () => {
   };
 
   const handlenextpage =  () => {
-    navigate("/tourGuide/Itinerary");
+    navigate("/tour-guide/itinerary");
   };
 
   // Save changes

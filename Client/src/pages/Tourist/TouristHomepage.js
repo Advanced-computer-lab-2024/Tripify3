@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
 import { getUserId } from "../../utils/authUtils.js";
 
@@ -15,52 +15,11 @@ const TouristHomePage = () => {
   });
 
   const countries = [
-    "USA",
-    "Canada",
-    "UK",
-    "Germany",
-    "France",
-    "Australia",
-    "Egypt",
-    "Italy",
-    "Spain",
-    "Brazil",
-    "Argentina",
-    "Mexico",
-    "India",
-    "China",
-    "Japan",
-    "South Korea",
-    "Russia",
-    "South Africa",
-    "Nigeria",
-    "Kenya",
-    "Turkey",
-    "Saudi Arabia",
-    "United Arab Emirates",
-    "Sweden",
-    "Norway",
-    "Finland",
-    "Denmark",
-    "Netherlands",
-    "Belgium",
-    "Switzerland",
-    "Austria",
-    "Greece",
-    "Portugal",
-    "Czech Republic",
-    "Ireland",
-    "Iceland",
-    "Palestine",
-    "Chile",
-    "Colombia",
-    "Peru",
-    "Panama",
-    "Costa Rica",
-    "Cuba",
-    "Honduras",
-    "El Salvador",
-    "Paraguay",
+    "USA", "Canada", "UK", "Germany", "France", "Australia", "Egypt", "Italy", "Spain", "Brazil", "Argentina", 
+    "Mexico", "India", "China", "Japan", "South Korea", "Russia", "South Africa", "Nigeria", "Kenya", "Turkey", 
+    "Saudi Arabia", "United Arab Emirates", "Sweden", "Norway", "Finland", "Denmark", "Netherlands", "Belgium", 
+    "Switzerland", "Austria", "Greece", "Portugal", "Czech Republic", "Ireland", "Iceland", "Palestine", "Chile", 
+    "Colombia", "Peru", "Panama", "Costa Rica", "Cuba", "Honduras", "El Salvador", "Paraguay"
   ];
 
   // Fetch user profile on component mount
@@ -103,203 +62,97 @@ const TouristHomePage = () => {
   };
 
   return (
-    <div>
-      <h1>Tourist Homepage</h1>
-      {/* Profile Card */}
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h4" sx={{ mb: 4 }}>Tourist Profile</Typography>
+      
       {userProfile && (
-        <div
-          className="profile-card"
-          style={{
+        <Box
+          sx={{
             border: "1px solid #ccc",
-            padding: "20px",
-            margin: "20px 0",
-            borderRadius: "8px",
+            padding: 3,
+            borderRadius: 2,
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            maxWidth: 600,
+            margin: "auto",
           }}
         >
-          <h2>Profile</h2>
-          <p>
-            <strong>Username:</strong> {userProfile.username}
-          </p>
-          <p>
-            <strong>Email:</strong> {userProfile.email}
-          </p>
-          <p>
-            <strong>Phone Number:</strong>
-            {isEditing ? (
-              <input
-                type="text"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  margin: "5px 0",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            ) : (
-              userProfile.phoneNumber
-            )}
-          </p>
-          <p>
-            <strong>Nationality:</strong>
-            {isEditing ? (
-              <select
-                name="nationality"
-                value={formData.nationality}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  margin: "5px 0",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-              >
-                <option value="">Select your nationality</option>
-                {countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              userProfile.nationality
-            )}
-          </p>
-          <p>
-            <strong>Birth Date:</strong>
-            {isEditing ? (
-              <input
-                type="date"
-                name="birthDate"
-                value={formData.birthDate}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  margin: "5px 0",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            ) : (
-              userProfile.birthDate
-            )}
-          </p>
-          <p>
-            <strong>Occupation:</strong>
-            {isEditing ? (
-              <input
-                type="text"
-                name="occupation"
-                value={formData.occupation}
-                onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  margin: "5px 0",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            ) : (
-              userProfile.occupation
-            )}
-          </p>
-          {isEditing ? (
-            <button
-              onClick={handleSubmit}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Save
-            </button>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#007BFF",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Edit Profile
-            </button>
-          )}
-        </div>
-      )}
+          <Typography variant="h6">Profile Information</Typography>
+          <TextField
+            label="Username"
+            value={userProfile.username}
+            fullWidth
+            disabled
+            sx={{ my: 2 }}
+          />
+          <TextField
+            label="Email"
+            value={userProfile.email}
+            fullWidth
+            disabled
+            sx={{ my: 2 }}
+          />
 
-      {/* Navigation Buttons */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          margin: "20px 0",
-        }}
-      >
-        {[
-          { path: "/tourist/activities", text: "Activities" },
-          { path: "/tourist/itineraries", text: "Itineraries" },
-          { path: "/tourist/historicalplaces", text: "Historical Places" },
-          { path: "/tourist/ProductList", text: "ProductList" },
-          { path: "/tourist/SearchProduct", text: "Search Product" },
-          { path: "/tourist/FilterProduct", text: "Filter Product" },
-          { path: "/tourist/SortBy", text: "Sort by Rating" },
-        ].map(({ path, text }) => (
-          <button
-            key={path}
-            style={{
-              padding: "15px 30px",
-              backgroundColor: "#007BFF",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              margin: "5px",
-            }}
-          >
-            <Link to={path} style={{ textDecoration: "none", color: "white" }}>
-              {text}
-            </Link>
-          </button>
-        ))}
-        {/* New buttons for search functionality */}
-        {["Activities", "Places", "Itinerary"].map((text) => (
-          <button
-            key={`search-${text}`}
-            style={{
-              padding: "15px 30px",
-              backgroundColor: "#28A745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              margin: "5px",
-            }}
-          >
-            <Link
-              to={`/search/${text.toLowerCase()}`}
-              style={{ textDecoration: "none", color: "white" }}
+          <TextField
+            label="Phone Number"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            fullWidth
+            disabled={!isEditing}
+            sx={{ my: 2 }}
+          />
+
+          <FormControl fullWidth sx={{ my: 2 }}>
+            <InputLabel>Nationality</InputLabel>
+            <Select
+              label="Nationality"
+              name="nationality"
+              value={formData.nationality}
+              onChange={handleChange}
+              disabled={!isEditing}
             >
-              Search {text}
-            </Link>
-          </button>
-        ))}
-      </div>
-    </div>
+              {countries.map((country) => (
+                <MenuItem key={country} value={country}>
+                  {country}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <TextField
+            label="Birth Date"
+            type="date"
+            name="birthDate"
+            value={formData.birthDate}
+            onChange={handleChange}
+            fullWidth
+            disabled={!isEditing}
+            InputLabelProps={{ shrink: true }}
+            sx={{ my: 2 }}
+          />
+
+          <TextField
+            label="Occupation"
+            name="occupation"
+            value={formData.occupation}
+            onChange={handleChange}
+            fullWidth
+            disabled={!isEditing}
+            sx={{ my: 2 }}
+          />
+
+          {isEditing ? (
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+              Save
+            </Button>
+          ) : (
+            <Button variant="outlined" color="secondary" onClick={() => setIsEditing(true)}>
+              Edit Profile
+            </Button>
+          )}
+        </Box>
+      )}
+    </Box>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllActivities, getAllCategories } from "../../services/tourist.js"; // Import the API function
 
-const AllActivities = () => {
+const Activities = () => {
   const [activities, setActivities] = useState([]); // Store the filtered activities
   const [originalActivities, setOriginalActivities] = useState([]); // Store the original activities
   const [loading, setLoading] = useState(true); // Loading state
@@ -346,4 +346,4 @@ const styles = {
   },
 };
 
-export default AllActivities;
+export default Activities;

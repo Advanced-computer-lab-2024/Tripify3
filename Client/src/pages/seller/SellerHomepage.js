@@ -3,11 +3,8 @@ import CreateProductForm from "./CreateProductForm.js"; // Adjust the path if ne
 import DecrementProductQuantity from "./DecrementProductQuantity.js";
 import DeleteProduct from "./DeleteProduct.js";
 import EditProductForm from "./EditProductForm.js";
-import FilterProductCondition from "./FilterProductCondition.js";
-import ProductList from "./ProductList.js";
-import MyProduct from "./MyProductList.js";
-import SearchProduct from "./SearchMyProduct.js";
-import SortByRating from "./SortByRating.js";
+import Products from "./products.js";
+import MyProducts from "./myProducts.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
 import UpdateSellerForm from "./UpdateSellerForm.js";
 import ViewProductStockAndSales from "./ViewProductStockAndSales.js";
@@ -21,20 +18,10 @@ const aSeller = () => {
       <CreateProductForm />
       <UpdateSellerForm />
       {/* <ProductList /> */}
-      <MyProduct />
+      <MyProducts />
       <EditProductForm />
-      <SearchProduct />
-      <FilterProductCondition />
-      <SortByRating />
+      <Products />
 
-      {/* instead of seller id i want to make it seller username that links ti another tab with the seller info */}
-      {/* <DeleteProduct /> 
-      <ViewProductStockAndSales />
-      <ArchiveProduct />
-      <UnarchiveProduct />
-      <DecrementProductQuantity />
-      <FilterSalesReport />
-      */}
     </>
   );
 };

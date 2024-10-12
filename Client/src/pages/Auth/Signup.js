@@ -55,7 +55,7 @@ const nationalities = [
   // Add more nationalities as needed
 ];
 
-const SignupPage = () => {
+const Signup = () => {
   const [formData, setFormData] = useState({
     type: "",
     username: "",
@@ -457,4 +457,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default Signup;
