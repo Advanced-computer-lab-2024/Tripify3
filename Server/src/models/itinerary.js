@@ -79,6 +79,10 @@ const itinerarySchema = new mongoose.Schema({
     type: String,
     required: true, // Ensure accessibility is required
   },
+  inappropriate:{
+    type: Boolean,
+    default: false
+  },
   tags: [
     {
       type: mongoose.Schema.Types.ObjectId,

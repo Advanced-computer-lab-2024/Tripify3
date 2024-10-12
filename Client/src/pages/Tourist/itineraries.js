@@ -18,9 +18,13 @@ import {
   ListItemText,
   Grid,
   CircularProgress,
+  IconButton, // Import IconButton
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllIteneraries, getAllTags } from "../../services/tourist.js"; // Updated API functions
+import { getAllIteneraries, getAllTags, markItineraryInappropriate } from "../../services/tourist.js"; // Updated API functions
+import { getUserId, getUserType } from "../../utils/authUtils.js";
+import FlagIcon from "@mui/icons-material/Flag"; // Import FlagIcon
+import { toast } from "react-toastify"; // Optional: For notification
 
 const theme = createTheme({
   palette: {
@@ -43,27 +47,16 @@ const Itineraries = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [budget, setBudget] = useState("");
   const [validationError, setValidationError] = useState("");
+  const userId = getUserId();
+  const userType = getUserType();
 
-  const languageOptions = [
-    "English",
-    "Spanish",
-    "French",
-    "German",
-    "Arabic",
-    "Russian",
-    "Japanese",
-    "Korean",
-    "Italian",
-  ];
+  const languageOptions = ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"];
 
   // Fetch itineraries and tags when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [itinerariesResponse, tagsResponse] = await Promise.all([
-          getAllIteneraries(),
-          getAllTags(),
-        ]);
+        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllIteneraries(userId), getAllTags()]);
         setItineraries(itinerariesResponse.data);
         setTags(tagsResponse.data.tags);
         setLoading(false);
@@ -103,6 +96,25 @@ const Itineraries = () => {
     // Optionally refetch itineraries
   };
 
+  const handleFlagClick = async (itineraryId, currentInappropriateStatus) => {
+    try {
+      const newStatus = !currentInappropriateStatus; // Toggle the current status
+      await markItineraryInappropriate(itineraryId, { inappropriate: newStatus }); // Call API with new status
+
+      setItineraries((prevItineraries) =>
+        prevItineraries.map((itinerary) =>
+          itinerary._id === itineraryId
+            ? { ...itinerary, inappropriate: newStatus } // Update local state with the new status
+            : itinerary
+        )
+      );
+
+      toast.success(newStatus ? "Itinerary marked as inappropriate!" : "Itinerary unmarked as inappropriate!"); // Notify the user based on the action
+    } catch (error) {
+      toast.error("Error updating itinerary status!"); // Handle error
+    }
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
@@ -128,18 +140,10 @@ const Itineraries = () => {
       <Box sx={{ p: 4 }}>
         {/* Search, Sort, and Filter Section */}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-          <TextField
-            label="Search by name"
-            variant="outlined"
-            sx={{ mr: 2, width: "300px" }}
-          />
+          <TextField label="Search by name" variant="outlined" sx={{ mr: 2, width: "300px" }} />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
-            <Select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              label="Sort by Price"
-            >
+            <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
               <MenuItem value="asc">Low to High</MenuItem>
               <MenuItem value="desc">High to Low</MenuItem>
             </Select>
@@ -199,22 +203,15 @@ const Itineraries = () => {
             </Select>
           </FormControl>
 
-          <TextField
-            label="Budget"
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            variant="outlined"
-            sx={{ width: "150px", mr: 2 }}
-          />
+          <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
 
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter
           </Button>
 
           <Button variant="contained" color="secondary" onClick={handleResetFilters} sx={{ ml: 2 }}>
-              Reset Filters
-            </Button>
+            Reset Filters
+          </Button>
         </Box>
 
         {/* Itineraries Section */}
@@ -232,11 +229,16 @@ const Itineraries = () => {
                   <Typography>
                     <strong>Language:</strong> {itinerary.language}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to itinerary ${itinerary._id}`)}
-                  >
+                  {userType === "Admin" && ( // Render flag icon only for admin users
+                    <IconButton
+                      onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)} // Pass current inappropriate status
+                      sx={{ color: itinerary.inappropriate ? "red" : "inherit" }} // Change color if marked inappropriate
+                    >
+                      <FlagIcon />
+                    </IconButton>
+                  )}
+
+                  <Button variant="contained" sx={{ mt: 2 }} onClick={() => console.log(`Navigate to itinerary ${itinerary._id}`)}>
                     View Details
                   </Button>
                 </CardContent>
