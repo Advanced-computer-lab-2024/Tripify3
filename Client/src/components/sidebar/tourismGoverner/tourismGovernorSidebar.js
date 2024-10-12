@@ -17,7 +17,7 @@ const TourismGovernorSidebar = () => {
       }}
     >
       <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
-        Tourist Menu
+        Tourism Governor Menu
       </Typography>
 
       <List>
@@ -28,14 +28,14 @@ const TourismGovernorSidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/activities" sx={linkStyle}>
+          <ListItemButton component={Link} to="/tourism-governor/activities" sx={linkStyle}>
             Activities
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
           <ListItemButton onClick={() => setShowItineraries(!showItineraries)} sx={linkStyle}>
-            Itineraries
+            Historical Places
             {showItineraries ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
@@ -43,26 +43,26 @@ const TourismGovernorSidebar = () => {
         <Collapse in={showItineraries} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries" sx={subLinkStyle}>
-                All Itineraries
+              <ListItemButton component={Link} to="/tourism-governor/historical-places" sx={subLinkStyle}>
+                All Historical Places
               </ListItemButton>
             </ListItem>
             <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/my" sx={subLinkStyle}>
-                Booked Itineraries
+              <ListItemButton component={Link} to="/tourism-governor/my-historical-places" sx={subLinkStyle}>
+                My Historical Places
               </ListItemButton>
             </ListItem>
           </List>
         </Collapse>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/historical-places" sx={linkStyle}>
-            Historical Places
+          <ListItemButton component={Link} to="/tourism-governor/itineraries" sx={linkStyle}>
+            Iteneraries
           </ListItemButton>
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
+          <ListItemButton component={Link} to="/tourism-governor/reviews" sx={linkStyle}>
             Reviews
           </ListItemButton>
         </ListItem>
