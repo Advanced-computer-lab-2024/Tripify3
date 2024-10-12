@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
+  AppBar,
+  Toolbar,
   Box,
   Button,
   Card,
@@ -115,11 +117,15 @@ const Itineraries = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h3" align="center" color="primary" gutterBottom>
-          Upcoming Itineraries
-        </Typography>
+      <AppBar position="static" color="primary" sx={{ mb: 4 }}>
+        <Toolbar sx={{ justifyContent: "center" }}>
+          <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
+            Upcoming Itineraries
+          </Typography>
+        </Toolbar>
+      </AppBar>
 
+      <Box sx={{ p: 4 }}>
         {/* Search, Sort, and Filter Section */}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
           <TextField
@@ -205,9 +211,10 @@ const Itineraries = () => {
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter
           </Button>
-          <Button variant="outlined" onClick={handleResetFilters}>
-            Reset Filters
-          </Button>
+
+          <Button variant="contained" color="secondary" onClick={handleResetFilters} sx={{ ml: 2 }}>
+              Reset Filters
+            </Button>
         </Box>
 
         {/* Itineraries Section */}

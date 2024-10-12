@@ -17,7 +17,7 @@ const AdminSidebar = () => {
       }}
     >
       <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
-        Tourist Menu
+        Admin Menu
       </Typography>
 
       <List>
@@ -28,7 +28,7 @@ const AdminSidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/home" sx={linkStyle}>
+          <ListItemButton component={Link} to="/admin/users" sx={linkStyle}>
             Users
           </ListItemButton>
         </ListItem>
@@ -48,6 +48,13 @@ const AdminSidebar = () => {
 
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/admin/historical-places" sx={linkStyle}>
+            Historical Places
+          </ListItemButton>
+        </ListItem>
+
+        
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/admin/products" sx={linkStyle}>
             Products
           </ListItemButton>
         </ListItem>

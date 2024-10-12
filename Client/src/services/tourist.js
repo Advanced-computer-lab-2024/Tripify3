@@ -14,14 +14,6 @@ export const getAllPlaces = async () => {
   return await axios.get(`${API_URL}/places/get`);
 };
 
-export const getFilteredPlaces = async (filters) => {
-  return await axios.get(`${API_URL}/places/filter`, {
-    params: filters, // Pass filters directly here
-    paramsSerializer: (params) => {
-      return `tags=${encodeURIComponent(params.tags)}`; // Ensure it's serialized as a proper query string
-    },
-  });
-};
 
 export const getAllIteneraries = async () => {
   return await axios.get(`${API_URL}/itinerary/get`);
@@ -39,44 +31,3 @@ export const updateProfile = async (userId, formData) => {
   return await axios.put(`${API_URL}/tourist/profile/${userId}`, formData);
 };
 
-export const filterActivities = async (filters) => {
-  const { minPrice, maxPrice, category, rating } = filters;
-  return await axios.get(`${API_URL}/tourist/activity/filter`, {
-    params: {
-      minPrice,
-      maxPrice,
-      category,
-      rating,
-    },
-  });
-};
-
-export const filterItineraries = async (filters) => {
-  const { budget, date, language, tags } = filters;
-
-  const params = {
-    budget,
-    date,
-    language,
-  };
-
-  // Add tags as a stringified array only if they exist and are not empty
-  if (tags && tags.length > 0) {
-    params.tags = JSON.stringify(tags); // Convert tags to a JSON string
-  }
-
-  return await axios.get(`${API_URL}/tourist/itinerary/filter`, {
-    params,
-  });
-};
-
-export const sortActivities = async (filters) => {
-  const { price, rating, date } = filters;
-  return await axios.get(`${API_URL}/tourist/activity/sort`, {
-    params: {
-      price,
-      rating,
-      date,
-    },
-  });
-};

@@ -1,10 +1,72 @@
 import User from "../../models/user.js";
-import Tourist from "../../models/tourist.js";
 import Category from "../../models/category.js";
-import Seller from "../../models/seller.js";
 import Advertiser from "../../models/advertiser.js";
-import TourGuide from "../../models/tourGuide.js"; 
-import Tag from "../../models/tag.js"; 
+import Seller from "../../models/seller.js";
+import TourGuide from "../../models/tourGuide.js";
+import Tourist from "../../models/tourist.js";
+
+
+export const getAllAcceptedUsers = async (req, res) => {
+  try {
+    const users = await User.find({ status: "Accepted" });
+
+    // Populate details based on user type
+    const userDetailsPromises = users.map(async (user) => {
+      if (user.type === "advertiser") {
+        const advertiserDetails = await Advertiser.findOne({ _id: user._id });
+        return { ...user.toObject(), advertiserDetails };
+      }
+      if (user.type === "seller") {
+        const sellerDetails = await Seller.findOne({ _id: user._id });
+        return { ...user.toObject(), sellerDetails };
+      }
+      if (user.type === "tourGuide") {
+        const tourGuideDetails = await TourGuide.findOne({ _id: user._id });
+        return { ...user.toObject(), tourGuideDetails };
+      }
+      return user; // Return the user as is for other types
+    });
+
+    const userDetails = await Promise.all(userDetailsPromises);
+
+    return res.status(200).json(userDetails);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getAllPendingUsers = async (req, res) => {
+  try {
+    const users = await User.find({ status: "Pending" });
+
+    // Populate details based on user type
+    const userDetailsPromises = users.map(async (user) => {
+      if (user.type === "advertiser") {
+        const advertiserDetails = await Advertiser.findOne({ _id: user._id });
+        return { ...user.toObject(), advertiserDetails };
+      }
+      if (user.type === "seller") {
+        const sellerDetails = await Seller.findOne({ _id: user._id });
+        return { ...user.toObject(), sellerDetails };
+      }
+      if (user.type === "tourGuide") {
+        const tourGuideDetails = await TourGuide.findOne({ _id: user._id });
+        return { ...user.toObject(), tourGuideDetails };
+      }
+      return user; // Return the user as is for other types
+    });
+
+    const userDetails = await Promise.all(userDetailsPromises);
+
+    return res.status(200).json(userDetails);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 
 export const findUser = async (req, res) => {
   const { username } = req.body;
@@ -16,33 +78,20 @@ export const findUser = async (req, res) => {
   }
 };
 
+export const addUser = async (req, res) => {
+  const { username, password, type } = req.body;
 
-export const deleteUser = async (req, res) => {
-  const { username } = req.body;
+  console.log(req.body);
   try {
-    const deletedUser = await User.findOneAndDelete({ username });
-    res.status(200).json(deletedUser);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
+    // Check if the username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
 
-
-export const addTourismGovernor = async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const newtourismgovernor = await User.create({ username, password, type: "Tourism Governor" });
-    res.status(201).json(newtourismgovernor);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-export const addAdmin = async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const newadmin = await User.create({ username, password, type: "Admin" });
-    res.status(201).json(newadmin);
+    // If the username is available, create a new user
+    const newUser = await User.create({ username, password, type });
+    res.status(201).json(newUser); // Ensure you're returning the correct variable
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -52,7 +101,7 @@ export const addCategory = async (req, res) => {
   const { name } = req.body;
   try {
     const newcategory = await Category.create({ name });
-    res.status(201).json({ message: "Category created successfully", newcategory});
+    res.status(201).json({ message: "Category created successfully", newcategory });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -85,40 +134,114 @@ export const deleteCategory = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
-export const addTag = async (req, res) => {
-  const { name } = req.body;
+
+// Remove user by ID
+export const deleteUser = async (req, res) => {
+  const { id } = req.params; // Get user ID from request parameters
+
   try {
-    const newtag = await Tag.create({ name });
-    res.status(201).json({ message: "Tag created successfully" , newtag});
+    // Fetch the user to determine their type
+    const user = await User.findById(id);
+    console.log(user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete the user from the corresponding model based on user type
+    let deletedUser;
+
+    switch (user.type) {
+      case "Advertiser":
+        deletedUser = await Advertiser.findByIdAndDelete(id);
+        break;
+      case "Seller":
+        deletedUser = await Seller.findByIdAndDelete(id);
+        break;
+      case "Tour Guide":
+        deletedUser = await TourGuide.findByIdAndDelete(id);
+        break;
+      case "Tourist":
+        deletedUser = await Tourist.findByIdAndDelete(id);
+        break;
+      case "Tourism Governor":
+        deletedUser = await User.findByIdAndDelete(id);
+        break;
+      case "Admin":
+        deletedUser = await User.findByIdAndDelete(id);
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid user type" });
+    }
+
+    // If the user type is not valid or the deletion failed, return an error
+    if (!deletedUser) {
+      return res.status(400).json({ message: "Failed to delete user" });
+    }
+
+    // Optionally, remove the user from the User model as well
+    await User.findByIdAndDelete(id);
+
+    // Return a success message
+    return res.status(200).json({ message: "User successfully deleted" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
-export const viewTag = async (req, res) => {
-  try {
-    const tag = await Tag.find();
-    res.status(200).json(tag);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-export const updateTag = async (req, res) => {
-  const { oldName, newName } = req.body;
-  try {
-    const updatedtag = await Tag.findOneAndUpdate({ name: oldName }, { name: newName }, { new: true });
-    res.status(200).json(updatedtag);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
+// Update user status
+export const updateUserStatus = async (req, res) => {
+  const { id } = req.params; // Get user ID from request parameters
+  const { status } = req.body; // Get the new status from the request body
 
-export const deleteTag = async (req, res) => {
-  const { name } = req.body;
+  console.log(req.body);
+
   try {
-    const deletedtag = await Tag.findOneAndDelete({ name });
-    res.status(200).json(deletedtag);
+    // Fetch the user to determine their type
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the status in the corresponding model based on user type
+    let updatedUser;
+
+    switch (user.type) {
+      case "Advertiser":
+        updatedUser = await Advertiser.findByIdAndUpdate(
+          id,
+          { status }, // Update the status
+          { new: true, runValidators: true } // Options: return the new document and validate
+        );
+        break;
+      case "Seller":
+        updatedUser = await Seller.findByIdAndUpdate(
+          id,
+          { status }, // Update the status
+          { new: true, runValidators: true }
+        );
+        break;
+      case "Tour Guide":
+        updatedUser = await TourGuide.findByIdAndUpdate(
+          id,
+          { status }, // Update the status
+          { new: true, runValidators: true }
+        );
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid user type" });
+    }
+
+    // If the user type is not valid, return an error
+    if (!updatedUser) {
+      return res.status(400).json({ message: "Failed to update status" });
+    }
+
+    // Return the updated user details
+    return res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
