@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -13,7 +12,25 @@ import {
   InputLabel,
   FormControl,
   Chip,
-} from '@mui/material';
+  CircularProgress,
+  Checkbox,
+  OutlinedInput,
+  Box,
+  ListItemText,
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import axios from "axios";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#1e3a5f", // Dark blue
+    },
+    secondary: {
+      main: "#ff6f00", // Orange
+    },
+  },
+});
 
 const HistoricalPlaces = () => {
   const [places, setPlaces] = useState([]);
@@ -21,31 +38,38 @@ const HistoricalPlaces = () => {
   const [error, setError] = useState(null);
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedType, setSelectedType] = useState('');
+  const [selectedType, setSelectedType] = useState("");
   const [filteredPlaces, setFilteredPlaces] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const placeTypes = ["Monument", "Religious Site", "Palace", "Castle", "Historical Place", "Museum"];
+  const placeTypes = [
+    "Monument",
+    "Religious Site",
+    "Palace",
+    "Castle",
+    "Historical Place",
+    "Museum",
+  ];
 
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/places/get');
+        const response = await axios.get("http://localhost:8000/places/get");
         setPlaces(response.data.data);
         setFilteredPlaces(response.data.data); // Initialize with all places
         setLoading(false);
       } catch (err) {
-        setError('Error fetching places data');
+        setError("Error fetching places data");
         setLoading(false);
       }
     };
 
     const fetchTags = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/tag/get'); // Check if this is the correct URL
+        const response = await axios.get("http://localhost:8000/tag/get");
         setTags(response.data.tags);
       } catch (err) {
-        setError('Error fetching tags');
+        setError("Error fetching tags");
       }
     };
 
@@ -53,142 +77,167 @@ const HistoricalPlaces = () => {
     fetchTags();
   }, []);
 
+  // Filter places based on search term
   useEffect(() => {
-    const filtered = places.filter(place =>
+    const filtered = places.filter((place) =>
       place.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPlaces(filtered);
   }, [searchTerm, places]);
 
   const handleTagChange = (event) => {
-    const value = event.target.value;
-    setSelectedTags(typeof value === 'string' ? value.split(',') : value);
+    setSelectedTags(event.target.value);
   };
 
-  const handleFilter = async () => {
-    try {
-      const tagQuery = selectedTags.join(',');
-      const response = await axios.get(`http://localhost:8000/places/filter?tags=${tagQuery}&type=${selectedType}`);
-      setFilteredPlaces(response.data.data);
-    } catch (err) {
-      setError('Error applying filter');
+  // Filter function now runs on the frontend
+  const handleFilter = () => {
+    let filtered = [...places];
+
+    // Filter by tags if any tag is selected
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter((place) =>
+        selectedTags.every((tag) => place.tags.includes(tag))
+      );
     }
+
+    // Filter by type if selected
+    if (selectedType) {
+      filtered = filtered.filter((place) => place.type === selectedType);
+    }
+
+    setFilteredPlaces(filtered);
   };
 
   const handleReset = () => {
-    setSelectedType('');
+    setSelectedType("");
     setSelectedTags([]);
-    setSearchTerm('');
+    setSearchTerm("");
     setFilteredPlaces(places); // Reset to all places
   };
 
-  if (loading) return <Typography variant="h6">Loading...</Typography>;
-  if (error) return <Typography variant="h6" color="error">{error}</Typography>;
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return <Typography variant="h6" color="error">{error}</Typography>;
+  }
 
   return (
-    <Container>
-      <Typography variant="h2" align="center" gutterBottom>
-        Historical Places
-      </Typography>
+    <ThemeProvider theme={theme}>
+      <Container>
+        <Typography
+          variant="h2"
+          align="center"
+          gutterBottom
+          sx={{ color: theme.palette.primary.main }}
+        >
+          Historical Places
+        </Typography>
 
-      <TextField
-        label="Search by Name"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+        {/* Search and Filter Section */}
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <TextField
+            label="Search by Name"
+            variant="outlined"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ mr: 2, width: "300px" }}
+          />
 
-      <div style={{ marginBottom: '20px' }}>
-        <Typography variant="h6">Filter Places</Typography>
-        
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Type of Place</InputLabel>
-          <Select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-          >
-            <MenuItem value=""><em>Select Type</em></MenuItem>
-            {placeTypes.map((type) => (
-              <MenuItem key={type} value={type}>{type}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Tags</InputLabel>
-          <Select
-            multiple
-            value={selectedTags}
-            onChange={handleTagChange}
-            renderValue={(selected) => (
-              <div>
-                {selected.map((value) => (
-                  <Chip key={value} label={tags.find(tag => tag._id === value)?.name} />
-                ))}
-              </div>
-            )}
-          >
-            {tags.map((tag) => (
-              <MenuItem key={tag._id} value={tag._id}>
-                {tag.name}
+          <FormControl variant="outlined" sx={{ mr: 2, width: "200px" }}>
+            <InputLabel>Type of Place</InputLabel>
+            <Select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              label="Type of Place"
+            >
+              <MenuItem value="">
+                <em>Select Type</em>
               </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+              {placeTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-        <Button variant="contained" color="primary" onClick={handleFilter}>
-          Apply Filter
-        </Button>
-        <Button variant="outlined" color="secondary" onClick={handleReset} style={{ marginLeft: '10px' }}>
-          Reset Filter
-        </Button>
-      </div>
+          <FormControl variant="outlined" sx={{ width: "200px" }}>
+            <InputLabel>Tags</InputLabel>
+            <Select
+              multiple
+              value={selectedTags}
+              onChange={handleTagChange}
+              input={<OutlinedInput label="Tags" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={tags.find((tag) => tag._id === value)?.name || value}
+                    />
+                  ))}
+                </Box>
+              )}
+            >
+              {tags.map((tag) => (
+                <MenuItem key={tag._id} value={tag._id}>
+                  <Checkbox checked={selectedTags.indexOf(tag._id) > -1} />
+                  <ListItemText primary={tag.name} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
-      <Grid container spacing={3}>
-        {filteredPlaces.map((place) => (
-          <Grid item xs={12} sm={6} md={4} key={place._id}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5">{place.name}</Typography>
-                <Typography variant="body2">{place.description}</Typography>
-                <Typography variant="subtitle2">
-                  <strong>Place Type:</strong> {place.type}
-                </Typography>
-                <Typography variant="subtitle2">
-                  <strong>Location:</strong> {place.location.address}, {place.location.city}, {place.location.country}
-                </Typography>
-                <Typography variant="subtitle2">
-                  <strong>Ticket Prices:</strong> Foreigner: {place.ticketPrices.foreigner} EGP, Native: {place.ticketPrices.native} EGP, Student: {place.ticketPrices.student} EGP
-                </Typography>
-                <div>
-                  <strong>Opening Hours:</strong>
-                  <ul>
-                    {place.openingHours.map((hours) => (
-                      <li key={hours._id}>
-                        {hours.day}: {hours.from} - {hours.to}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <strong>Tags:</strong>
-                  <ul>
-                    {place.tags.map((tag) => (
-                      <li key={tag._id}>{tag.name}</li>
-                    ))}
-                  </ul>
-                </div>
-                <Button variant="outlined" color="primary" onClick={() => alert(`Viewing details for ${place.name}`)}>
-                  View Details
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleFilter}
+            sx={{ mr: 2 }}
+          >
+            Apply Filter
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleReset}>
+            Reset Filters
+          </Button>
+        </Box>
+
+        {/* Places Display Section */}
+        <Grid container spacing={3}>
+          {filteredPlaces.map((place) => (
+            <Grid item xs={12} md={6} key={place._id}>
+              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+                <CardContent>
+                  <Typography variant="h6" color="secondary">
+                    {place.name}
+                  </Typography>
+                  <Typography>
+                    <strong>Type:</strong> {place.type}
+                  </Typography>
+                  <Typography>
+                    <strong>Description:</strong> {place.description}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    onClick={() => console.log(`Navigate to place ${place._id}`)}
+                  >
+                    View Details
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
+    </ThemeProvider>
   );
 };
 

@@ -1,349 +1,226 @@
 import React, { useState, useEffect } from "react";
-import { getAllActivities, getAllCategories } from "../../services/tourist.js"; // Import the API function
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Chip,
+  Checkbox,
+  OutlinedInput,
+  ListItemText,
+  Grid,
+  CircularProgress,
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { getAllActivities, getAllCategories } from "../../services/tourist.js";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#1e3a5f", // Dark blue
+    },
+    secondary: {
+      main: "#ff6f00", // Orange
+    },
+  },
+});
 
 const Activities = () => {
-  const [activities, setActivities] = useState([]); // Store the filtered activities
-  const [originalActivities, setOriginalActivities] = useState([]); // Store the original activities
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [categories, setCategories] = useState([]); // Store categories
-  const [filters, setFilters] = useState({
-    budget: "",
-    selectedCategories: [],
-    rating: "",
-    date: "",
-  }); // Store filter values
-  const [sort, setSort] = useState({ field: "date", order: "asc" }); // Store sort values
-  const [validationError, setValidationError] = useState(""); // Validation error message
+  const [activities, setActivities] = useState([]);
+  const [originalActivities, setOriginalActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [budget, setBudget] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
+  const [validationError, setValidationError] = useState("");
 
-  // Fetch activities from the backend
-  const fetchActivities = async () => {
-    try {
-      const response = await getAllActivities();
-      setActivities(response.data.activities); // Set activities data
-      setOriginalActivities(response.data.activities); // Store the original activities
-      setLoading(false);
-    } catch (error) {
-      setError("Error fetching activities");
-      setLoading(false);
-    }
-  };
-
-  // Fetch categories for the dropdown
-  const fetchCategories = async () => {
-    try {
-      const response = await getAllCategories();
-      setCategories(response.data.categories); // Set categories data
-    } catch (error) {
-      setError("Error fetching categories");
-    }
-  };
-
-  // Handle category checkbox change
-  const handleCategoryChange = (categoryId) => {
-    setFilters((prevFilters) => {
-      const { selectedCategories } = prevFilters;
-      if (selectedCategories.includes(categoryId)) {
-        return {
-          ...prevFilters,
-          selectedCategories: selectedCategories.filter((id) => id !== categoryId),
-        };
-      } else {
-        return {
-          ...prevFilters,
-          selectedCategories: [...selectedCategories, categoryId],
-        };
-      }
-    });
-  };
-
-  // Validate filter inputs
-  const validateFilters = () => {
-    if (!filters.budget && !filters.selectedCategories.length && !filters.rating && !filters.date) {
-      setValidationError("Please fill at least one filter field.");
-      return false;
-    }
-    setValidationError(""); // Clear error message if validation passes
-    return true;
-  };
-
-  // Handle filter submission (all filtering logic on frontend)
-  const handleFilter = () => {
-    if (!validateFilters()) return; // Only proceed if validation passes
-
-    let filteredActivities = [...originalActivities]; // Always filter from the original list
-
-    // Filter by category
-    if (filters.selectedCategories.length > 0) {
-      filteredActivities = filteredActivities.filter((activity) => filters.selectedCategories.includes(activity.category._id));
-    }
-
-    // Filter by budget
-    if (filters.budget) {
-      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(filters.budget));
-    }
-
-    // Filter by rating
-    if (filters.rating) {
-      filteredActivities = filteredActivities.filter((activity) => {
-        const activityRating = parseFloat(activity.rating) || 0;
-        return activityRating === parseFloat(filters.rating);
-      });
-    }
-
-    // Filter by date
-    if (filters.date) {
-      filteredActivities = filteredActivities.filter((activity) => {
-        const activityDate = new Date(activity.date).toISOString().split("T")[0];
-        return activityDate === filters.date;
-      });
-    }
-
-    setActivities(filteredActivities); // Set filtered activities
-  };
-
-  // Sorting logic
-  const handleSort = () => {
-    let sortedActivities = [...activities]; // Create a copy of activities
-
-    // Sorting logic
-    sortedActivities.sort((a, b) => {
-      if (sort.field === "date") {
-        return sort.order === "asc"
-          ? new Date(a.date) - new Date(b.date)
-          : new Date(b.date) - new Date(a.date);
-      } else if (sort.field === "price") {
-        return sort.order === "asc" ? a.price - b.price : b.price - a.price;
-      } else {
-        return 0; // Default case, no sorting applied
-      }
-    });
-
-    setActivities(sortedActivities); // Set sorted activities
-  };
-
-  // Reset filters and fetch all activities again
-  const handleResetFilters = () => {
-    setFilters({ budget: "", selectedCategories: [], rating: "", date: "" }); // Reset filter values
-    setValidationError(""); // Clear validation error
-    setActivities(originalActivities); // Reset activities to original list
-  };
-
-  // useEffect to call fetchActivities and fetchCategories when component mounts
+  // Fetch activities and categories when the component mounts
   useEffect(() => {
-    fetchActivities();
-    fetchCategories();
+    const fetchData = async () => {
+      try {
+        const [activitiesResponse, categoriesResponse] = await Promise.all([
+          getAllActivities(),
+          getAllCategories(),
+        ]);
+        setActivities(activitiesResponse.data.activities);
+        setOriginalActivities(activitiesResponse.data.activities);
+        setCategories(categoriesResponse.data.categories);
+        setLoading(false);
+      } catch (error) {
+        setError("Error fetching activities or categories");
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
+  const handleCategoryChange = (event) => {
+    setSelectedCategories(event.target.value);
+  };
+
+  const handleSortByPrice = () => {
+    const sortedActivities = [...activities].sort((a, b) => {
+      if (sortOrder === "asc") return a.price - b.price;
+      if (sortOrder === "desc") return b.price - a.price;
+      return 0;
+    });
+    setActivities(sortedActivities);
+  };
+
+  const handleFilter = () => {
+    let filteredActivities = [...originalActivities];
+
+    if (selectedCategories.length > 0) {
+      filteredActivities = filteredActivities.filter((activity) =>
+        selectedCategories.includes(activity.category._id)
+      );
+    }
+
+    if (budget) {
+      filteredActivities = filteredActivities.filter(
+        (activity) => activity.price <= parseFloat(budget)
+      );
+    }
+
+    setActivities(filteredActivities);
+  };
+
+  const handleResetFilters = () => {
+    setSelectedCategories([]);
+    setBudget("");
+    setActivities(originalActivities);
+  };
+
   if (loading) {
-    return <p style={styles.loading}>Loading...</p>;
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (error) {
-    return <p style={styles.error}>{error}</p>;
+    return <Typography color="error">{error}</Typography>;
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Upcoming Activities</h2>
+    <ThemeProvider theme={theme}>
+      <AppBar position="static" color="primary" sx={{ mb: 4 }}>
+        <Toolbar sx={{ justifyContent: "center" }}>
+          <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
+            Upcoming Activities
+          </Typography>
+        </Toolbar>
+      </AppBar>
 
-      {/* Sort Dropdown */}
-      <div style={styles.sortContainer}>
-        <label style={styles.label}>
-          Sort by:
-          <select
-            value={sort.field}
-            onChange={(e) => setSort({ ...sort, field: e.target.value })}
-            style={styles.select}
-          >
-            <option value="date">Date</option>
-            <option value="price">Price</option>
-          </select>
-        </label>
-        <label style={styles.label}>
-          Order:
-          <select
-            value={sort.order}
-            onChange={(e) => setSort({ ...sort, order: e.target.value })}
-            style={styles.select}
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </label>
-        {/* Sort Button */}
-        <button onClick={handleSort} style={styles.button}>
-          Sort
-        </button>
-      </div>
+      <Box sx={{ p: 4 }}>
+        {/* Search, Sort, and Filter Section */}
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+          <TextField
+            label="Search by name"
+            variant="outlined"
+            sx={{ mr: 2, width: "300px" }}
+          />
+          <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
+            <InputLabel>Sort by Price</InputLabel>
+            <Select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              label="Sort by Price"
+            >
+              <MenuItem value="asc">Low to High</MenuItem>
+              <MenuItem value="desc">High to Low</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" onClick={handleSortByPrice}>
+            Sort
+          </Button>
+        </Box>
 
-      <div style={styles.filterContainer}>
-        <h4>Filter by Category:</h4>
-        <div style={styles.checkboxContainer}>
-          {categories.map((category) => (
-            <label key={category._id} style={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                value={category._id}
-                checked={filters.selectedCategories.includes(category._id)}
-                onChange={() => handleCategoryChange(category._id)}
-              />
-              {category.name}
-            </label>
-          ))}
-        </div>
+        {/* Filters Section */}
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <FormControl variant="outlined" sx={{ mr: 2, width: "200px" }}>
+            <InputLabel>Categories</InputLabel>
+            <Select
+              multiple
+              value={selectedCategories}
+              onChange={handleCategoryChange}
+              input={<OutlinedInput label="Categories" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={categories.find((cat) => cat._id === value)?.name || value} />
+                  ))}
+                </Box>
+              )}
+            >
+              {categories.map((category) => (
+                <MenuItem key={category._id} value={category._id}>
+                  <Checkbox checked={selectedCategories.indexOf(category._id) > -1} />
+                  <ListItemText primary={category.name} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-        <input
-          type="number"
-          placeholder="Budget"
-          min="0"
-          value={filters.budget}
-          onChange={(e) => setFilters({ ...filters, budget: e.target.value })}
-          style={styles.input}
-        />
+          <TextField
+            label="Budget"
+            type="number"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            variant="outlined"
+            sx={{ width: "150px", mr: 2 }}
+          />
 
-        <input
-          type="number"
-          placeholder="Rating (1-5)"
-          value={filters.rating}
-          min="1"
-          max="5"
-          onChange={(e) => setFilters({ ...filters, rating: e.target.value })}
-          style={styles.input}
-        />
+          <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
+            Filter
+          </Button>
 
-        <input
-          type="date"
-          value={filters.date}
-          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-          style={styles.input}
-        />
+          <Button variant="contained" color="secondary" onClick={handleResetFilters} sx={{ ml: 2 }}>
+            Reset Filters
+          </Button>
+        </Box>
 
-        <button onClick={handleFilter} style={styles.button}>
-          Filter
-        </button>
-        <button onClick={handleResetFilters} style={styles.button}>
-          Reset Filters
-        </button>
-      </div>
-      {validationError && <p style={styles.error}>{validationError}</p>} {/* Display validation error */}
-      {activities.length === 0 ? (
-        <p style={styles.noActivities}>No upcoming activities available.</p>
-      ) : (
-        <div style={styles.grid}>
+        {/* Activities Section */}
+        <Grid container spacing={3}>
           {activities.map((activity) => (
-            <div key={activity._id} style={styles.card}>
-              <h3 style={styles.cardHeading}>{activity.name}</h3>
-              <p>
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Time:</strong> {activity.time}
-              </p>
-              <p>
-                <strong>Category:</strong> {activity.category.name}
-              </p>
-              <p>
-                <strong>Tags:</strong> {activity.tags.length > 0 ? activity.tags.map((tag) => tag.name).join(", ") : "No tags available"}
-              </p>
-              <p>
-                <strong>Price:</strong> ${activity.price}
-              </p>
-              <p>
-                <strong>Duration:</strong> {activity.duration} mins
-              </p>
-              <p>
-                <strong>Rating:</strong> {activity.rating || "No ratings yet"}
-              </p>
-              <p>
-                <strong>Discount:</strong> {activity.specialDiscount}%
-              </p>
-              <p>
-                <strong>Location:</strong> {activity.location}
-              </p>
-              <p>
-                <strong>Bookable:</strong> {activity.isBookable ? "Yes" : "No"}
-              </p>
-            </div>
+            <Grid item xs={12} md={6} key={activity._id}>
+              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+                <CardContent>
+                  <Typography variant="h6" color="secondary">
+                    {activity.name}
+                  </Typography>
+                  <Typography>
+                    <strong>Price:</strong> ${activity.price}
+                  </Typography>
+                  <Typography>
+                    <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    onClick={() => console.log(`Navigate to activity ${activity._id}`)}
+                  >
+                    View Details
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
           ))}
-        </div>
-      )}
-    </div>
+        </Grid>
+      </Box>
+    </ThemeProvider>
   );
-};
-
-// Styles as JavaScript objects
-const styles = {
-  container: {
-    padding: "20px",
-    backgroundColor: "#f9f9f9",
-    color: "#333",
-  },
-  heading: {
-    fontSize: "24px",
-    marginBottom: "20px",
-    color: "#00695c",
-  },
-  loading: {
-    fontSize: "18px",
-    textAlign: "center",
-    margin: "20px 0",
-  },
-  error: {
-    fontSize: "18px",
-    color: "red",
-    textAlign: "center",
-    margin: "20px 0",
-  },
-  noActivities: {
-    fontSize: "18px",
-    textAlign: "center",
-    margin: "20px 0",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-    gap: "20px",
-  },
-  card: {
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    padding: "15px",
-    backgroundColor: "#fff",
-    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-  },
-  cardHeading: {
-    fontSize: "20px",
-    marginBottom: "10px",
-  },
-  sortContainer: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "20px",
-  },
-  filterContainer: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "20px",
-  },
-  input: {
-    marginRight: "10px",
-    padding: "5px",
-    width: "100px",
-  },
-  select: {
-    marginRight: "10px",
-    padding: "5px",
-  },
-  button: {
-    marginRight: "10px",
-    padding: "5px 10px",
-    backgroundColor: "#00695c",
-    color: "#fff",
-    border: "none",
-    borderRadius: "3px",
-    cursor: "pointer",
-  },
 };
 
 export default Activities;

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import signupImage from "../../assets/signup/CarouselLogin1.png";
-import { TextField, Button, Checkbox, FormControlLabel, Grid, Box, Typography, Link, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
-import { signup } from "../../services/Signup.js"; // Import the signup service
+import { TextField, Button, IconButton, Checkbox, FormControlLabel, Grid, Box, Typography, Link, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+import { signup, uploadFiles } from "../../services/Signup.js"; // Import the signup service
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const userTypes = ["Tourist", "Tour Guide", "Seller", "Advertiser"];
 const nationalities = [
@@ -74,9 +75,11 @@ const Signup = () => {
     websiteLink: "", // New field for Advertiser
     hotline: "", // New field for Advertiser
     description: "",
+    files: [],
   });
   const navigate = useNavigate();
 
+  const [selectedFiles, setSelectedFiles] = useState([]); // State to store uploaded files
   const [errors, setErrors] = useState({}); // State for error messages
 
   const handleInputChange = (e) => {
@@ -85,6 +88,32 @@ const Signup = () => {
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const newFiles = Array.from(e.target.files); // Convert FileList to Array
+    const allFiles = [...selectedFiles, ...newFiles]; // Combine new files with already selected files
+
+    // Check if there are any duplicate file names
+    const fileNames = allFiles.map((file) => file.name);
+    const hasDuplicates = fileNames.some((name, index) => fileNames.indexOf(name) !== index);
+
+    if (hasDuplicates) {
+      setErrors({ files: "Duplicate file names are not allowed." });
+    } else {
+      setSelectedFiles(allFiles); // Add new files to the selectedFiles state
+      setFormData({
+        ...formData,
+        files: allFiles, // Update the formData with selected files
+      });
+      setErrors({ files: "" });
+    }
+  };
+
+  // Handle file removal
+  const handleRemoveFile = (index) => {
+    setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const validateEmail = (email) => {
@@ -106,7 +135,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, name, email, password, phoneNumber, nationality, birthDate, occupation, yearsOfExperience, previousWork, type, companyName, websiteLink, hotline, description } = formData;
+    const { username, name, email, password, phoneNumber, nationality, birthDate, occupation, yearsOfExperience, previousWork, type, companyName, websiteLink, hotline, description, files } = formData;
 
     const newErrors = {};
     if (!username) newErrors.username = "Username is required";
@@ -115,6 +144,13 @@ const Signup = () => {
     else if (!validateEmail(email)) newErrors.email = "Email is not valid";
     if (!password) newErrors.password = "Password is required";
     if (!formData.confirmPassword) newErrors.confirmPassword = "Confirm password is required";
+
+    console.log(files);
+
+    // Validate file uploads for Advertiser, Seller, or Tour Guide
+    if (["Tour Guide", "Seller", "Advertiser"].includes(type) && (!files || files.length < 2)) {
+      newErrors.files = "Please upload at least 2 files";
+    }
 
     // Validate fields based on user type
     if (type === "Tourist") {
@@ -209,12 +245,28 @@ const Signup = () => {
 
     try {
       const response = await signup(signupData);
+      const userId = response.user._id; // Extract user ID from response
+      const userType = response.user.type; // Extract user ID from response
       console.log("Signup successful:", response);
-      // If successful, navigate to the login page
 
-      navigate("/login");
+      // Step 2: After signup, call the file upload API if user is 'Tour Guide', 'Seller', or 'Advertiser'
+      if (userType === "Tour Guide" || userType === "Seller" || userType === "Advertiser") {
+        console.log(selectedFiles);
+        console.log("=========================");
+
+        const formData = new FormData();
+        formData.append("userId", userId); // Use the userId from the signup response
+        selectedFiles.forEach((file) => formData.append("files", file)); // Append each selected file
+
+        await uploadFiles(formData);
+
+        navigate("/login");
+      } else {
+        // If user didn't upload files or isn't required to, navigate to login
+        navigate("/login");
+      }
     } catch (error) {
-      if (error.response.status === 400) {
+      if (error.response && error.response.status === 400) {
         const errorMessage = error.response.data.message;
         console.log(errorMessage);
 
@@ -233,6 +285,38 @@ const Signup = () => {
       console.error("Signup failed:", error);
       // Handle error (e.g., show an error message)
     }
+  };
+
+  // Render selected files with remove button
+  const renderSelectedFiles = () => (
+    <div>
+      {selectedFiles.map((file, index) => (
+        <div key={index} style={{ display: "flex", alignItems: "center", margin: "5px 0" }}>
+          <Typography variant="body2" style={{ marginRight: "10px" }}>
+            {file.name}
+          </Typography>
+          <IconButton size="small" onClick={() => handleRemoveFile(index)}>
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderFileUploadSection = () => {
+    if (["Advertiser", "Seller", "Tour Guide"].includes(formData.type)) {
+      return (
+        <>
+          <Button variant="outlined" component="label" fullWidth margin="normal">
+            Upload Documents
+            <input type="file" multiple hidden onChange={handleFileChange} />
+          </Button>
+          {errors.files && <Typography color="error">{errors.files}</Typography>}
+          {renderSelectedFiles()} {/* Show selected files under the button */}
+        </>
+      );
+    }
+    return null;
   };
 
   // Conditionally render the name field for specific user types
@@ -414,6 +498,8 @@ const Signup = () => {
               </Select>
             </FormControl>
             {renderConditionalFields()}
+            {renderFileUploadSection()}
+
             <TextField label="Email" name="email" fullWidth margin="normal" value={formData.email} onChange={handleInputChange} error={!!errors.email} helperText={errors.email} />
             <TextField
               label="Password"
