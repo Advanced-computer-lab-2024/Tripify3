@@ -107,7 +107,7 @@ export const addCategory = async (req, res) => {
   }
 };
 
-export const viewCategory = async (req, res) => {
+export const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
     res.status(200).json(categories);

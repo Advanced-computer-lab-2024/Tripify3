@@ -24,18 +24,6 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-export const getCategories = async (req, res) => {
-  try {
-    const categories = await Category.find(); // Fetch all categories from the database
-    res.status(200).json({
-      message: "Categories retrieved successfully",
-      categories: categories,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving categories", error: error.message });
-  }
-};
-
 // Get the user profile
 export const getProfile = async (req, res) => {
   const { id } = req.params;

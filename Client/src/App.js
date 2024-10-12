@@ -35,6 +35,7 @@ import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismG
 
 import { getUserType } from "./utils/authUtils.js";
 import Users from "./pages/admin/users.js";
+import Categories from "./pages/admin/categories.js";
 
 // Mock function to get the current user role
 const getUserRole = () => {
@@ -89,7 +90,7 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/reset-password/email-input" element={<EmailInput />} />
+        <Route path="/email-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
 
@@ -120,6 +121,7 @@ const App = () => {
         <Route path={`${basePath}/admin`} element={getLayoutForRole(userRole, <SellerHomepage />)}/>
         <Route path={`${basePath}/users`} element={getLayoutForRole(userRole, <Users />)}/>
         <Route path={`${basePath}/my-products`} element={getLayoutForRole(userRole, <MyProducts />)} />
+        <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
         <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
 
         {/* Admin Routes */}

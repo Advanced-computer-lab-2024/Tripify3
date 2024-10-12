@@ -54,7 +54,7 @@ const Activities = () => {
         ]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
-        setCategories(categoriesResponse.data.categories);
+        setCategories(categoriesResponse.data);
         setLoading(false);
       } catch (error) {
         setError("Error fetching activities or categories");

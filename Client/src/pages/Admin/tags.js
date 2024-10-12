@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Toolbar, Box, Button, Card, CardContent, Typography, TextField, IconButton, CircularProgress, Grid, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  IconButton,
+  CircularProgress,
+  Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Add, Delete, Edit } from "@mui/icons-material";
-import { getAllTags, createTag, deleteTag, editTag } from "../../services/admin.js"; // Import the necessary functions
+import { getAllTags, createTag, deleteTag, editTag } from "../../services/admin.js";
 
 const theme = createTheme({
   palette: {
@@ -23,6 +39,8 @@ const Tags = () => {
   const [newTagName, setNewTagName] = useState("");
   const [selectedTag, setSelectedTag] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openAddTagDialog, setOpenAddTagDialog] = useState(false); // State for the add tag dialog
+  const [addTagError, setAddTagError] = useState(""); // State for error message when adding tag
 
   // Fetch tags when the component mounts
   useEffect(() => {
@@ -53,8 +71,14 @@ const Tags = () => {
       const response = await createTag({ name: newTagName });
       setTags([...tags, response.data.newTag]);
       setNewTagName("");
+      setOpenAddTagDialog(false); // Close the dialog after adding the tag
+      setAddTagError(""); // Reset error message
     } catch (error) {
-      alert("Error creating tag");
+      if (error.response?.status === 400) {
+        setAddTagError("Tag name already exists.");
+      } else {
+        alert("Error creating tag");
+      }
     }
   };
 
@@ -68,7 +92,7 @@ const Tags = () => {
   };
 
   const handleOpenEditDialog = (tag) => {
-    setSelectedTag({ ...tag, oldName: tag.name, newName: tag.name }); // Set both oldName and newName
+    setSelectedTag({ ...tag, oldName: tag.name, newName: tag.name });
     setOpenEditDialog(true);
   };
 
@@ -79,7 +103,6 @@ const Tags = () => {
     }
 
     try {
-      // Make sure you're sending the correct `oldName` and `newName`
       await editTag({ oldName: selectedTag.oldName, newName: selectedTag.newName });
       setTags(tags.map((tag) => (tag._id === selectedTag._id ? { ...tag, name: selectedTag.newName } : tag)));
       setOpenEditDialog(false);
@@ -113,17 +136,36 @@ const Tags = () => {
           </Toolbar>
         </AppBar>
 
-        {/* Search and Add Tag Section */}
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 4 }}>
-          <TextField label="Search tags" variant="outlined" value={searchTerm} onChange={handleSearchChange} sx={{ width: "300px", mr: 2 }} />
-          <TextField label="Add new tag" variant="outlined" value={newTagName} onChange={(e) => setNewTagName(e.target.value)} sx={{ width: "300px", mr: 2 }} />
-          <Button variant="contained" onClick={handleAddTag} color="primary">
+        {/* Search Section */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ height: '56px', mr: 2 }} 
+          >
+            Search
+          </Button>
+            <TextField
+              label="Search tags"
+              variant="outlined"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              sx={{ width: "300px", mr: 2 }}
+            />
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setOpenAddTagDialog(true)} // Open the add tag dialog
+            color="primary"
+          >
             Add Tag
           </Button>
         </Box>
 
         {/* Tags List */}
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{ mt: 4 }}>
           {filteredTags.map((tag) => (
             <Grid item xs={12} md={6} key={tag._id}>
               <Card sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
@@ -146,23 +188,45 @@ const Tags = () => {
         </Grid>
 
         {/* Edit Dialog */}
-        <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
+        <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)} maxWidth="sm" fullWidth>
           <DialogTitle>Edit Tag</DialogTitle>
           <DialogContent>
             <TextField
               label="Tag Name"
               variant="outlined"
-              value={selectedTag?.newName || ""} // Bind this to newName
-              onChange={(e) => setSelectedTag({ ...selectedTag, newName: e.target.value })} // Update newName on change
+              value={selectedTag?.newName || ""}
+              onChange={(e) => setSelectedTag({ ...selectedTag, newName: e.target.value })}
               fullWidth
             />
           </DialogContent>
-
           <DialogActions>
             <Button onClick={handleEditTag} color="primary" variant="contained">
               Save
             </Button>
             <Button onClick={() => setOpenEditDialog(false)} color="secondary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Add Tag Dialog */}
+        <Dialog open={openAddTagDialog} onClose={() => setOpenAddTagDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Add Tag</DialogTitle>
+          <DialogContent>
+            {addTagError && <Typography color="error">{addTagError}</Typography>} {/* Display error message */}
+            <TextField
+              label="Tag Name"
+              variant="outlined"
+              value={newTagName}
+              onChange={(e) => setNewTagName(e.target.value)}
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleAddTag} color="primary" variant="contained">
+              Add
+            </Button>
+            <Button onClick={() => setOpenAddTagDialog(false)} color="secondary">
               Cancel
             </Button>
           </DialogActions>
