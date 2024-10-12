@@ -22,7 +22,7 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Add, Delete, CheckCircle, Cancel, Visibility, VisibilityOff } from "@mui/icons-material";
 import { getUploadedFiles, getAllAcceptedUsers, getAllPendingUsers, updateUserStatus, removeUser, addUser } from "../../services/admin.js";
-import FileViewer from './fileViewer.js'; // Import the new component
+import { useNavigate } from "react-router-dom"; // Import useNavigate from React Router
 
 const theme = createTheme({
   palette: {
@@ -48,6 +48,9 @@ const Users = () => {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [openFileViewer, setOpenFileViewer] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
+
+  const navigate = useNavigate(); // Use useNavigate for navigation
+
 
   // Fetch both accepted and pending users when the component mounts
   // Function to fetch users
@@ -94,21 +97,18 @@ const Users = () => {
   const handleViewDocuments = async (userId) => {
     try {
       const response = await getUploadedFiles(userId);
-  
-      const files = response.data
+      const files = response.data;
       if (files && files.length > 0) {
-        setFileUrls(files);
-        setOpenFileViewer(true); // Open the file viewer dialog
+        // Navigate to the FileViewer page with userId and files
+        navigate(`/admin/file-viewer`, { state: { files, userId } });
       } else {
-        alert('No documents available for this user.');
+        alert("No documents available for this user.");
       }
     } catch (error) {
-      console.error('Error fetching files', error);
-      alert('Error fetching documents.');
+      console.error("Error fetching files", error);
+      alert("Error fetching documents.");
     }
   };
-
-  
 
   const handleAddUser = async () => {
     setAddUserError(""); // Reset error message
@@ -145,8 +145,6 @@ const Users = () => {
   }
 
   return (
-    
-    
     <ThemeProvider theme={theme}>
       <Box sx={{ p: 4 }}>
         <AppBar position="static">
@@ -157,12 +155,7 @@ const Users = () => {
           </Toolbar>
         </AppBar>
 
-        <FileViewer
-        open={openFileViewer}
-        onClose={() => setOpenFileViewer(false)}
-        fileUrls={fileUrls}
-      />
-
+    
         {/* Add User Button */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
           <Button variant="contained" startIcon={<Add />} onClick={() => setOpenAddUserDialog(true)} color="primary">

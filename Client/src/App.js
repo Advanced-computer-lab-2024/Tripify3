@@ -35,6 +35,7 @@ import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismG
 import { getUserType } from "./utils/authUtils.js";
 import Users from "./pages/admin/users.js";
 import Categories from "./pages/admin/categories.js";
+import FileViewer from "./pages/admin/fileViewer.js";
 
 // Mock function to get the current user role
 const getUserRole = () => {
@@ -125,6 +126,7 @@ const App = () => {
 
         {/* Admin Routes */}
         <Route path={`${basePath}/admin`} element={getLayoutForRole(userRole, <Users />)} />
+        <Route path={`${basePath}/file-viewer`} element={ <FileViewer />} />
       </Routes>
     </Router>
   );
