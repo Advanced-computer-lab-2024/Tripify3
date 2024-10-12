@@ -49,7 +49,7 @@ const Categories = () => {
         const response = await getAllCategories();
         console.log(response.data);
         
-        setCategories(response.data.categories);
+        setCategories(response.data);
         setLoading(false);
       } catch (error) {
         setError("Error fetching categories");
