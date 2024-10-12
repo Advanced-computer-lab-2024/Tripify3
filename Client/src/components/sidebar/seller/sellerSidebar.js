@@ -39,6 +39,12 @@ const SellerSidebar = () => {
           </ListItemButton>
         </ListItem>
 
+        <ListItem disablePadding>
+        <ListItemButton component={Link} to="/seller/historical-places" sx={linkStyle}>
+            Historical Places
+          </ListItemButton>
+        </ListItem>
+
        
         
       </List>

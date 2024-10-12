@@ -11,7 +11,6 @@ import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
 import TourGuideProfile from "./pages/tourGuide/tourGuideProfile.js";
 import Itinerary from "./pages/tourGuide/tourGuideItinerary.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/touristHomepage.js";
@@ -100,7 +99,7 @@ const App = () => {
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
         {/* Tourist Routes */}
-        <Route path={`${basePath}/tourist`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
+        <Route path={`${basePath}/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
@@ -118,14 +117,14 @@ const App = () => {
         <Route path={`${basePath}/activities`} element={<AdvertiserActivities />} />
 
         {/* Seller Routes */}
-        <Route path={`${basePath}/admin`} element={getLayoutForRole(userRole, <SellerHomepage />)}/>
+        <Route path={`${basePath}/seller`} element={getLayoutForRole(userRole, <SellerHomepage />)}/>
         <Route path={`${basePath}/users`} element={getLayoutForRole(userRole, <Users />)}/>
         <Route path={`${basePath}/my-products`} element={getLayoutForRole(userRole, <MyProducts />)} />
         <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
         <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
 
         {/* Admin Routes */}
-        <Route path={`${basePath}`} element={getLayoutForRole(userRole, <AdminHomepage />)} />
+        <Route path={`${basePath}/admin`} element={getLayoutForRole(userRole, <Users />)} />
       </Routes>
     </Router>
   );

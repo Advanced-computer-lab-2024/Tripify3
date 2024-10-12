@@ -61,11 +61,6 @@ const TourismGovernorSidebar = () => {
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourism-governor/reviews" sx={linkStyle}>
-            Reviews
-          </ListItemButton>
-        </ListItem>
       </List>
     </Box>
   );
