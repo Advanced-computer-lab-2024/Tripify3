@@ -21,7 +21,8 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Add, Delete, CheckCircle, Cancel, Visibility, VisibilityOff } from "@mui/icons-material";
-import { getAllAcceptedUsers, getAllPendingUsers, updateUserStatus, removeUser, addUser } from "../../services/admin.js";
+import { getUploadedFiles, getAllAcceptedUsers, getAllPendingUsers, updateUserStatus, removeUser, addUser } from "../../services/admin.js";
+import FileViewer from './fileViewer.js'; // Import the new component
 
 const theme = createTheme({
   palette: {
@@ -45,6 +46,8 @@ const Users = () => {
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
   const [addUserError, setAddUserError] = useState(""); // Error message for adding user
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [openFileViewer, setOpenFileViewer] = useState(false);
+  const [fileUrls, setFileUrls] = useState([]);
 
   // Fetch both accepted and pending users when the component mounts
   // Function to fetch users
@@ -78,7 +81,6 @@ const Users = () => {
       alert("Error updating user status");
     }
   };
-  
 
   const handleRemoveUser = async (id) => {
     try {
@@ -88,6 +90,25 @@ const Users = () => {
       alert("Error removing user");
     }
   };
+
+  const handleViewDocuments = async (userId) => {
+    try {
+      const response = await getUploadedFiles(userId);
+  
+      const files = response.data
+      if (files && files.length > 0) {
+        setFileUrls(files);
+        setOpenFileViewer(true); // Open the file viewer dialog
+      } else {
+        alert('No documents available for this user.');
+      }
+    } catch (error) {
+      console.error('Error fetching files', error);
+      alert('Error fetching documents.');
+    }
+  };
+
+  
 
   const handleAddUser = async () => {
     setAddUserError(""); // Reset error message
@@ -124,6 +145,8 @@ const Users = () => {
   }
 
   return (
+    
+    
     <ThemeProvider theme={theme}>
       <Box sx={{ p: 4 }}>
         <AppBar position="static">
@@ -133,6 +156,12 @@ const Users = () => {
             </Typography>
           </Toolbar>
         </AppBar>
+
+        <FileViewer
+        open={openFileViewer}
+        onClose={() => setOpenFileViewer(false)}
+        fileUrls={fileUrls}
+      />
 
         {/* Add User Button */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
@@ -155,7 +184,10 @@ const Users = () => {
                   <Typography color="textSecondary">{user.email}</Typography>
                 </CardContent>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <IconButton onClick={() => handleUpdateUserStatus(user._id, "Accepted")} color="success" sx={{ mr: 2 }}>
+                  <Button variant="contained" color="primary" onClick={() => handleViewDocuments(user._id)}>
+                    View Documents
+                  </Button>
+                  <IconButton onClick={() => handleUpdateUserStatus(user._id, "Accepted")} color="success" sx={{ ml: 2 }}>
                     <CheckCircle />
                   </IconButton>
                   <IconButton onClick={() => handleUpdateUserStatus(user._id, "Rejected")} color="error">

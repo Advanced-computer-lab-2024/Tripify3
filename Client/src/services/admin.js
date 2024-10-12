@@ -10,6 +10,9 @@ export const updateActivity = async (advertiserId, activityId, activity) => {
   return await axios.put(`${API_URL}/advertiser/activity/${advertiserId}/${activityId}`, activity);
 };
 
+export const getUploadedFiles = async (userId) => {
+    return await axios.get(`${API_URL}/user/${userId}/files`);
+  };
 export const getAllAcceptedUsers = async () => {
   return await axios.get(`${API_URL}/users/accepted`);
 };

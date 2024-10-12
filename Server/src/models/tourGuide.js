@@ -28,6 +28,13 @@ const tourGuideSchema = new mongoose.Schema({
     required: true,
     default: "Pending",
   },
+  files: [
+    {
+      filename: String,
+      filepath: String,
+      uploadedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 const TourGuide = User.discriminator("Tour Guide", tourGuideSchema);

@@ -2,7 +2,6 @@
 import AddCategory from "./addCategory.js";
 import AddTourismGovernForm from "./addTourismGovernorForm.js";
 import DeleteCategory from "./deleteCategory.js";
-import DeleteTag from "./deleteTag.js";
 import UpdateCategory from "./updateCategory.js";
 import ViewCategory from "./viewCategories.js";
 import Products from "../seller/products.js";
@@ -14,7 +13,6 @@ const Admin = () => {
       <AddCategory />
       <AddTourismGovernForm />
       <DeleteCategory />
-      <DeleteTag />
       <UpdateCategory />
       <ViewCategory />
       <Products />

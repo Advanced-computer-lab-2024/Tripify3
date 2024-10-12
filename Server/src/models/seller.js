@@ -13,6 +13,14 @@ const sellerSchema = new mongoose.Schema({
     required: false,
     default: "Pending",
   },
+   // Add a files field to store file information
+   files: [
+    {
+      filename: String,
+      filepath: String,
+      uploadedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 const Seller = user.discriminator("Seller", sellerSchema);
