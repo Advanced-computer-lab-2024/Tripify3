@@ -64,6 +64,11 @@ const AdminSidebar = () => {
             Tags
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/admin/categories" sx={linkStyle}>
+            Categories
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   );

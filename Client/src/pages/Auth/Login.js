@@ -171,7 +171,7 @@ const Login = () => {
               {/* Forgot Password link under the password field */}
               <Box sx={{ textAlign: "right", mt: 1 }}>
                 <Link
-                  href="/username-input"
+                  href="/email-input"
                   underline="none"
                   sx={{ color: "#00695C", fontSize: "14px" }}
                 >

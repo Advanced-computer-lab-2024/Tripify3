@@ -51,3 +51,20 @@ export const deleteTag = async (id) => {
 export const editTag = async (tagData) => {
   return await axios.put(`${API_URL}/tag/update`, tagData);
 };
+
+
+export const getAllCategories = async () => {
+    return await axios.get(`${API_URL}/category/get`);
+  };
+  
+  export const createCategory = async (categoryData) => {
+    return await axios.post(`${API_URL}/admin/category/create`, categoryData);
+  };
+  
+  export const editCategory = async (categoryData) => {
+    return await axios.put(`${API_URL}/admin/category/update`, categoryData);
+  };
+  
+  export const deleteCategory = async (categoryData) => {
+    return await axios.delete(`${API_URL}/admin/category/delete`, { data: categoryData });
+  };

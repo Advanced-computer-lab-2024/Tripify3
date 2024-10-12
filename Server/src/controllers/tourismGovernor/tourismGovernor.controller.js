@@ -58,27 +58,6 @@ export const createTag = async (req, res) => {
   }
 };
 
-
-// export const getAllPlaces = async (req, res) => {
-//   try {
-//     // Fetch all places from the location collection
-//     const places = await Location.find().populate({ path: "tags", select: "name" }); // Populate tag names
-//     ;
-
-//     // Send response with the fetched places
-//     res.status(200).json({
-//       success: true,
-//       data: places,
-//     });
-//   } catch (err) {
-//     console.error("Error fetching places:", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error, could not retrieve places.",
-//     });
-//   }
-// };
-
 export const getPlace = async (req, res) => {
   try {
     const { id } = req.params; // Extract ID from request parameters
