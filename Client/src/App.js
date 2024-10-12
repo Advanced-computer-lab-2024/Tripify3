@@ -95,7 +95,7 @@ const App = () => {
         <Route path="/new-password" element={<NewPassword />} />
 
         {/* Tourism Governor Routes */}
-        <Route path={`${basePath}`} element={<PlacesList />} />
+        <Route path={`${basePath}/tourism-governor`}  element={getLayoutForRole(userRole, <PlacesList />)}/>
         <Route path={`${basePath}/:id`} element={<PlaceDetails />} />
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
