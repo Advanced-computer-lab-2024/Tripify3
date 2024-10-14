@@ -6,9 +6,9 @@ const touristSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  name:{
-    type:String,
-    required:true
+  name: {
+    type: String,
+    required: true,
   },
   nationality: {
     type: String,
@@ -25,6 +25,10 @@ const touristSchema = new mongoose.Schema({
   loyaltyPoints: {
     type: Number,
     default: 0,
+  }, // Loyalty points earned by the user
+  gender: {
+    type: String,
+    enum: ["Male", "Female"], // Possible user roles
   }, // Loyalty points earned by the user
   complaints: [
     {
