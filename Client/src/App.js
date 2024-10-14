@@ -13,7 +13,8 @@ import Itinerary from "./pages/tourGuide/tourGuideItinerary.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-import TouristHomePage from "./pages/tourist/touristHomepage.js";
+import TouristHomePage from "./pages/tourist/homepage.js";
+import TouristProfile from "./pages/tourist/profile.js";
 
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
@@ -102,6 +103,8 @@ const App = () => {
 
         {/* Tourist Routes */}
         <Route path={`${basePath}/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
+        <Route path={`${basePath}/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
+        <Route path={`${basePath}/tourist/account`} element={getLayoutForRole(userRole, <TouristProfile />)} />
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />

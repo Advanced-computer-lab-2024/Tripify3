@@ -1,16 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  TextField,
-  Typography,
-  Alert,
-  IconButton,
-  Link,
-  InputAdornment,
-} from "@mui/material";
+import { Box, Button, Container, TextField, Typography, Alert, IconButton, Link, InputAdornment } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -45,7 +35,7 @@ const Login = () => {
       if (data.user.type === "Tourism Governor") {
         navigate("/tourism-governor/tourism-governor");
       } else if (data.user.type === "Tourist") {
-        navigate("/tourist/tourist");
+        navigate("/tourist/tourist/homepage");
       } else if (data.user.type === "Seller") {
         navigate("/seller/seller");
       } else if (data.user.type === "Admin") {
@@ -113,18 +103,10 @@ const Login = () => {
           }}
         >
           <Box sx={{ width: "100%", maxWidth: "500px" }}>
-            <Typography
-              variant="h4"
-              gutterBottom
-              sx={{ fontWeight: "bold", color: "black" }}
-            >
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "black" }}>
               Login
             </Typography>
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              sx={{ marginBottom: "30px" }}
-            >
+            <Typography variant="body1" color="textSecondary" sx={{ marginBottom: "30px" }}>
               Please enter your username and password to log in.
             </Typography>
 
@@ -135,15 +117,7 @@ const Login = () => {
             )}
 
             <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                label="Username"
-                variant="outlined"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                margin="normal"
-                required
-              />
+              <TextField fullWidth label="Username" variant="outlined" value={username} onChange={(e) => setUsername(e.target.value)} margin="normal" required />
 
               <TextField
                 fullWidth
@@ -157,10 +131,7 @@ const Login = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        sx={{ color: "orange" }}
-                      >
+                      <IconButton onClick={() => setShowPassword(!showPassword)} sx={{ color: "orange" }}>
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -170,11 +141,7 @@ const Login = () => {
 
               {/* Forgot Password link under the password field */}
               <Box sx={{ textAlign: "right", mt: 1 }}>
-                <Link
-                  href="/email-input"
-                  underline="none"
-                  sx={{ color: "#00695C", fontSize: "14px" }}
-                >
+                <Link href="/email-input" underline="none" sx={{ color: "#00695C", fontSize: "14px" }}>
                   Forgot Password?
                 </Link>
               </Box>
@@ -189,25 +156,15 @@ const Login = () => {
                 Login
               </Button>
 
-              <Typography
-                variant="body2"
-                sx={{ marginTop: "20px", color: "gray", textAlign: "center" }}
-              >
+              <Typography variant="body2" sx={{ marginTop: "20px", color: "gray", textAlign: "center" }}>
                 Don't have an account?{" "}
                 <Link href="/signup" underline="none" sx={{ color: "#00695C" }}>
                   Sign up
                 </Link>
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{ marginTop: "5px", color: "gray", textAlign: "center" }}
-              >
+              <Typography variant="body2" sx={{ marginTop: "5px", color: "gray", textAlign: "center" }}>
                 continue as{" "}
-                <Link
-                  href="/tourist"
-                  underline="none"
-                  sx={{ color: "#00695C" }}
-                >
+                <Link href="/tourist" underline="none" sx={{ color: "#00695C" }}>
                   Guest
                 </Link>
               </Typography>

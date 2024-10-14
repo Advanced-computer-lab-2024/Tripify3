@@ -1,12 +1,28 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Box, List, ListItem, ListItemButton, Typography, Collapse } from "@mui/material";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const TouristSidebar = () => {
   const [showItineraries, setShowItineraries] = useState(false);
+  const location = useLocation();
 
-  return (
+  // Define the routes where the sidebar should be visible
+  const visibleRoutes = [
+    "/tourist/home",
+    "/tourist/activities",
+    "/tourist/itineraries",
+    "/tourist/itineraries/my",
+    "/tourist/historical-places",
+    "/tourist/reviews",
+    "/tourist/tourist/profile",
+  ];
+
+  // Check if the current route is in the list of visible routes
+  const isSidebarVisible = visibleRoutes.includes(location.pathname);
+
+  // Conditionally render the sidebar based on the current route
+  return isSidebarVisible ? (
     <Box
       sx={{
         width: 240,
@@ -61,20 +77,38 @@ const TouristSidebar = () => {
           </ListItemButton>
         </ListItem>
 
+        
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Reviews
+            Wishlist
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
+            Payments
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
+            Gift Cards
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/tourist/tourist/profile" sx={linkStyle}>
+            Profile
+          </ListItemButton>
+        </ListItem>
+        
+
       </List>
     </Box>
-  );
+  ) : null; // Return null if the sidebar should not be visible
 };
 
 const linkStyle = {
   color: "#fff",
   padding: "10px",
-  fontSize: "16px", // Increase font size
+  fontSize: "16px",
   "&:hover": {
     backgroundColor: "#00509e",
   },
