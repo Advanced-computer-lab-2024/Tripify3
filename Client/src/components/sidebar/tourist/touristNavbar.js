@@ -78,7 +78,7 @@ const TouristNavbar = () => {
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleServicesClose}>
               <MenuItem onClick={() => navigate("/hotels")}>Hotels</MenuItem>
-              <MenuItem onClick={() => navigate("/flights")}>Flights</MenuItem>
+              <MenuItem onClick={() => navigate("/search_flights")}>Flights</MenuItem>
             </Menu>
 
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
@@ -101,28 +101,28 @@ const TouristNavbar = () => {
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate('/tourist/itineraries')}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}>
             <ListAlt />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Itineraries
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate('/tourist/events')} >
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/events")}>
             <Event />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Events
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate('/tourist/activities')}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}>
             <DirectionsRun />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Activities
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}>
             <Flight />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Flights

@@ -2,7 +2,7 @@ import express from "express";
 import { getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
 import { getAllActivities} from "../controllers/tourist/activities.controller.js";
 import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
-import { searchPlaces, searchActivities, searchItineraries } from "../controllers/tourist/search.controller.js";
+import { searchPlaces, searchActivities, searchItineraries, getFlightsData } from "../controllers/tourist/search.controller.js";
 const router = express.Router();
 
 // GET request to filter places by type and/or tags
@@ -11,6 +11,8 @@ router.get("/tourist/itinerary/filter", getFilteredItineraries); // Get filtered
 router.get("/tourist/activity", getAllActivities); // Get all activities
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
 router.put("/tourist/profile/:id", editProfile); // Get filtered activities
+router.get('/flights', getFlightsData); // Get Flights
+
 
 router.post("/places/search", searchPlaces); // Search places
 router.post("/activities/search", searchActivities); // Search activities
