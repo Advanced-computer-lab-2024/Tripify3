@@ -1,6 +1,11 @@
 //https://www.postman.com/supply-technologist-59501949/84b5b4b2-11af-4baa-9cb5-027a8688a59c
 import express from "express";
-import { viewSeller, updateSeller,   findSeller, getSellerByUserName } from "../controllers/seller/seller.controller.js";
+import {
+  viewSeller,
+  updateSeller,
+  findSeller,
+  getSellerByUserName,
+} from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
   searchAllProducts,
@@ -38,7 +43,10 @@ router.get("/access/seller/searchAllProducts", searchAllProducts);
 //search all my products
 router.get("/access/seller/searchMyProducts", searchMyProducts);
 //search all archived products
-router.get("/access/seller/searchAllArchivedProducts", searchAllArchivedProducts);
+router.get(
+  "/access/seller/searchAllArchivedProducts",
+  searchAllArchivedProducts
+);
 //edit product
 router.put("/access/seller/editProduct", editProduct);
 // search a product

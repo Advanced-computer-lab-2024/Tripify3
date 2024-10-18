@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { getUserId, getUserType } from "../../utils/authUtils";
 const FilterSalesReport = () => {
   const [productId, setProductId] = useState(""); // Product ID
   const [conditions, setConditions] = useState([]); // Multiple conditions
   const [responseMessage, setResponseMessage] = useState(""); // For response messages
   const [filteredSales, setFilteredSales] = useState([]); // Sales data from API
   const [filteredResults, setFilteredResults] = useState([]); // Filtered sales data for display
-
+  const [Id, setId] = useState("");
   // Handle adding a new condition
   const addCondition = () => {
     setConditions([...conditions, { type: "", operator: "=", value: "" }]); // Default operator is "="
@@ -44,10 +44,11 @@ const FilterSalesReport = () => {
 
   // Fetch the sales data for the product
   const fetchSalesHistory = async () => {
-    console.log(productId);
+    var sellerD = getUserId == "Admin" ? Id : getUserId();
+    console.log("get user ", getUserType());
     try {
       const response = await axios.get(
-        `http://localhost:8000/access/seller/getSalesHistory?name=${productId}`
+        `http://localhost:8000/access/seller/getSalesHistory?name=${productId}&&sellerId=${sellerD}`
       );
       setFilteredSales(response.data || []); // Ensure it's an array
       console.log(response.data);
@@ -153,6 +154,21 @@ const FilterSalesReport = () => {
           placeholder="Enter product ID"
           required
         />
+        {getUserType() == "Admin" ? (
+          <>
+            <label htmlFor="sellerId">Seller ID:</label>
+            <input
+              type="text"
+              id="sellerId"
+              value={Id}
+              onChange={(e) => setId(e.target.value)} // Update state as the admin types
+              placeholder="Enter seller ID"
+              required
+            />
+          </>
+        ) : (
+          <></>
+        )}
         <button onClick={() => fetchSalesHistory()}>Search Product</button>
       </div>
 

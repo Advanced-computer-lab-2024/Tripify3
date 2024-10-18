@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { getUserType, getUserId } from "../../utils/authUtils";
+import { IconButton } from "@mui/material";
+import ArchiveIcon from "@mui/icons-material/Archive"; // Import an archive icon
 import {
   AppBar,
   Toolbar,
@@ -106,6 +108,20 @@ const Products = () => {
     setFilterOption({ rating: 0 });
     setBudget(""); // Reset budget
   };
+  const handleArchive = async (productId) => {
+    try {
+      // API call with `id` in the request body
+      const response = await axios.put(
+        "http://localhost:8000/access/seller/archiveProduct",
+        { id: productId } // Sending the product id in the request body
+      );
+      alert("Product archived successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error archiving product:", error);
+      alert("Failed to archive the product. ");
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -191,13 +207,33 @@ const Products = () => {
               <Grid container spacing={2}>
                 {filteredProducts.map((product) => (
                   <Grid item xs={12} sm={6} md={4} key={product._id}>
-                    <Card>
+                    <Card style={{ position: "relative" }}>
+                      {/* Archive Button in Top Right */}
+                      <IconButton
+                        style={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          zIndex: 1,
+                          backgroundColor: "#fff",
+                        }}
+                        onClick={() => handleArchive(product._id)} // Function to handle archiving
+                      >
+                        <ArchiveIcon />
+                      </IconButton>
+
                       {Array.isArray(product.imageUrl) &&
                       product.imageUrl.length > 0 ? (
                         <CardMedia
                           component="img"
-                          height="140"
                           image={product.imageUrl[0]}
+                          style={{
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            maxWidth: "200px",
+                            maxHeight: "200px",
+                            margin: "auto",
+                          }}
                           alt={product.name}
                         />
                       ) : (

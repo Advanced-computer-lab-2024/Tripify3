@@ -21,6 +21,7 @@ const aSeller = () => {
       <MyProducts />
       <EditProductForm />
       <Products />
+      <FilterSalesReport />
     </>
   );
 };

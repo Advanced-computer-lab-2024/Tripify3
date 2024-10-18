@@ -399,6 +399,7 @@ export const viewProductStockAndSales = async (req, res) => {
 //dont know whether to search with name or id
 export const archiveProduct = async (req, res) => {
   const { id } = req.body;
+  console.log(id);
   try {
     const product2 = await product.findOneAndUpdate(
       { _id: id }, // Query to find the product by _id
@@ -661,8 +662,13 @@ export const addProdImage = async (req, res) => {
 };
 export const getSalesHistory = async (req, res) => {
   try {
-    const { name } = req.query;
-    const product2 = await product.findOne({ name });
+    const { name, sellerId } = req.query;
+    const product2 = await product.findOne({
+      name,
+      sellerId: sellerId,
+    });
+
+    console.log(product2);
     if (!product2) {
       return res.status(404).json({ message: "Product not found" });
     }
