@@ -3,7 +3,7 @@ import CreateProductForm from "./CreateProductForm.js"; // Adjust the path if ne
 import DecrementProductQuantity from "./DecrementProductQuantity.js";
 import DeleteProduct from "./DeleteProduct.js";
 import EditProductForm from "./EditProductForm.js";
-import Products from "./products.js";
+import Products from "./productSeller.js";
 import MyProducts from "./myProducts.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
 import UpdateSellerForm from "./UpdateSellerForm.js";
@@ -21,7 +21,6 @@ const aSeller = () => {
       <MyProducts />
       <EditProductForm />
       <Products />
-
     </>
   );
 };
