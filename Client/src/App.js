@@ -96,9 +96,8 @@ const App = () => {
           path={`${basePath}/tourism-governor`}
           element={getLayoutForRole(userRole, <PlacesList />)}
         />
-        <Route path={`/tourism-governor:id`} element={<PlaceDetails />} />
-        {/* needed to be changed */}
-
+        {/* <Route path={`${basePath}/:id`} element={<PlaceDetails />} /> */}
+        {/* if u see this u have to change the path as it clashes with viewseller */}
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
         {/* Tourist Routes */}
@@ -114,8 +113,8 @@ const App = () => {
           path={`${basePath}/tourist/account`}
           element={getLayoutForRole(userRole, <TouristProfile />)}
         />
-        <Route path={`/search_flights`} element={<SearchFlights />} />
-        <Route path={`/load_flights`} element={<LoadFlights />} />
+        <Route path={"/search_flights"} element={<SearchFlights />} />
+        <Route path={"/load_flights"} element={<LoadFlights />} />
 
         {/* Shared Routes */}
         <Route
@@ -148,10 +147,18 @@ const App = () => {
         />
 
         {/* Seller Routes */}
-        <Route path={`seller/:id`} element={<ViewSellerprofile />} />
+        <Route
+          path={`${basePath}/seller`}
+          element={getLayoutForRole(userRole, <SellerHomepage />)}
+        />
+        <Route
+          path={`${basePath}/my-products`}
+          element={getLayoutForRole(userRole, <MyProducts />)}
+        />
+        <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
 
         {/* Admin Routes */}
-        <Route path={`/chatbot`} element={<Chatbot />} />
+        <Route path={"/chatbot"} element={<Chatbot />} />
       </Routes>
     </Router>
   );
