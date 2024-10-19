@@ -10,6 +10,7 @@ import {
   createProduct,
   searchAllProducts,
   searchMyProducts,
+  searchMyProductsArchived,
   searchAllArchivedProducts,
   editProduct,
   searchProduct,
@@ -40,6 +41,8 @@ router.put("/access/seller/updateSeller", updateSeller);
 router.post("/access/seller/createProduct", createProduct);
 //search all products
 router.get("/access/seller/searchAllProducts", searchAllProducts);
+//search all products
+router.get("/access/seller/searchMyProductsArchived", searchMyProductsArchived);
 //search all my products
 router.get("/access/seller/searchMyProducts", searchMyProducts);
 //search all archived products

@@ -129,6 +129,22 @@ export const searchMyProducts = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+export const searchMyProductsArchived = async (req, res) => {
+  try {
+    // Find products by name
+    const { sellerId } = req.query;
+    const product2 = await product.find({
+      archived: true,
+      sellerId: sellerId,
+    }); // Using regex for case-insensitive search
+    // Return the found product(s)
+    console.log("this is the ", product2);
+    return res.status(200).json(product2);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
 export const searchAllArchivedProducts = async (req, res) => {
   try {
     // Find products by name
@@ -382,7 +398,10 @@ export const addProdImage2 = async (req, res) => {
 export const viewProductStockAndSales = async (req, res) => {
   try {
     // Retrieve all products with quantity and sales
-    const products = await product.find({}, "name quantity sales price");
+    const products = await product.find(
+      {},
+      "name quantity sales price sellerId"
+    );
 
     // Check if products exist
     if (!products || products.length === 0) {

@@ -48,16 +48,13 @@ const Products = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [filterOption, setFilterOption] = useState({ rating: 0 });
   const [budget, setBudget] = useState(""); // State for budget
-  const [effect, setEffect] = useState("");
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/access/seller/searchAllProducts"
+        `http://localhost:8000/access/seller/searchAllArchivedProducts`
       );
-      setProducts(
-        response.data.filter((product) => product.sellerId === getUserId())
-      );
+      setProducts(response.data);
       fetchSellerNames(response.data);
     } catch (error) {
       setErrorMessage("Error fetching products: " + error.message);
@@ -88,7 +85,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [effect]);
+  }, []);
 
   const filteredProducts = products
     .filter(
@@ -113,14 +110,14 @@ const Products = () => {
     try {
       // API call with `id` in the request body
       const response = await axios.put(
-        "http://localhost:8000/access/seller/archiveProduct",
+        "http://localhost:8000/access/seller/unarchiveProduct",
         { id: productId } // Sending the product id in the request body
       );
-      alert("Product archived successfully");
-      setEffect(response.data);
+      alert("Product Unarchived successfully");
+      window.location.reload();
     } catch (error) {
-      console.error("Error archiving product:", error);
-      alert("Failed to archive the product. ");
+      console.error("Error Unarchiving product:", error);
+      alert("Failed to Unarchive the product. ");
     }
   };
 
@@ -238,13 +235,7 @@ const Products = () => {
                           alt={product.name}
                         />
                       ) : (
-                        <CircularProgress
-                          style={{
-                            margin: "auto",
-                            display: "block",
-                          }}
-                          size={50}
-                        />
+                        <CircularProgress />
                       )}
                       <CardContent>
                         <Typography variant="h5">{product.name}</Typography>

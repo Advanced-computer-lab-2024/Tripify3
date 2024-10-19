@@ -16,13 +16,12 @@ const ViewProductStockAndSales = () => {
         const response = await axios.get(
           "http://localhost:8000/access/seller/viewProductStockAndSales"
         );
-        if (userType === "Seller") {
-          const filteredProducts = response.data.filter(
-            (product) => product.sellerId === userId
-          );
-          setProducts(filteredProducts);
-        } else {
+        if (userType === "Admin") {
           setProducts(response.data);
+        } else {
+          setProducts(
+            response.data.filter((product) => product.sellerId === userId)
+          );
         }
 
         setLoading(false);

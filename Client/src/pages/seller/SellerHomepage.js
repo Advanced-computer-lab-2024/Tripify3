@@ -4,23 +4,26 @@ import DecrementProductQuantity from "./DecrementProductQuantity.js";
 import DeleteProduct from "./DeleteProduct.js";
 import EditProductForm from "./EditProductForm.js";
 import Products from "./productSeller.js";
+import ProductsA from "./productSellerA.js";
 import MyProducts from "./myProducts.js";
 import UnarchiveProduct from "./unarchiveProduct.js";
 import UpdateSellerForm from "./UpdateSellerForm.js";
 import ViewProductStockAndSales from "./ViewProductStockAndSales.js";
 import ViewSellerPage from "./viewSeller.js"; // Ensure this path is correct
 import FilterSalesReport from "./filterSalesReport.js";
-
+import { useState } from "react";
 const aSeller = () => {
+  const [toggle, setToggle] = useState(true);
   return (
     <>
       <ViewSellerPage />
       <CreateProductForm />
       <UpdateSellerForm />
       {/* <ProductList /> */}
-      <MyProducts />
+      <ViewProductStockAndSales />
       <EditProductForm />
-      <Products />
+      {toggle ? <Products /> : <ProductsA />}
+      <button onClick={() => setToggle(!toggle)}>Toggle</button>
       <FilterSalesReport />
     </>
   );

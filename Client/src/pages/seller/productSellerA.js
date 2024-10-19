@@ -52,8 +52,9 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
+      const sellerId = getUserId();
       const response = await axios.get(
-        "http://localhost:8000/access/seller/searchAllProducts"
+        `http://localhost:8000/access/seller/searchMyProductsArchived?sellerId=${sellerId}`
       );
       setProducts(
         response.data.filter((product) => product.sellerId === getUserId())
@@ -113,14 +114,14 @@ const Products = () => {
     try {
       // API call with `id` in the request body
       const response = await axios.put(
-        "http://localhost:8000/access/seller/archiveProduct",
+        "http://localhost:8000/access/seller/unarchiveProduct",
         { id: productId } // Sending the product id in the request body
       );
-      alert("Product archived successfully");
+      alert("Product Unarchived successfully");
       setEffect(response.data);
     } catch (error) {
-      console.error("Error archiving product:", error);
-      alert("Failed to archive the product. ");
+      console.error("Error Unarchiving product:", error);
+      alert("Failed to Unarchive the product. ");
     }
   };
 
@@ -133,7 +134,7 @@ const Products = () => {
               variant="h4"
               sx={{ fontWeight: "bold", textAlign: "center" }}
             >
-              Product List
+              Archived Product List
             </Typography>
           </Toolbar>
         </AppBar>
@@ -238,13 +239,7 @@ const Products = () => {
                           alt={product.name}
                         />
                       ) : (
-                        <CircularProgress
-                          style={{
-                            margin: "auto",
-                            display: "block",
-                          }}
-                          size={50}
-                        />
+                        <CircularProgress />
                       )}
                       <CardContent>
                         <Typography variant="h5">{product.name}</Typography>
