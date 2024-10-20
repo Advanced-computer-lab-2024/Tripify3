@@ -85,7 +85,9 @@ const EditProductForm = () => {
     );
 
     try {
-      const response = await axios.delete(`http://localhost:8000/${file}`);
+      const response = await axios.delete(
+        `http://localhost:8000/${file}?indexToRemove=${indexToRemove}`
+      );
       console.log(response.data.message);
 
       // Optionally, display a message to reflect the success

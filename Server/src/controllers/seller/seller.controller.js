@@ -14,8 +14,9 @@ const indexOfSrc = currentPath.indexOf("src/");
 // Extract everything before "src/"
 const __dirname = currentPath.substring(0, indexOfSrc);
 
-export const deleteImage = (req, res) => {
+export const deleteImage = async (req, res) => {
   const { sellerId, filename } = req.params;
+  const { indexToRemove } = req.query;
   console.log("this is delete", __dirname);
 
   // Construct the full file path to the requested image
@@ -29,13 +30,49 @@ export const deleteImage = (req, res) => {
     }
 
     // If the file exists, delete it
-    fs.unlink(filePath, (err) => {
+    fs.unlink(filePath, async (err) => {
       if (err) {
         // Handle any errors while deleting the file
         console.error("Error deleting file:", err);
         return res.status(500).json({ message: "Error deleting file" });
       }
+      const [nameA, numberWithExtension] = filename.split("-");
 
+      // Step 2: Split "1.png" on the period to get just the "1"
+      const [number] = numberWithExtension.split(".");
+      try {
+        // Step 1: Find the product by sellerId and name
+        const product2 = await product.findOne({ sellerId, name: nameA });
+
+        if (!product2) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        // Step 2: Remove the image URL at index (number - 1)
+
+        console.log("this is the index", indexToRemove);
+        if (indexToRemove >= 0 && indexToRemove < product2.imageUrl.length) {
+          product2.imageUrl.splice(indexToRemove, 1); // Remove the image at the specified index
+        } else {
+          return res.status(400).json({ message: "Invalid image index" });
+        }
+
+        // Step 3: Save the updated product
+        await product2.save();
+
+        // Return success message after deleting the image file and updating the database
+        return res.status(200).json({
+          message: `File deleted successfully and image at index ${
+            indexToRemove + 1
+          } removed from product`,
+          product2, // Optionally return the updated product
+        });
+      } catch (error) {
+        console.error("Error updating product:", error);
+        return res
+          .status(500)
+          .json({ message: "Error updating product after file deletion" });
+      }
       // If deletion is successful, return a success response
       return res.status(200).json({ message: "File deleted successfully" });
     });
