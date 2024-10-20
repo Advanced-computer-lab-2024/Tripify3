@@ -9,7 +9,8 @@ const EditProductForm = () => {
   const [price, setPrice] = useState("");
   const [details, setDetails] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [imageUrl, setImageUrl] = useState([]); // Array to store fetched images
+  const [existingImages, setExistingImages] = useState([]); // Array to store existing image URLs
+  const [newImages, setNewImages] = useState([]); // Array to store new file uploads
   const [category, setCategory] = useState("");
   const [sellerName, setSellerName] = useState(""); // Input for Seller Name (for Admin)
   const [sellerId, setSellerId] = useState(userId); // If Seller, default to userId
@@ -49,13 +50,13 @@ const EditProductForm = () => {
 
       const product = response.data[0]; // Assuming the first product is the correct one
 
-      // Set product details and images
+      // Set product details and existing images
       setProductId(product._id);
       setPrice(product.price);
       setDetails(product.details);
       setQuantity(product.quantity);
       setCategory(product.category);
-      setImageUrl(product.imageUrl || []); // Assuming imageUrl is part of product details
+      setExistingImages(product.imageUrl || []); // Set existing image URLs
       console.log("Product details:", product);
     } catch (error) {
       setProductId("");
@@ -64,60 +65,103 @@ const EditProductForm = () => {
       setQuantity("");
       setCategory("");
       setSellerId(userType === "Seller" ? userId : "");
-      setImageUrl([]);
+      setExistingImages([]);
       console.error("Error fetching product details:", error);
       setResponseMessage(error.response?.data?.message || "Product not found.");
     }
   };
 
-  // Update the image URLs directly
-  const handleImageChange = (index, value) => {
-    const updatedImages = [...imageUrl];
-    updatedImages[index] = value; // Update the image URL at the specific index
-    setImageUrl(updatedImages);
+  // Handle adding new files
+  const handleNewImageChange = (e) => {
+    const newFiles = Array.from(e.target.files); // Convert FileList to an array
+    setNewImages((prevImages) => [...prevImages, ...newFiles]); // Append new files to the list
+  };
+
+  // Handle removing an existing image (by URL)
+  const handleRemoveExistingImage = async (file, indexToRemove) => {
+    // Optimistically remove the image from the UI
+    setExistingImages((prevImages) =>
+      prevImages.filter((_, index) => index !== indexToRemove)
+    );
+
+    try {
+      const response = await axios.delete(`http://localhost:8000/${file}`);
+      console.log(response.data.message);
+
+      // Optionally, display a message to reflect the success
+      setResponseMessage("Image deleted successfully");
+    } catch (error) {
+      console.error(
+        "Error deleting image:",
+        error.response?.data || error.message
+      );
+
+      // Optionally, revert the optimistic update if the delete fails
+      setExistingImages((prevImages) => [...prevImages, file]);
+
+      setResponseMessage("Failed to delete image.");
+    }
+  };
+
+  // Handle removing a new image file
+  const handleRemoveNewImage = (indexToRemove) => {
+    setNewImages((prevImages) =>
+      prevImages.filter((_, index) => index !== indexToRemove)
+    );
   };
 
   // Handle form submission for updating the product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Combine existing image URLs and new image URLs (assuming you have already uploaded new images)
-    const combinedImageUrls = [
-      ...existingImages,
-      ...newImages.map((image) => image.url),
-    ]; // Assuming `newImages` is an array of objects with a `url` property
+    const newFormData = new FormData();
+    newFormData.append("productId", productId); // Include productId in the request body
+    newFormData.append("name", name);
+    newFormData.append("price", price);
+    newFormData.append("details", details);
+    newFormData.append("quantity", quantity);
+    newFormData.append("category", category);
+    newFormData.append("sellerId", sellerId);
+
+    // Append existing images as URLs
+    existingImages.forEach((url) => {
+      newFormData.append("existingImages", url); // Assuming your backend handles "existingImages" for URLs
+    });
+
+    // Append new images (files uploaded by the user)
+    newImages.forEach((image, index) => {
+      newFormData.append(
+        "images",
+        image,
+        `${name}-${index + 1}.${image.name.split(".").pop()}` // productName-index.ext
+      );
+    });
+
+    // Debug: Log the FormData content to verify its structure
+    for (let pair of newFormData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
 
     try {
-      // Make the API request to edit the product with image URLs and other details
       const response = await axios.put(
-        "http://localhost:8000/access/seller/editProduct", // Ensure you're hitting the correct endpoint
+        `http://localhost:8000/access/seller/editProduct`, // Don't pass the productId in the URL
+        newFormData,
         {
-          name,
-          price,
-          details,
-          quantity,
-          category,
-          sellerId,
-          imageUrl: combinedImageUrls, // Send the combined image URLs
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "user-id": userId, // Pass userId in the headers
+          },
         }
       );
-
-      // Set response message on success
-      setResponseMessage("Product updated successfully.");
-      console.log("Response:", response.data);
+      console.log("Product updated successfully", response.data);
+      setResponseMessage("Product updated successfully."); // Store response message
     } catch (error) {
-      // Handle any errors
       console.error(
-        "Error updating product:",
+        "Error updating product",
         error.response?.data || error.message
-      ); // Log the backend error message
+      );
       setResponseMessage("Failed to update product.");
     }
-  };
-
-  // Add a new empty image input field
-  const handleAddNewImage = () => {
-    setImageUrl([...imageUrl, ""]);
   };
 
   return (
@@ -195,40 +239,73 @@ const EditProductForm = () => {
             />
           </div>
 
-          {/* Display existing images as editable text inputs */}
+          {/* Display existing images */}
           <div>
-            <h4>Product Images</h4>
-            {imageUrl.length > 0 ? (
-              imageUrl.map((url, index) => (
-                <div key={index} style={{ marginBottom: "10px" }}>
-                  <input
-                    type="text"
-                    value={url}
-                    onChange={(e) => handleImageChange(index, e.target.value)}
-                    placeholder={`Image URL ${index + 1}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedImages = imageUrl.filter(
-                        (_, i) => i !== index
-                      );
-                      setImageUrl(updatedImages);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))
+            <h4>Existing Product Images</h4>
+            {existingImages.length > 0 ? (
+              existingImages.map((url, index) => {
+                var indexOfUploads = url.indexOf("uploads/");
+                var relativePath = url.substring(indexOfUploads);
+
+                console.log("File:", relativePath);
+                return (
+                  <div key={index} style={{ marginBottom: "10px" }}>
+                    <img
+                      src={`http://localhost:8000/${relativePath}`}
+                      alt={`Product image ${index + 1}`}
+                      style={{
+                        maxWidth: "100px",
+                        maxHeight: "100px",
+                        minWidth: "200px",
+                        minHeight: "200px",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleRemoveExistingImage(relativePath, index)
+                      }
+                    >
+                      Delete
+                    </button>
+                  </div>
+                );
+              })
             ) : (
               <p>No images available for this product.</p>
             )}
-
-            {/* Button to add a new image field */}
-            <button type="button" onClick={handleAddNewImage}>
-              Add New Image
-            </button>
           </div>
+
+          {/* Upload new images */}
+          <div>
+            <label>Upload New Images:</label>
+            <input
+              type="file"
+              name="images"
+              onChange={handleNewImageChange}
+              multiple // Allow multiple file uploads
+              accept="image/*" // Only accept image files
+            />
+          </div>
+          {/* Display new image files with a remove button */}
+          {newImages.length > 0 && (
+            <div>
+              <h4>New Selected Images</h4>
+              <ul>
+                {newImages.map((image, index) => (
+                  <li key={index}>
+                    {image.name}{" "}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveNewImage(index)}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <button type="submit">Update Product</button>
         </form>

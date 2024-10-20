@@ -1,13 +1,17 @@
 //https://www.postman.com/supply-technologist-59501949/84b5b4b2-11af-4baa-9cb5-027a8688a59c
 import express from "express";
+import { upload } from "../middlewares/multer.middleware.js"; // Multer configuration file
 import {
   viewSeller,
   updateSeller,
   findSeller,
   getSellerByUserName,
+  getImage,
+  deleteImage,
 } from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
+  createProductM,
   searchAllProducts,
   searchMyProducts,
   searchMyProductsArchived,
@@ -51,7 +55,7 @@ router.get(
   searchAllArchivedProducts
 );
 //edit product
-router.put("/access/seller/editProduct", editProduct);
+// router.put("/access/seller/editProduct", editProduct);
 // search a product
 router.get("/access/seller/searchProduct", searchProduct);
 //delete a product
@@ -76,4 +80,17 @@ router.put("/access/seller/decrementProductQuantity", decrementProductQuantity);
 router.get("/access/seller/getSalesHistory", getSalesHistory);
 //search for a product
 router.get("/access/seller/searchaProduct", searchaProduct);
+
+router.post(
+  "/access/seller/createProductM",
+  upload.array("images", 5),
+  createProductM
+);
+router.put(
+  "/access/seller/editProduct",
+  upload.array("images", 5),
+  editProduct
+);
+router.get("/uploads/:sellerId/:filename", getImage);
+router.delete("/uploads/:sellerId/:filename", deleteImage);
 export default router;

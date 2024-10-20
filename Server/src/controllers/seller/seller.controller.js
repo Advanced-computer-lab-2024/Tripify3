@@ -2,6 +2,70 @@ import seller from "../../models/seller.js"; // Adjust the path as necessary
 import product from "../../models/product.js"; // Adjust the path as necessary
 import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
 
+import { fileURLToPath } from "url";
+import path from "path";
+
+// Simulate __dirname for ES6
+const __filename = fileURLToPath(import.meta.url);
+const currentPath = path.dirname(__filename);
+import fs from "fs";
+const indexOfSrc = currentPath.indexOf("src/");
+
+// Extract everything before "src/"
+const __dirname = currentPath.substring(0, indexOfSrc);
+
+export const deleteImage = (req, res) => {
+  const { sellerId, filename } = req.params;
+  console.log("this is delete", __dirname);
+
+  // Construct the full file path to the requested image
+  const filePath = path.join(__dirname, "src", "uploads", sellerId, filename);
+
+  // Check if the file exists
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // If the file does not exist, return a 404 error
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    // If the file exists, delete it
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        // Handle any errors while deleting the file
+        console.error("Error deleting file:", err);
+        return res.status(500).json({ message: "Error deleting file" });
+      }
+
+      // If deletion is successful, return a success response
+      return res.status(200).json({ message: "File deleted successfully" });
+    });
+  });
+};
+
+export const getImage = (req, res) => {
+  const { sellerId, filename } = req.params;
+
+  // Construct the full file path to the requested image
+  const filePath = path.join(__dirname, "uploads", sellerId, filename);
+
+  // Check if the file exists
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      // If the file does not exist, return a 404 error
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    // If the file exists, send it
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        // Handle any errors while sending the file
+        console.error("Error sending file:", err);
+        res.status(500).json({ message: "Error sending file" });
+      }
+    });
+  });
+};
+
 export const findSeller = async (req, res) => {
   try {
     const { id } = req.query;
@@ -101,6 +165,49 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+export const createProductM = async (req, res) => {
+  try {
+    const { name, price, details, quantity, category } = req.body;
+    const sellerId = req.headers["user-id"]; // Get sellerId from headers
+
+    if (!name || !price || !details || !quantity || !category || !sellerId) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Initialize the imageUrls array
+    const imageUrls = [];
+
+    // Ensure that req.files exists and contains the uploaded images
+    if (req.files && Array.isArray(req.files)) {
+      req.files.forEach((file) => {
+        imageUrls.push(file.path); // Store the path of the uploaded images
+      });
+    }
+
+    // Create a new product with the form data and image URLs
+    const newProduct = new product({
+      name,
+      price,
+      details,
+      quantity,
+      category,
+      sellerId,
+      imageUrl: imageUrls, // Store the array of image paths in imageUrl
+      rating: 0, // Initialize rating to 0
+      sales: 0, // Initialize sales to 0
+    });
+
+    await newProduct.save();
+
+    res.status(201).json({
+      message: "Product created successfully",
+      product: newProduct,
+    });
+  } catch (error) {
+    console.error("Error creating product:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
 
 //need to change in FE to loop over the images need to be changed
 export const searchAllProducts = async (req, res) => {
@@ -156,7 +263,7 @@ export const searchAllArchivedProducts = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-export const editProduct = async (req, res) => {
+export const editProduct2 = async (req, res) => {
   const { name, price, details, quantity, imageUrl, category, sellerId } =
     req.body;
 
@@ -194,6 +301,73 @@ export const editProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+export const editProduct = async (req, res) => {
+  const {
+    productId,
+    name,
+    price,
+    details,
+    quantity,
+    category,
+    sellerId,
+    existingImages, // Extract existingImages from req.body
+  } = req.body;
+
+  // Uploaded files will be in req.files
+  // existingImages will be in req.body.existingImages
+
+  try {
+    // Find the product by productId
+    const currentProduct = await product.findById(productId);
+
+    if (!currentProduct) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    if (!currentProduct.sellerId.equals(sellerId)) {
+      return res.status(400).json({ message: "This seller is not the owner." });
+    }
+
+    // Ensure existingImages is an array
+    const existingImagesArray = Array.isArray(existingImages)
+      ? existingImages
+      : existingImages
+      ? [existingImages]
+      : [];
+
+    // Get new uploaded images
+    const newImages = req.files ? req.files.map((file) => file.path) : [];
+
+    // Combine existing images and new images
+    const updatedImageUrl = [...existingImagesArray, ...newImages];
+
+    // Update the product
+    const updatedProduct = await product.findByIdAndUpdate(
+      productId,
+      {
+        name,
+        price,
+        details,
+        quantity,
+        category,
+        imageUrl: updatedImageUrl,
+      },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res
+        .status(404)
+        .json({ message: "Product not found after update." });
+    }
+
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error("Error in editProduct:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getSellerByUserName = async (req, res) => {
   try {
     const { username } = req.query;

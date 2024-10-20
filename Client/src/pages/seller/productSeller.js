@@ -225,18 +225,29 @@ const Products = () => {
 
                       {Array.isArray(product.imageUrl) &&
                       product.imageUrl.length > 0 ? (
-                        <CardMedia
-                          component="img"
-                          image={product.imageUrl[0]}
-                          style={{
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                            maxWidth: "200px",
-                            maxHeight: "200px",
-                            margin: "auto",
-                          }}
-                          alt={product.name}
-                        />
+                        (() => {
+                          const indexOfUploads =
+                            product.imageUrl[0].indexOf("uploads/");
+                          const relativePath =
+                            product.imageUrl[0].substring(indexOfUploads);
+                          return (
+                            <CardMedia
+                              component="img"
+                              image={`http://localhost:8000/${relativePath}`}
+                              style={{
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                minWidth: "200px",
+                                minHeight: "200px",
+                                maxWidth: "200px",
+                                maxHeight: "200px",
+                                margin: "auto",
+                                marginTop: "20px",
+                              }}
+                              alt={product.name}
+                            />
+                          );
+                        })()
                       ) : (
                         <CircularProgress
                           style={{

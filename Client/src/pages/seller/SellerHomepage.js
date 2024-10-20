@@ -1,5 +1,6 @@
 import ArchiveProduct from "./archiveProduct.js";
 import CreateProductForm from "./CreateProductForm.js"; // Adjust the path if needed
+import CreatProdM from "./creatProdM.js"; // Adjust the path if needed
 import DecrementProductQuantity from "./DecrementProductQuantity.js";
 import DeleteProduct from "./DeleteProduct.js";
 import EditProductForm from "./EditProductForm.js";
@@ -12,6 +13,7 @@ import ViewProductStockAndSales from "./ViewProductStockAndSales.js";
 import ViewSellerPage from "./viewSeller.js"; // Ensure this path is correct
 import FilterSalesReport from "./filterSalesReport.js";
 import { useState } from "react";
+import EditProduct from "./EditProduct.js";
 const aSeller = () => {
   const [toggle, setToggle] = useState(true);
   return (
@@ -25,6 +27,8 @@ const aSeller = () => {
       {toggle ? <Products /> : <ProductsA />}
       <button onClick={() => setToggle(!toggle)}>Toggle</button>
       <FilterSalesReport />
+      <CreatProdM />
+      <EditProduct />
     </>
   );
 };
