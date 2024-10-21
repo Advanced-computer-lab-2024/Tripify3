@@ -159,6 +159,7 @@ const App = () => {
 
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={<Chatbot />} />
+        <Route path={"admin/admin"} element={<SellerHomepage />} />
       </Routes>
     </Router>
   );

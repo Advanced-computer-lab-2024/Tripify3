@@ -58,9 +58,9 @@ const Products = () => {
       const response = await axios.get(
         "http://localhost:8000/access/seller/searchAllProducts"
       );
-      if (getUserType() === "Seller") {
+      if (getUserType() === "Tourist") {
         setProducts(
-          response.data.filter((product) => product.sellerId === getUserId())
+          response.data.filter((product) => wishArray.includes(product._id))
         );
       } else {
         setProducts(response.data);
@@ -177,7 +177,7 @@ const Products = () => {
               variant="h4"
               sx={{ fontWeight: "bold", textAlign: "center" }}
             >
-              Product List
+              My WishList
             </Typography>
           </Toolbar>
         </AppBar>

@@ -907,3 +907,16 @@ export const getSalesHistory = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const SearchProductById = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const product2 = await product.findById(id);
+    if (!product2) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+    return res.status(200).json(product2);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

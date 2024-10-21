@@ -14,14 +14,16 @@ import ViewSellerPage from "./viewSeller.js"; // Ensure this path is correct
 import FilterSalesReport from "./filterSalesReport.js";
 import { useState } from "react";
 import EditProduct from "./EditProduct.js";
+import WishList from "../tourist/wishList.js";
+import Cart from "../tourist/cart.js";
 const aSeller = () => {
   const [toggle, setToggle] = useState(true);
   return (
     <>
-      <ViewSellerPage />
+      {/* <ViewSellerPage />
       <CreateProductForm />
       <UpdateSellerForm />
-      {/* <ProductList /> */}
+      {/* <ProductList /> 
       <ViewProductStockAndSales />
       <EditProductForm />
       {toggle ? <Products /> : <ProductsA />}
@@ -29,6 +31,8 @@ const aSeller = () => {
       <FilterSalesReport />
       <CreatProdM />
       <EditProduct />
+      <WishList /> */}
+      <Cart />
     </>
   );
 };

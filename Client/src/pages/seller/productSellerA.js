@@ -55,11 +55,15 @@ const Products = () => {
     try {
       const sellerId = getUserId();
       const response = await axios.get(
-        `http://localhost:8000/access/seller/searchMyProductsArchived?sellerId=${sellerId}`
+        "http://localhost:8000/access/seller/searchAllArchivedProducts"
       );
-      setProducts(
-        response.data.filter((product) => product.sellerId === getUserId())
-      );
+      if (getUserType() === "Seller") {
+        setProducts(
+          response.data.filter((product) => product.sellerId === getUserId())
+        );
+      } else {
+        setProducts(response.data);
+      }
       fetchSellerNames(response.data);
     } catch (error) {
       setErrorMessage("Error fetching products: " + error.message);

@@ -40,6 +40,10 @@ const touristSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wishlist", // References the Wishlist model
   },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cart", // References the Cart model
+  },
   preferences: { type: [String], required: false },
   tripsTaken: { type: [String], required: false },
 });

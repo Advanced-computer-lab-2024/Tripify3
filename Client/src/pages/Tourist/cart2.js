@@ -1,0 +1,347 @@
+import {
+  MDBBtn,
+  MDBCard,
+  MDBCardBody,
+  MDBCardImage,
+  MDBCardText,
+  MDBCol,
+  MDBContainer,
+  MDBIcon,
+  MDBInput,
+  MDBRow,
+  MDBTypography,
+} from "mdb-react-ui-kit";
+import React from "react";
+import { IconButton, TextField, TableCell, TableRow } from "@mui/material";
+import "mdb-react-ui-kit/dist/css/mdb.min.css"; // Ensure MDB's CSS is imported
+import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap's CSS
+import { Add, Remove, Delete } from "@mui/icons-material";
+import { getUserId } from "../../utils/authUtils";
+import axios from "axios";
+import { useEffect, useState } from "react";
+export default function QuantityEdit() {
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedDelivery, setSelectedDelivery] = useState("1");
+  const [deliveryPrice, setDeliveryPrice] = useState("");
+
+  const handleDeliveryChange = (event) => {
+    const selectedValue = event.target.value; // Get the selected value
+    setSelectedDelivery(selectedValue); // Update the state with the selected value
+
+    const selectedText = event.target.options[event.target.selectedIndex].text;
+    const price = selectedText.split("$")[1].trim(); // Get substring after "$" and trim whitespace
+    setDeliveryPrice(price); // Update the delivery price
+  };
+  const getCart = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/tourist/cart/?touristId=671588c2d1737e8194e237c5"
+      );
+      setCart(response.data);
+    } catch (error) {
+      setErrorMessage("Error fetching cart: " + error.message);
+    }
+  };
+  const getProdInCart = async () => {
+    if (cart && cart.products && cart.products.length > 0) {
+      try {
+        const productDetails = await Promise.all(
+          cart.products.map(async (item) => {
+            const response = await axios.get(
+              `http://localhost:8000/access/seller/SearchProductById?id=${item.product}`
+            );
+            return { ...response.data, quantity: item.quantity }; // Add quantity to product details
+          })
+        );
+        setProducts(productDetails);
+        console.log(products);
+      } catch (error) {
+        setErrorMessage(
+          "Error fetching products in the cart: " + error.message
+        );
+      }
+    }
+  };
+
+  const updateCart = async (productId, quantity) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/tourist/cart/update`,
+        {
+          touristId: getUserId(),
+          productId,
+          quantity,
+        }
+      );
+      setCart(response.data.cart);
+    } catch (error) {
+      setErrorMessage("Error updating cart: " + error.message);
+    }
+  };
+  useEffect(() => {
+    getCart();
+  }, []); // Only run once on component mount
+
+  useEffect(() => {
+    if (cart) {
+      getProdInCart();
+    }
+  }, [cart]); // Runs every time 'cart' changes
+
+  const handleIncrement = async (productId, currentQuantity) => {
+    try {
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/update",
+        {
+          touristId: getUserId(),
+          productId,
+          number: currentQuantity + 1, // Increment by 1
+        }
+      );
+      setCart(response.data.cart); // Update cart with the new data
+    } catch (error) {
+      setErrorMessage("Error updating cart: " + error.message);
+    }
+  };
+
+  // Handle decrementing the product quantity
+  const handleDecrement = async (productId, currentQuantity) => {
+    try {
+      const newQuantity = currentQuantity - 1;
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/update",
+        {
+          touristId: getUserId(),
+          productId,
+          number: newQuantity < 0 ? 0 : newQuantity, // Decrement by 1
+        }
+      );
+      setCart(response.data.cart); // Update cart with the new data
+    } catch (error) {
+      setErrorMessage("Error updating cart: " + error.message);
+    }
+  };
+  const handleRemove = async (productId) => {
+    try {
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/update",
+        {
+          touristId: getUserId(),
+          productId,
+          number: 0, // Set quantity to 0 to remove the item
+        }
+      );
+      setCart(response.data.cart); // Update cart with the new data
+    } catch (error) {
+      setErrorMessage("Error updating cart: " + error.message);
+    }
+  };
+  return (
+    <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
+      <MDBContainer className="py-5 h-100">
+        <MDBRow className="justify-content-center align-items-center h-100">
+          <MDBCol size="12">
+            <MDBCard
+              className="card-registration card-registration-2"
+              style={{ borderRadius: "15px" }}
+            >
+              <MDBCardBody className="p-0">
+                <MDBRow className="g-0">
+                  <MDBCol lg="8">
+                    <div className="p-5">
+                      <div className="d-flex justify-content-between align-items-center mb-5">
+                        <MDBTypography
+                          tag="h1"
+                          className="fw-bold mb-0 text-black"
+                        >
+                          Shopping Cart
+                        </MDBTypography>
+                        <MDBTypography className="mb-0 text-muted">
+                          {cart && cart.products && cart.products.length > 0
+                            ? cart.products.length
+                            : 0}{" "}
+                          items
+                        </MDBTypography>
+                      </div>
+
+                      <hr className="my-4" />
+
+                      {products.map((product) => (
+                        <React.Fragment key={product._id}>
+                          <MDBRow className="mb-4 d-flex justify-content-between align-items-center">
+                            <MDBCol md="2" lg="2" xl="2">
+                              <MDBCardImage
+                                src={
+                                  Array.isArray(product.imageUrl) &&
+                                  product.imageUrl.length > 0
+                                    ? product.imageUrl[0]
+                                    : "https://shuttershopegypt.com/wp-content/uploads/2024/08/Microsoft-Surface-Laptop-4-i7.webp2_.webp"
+                                }
+                                fluid
+                                className="rounded-3"
+                                alt={product.name}
+                              />
+                            </MDBCol>
+
+                            <MDBCol md="3" lg="3" xl="3">
+                              <MDBTypography tag="h6" className="text-muted">
+                                {product.category}
+                              </MDBTypography>
+                              <MDBTypography
+                                tag="h6"
+                                className="text-black mb-0"
+                              >
+                                {product.name}
+                              </MDBTypography>
+                            </MDBCol>
+
+                            <MDBCol
+                              md="3"
+                              lg="3"
+                              xl="3"
+                              className="d-flex align-items-center"
+                            >
+                              <IconButton
+                                color="primary"
+                                onClick={() =>
+                                  handleDecrement(product._id, product.quantity)
+                                }
+                              >
+                                <Remove />
+                              </IconButton>
+
+                              <MDBInput
+                                type="number"
+                                size="sm"
+                                value={product.quantity}
+                                onChange={(e) =>
+                                  handleQuantityChange(
+                                    product._id,
+                                    e.target.value
+                                  )
+                                }
+                              />
+
+                              <IconButton
+                                color="primary"
+                                onClick={() =>
+                                  handleIncrement(product._id, product.quantity)
+                                }
+                              >
+                                <Add />
+                              </IconButton>
+                            </MDBCol>
+
+                            <MDBCol md="3" lg="2" xl="2" className="text-end">
+                              <MDBTypography tag="h6" className="mb-0">
+                                € {product.price.toFixed(2)}
+                              </MDBTypography>
+                            </MDBCol>
+
+                            <MDBCol md="1" lg="1" xl="1" className="text-end">
+                              <IconButton
+                                color="error"
+                                onClick={() => handleRemove(product._id)}
+                              >
+                                <Delete />
+                              </IconButton>
+                            </MDBCol>
+                          </MDBRow>
+                          <hr className="my-4" />
+                        </React.Fragment>
+                      ))}
+
+                      <hr className="my-4" />
+
+                      <div className="pt-5">
+                        <MDBTypography tag="h6" className="mb-0">
+                          <MDBCardText tag="a" href="#!" className="text-body">
+                            <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back
+                            to shop
+                          </MDBCardText>
+                        </MDBTypography>
+                      </div>
+                    </div>
+                  </MDBCol>
+                  <MDBCol lg="4" className="bg-grey">
+                    <div className="p-5">
+                      <MDBTypography
+                        tag="h3"
+                        className="fw-bold mb-5 mt-2 pt-1"
+                      >
+                        Summary
+                      </MDBTypography>
+
+                      <hr className="my-4" />
+
+                      <div className="d-flex justify-content-between mb-4">
+                        <MDBTypography tag="h5" className="text-uppercase">
+                          {cart && cart.products && cart.products.length > 0
+                            ? cart.products.length
+                            : 0}{" "}
+                          items
+                        </MDBTypography>
+                        <MDBTypography tag="h5">
+                          ${cart && cart.totalPrice}.00
+                        </MDBTypography>
+                      </div>
+
+                      <MDBTypography tag="h5" className="text-uppercase mb-3">
+                        Shipping
+                      </MDBTypography>
+
+                      <div className="mb-4 pb-2">
+                        <select
+                          className="select p-2 rounded bg-grey"
+                          style={{ width: "100%" }}
+                          value={selectedDelivery} // Bind the select value to the state
+                          onChange={handleDeliveryChange}
+                        >
+                          <option value="1">Standard-Delivery - $5.00</option>
+                          <option value="2">Express-Delivery - $10.00</option>
+                          <option value="3">Next-Day-Delivery - $15.00</option>
+                          <option value="4">Same-Day-Delivery - $20.00</option>
+                        </select>
+                      </div>
+
+                      <MDBTypography tag="h5" className="text-uppercase mb-3">
+                        Give code
+                      </MDBTypography>
+
+                      <div className="mb-5">
+                        <MDBInput size="lg" label="Enter your code" />
+                      </div>
+
+                      <hr className="my-4" />
+
+                      <div className="d-flex justify-content-between mb-5">
+                        <MDBTypography tag="h5" className="text-uppercase">
+                          Total price
+                        </MDBTypography>
+                        <MDBTypography tag="h5">
+                          $
+                          {cart && cart.totalPrice
+                            ? (
+                                parseFloat(cart.totalPrice) +
+                                parseFloat(deliveryPrice)
+                              ).toFixed(2)
+                            : "0.00"}
+                        </MDBTypography>
+                      </div>
+
+                      <MDBBtn color="dark" block size="lg">
+                        Checkout
+                      </MDBBtn>
+                    </div>
+                  </MDBCol>
+                </MDBRow>
+              </MDBCardBody>
+            </MDBCard>
+          </MDBCol>
+        </MDBRow>
+      </MDBContainer>
+    </section>
+  );
+}
