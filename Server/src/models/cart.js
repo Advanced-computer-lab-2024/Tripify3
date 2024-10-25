@@ -26,6 +26,11 @@ const cartSchema = new mongoose.Schema({
     required: true,
     default: 0,
   }, // Total price of all products in the cart
+  itemCount: {
+    type: Number,
+    required: true,
+    default: 0,
+  }, // Total number of products in the cart
 });
 
 const Cart = mongoose.model("Cart", cartSchema);

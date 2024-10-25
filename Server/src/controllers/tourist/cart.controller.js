@@ -42,7 +42,7 @@ export const initializeCart = async (req, res) => {
 };
 
 export const addToCart = async (req, res) => {
-  const { touristId, productId } = req.body;
+  const { touristId, productId, quantity = 1 } = req.body; // Default quantity is 1 if not provided
 
   try {
     // Find the tourist by ID and populate their cart
@@ -58,6 +58,7 @@ export const addToCart = async (req, res) => {
         user: tourist._id,
         products: [],
         totalPrice: 0,
+        itemCount: 0, // Initialize itemCount to 0
       });
 
       // Save the new cart
@@ -70,6 +71,12 @@ export const addToCart = async (req, res) => {
       console.log("New cart created and associated with tourist.");
     }
 
+    // Fetch the product details (assuming you have a Product model)
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
     // Check if the product already exists in the cart
     const existingProductIndex = cart.products.findIndex(
       (item) => item.product.toString() === productId
@@ -77,13 +84,17 @@ export const addToCart = async (req, res) => {
 
     if (existingProductIndex > -1) {
       // If the product already exists in the cart, increase the quantity
-      cart.products[existingProductIndex].quantity += 1;
+      cart.products[existingProductIndex].quantity += quantity;
     } else {
-      // If the product does not exist in the cart, add it with a quantity of 1
-      cart.products.push({ product: productId, quantity: 1 });
+      // If the product does not exist in the cart, add it with the specified quantity
+      cart.products.push({ product: productId, quantity: quantity });
     }
 
-    // Save the cart
+    // Update itemCount and totalPrice
+    cart.itemCount += quantity;
+    cart.totalPrice += quantity * product.price; // Add the product price multiplied by the quantity
+
+    // Save the updated cart
     await cart.save();
 
     res.status(200).json({ message: "Product added to cart", cart });
@@ -135,12 +146,31 @@ export const removeFromCart = async (req, res) => {
     // Find the cart associated with the tourist
     const cart = await Cart.findById(touristData.cart._id);
 
-    // Remove the product from the cart by filtering the products array
-    const updatedProducts = cart.products.filter(
-      (products) => products.product.toString() !== productId
+    // Find the product you are going to remove in the cart
+    const productToRemove = cart.products.find(
+      (product) => product.product.toString() === productId
     );
 
-    cart.products = updatedProducts;
+    if (productToRemove) {
+      // Fetch the product details (assuming you have a Product model)
+      const productDetails = await Product.findById(productId);
+      if (!productDetails) {
+        return res
+          .status(404)
+          .json({ message: "Product not found in the database" });
+      }
+
+      // Subtract the quantity of the product being removed from itemCount
+      cart.itemCount -= productToRemove.quantity;
+      cart.totalPrice -= productToRemove.quantity * productDetails.price; // Use productDetails.price
+
+      // Filter out the product from the cart
+      cart.products = cart.products.filter(
+        (product) => product.product.toString() !== productId
+      );
+    } else {
+      return res.status(404).json({ message: "Product not found in cart" });
+    }
 
     // Save the updated cart
     await cart.save();
@@ -151,6 +181,7 @@ export const removeFromCart = async (req, res) => {
     res.status(500).json({ message: "Failed to remove product from cart" });
   }
 };
+
 export const Decrementor = async (req, res) => {
   const { touristId, productId } = req.body;
 
@@ -174,13 +205,25 @@ export const Decrementor = async (req, res) => {
       return res.status(404).json({ message: "Product not found in cart" });
     }
 
-    // Decrement the quantity of the product
+    // Fetch the product details (assuming you have a Product model)
+    const productDetails = await Product.findById(productId);
+    if (!productDetails) {
+      return res
+        .status(404)
+        .json({ message: "Product not found in the database" });
+    }
+
+    // Decrement the quantity of the product in the cart
     if (cart.products[productIndex].quantity > 1) {
       cart.products[productIndex].quantity -= 1;
     } else {
       // If the quantity is 1 or less, remove the product from the cart
       cart.products.splice(productIndex, 1);
     }
+
+    // Subtract the product price from the totalPrice
+    cart.totalPrice -= productDetails.price;
+    cart.itemCount -= 1;
 
     // Save the updated cart
     await cart.save();
@@ -307,6 +350,7 @@ export const updateCart = async (req, res) => {
     // Calculate the price difference
     const priceDifference = product.price * (number - oldQuantity);
 
+    cart.itemCount += number - oldQuantity;
     // If product is found in the cart
     if (productIndex > -1) {
       // Update the quantity in the cart

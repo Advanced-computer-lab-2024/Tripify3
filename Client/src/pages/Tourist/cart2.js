@@ -25,7 +25,8 @@ export default function QuantityEdit() {
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedDelivery, setSelectedDelivery] = useState("1");
   const [deliveryPrice, setDeliveryPrice] = useState("");
-
+  const [quant, setQuant] = useState([]);
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
   const handleDeliveryChange = (event) => {
     const selectedValue = event.target.value; // Get the selected value
     setSelectedDelivery(selectedValue); // Update the state with the selected value
@@ -56,6 +57,13 @@ export default function QuantityEdit() {
           })
         );
         setProducts(productDetails);
+        const updatedQuant = cart.products.map((item) => ({
+          productId: item.product,
+          quantity: item.quantity,
+        }));
+
+        setQuant(updatedQuant); // Set the quant state with the array of objects
+        console.log(updatedQuant);
         console.log(products);
       } catch (error) {
         setErrorMessage(
@@ -65,17 +73,18 @@ export default function QuantityEdit() {
     }
   };
 
-  const updateCart = async (productId, quantity) => {
+  const updateCart = async (productId, currentQuantity) => {
     try {
+      const newQuantity = currentQuantity;
       const response = await axios.put(
-        `http://localhost:8000/tourist/cart/update`,
+        "http://localhost:8000/tourist/cart/update",
         {
           touristId: getUserId(),
           productId,
-          quantity,
+          number: newQuantity < 0 ? 0 : newQuantity, // Decrement by 1
         }
       );
-      setCart(response.data.cart);
+      setCart(response.data.cart); // Update cart with the new data
     } catch (error) {
       setErrorMessage("Error updating cart: " + error.message);
     }
@@ -90,39 +99,64 @@ export default function QuantityEdit() {
     }
   }, [cart]); // Runs every time 'cart' changes
 
-  const handleIncrement = async (productId, currentQuantity) => {
-    try {
-      const response = await axios.put(
-        "http://localhost:8000/tourist/cart/update",
-        {
-          touristId: getUserId(),
-          productId,
-          number: currentQuantity + 1, // Increment by 1
-        }
-      );
-      setCart(response.data.cart); // Update cart with the new data
-    } catch (error) {
-      setErrorMessage("Error updating cart: " + error.message);
+  const handleIncrement = (productId) => {
+    // Optimistically update the quantity in the UI
+    setQuant((prevQuant) =>
+      prevQuant.map((q) =>
+        q.productId === productId
+          ? { ...q, quantity: Math.max(0, parseInt(q.quantity) + 1) }
+          : q
+      )
+    );
+
+    // Clear any existing timeout to prevent multiple API calls
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
     }
+
+    // Set a new timeout to call the API after the user stops pressing the button
+    const newTimeout = setTimeout(() => {
+      // Use functional state update to get the latest value of `quant`
+      setQuant((currentQuant) => {
+        const updatedQuantity =
+          currentQuant.find((q) => q.productId === productId)?.quantity || 0;
+        updateCart(productId, updatedQuantity); // Call the API with the latest quantity
+        return currentQuant; // Return current state
+      });
+    }, 1000); // Debounce time of 1 second for smoother experience
+
+    setDebounceTimeout(newTimeout); // Save the timeout so it can be cleared on the next press
   };
 
-  // Handle decrementing the product quantity
-  const handleDecrement = async (productId, currentQuantity) => {
-    try {
-      const newQuantity = currentQuantity - 1;
-      const response = await axios.put(
-        "http://localhost:8000/tourist/cart/update",
-        {
-          touristId: getUserId(),
-          productId,
-          number: newQuantity < 0 ? 0 : newQuantity, // Decrement by 1
-        }
-      );
-      setCart(response.data.cart); // Update cart with the new data
-    } catch (error) {
-      setErrorMessage("Error updating cart: " + error.message);
+  const handleDecrement = (productId) => {
+    // Optimistically update the quantity in the UI
+    setQuant((prevQuant) =>
+      prevQuant.map((q) =>
+        q.productId === productId
+          ? { ...q, quantity: Math.max(0, parseInt(q.quantity) - 1) }
+          : q
+      )
+    );
+
+    // Clear any existing timeout to prevent multiple API calls
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
     }
+
+    // Set a new timeout to call the API after the user stops pressing the button
+    const newTimeout = setTimeout(() => {
+      // Use functional state update to get the latest value of `quant`
+      setQuant((currentQuant) => {
+        const updatedQuantity =
+          currentQuant.find((q) => q.productId === productId)?.quantity || 0;
+        updateCart(productId, updatedQuantity); // Call the API with the latest quantity
+        return currentQuant; // Return current state
+      });
+    }, 1000); // Debounce time of 1 second for smoother experience
+
+    setDebounceTimeout(newTimeout); // Save the timeout so it can be cleared on the next press
   };
+
   const handleRemove = async (productId) => {
     try {
       const response = await axios.put(
@@ -138,6 +172,12 @@ export default function QuantityEdit() {
       setErrorMessage("Error updating cart: " + error.message);
     }
   };
+
+  // const handleQuantityChange(
+  //   product._id,
+  //   e.target.value
+  // )
+
   return (
     <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
       <MDBContainer className="py-5 h-100">
@@ -168,90 +208,118 @@ export default function QuantityEdit() {
 
                       <hr className="my-4" />
 
-                      {products.map((product) => (
-                        <React.Fragment key={product._id}>
-                          <MDBRow className="mb-4 d-flex justify-content-between align-items-center">
-                            <MDBCol md="2" lg="2" xl="2">
-                              <MDBCardImage
-                                src={
-                                  Array.isArray(product.imageUrl) &&
-                                  product.imageUrl.length > 0
-                                    ? product.imageUrl[0]
-                                    : "https://shuttershopegypt.com/wp-content/uploads/2024/08/Microsoft-Surface-Laptop-4-i7.webp2_.webp"
-                                }
-                                fluid
-                                className="rounded-3"
-                                alt={product.name}
-                              />
-                            </MDBCol>
+                      {cart &&
+                        cart.products &&
+                        cart.products.length > 0 &&
+                        products.map((product) => (
+                          <React.Fragment key={product._id}>
+                            <MDBRow className="mb-4 d-flex justify-content-between align-items-center">
+                              <MDBCol md="2" lg="2" xl="2">
+                                <MDBCardImage
+                                  src={
+                                    Array.isArray(product.imageUrl) &&
+                                    product.imageUrl.length > 0
+                                      ? `http://localhost:8000/${product.imageUrl[0].substring(
+                                          product.imageUrl[0].indexOf(
+                                            "uploads/"
+                                          )
+                                        )}`
+                                      : "https://shuttershopegypt.com/wp-content/uploads/2024/08/Microsoft-Surface-Laptop-4-i7.webp2_.webp"
+                                  }
+                                  fluid
+                                  className="rounded-3"
+                                  alt={product.name}
+                                />
+                              </MDBCol>
 
-                            <MDBCol md="3" lg="3" xl="3">
-                              <MDBTypography tag="h6" className="text-muted">
-                                {product.category}
-                              </MDBTypography>
-                              <MDBTypography
-                                tag="h6"
-                                className="text-black mb-0"
+                              <MDBCol md="3" lg="3" xl="3">
+                                <MDBTypography tag="h6" className="text-muted">
+                                  {product.category}
+                                </MDBTypography>
+                                <MDBTypography
+                                  tag="h6"
+                                  className="text-black mb-0"
+                                >
+                                  {product.name}
+                                </MDBTypography>
+                              </MDBCol>
+
+                              <MDBCol
+                                md="3"
+                                lg="3"
+                                xl="3"
+                                className="d-flex align-items-center"
                               >
-                                {product.name}
-                              </MDBTypography>
-                            </MDBCol>
+                                <IconButton
+                                  color="primary"
+                                  onClick={() =>
+                                    handleDecrement(
+                                      product._id,
+                                      product.quantity
+                                    )
+                                  }
+                                >
+                                  <Remove />
+                                </IconButton>
 
-                            <MDBCol
-                              md="3"
-                              lg="3"
-                              xl="3"
-                              className="d-flex align-items-center"
-                            >
-                              <IconButton
-                                color="primary"
-                                onClick={() =>
-                                  handleDecrement(product._id, product.quantity)
-                                }
-                              >
-                                <Remove />
-                              </IconButton>
+                                <MDBInput
+                                  type="number"
+                                  size="sm"
+                                  value={
+                                    quant.find(
+                                      (q) => q.productId === product._id
+                                    )?.quantity
+                                  }
+                                  onChange={(e) =>
+                                    setQuant(
+                                      quant.map((q) =>
+                                        q.productId === product._id
+                                          ? { ...q, quantity: e.target.value }
+                                          : q
+                                      )
+                                    )
+                                  }
+                                  onBlur={() =>
+                                    updateCart(
+                                      product._id,
+                                      quant.find(
+                                        (q) => q.productId === product._id
+                                      )?.quantity || 0
+                                    )
+                                  }
+                                />
 
-                              <MDBInput
-                                type="number"
-                                size="sm"
-                                value={product.quantity}
-                                onChange={(e) =>
-                                  handleQuantityChange(
-                                    product._id,
-                                    e.target.value
-                                  )
-                                }
-                              />
+                                <IconButton
+                                  color="primary"
+                                  onClick={() =>
+                                    handleIncrement(
+                                      product._id,
+                                      product.quantity
+                                    )
+                                  }
+                                >
+                                  <Add />
+                                </IconButton>
+                              </MDBCol>
 
-                              <IconButton
-                                color="primary"
-                                onClick={() =>
-                                  handleIncrement(product._id, product.quantity)
-                                }
-                              >
-                                <Add />
-                              </IconButton>
-                            </MDBCol>
+                              <MDBCol md="3" lg="2" xl="2" className="text-end">
+                                <MDBTypography tag="h6" className="mb-0">
+                                  € {product.price.toFixed(2)}
+                                </MDBTypography>
+                              </MDBCol>
 
-                            <MDBCol md="3" lg="2" xl="2" className="text-end">
-                              <MDBTypography tag="h6" className="mb-0">
-                                € {product.price.toFixed(2)}
-                              </MDBTypography>
-                            </MDBCol>
-
-                            <MDBCol md="1" lg="1" xl="1" className="text-end">
-                              <IconButton
-                                color="error"
-                                onClick={() => handleRemove(product._id)}
-                              >
-                                <Delete />
-                              </IconButton>
-                            </MDBCol>
-                          </MDBRow>
-                          <hr className="my-4" />
-                        </React.Fragment>
-                      ))}
+                              <MDBCol md="1" lg="1" xl="1" className="text-end">
+                                <IconButton
+                                  color="error"
+                                  onClick={() => handleRemove(product._id)}
+                                >
+                                  <Delete />
+                                </IconButton>
+                              </MDBCol>
+                            </MDBRow>
+                            <hr className="my-4" />
+                          </React.Fragment>
+                        ))}
 
                       <hr className="my-4" />
 
@@ -323,10 +391,14 @@ export default function QuantityEdit() {
                         <MDBTypography tag="h5">
                           $
                           {cart && cart.totalPrice
-                            ? (
-                                parseFloat(cart.totalPrice) +
-                                parseFloat(deliveryPrice)
-                              ).toFixed(2)
+                            ? deliveryPrice
+                              ? (
+                                  parseFloat(cart.totalPrice) +
+                                  parseFloat(deliveryPrice)
+                                ).toFixed(2)
+                              : (
+                                  parseFloat(cart.totalPrice) + parseFloat(5.0)
+                                ).toFixed(2)
                             : "0.00"}
                         </MDBTypography>
                       </div>

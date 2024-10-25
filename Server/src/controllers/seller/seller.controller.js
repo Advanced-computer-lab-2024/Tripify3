@@ -14,6 +14,36 @@ const indexOfSrc = currentPath.indexOf("src/");
 // Extract everything before "src/"
 const __dirname = currentPath.substring(0, indexOfSrc);
 
+export const getAllProductImages = (req, res) => {
+  const { sellerId, productName } = req.params;
+
+  // Construct the full path to the seller's directory
+  const dirPath = path.join(__dirname, "uploads", sellerId);
+
+  // Read the directory to get all files
+  fs.readdir(dirPath, (err, files) => {
+    if (err) {
+      return res.status(500).json({ message: "Error reading directory" });
+    }
+
+    // Filter files to match the pattern: productName-n.png or productName-n.jpeg
+    const productImages = files.filter((file) => {
+      const regex = new RegExp(`^${productName}-\\d+\\.(png|jpeg|jpg)$`, "i");
+      return regex.test(file); // Match product name followed by -n and correct extension
+    });
+
+    // Check if any files were found
+    if (productImages.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No images found for this product" });
+    }
+
+    // Send the list of product image names
+    res.json(productImages);
+  });
+};
+
 export const deleteImage = async (req, res) => {
   const { sellerId, filename } = req.params;
   const { indexToRemove } = req.query;
