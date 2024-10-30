@@ -15,7 +15,7 @@ export const getAllCategories = async () => {
 };
 
 export const getAllPlaces = async () => {
-  return await axios.get(`${API_URL}/places/get`);
+  return await axios.get(`${API_URL}`);
 };
 
 export const getAllIteneraries = async (userId) => {

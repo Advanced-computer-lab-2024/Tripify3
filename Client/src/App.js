@@ -17,6 +17,7 @@ import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
+import ComplaintForm from "./pages/tourist/ComplaintForm.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -125,6 +126,10 @@ const App = () => {
           path={`${basePath}/itineraries`}
           element={getLayoutForRole(userRole, <Itineraries />)}
         />
+              <Route
+        path={`${basePath}/file-complaint`}
+        element={getLayoutForRole(userRole, <ComplaintForm />)}
+      />
         <Route
           path={`${basePath}/historical-places`}
           element={getLayoutForRole(userRole, <HistoricalPlaces />)}
