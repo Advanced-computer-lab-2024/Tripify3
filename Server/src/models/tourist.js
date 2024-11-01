@@ -25,6 +25,10 @@ const touristSchema = new mongoose.Schema({
   loyaltyPoints: {
     type: Number,
     default: 0,
+  },
+  walletAmount: {
+    type: Number,
+    default: 0,
   }, // Loyalty points earned by the user
   gender: {
     type: String,
