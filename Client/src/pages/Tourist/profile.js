@@ -152,24 +152,26 @@ const TouristProfile = () => {
                 </Typography>
               </Box>
               <Button
-                variant="outlined" // Change to outlined for a border effect
-                sx={{
-                  backgroundColor: "rgba(255, 255, 255, 0.8)", // Near-white background
-                  borderColor: "#1976d2", // Border color
-                  color: "#1976d2", // Text color
-                  borderRadius: "20px", // Make it oval
-                  padding: "8px 16px", // Padding for button
-                  marginLeft: 2,
-                  transition: "background-color 0.3s", 
-                  "&:hover": {
-                    backgroundColor: "#1976D2", 
-                    color: "#fff", 
-                  },
-                }}
-                onClick={() => console.log("Redeem points")} // Handle redeem logic here
-              >
-                Redeem
-              </Button>
+  variant="outlined"
+  sx={{
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderColor: "#1976d2",
+    color: "#1976d2",
+    borderRadius: "20px",
+    padding: "8px 16px",
+    marginLeft: 2,
+    transition: "background-color 0.3s",
+    "&:hover": {
+      backgroundColor: "#1976D2",
+      color: "#fff",
+    },
+  }}
+  onClick={() => console.log("Redeem points")} 
+  disabled={userProfile.loyaltyPoints < 10000} 
+>
+  Redeem
+</Button>
+
             </CardContent>
           </Card>
 
