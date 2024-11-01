@@ -134,7 +134,7 @@ const TouristProfile = () => {
           </Box>
 
           {/* Loyalty Points Section with Icon */}
-          <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 2 }}>
+          <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 0}}>
             <CardHeader title="Loyalty Points" titleTypographyProps={{ variant: "h6" }} />
             <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <Box
@@ -180,7 +180,7 @@ const TouristProfile = () => {
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
             <TextField label="Username" name="username" value={formData.username} onChange={handleChange} fullWidth disabled sx={{ mr: 2 }} />
             <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth disabled sx={{ mx: 2 }} />
-            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
+            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`}  disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
           </Box>
 
           {/* Second Row: Phone Number, Birth Date, Gender */}
