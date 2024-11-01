@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt } from 'react-icons/fa'; // Using more thematic icons
 import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
 import { getUserId } from "../../utils/authUtils.js";
+import Wallet from "./wallet"; // Import the Wallet component
 
 const TouristProfile = () => {
   const userId = getUserId(); // Replace with dynamic user ID as necessary
@@ -76,6 +86,7 @@ const TouristProfile = () => {
     }
   };
 
+  // Function to get badge level based on loyalty points
   const getBadgeInfo = (points) => {
     if (points > 500000) {
       return { level: 3, text: "Congratulations! You are a Loyalty Master! Keep it up!", icon: <FaTrophy size={40} color="#FFD700" /> };
@@ -86,6 +97,7 @@ const TouristProfile = () => {
     }
   };
 
+  // Get badge info based on user's loyalty points
   const badgeInfo = userProfile ? getBadgeInfo(userProfile.loyaltyPoints) : { level: 1, text: "", icon: null };
 
   return (
@@ -93,7 +105,7 @@ const TouristProfile = () => {
       {userProfile && (
         <Box
           sx={{
-            backgroundColor: "#fff", 
+            backgroundColor: "#fff", // White background
             borderRadius: 2,
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             padding: 3,
@@ -117,6 +129,9 @@ const TouristProfile = () => {
               </Typography>
             </Box>
           </Box>
+
+          {/* Wallet Component */}
+          <Wallet walletAmount={userProfile.walletAmount} /> {/* Pass the wallet amount as a prop */}
 
           {/* First Row: Username, Email, Name */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
@@ -172,11 +187,11 @@ const TouristProfile = () => {
             </Box>
           </Box>
 
-          {/* Third Row: Nationality, Occupation */}
+          {/* Third Row: Nationality and Occupation */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
-            <FormControl fullWidth sx={{ mr: 2 }}>
+            <FormControl fullWidth sx={{ mr: 2 }} disabled={!isEditing}>
               <InputLabel>Nationality</InputLabel>
-              <Select label="Nationality" name="nationality" value={formData.nationality} onChange={handleChange} disabled={!isEditing}>
+              <Select label="Nationality" name="nationality" value={formData.nationality} onChange={handleChange}>
                 {countries.map((country) => (
                   <MenuItem key={country} value={country}>
                     {country}
@@ -184,10 +199,10 @@ const TouristProfile = () => {
                 ))}
               </Select>
             </FormControl>
-
             <TextField label="Occupation" name="occupation" value={formData.occupation} onChange={handleChange} fullWidth disabled={!isEditing} sx={{ ml: 2 }} />
           </Box>
 
+          {/* Save or Edit Button */}
           {isEditing ? (
             <Button variant="contained" onClick={handleSubmit}>
               Save
