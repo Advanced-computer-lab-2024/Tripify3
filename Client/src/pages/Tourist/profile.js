@@ -8,8 +8,11 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Card,
+  CardContent,
+  CardHeader,
 } from "@mui/material";
-import { FaTrophy, FaShieldAlt, FaStarHalfAlt } from 'react-icons/fa'; // Using more thematic icons
+import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins } from "react-icons/fa"; // Adding coin icon for points
 import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
 import { getUserId } from "../../utils/authUtils.js";
 import Wallet from "./wallet"; // Import the Wallet component
@@ -130,6 +133,46 @@ const TouristProfile = () => {
             </Box>
           </Box>
 
+          {/* Loyalty Points Section with Icon */}
+          <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 2 }}>
+            <CardHeader title="Loyalty Points" titleTypographyProps={{ variant: "h6" }} />
+            <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  backgroundColor: "#E3F2FD",
+                  borderRadius: "20px",
+                  padding: "10px 20px",
+                }}
+              >
+                <FaCoins size={24} color="#1976d2" style={{ marginRight: "10px" }} />
+                <Typography variant="body1" sx={{ color: "#1976d2", fontWeight: "bold" }}>
+                  {userProfile.loyaltyPoints} Points
+                </Typography>
+              </Box>
+              <Button
+                variant="outlined" // Change to outlined for a border effect
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.8)", // Near-white background
+                  borderColor: "#1976d2", // Border color
+                  color: "#1976d2", // Text color
+                  borderRadius: "20px", // Make it oval
+                  padding: "8px 16px", // Padding for button
+                  marginLeft: 2,
+                  transition: "background-color 0.3s", 
+                  "&:hover": {
+                    backgroundColor: "#1976D2", 
+                    color: "#fff", 
+                  },
+                }}
+                onClick={() => console.log("Redeem points")} // Handle redeem logic here
+              >
+                Redeem
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Wallet Component */}
           <Wallet walletAmount={userProfile.walletAmount} /> {/* Pass the wallet amount as a prop */}
 
@@ -165,25 +208,26 @@ const TouristProfile = () => {
                 sx={{ mb: 0.01 }} // Margin bottom for spacing
               />
               <Typography variant="body2" sx={{ mt: 1 }}>
-                Get offers on your special day!
+                Get a free gift on your birthday!
               </Typography>
             </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center", width: "30%", justifyContent: "space-between" }}>
-              <Typography variant="body1" sx={{ mr: 2 }}>
-                Gender
-              </Typography>
-              <Button
-                variant={formData.gender === "Male" ? "contained" : "outlined"}
-                onClick={() => setFormData({ ...formData, gender: "Male" })}
-                disabled={!isEditing}
-                sx={{ mr: 1 }} // Space between buttons
-              >
-                Male
-              </Button>
-              <Button variant={formData.gender === "Female" ? "contained" : "outlined"} onClick={() => setFormData({ ...formData, gender: "Female" })} disabled={!isEditing}>
-                Female
-              </Button>
+            {/* Gender Selection */}
+            <Box sx={{ width: "30%" }}>
+              <FormControl fullWidth disabled={!isEditing}>
+                <InputLabel>Gender</InputLabel>
+                <Select
+                  label="Gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  sx={{ mr: 2 }}
+                >
+                  <MenuItem value="Male">Male</MenuItem>
+                  <MenuItem value="Female">Female</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
           </Box>
 
@@ -191,7 +235,12 @@ const TouristProfile = () => {
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
             <FormControl fullWidth sx={{ mr: 2 }} disabled={!isEditing}>
               <InputLabel>Nationality</InputLabel>
-              <Select label="Nationality" name="nationality" value={formData.nationality} onChange={handleChange}>
+              <Select
+                label="Nationality"
+                name="nationality"
+                value={formData.nationality}
+                onChange={handleChange}
+              >
                 {countries.map((country) => (
                   <MenuItem key={country} value={country}>
                     {country}
@@ -199,7 +248,15 @@ const TouristProfile = () => {
                 ))}
               </Select>
             </FormControl>
-            <TextField label="Occupation" name="occupation" value={formData.occupation} onChange={handleChange} fullWidth disabled={!isEditing} sx={{ ml: 2 }} />
+            <TextField
+              label="Occupation"
+              name="occupation"
+              value={formData.occupation}
+              onChange={handleChange}
+              fullWidth
+              disabled={!isEditing}
+              sx={{ ml: 2 }}
+            />
           </Box>
 
           {/* Save or Edit Button */}
