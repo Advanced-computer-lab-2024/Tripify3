@@ -282,7 +282,7 @@ const TouristProfile = () => {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <FaCheckCircle size={40} color="green" style={{ marginRight: "10px" }} />
                 <Typography variant="body1">
-                Your wallet balance is now {userProfile.walletAmount}.
+                Your wallet balance is now {userProfile.walletAmount} EGP.
                 </Typography>
               </Box>
             </DialogContent>
