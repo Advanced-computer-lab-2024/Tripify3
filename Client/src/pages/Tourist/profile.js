@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+import { FaTrophy, FaShieldAlt, FaStarHalfAlt } from 'react-icons/fa'; // Using more thematic icons
 import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
 import { getUserId } from "../../utils/authUtils.js";
 
@@ -20,51 +21,13 @@ const TouristProfile = () => {
   });
 
   const countries = [
-    "USA",
-    "Canada",
-    "UK",
-    "Germany",
-    "France",
-    "Australia",
-    "Egypt",
-    "Italy",
-    "Spain",
-    "Brazil",
-    "Argentina",
-    "Mexico",
-    "India",
-    "China",
-    "Japan",
-    "South Korea",
-    "Russia",
-    "South Africa",
-    "Nigeria",
-    "Kenya",
-    "Turkey",
-    "Saudi Arabia",
-    "United Arab Emirates",
-    "Sweden",
-    "Norway",
-    "Finland",
-    "Denmark",
-    "Netherlands",
-    "Belgium",
-    "Switzerland",
-    "Austria",
-    "Greece",
-    "Portugal",
-    "Czech Republic",
-    "Ireland",
-    "Iceland",
-    "Palestine",
-    "Chile",
-    "Colombia",
-    "Peru",
-    "Panama",
-    "Costa Rica",
-    "Cuba",
-    "Honduras",
-    "El Salvador",
+    "USA", "Canada", "UK", "Germany", "France", "Australia", "Egypt", "Italy",
+    "Spain", "Brazil", "Argentina", "Mexico", "India", "China", "Japan",
+    "South Korea", "Russia", "South Africa", "Nigeria", "Kenya", "Turkey",
+    "Saudi Arabia", "United Arab Emirates", "Sweden", "Norway", "Finland",
+    "Denmark", "Netherlands", "Belgium", "Switzerland", "Austria", "Greece",
+    "Portugal", "Czech Republic", "Ireland", "Iceland", "Palestine", "Chile",
+    "Colombia", "Peru", "Panama", "Costa Rica", "Cuba", "Honduras", "El Salvador",
     "Paraguay",
   ];
 
@@ -113,12 +76,24 @@ const TouristProfile = () => {
     }
   };
 
+  const getBadgeInfo = (points) => {
+    if (points > 500000) {
+      return { level: 3, text: "Congratulations! You are a Loyalty Master! Keep it up!", icon: <FaTrophy size={40} color="#FFD700" /> };
+    } else if (points > 100000) {
+      return { level: 2, text: "Great job! You are a Loyalty Pro! Keep collecting points!", icon: <FaShieldAlt size={40} color="#C0C0C0" /> };
+    } else {
+      return { level: 1, text: "Welcome! You are just starting your loyalty journey! Collect points to level up!", icon: <FaStarHalfAlt size={40} color="#D3D3D3" /> };
+    }
+  };
+
+  const badgeInfo = userProfile ? getBadgeInfo(userProfile.loyaltyPoints) : { level: 1, text: "", icon: null };
+
   return (
     <Box sx={{ padding: 7 }}>
       {userProfile && (
         <Box
           sx={{
-            backgroundColor: "#fff", // White background
+            backgroundColor: "#fff", 
             borderRadius: 2,
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             padding: 3,
@@ -130,11 +105,24 @@ const TouristProfile = () => {
             Profile Information
           </Typography>
 
+          {/* Badge Section */}
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+            {badgeInfo.icon}
+            <Box sx={{ ml: 2 }}>
+              <Typography variant="h6" sx={{ mb: 0 }}>
+                Level Badge: Level {badgeInfo.level}
+              </Typography>
+              <Typography variant="body2" sx={{ color: "#555" }}>
+                {badgeInfo.text}
+              </Typography>
+            </Box>
+          </Box>
+
           {/* First Row: Username, Email, Name */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
             <TextField label="Username" name="username" value={formData.username} onChange={handleChange} fullWidth disabled sx={{ mr: 2 }} />
             <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth disabled sx={{ mx: 2 }} />
-            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`} disabled={!isEditing}  fullWidth sx={{ ml: 2 }} />
+            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
           </Box>
 
           {/* Second Row: Phone Number, Birth Date, Gender */}
@@ -143,7 +131,7 @@ const TouristProfile = () => {
               label="Phone Number"
               name="phoneNumber"
               value={formData.phoneNumber}
-              disabled={!isEditing} 
+              disabled={!isEditing}
               onChange={handleChange}
               fullWidth={false} // Disable fullWidth for custom width
               sx={{ width: "30%", mr: 2 }} // Set a specific width for the phone number
@@ -159,7 +147,7 @@ const TouristProfile = () => {
                 fullWidth
                 disabled={!isEditing}
                 InputLabelProps={{ shrink: true }}
-                sx={{ mb: 0.01}} // Margin bottom for spacing
+                sx={{ mb: 0.01 }} // Margin bottom for spacing
               />
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Get offers on your special day!
@@ -201,11 +189,11 @@ const TouristProfile = () => {
           </Box>
 
           {isEditing ? (
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
+            <Button variant="contained" onClick={handleSubmit}>
               Save
             </Button>
           ) : (
-            <Button variant="outlined" color="secondary" onClick={() => setIsEditing(true)}>
+            <Button variant="outlined" onClick={() => setIsEditing(true)}>
               Edit Profile
             </Button>
           )}
