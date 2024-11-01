@@ -12,13 +12,13 @@ import {
   CardContent,
   CardHeader,
 } from "@mui/material";
-import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins } from "react-icons/fa"; // Adding coin icon for points
-import { getProfile, updateProfile } from "../../services/tourist.js"; // Import the API functions
+import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins } from "react-icons/fa";
+import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js"; 
 import { getUserId } from "../../utils/authUtils.js";
-import Wallet from "./wallet"; // Import the Wallet component
+import Wallet from "./wallet"; 
 
 const TouristProfile = () => {
-  const userId = getUserId(); // Replace with dynamic user ID as necessary
+  const userId = getUserId();
   const [userProfile, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,14 +44,12 @@ const TouristProfile = () => {
     "Paraguay",
   ];
 
-  // Fetch user profile on component mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await getProfile(userId);
         const fullName = response.data.userProfile.name.split(" ");
         setUserProfile(response.data.userProfile);
-        // Initialize formData with fetched profile data
         setFormData({
           username: response.data.userProfile.username,
           email: response.data.userProfile.email,
@@ -71,25 +69,22 @@ const TouristProfile = () => {
     fetchProfile();
   }, [userId]);
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle profile update
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await updateProfile(userId, formData);
-      setUserProfile(response.data.userProfile); // Update local userProfile with the new data
-      setIsEditing(false); // Stop editing mode
+      setUserProfile(response.data.userProfile);
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
     }
   };
 
-  // Function to get badge level based on loyalty points
   const getBadgeInfo = (points) => {
     if (points > 500000) {
       return { level: 3, text: "Congratulations! You are a Loyalty Master! Keep it up!", icon: <FaTrophy size={40} color="#FFD700" /> };
@@ -100,15 +95,27 @@ const TouristProfile = () => {
     }
   };
 
-  // Get badge info based on user's loyalty points
   const badgeInfo = userProfile ? getBadgeInfo(userProfile.loyaltyPoints) : { level: 1, text: "", icon: null };
+
+
+  const handleRedeem = async () => {
+    try {
+      const response = await redeemPoints(userId, { pointsToRedeem: userProfile.loyaltyPoints });
+      setUserProfile(response.data.userProfile); // Update the user profile with new points
+      alert('Points redeemed successfully!');
+    } catch (error) {
+      console.error("Error redeeming points:", error);
+      alert('Failed to redeem points. Please try again.');
+    }
+  };
+  
 
   return (
     <Box sx={{ padding: 7 }}>
       {userProfile && (
         <Box
           sx={{
-            backgroundColor: "#fff", // White background
+            backgroundColor: "#fff",
             borderRadius: 2,
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             padding: 3,
@@ -120,7 +127,6 @@ const TouristProfile = () => {
             Profile Information
           </Typography>
 
-          {/* Badge Section */}
           <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             {badgeInfo.icon}
             <Box sx={{ ml: 2 }}>
@@ -133,7 +139,6 @@ const TouristProfile = () => {
             </Box>
           </Box>
 
-          {/* Loyalty Points Section with Icon */}
           <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 0}}>
             <CardHeader title="Loyalty Points" titleTypographyProps={{ variant: "h6" }} />
             <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -152,40 +157,36 @@ const TouristProfile = () => {
                 </Typography>
               </Box>
               <Button
-  variant="outlined"
-  sx={{
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    borderColor: "#1976d2",
-    color: "#1976d2",
-    borderRadius: "20px",
-    padding: "8px 16px",
-    marginLeft: 2,
-    transition: "background-color 0.3s",
-    "&:hover": {
-      backgroundColor: "#1976D2",
-      color: "#fff",
-    },
-  }}
-  onClick={() => console.log("Redeem points")} 
-  disabled={userProfile.loyaltyPoints < 10000} 
->
-  Redeem
-</Button>
-
+                variant="outlined"
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
+                  borderColor: "#1976d2",
+                  color: "#1976d2",
+                  borderRadius: "20px",
+                  padding: "8px 16px",
+                  marginLeft: 2,
+                  transition: "background-color 0.3s",
+                  "&:hover": {
+                    backgroundColor: "#1976D2",
+                    color: "#fff",
+                  },
+                }}
+                onClick={handleRedeem} 
+                disabled={userProfile.loyaltyPoints < 10000} 
+              >
+                Redeem
+              </Button>
             </CardContent>
           </Card>
 
-          {/* Wallet Component */}
-          <Wallet walletAmount={userProfile.walletAmount} /> {/* Pass the wallet amount as a prop */}
+          <Wallet walletAmount={userProfile.walletAmount} />
 
-          {/* First Row: Username, Email, Name */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
             <TextField label="Username" name="username" value={formData.username} onChange={handleChange} fullWidth disabled sx={{ mr: 2 }} />
             <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth disabled sx={{ mx: 2 }} />
-            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`}  disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
+            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
           </Box>
 
-          {/* Second Row: Phone Number, Birth Date, Gender */}
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
             <TextField
               label="Phone Number"
@@ -193,10 +194,9 @@ const TouristProfile = () => {
               value={formData.phoneNumber}
               disabled={!isEditing}
               onChange={handleChange}
-              fullWidth={false} // Disable fullWidth for custom width
-              sx={{ width: "30%", mr: 2 }} // Set a specific width for the phone number
+              fullWidth={false}
+              sx={{ width: "30%", mr: 2 }} 
             />
-
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "30%" }}>
               <TextField
                 label="Birth Date"
@@ -207,14 +207,12 @@ const TouristProfile = () => {
                 fullWidth
                 disabled={!isEditing}
                 InputLabelProps={{ shrink: true }}
-                sx={{ mb: 0.01 }} // Margin bottom for spacing
+                sx={{ mb: 0.01 }} 
               />
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Get a free gift on your birthday!
               </Typography>
             </Box>
-
-            {/* Gender Selection */}
             <Box sx={{ width: "30%" }}>
               <FormControl fullWidth disabled={!isEditing}>
                 <InputLabel>Gender</InputLabel>
@@ -233,9 +231,8 @@ const TouristProfile = () => {
             </Box>
           </Box>
 
-          {/* Third Row: Nationality and Occupation */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
-            <FormControl fullWidth sx={{ mr: 2 }} disabled={!isEditing}>
+          <Box sx={{ display: "flex", mb: 5 }}>
+            <FormControl fullWidth disabled={!isEditing}>
               <InputLabel>Nationality</InputLabel>
               <Select
                 label="Nationality"
@@ -250,27 +247,24 @@ const TouristProfile = () => {
                 ))}
               </Select>
             </FormControl>
-            <TextField
-              label="Occupation"
-              name="occupation"
-              value={formData.occupation}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ ml: 2 }}
-            />
           </Box>
 
-          {/* Save or Edit Button */}
-          {isEditing ? (
-            <Button variant="contained" onClick={handleSubmit}>
-              Save
-            </Button>
-          ) : (
-            <Button variant="outlined" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </Button>
-          )}
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            {isEditing ? (
+              <>
+                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                  Save
+                </Button>
+                <Button variant="outlined" color="secondary" onClick={() => setIsEditing(false)} sx={{ ml: 2 }}>
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button variant="contained" color="primary" onClick={() => setIsEditing(true)}>
+                Edit Profile
+              </Button>
+            )}
+          </Box>
         </Box>
       )}
     </Box>

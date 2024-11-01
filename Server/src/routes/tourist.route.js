@@ -28,6 +28,7 @@ import {
   Decrementor,
   updateCart,
 } from "../controllers/tourist/cart.controller.js";
+import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 const router = express.Router();
 
 // GET request to filter places by type and/or tags
@@ -41,6 +42,8 @@ router.get("/flights", getFlightsData); // Get Flights
 router.post("/places/search", searchPlaces); // Search places
 router.post("/activities/search", searchActivities); // Search activities
 router.post("/itineraries/search", searchItineraries); // Search itineraries
+router.post("/tourist/profile/:id/redeem", redeemPoints);
+
 
 // Wishlist
 router.post("/initializeWishlist", initializeWishList);

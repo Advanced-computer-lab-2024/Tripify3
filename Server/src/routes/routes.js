@@ -15,6 +15,7 @@ import complaintRoute from "./complaint.route.js";
 
 
 
+
 export default (app) => {
   app.use(complaintRoute)
   app.use(tourismGovernorRoute);
