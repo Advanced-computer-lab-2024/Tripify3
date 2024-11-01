@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { getUserId } from "../../utils/authUtils.js";
 import axios from "axios";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa"; // For icons
 
 const ComplaintForm = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(true);
   const userId = getUserId();
 
   const handleSubmit = async (e) => {
@@ -18,11 +22,19 @@ const ComplaintForm = () => {
         date,
       });
       console.log("Complaint submitted:", response.data);
-      alert("Complaint filed successfully!");
+      setPopupMessage("Complaint filed successfully!");
+      setIsSuccess(true);
+      setShowPopup(true);
     } catch (error) {
       console.error("Error submitting complaint:", error);
-      alert("There was an issue submitting your complaint.");
+      setPopupMessage("There was an issue submitting your complaint.");
+      setIsSuccess(false);
+      setShowPopup(true);
     }
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -69,6 +81,22 @@ const ComplaintForm = () => {
         </p>
       </div>
 
+      {showPopup && (
+        <div className="popup-container">
+          <div className="popup-content">
+            {isSuccess ? (
+              <FaCheckCircle className="popup-icon success-icon" />
+            ) : (
+              <FaExclamationCircle className="popup-icon error-icon" />
+            )}
+            <p className="popup-message">{popupMessage}</p>
+            <button onClick={closePopup} className="popup-close-button">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         .complaint-form-container {
           display: flex;
@@ -76,7 +104,7 @@ const ComplaintForm = () => {
           align-items: center;
           min-height: 100vh;
           padding: 20px;
-          background-color: #f7f7f7; /* Neutral background color */
+          background-color: #f7f7f7;
         }
 
         .form-card {
@@ -100,7 +128,7 @@ const ComplaintForm = () => {
         .form {
           display: flex;
           flex-direction: column;
-          gap: 15px; /* Space between form elements */
+          gap: 15px;
         }
 
         .form-group {
@@ -115,7 +143,7 @@ const ComplaintForm = () => {
         }
 
         .form-input {
-          padding: 12px; /* Increased padding */
+          padding: 12px;
           border: 1px solid #ccc;
           border-radius: 5px;
           font-size: 16px;
@@ -124,17 +152,17 @@ const ComplaintForm = () => {
 
         .form-input:focus {
           outline: none;
-          border-color: #4caf50; /* Highlight color */
+          border-color: #4caf50;
         }
 
         .form-textarea {
-          resize: vertical; /* Allow vertical resizing */
-          height: 180px; /* Increased height for better visibility */
+          resize: vertical;
+          height: 180px;
         }
 
         .form-submit-button {
           padding: 12px;
-          background-color: #4caf50; /* Green color */
+          background-color: #4caf50;
           color: white;
           font-weight: bold;
           border: none;
@@ -144,8 +172,8 @@ const ComplaintForm = () => {
         }
 
         .form-submit-button:hover {
-          background-color: #45a049; /* Darker green on hover */
-          transform: translateY(-2px); /* Slight lift on hover */
+          background-color: #45a049;
+          transform: translateY(-2px);
         }
 
         .form-footer {
@@ -153,6 +181,56 @@ const ComplaintForm = () => {
           color: #777;
           font-size: 14px;
           margin-top: 15px;
+        }
+
+        .popup-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .popup-content {
+          background: white;
+          padding: 30px;
+          border-radius: 10px;
+          text-align: center;
+          width: 90%;
+          max-width: 400px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-icon {
+          font-size: 50px;
+          margin-bottom: 15px;
+        }
+
+        .success-icon {
+          color: #4caf50;
+        }
+
+        .error-icon {
+          color: #f44336;
+        }
+
+        .popup-message {
+          font-size: 18px;
+          color: #333;
+          margin-bottom: 20px;
+        }
+
+        .popup-close-button {
+          background-color: #4caf50;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
         }
       `}</style>
     </div>
