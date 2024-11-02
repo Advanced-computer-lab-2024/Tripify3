@@ -31,4 +31,5 @@ def chatbot_response(user_input):
     Function to get the chatbot response for a given user input.
     """
     response = conversation.predict(input=user_input)
+    print(response)
     return response
