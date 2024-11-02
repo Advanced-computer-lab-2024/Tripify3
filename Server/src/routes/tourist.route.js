@@ -1,33 +1,10 @@
 import express from "express";
-import {
-  getSortedItineraries,
-  getFilteredItineraries,
-} from "../controllers/tourist/itineraries.controller.js";
+import { getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
 import { getAllActivities } from "../controllers/tourist/activities.controller.js";
-import {
-  getProfile,
-  editProfile,
-} from "../controllers/tourist/profile.controller.js";
-import {
-  searchPlaces,
-  searchActivities,
-  searchItineraries,
-  getFlightsData,
-} from "../controllers/tourist/search.controller.js";
-import {
-  initializeWishList,
-  AddProductToWishlist,
-  getWishlist,
-  removeProductFromWishlist,
-} from "../controllers/tourist/wishList.contoller.js";
-import {
-  initializeCart,
-  addToCart,
-  getTouristCart,
-  removeFromCart,
-  Decrementor,
-  updateCart,
-} from "../controllers/tourist/cart.controller.js";
+import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
+import { getFlightsData } from "../controllers/tourist/search.controller.js";
+import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
+import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor, updateCart } from "../controllers/tourist/cart.controller.js";
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 const router = express.Router();
 
@@ -39,11 +16,7 @@ router.get("/tourist/profile/:id", getProfile); // Get filtered activities
 router.put("/tourist/profile/:id", editProfile); // Get filtered activities
 router.get("/flights", getFlightsData); // Get Flights
 
-router.post("/places/search", searchPlaces); // Search places
-router.post("/activities/search", searchActivities); // Search activities
-router.post("/itineraries/search", searchItineraries); // Search itineraries
 router.post("/tourist/profile/:id/redeem", redeemPoints);
-
 
 // Wishlist
 router.post("/initializeWishlist", initializeWishList);
