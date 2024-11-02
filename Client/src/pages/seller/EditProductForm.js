@@ -80,11 +80,17 @@ const EditProductForm = () => {
   // Handle form submission for updating the product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(imageUrl);
+
+    // Combine existing image URLs and new image URLs (assuming you have already uploaded new images)
+    const combinedImageUrls = [
+      ...existingImages,
+      ...newImages.map((image) => image.url),
+    ]; // Assuming `newImages` is an array of objects with a `url` property
+
     try {
-      // Make the API request to edit the product
+      // Make the API request to edit the product with image URLs and other details
       const response = await axios.put(
-        "http://localhost:8000/access/seller/editProduct",
+        "http://localhost:8000/access/seller/editProduct", // Ensure you're hitting the correct endpoint
         {
           name,
           price,
@@ -92,18 +98,19 @@ const EditProductForm = () => {
           quantity,
           category,
           sellerId,
-          imageUrl, // Send the updated image URLs
+          imageUrl: combinedImageUrls, // Send the combined image URLs
         }
       );
+
       // Set response message on success
       setResponseMessage("Product updated successfully.");
       console.log("Response:", response.data);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (error) {
       // Handle any errors
-      console.error("Error:", error.response?.data || error.message); // Log the backend error message
+      console.error(
+        "Error updating product:",
+        error.response?.data || error.message
+      ); // Log the backend error message
       setResponseMessage("Failed to update product.");
     }
   };

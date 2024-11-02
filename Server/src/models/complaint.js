@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const complaintSchema = new mongoose.Schema({
   complainer :{
     type :mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required : true
+    ref: 'Tourist',
+    // required : true
   },
   title: { 
     type: String, 

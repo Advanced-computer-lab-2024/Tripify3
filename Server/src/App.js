@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import initializeRoutes from "./routes/routes.js";
 import cors from "cors";
+import path from "path"; // Import path module
+import { fileURLToPath } from "url"; // Import fileURLToPath for getting the directory name
 
 dotenv.config(); // Load environment variables
 
@@ -13,6 +15,9 @@ class App {
     this.port = process.env.PORT || 8000;
     this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
     this.env = process.env.NODE_ENV || "development";
+
+    // Get the directory name
+    this.__dirname = path.dirname(fileURLToPath(import.meta.url)); // Set __dirname
   }
 
   // Connect to MongoDB
@@ -35,6 +40,10 @@ class App {
     // Enable CORS for all routes
     this.app.use(cors());
     this.app.use(express.json()); // Parse incoming JSON requests
+
+    // Serve static files from the 'uploads' directory
+    this.app.use('/uploads', express.static(path.join(this.__dirname, 'uploads')));
+
     initializeRoutes(this.app); // Initialize routes
   }
 

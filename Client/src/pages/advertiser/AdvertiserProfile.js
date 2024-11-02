@@ -17,7 +17,7 @@ const AdvertiserProfile = () => {
   useEffect(() => {
     const fetchAdvertiserProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/advertiser/getProfile/${userId}`);
+        const response = await axios.get(`http://localhost:8000/advertiser/profile/${userId}`);
         setProfile(response.data.profile); // Set profile data directly
         setUpdatedProfile(response.data.profile); // Also set updated profile to the fetched profile
       } catch (error) {
@@ -40,7 +40,7 @@ const AdvertiserProfile = () => {
   // Save changes
   const handleSave = async () => {
     try {
-      const response = await axios.put(`http://localhost:8000/advertiser/updateProfile/${userId}`, updatedProfile);
+      const response = await axios.put(`http://localhost:8000/advertiser/profile/${userId}`, updatedProfile);
       setProfile(response.data.profile); // Update profile with response data
       setIsEditing(false);
     } catch (error) {

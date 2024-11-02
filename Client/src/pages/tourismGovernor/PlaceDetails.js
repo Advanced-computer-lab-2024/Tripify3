@@ -9,7 +9,7 @@ function PlaceDetails() {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/getPlace/${id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/place/get/${id}`)
       .then((response) => {
         // Adjust to access the right place from the response structure
         const places = response.data.data.place;

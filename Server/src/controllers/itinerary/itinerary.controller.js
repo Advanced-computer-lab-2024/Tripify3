@@ -1,5 +1,35 @@
 import Itinerary from "../../models/itinerary.js";
 import Tag from "../../models/tag.js";
+import User from "../../models/user.js";
+
+// Edit itinerary inappropriate attribute
+export const editItineraryAttribute = async (req, res) => {
+  const { id } = req.params; // Get itinerary ID from request parameters
+  const { inappropriate } = req.body; // Get new value for inappropriate from request body
+
+  // Validate the inappropriate value
+  if (typeof inappropriate !== "boolean") {
+    return res.status(400).json({ message: "Inappropriate field must be a boolean value" });
+  }
+
+  try {
+    // Find and update the itinerary
+    const updatedItinerary = await Itinerary.findByIdAndUpdate(
+      id,
+      { inappropriate }, // Set the new value for inappropriate
+      { new: true, runValidators: true } // Return the updated document and run validation
+    );
+
+    // Check if the itinerary was found
+    if (!updatedItinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    res.status(200).json(updatedItinerary); // Return the updated itinerary
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // Handle errors
+  }
+};
 
 // Create a new itinerary
 export const createItinerary = async (req, res) => {
@@ -16,38 +46,53 @@ export const createItinerary = async (req, res) => {
 
 // Get all itineraries
 export const getAllItineraries = async (req, res) => {
+  const { id } = req.params;
   try {
+    // Find the user by ID to determine their type
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const itineraries = await Itinerary.find()
       .populate({
-        path: 'activities',
+        path: "activities",
         populate: {
-          path: 'tags', // Populate the tags within activities
-          select: 'name' // Select only the 'name' field of the tags
-        }
+          path: "tags", // Populate the tags within activities
+          select: "name", // Select only the 'name' field of the tags
+        },
       })
       .populate({
-        path: 'places',
+        path: "places",
         populate: {
-          path: 'tags', // Populate the tags within locations
-          select: 'name' // Select only the 'name' field of the tags
-        }
+          path: "tags", // Populate the tags within locations
+          select: "name", // Select only the 'name' field of the tags
+        },
       });
 
     // Transform the itineraries to include a combined tags array
-    const response = itineraries.map(itinerary => {
+    let response = itineraries.map((itinerary) => {
       // Extract tags from activities
-      const activityTags = itinerary.activities.flatMap(activity => activity.tags.map(tag => tag.name));
+      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
       // Extract tags from locations
-      const locationTags = itinerary.places.flatMap(location => location.tags.map(tag => tag.name));
+      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
 
       // Combine activity and location tags into one array
       const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
 
       return {
         ...itinerary.toObject(), // Convert Mongoose document to plain object
-        tags: combinedTags // Add combined tags array to the itinerary
+        tags: combinedTags, // Add combined tags array to the itinerary
       };
     });
+
+    console.log(user.type);
+    
+    // If the user is a tourist, filter itineraries by inappropriate status
+    if (user.type === "Tourist") {
+      response = response.filter((itinerary) => !itinerary.inappropriate);
+    }
 
     res.status(200).json(response);
   } catch (error) {

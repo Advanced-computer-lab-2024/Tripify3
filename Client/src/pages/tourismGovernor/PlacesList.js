@@ -43,7 +43,7 @@ function PlacesList() {
   const handleTagSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/governor/createTag", {
+      const response = await axios.post("http://localhost:8000/governor/tag/create", {
         name: tagName,
       });
       
@@ -150,10 +150,10 @@ function PlacesList() {
         >
           <h2 style={{ fontSize: "24px", marginBottom: "10px", color: "#333" }}>{place.name}</h2>
           <p style={{ fontSize: "16px", marginBottom: "20px", color: "#666" }}>{place.description}</p>
-          <Link to={`/governor/${place._id}`} style={{ marginRight: "15px", color: "#007BFF" }}>
+          <Link to={`/tourism-governor/${place._id}`} style={{ marginRight: "15px", color: "#007BFF" }}>
             View Details
           </Link>
-          <Link to={`/governor/edit/${place._id}`}>
+          <Link to={`/tourism-governor/edit/${place._id}`}>
             <button
               style={{
                 marginTop: "10px",

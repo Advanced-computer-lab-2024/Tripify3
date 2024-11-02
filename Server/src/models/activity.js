@@ -4,7 +4,7 @@ const activitySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-  }, // Name of the activity
+  },
   isBooking: {
     type: Boolean,
     required: true,
