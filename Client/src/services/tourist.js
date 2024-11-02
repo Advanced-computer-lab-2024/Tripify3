@@ -6,6 +6,11 @@ export const markItineraryInappropriate = async (id, data) => {
   return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
 };
 
+export const redeemPoints = async (userId, pointsToRedeem) => {
+  return await axios.post(`${API_URL}/tourist/profile/${userId}/redeem`, pointsToRedeem);
+};
+
+
 export const getAllTags = async () => {
   return await axios.get(`${API_URL}/tag/get`);
 };
@@ -15,7 +20,7 @@ export const getAllCategories = async () => {
 };
 
 export const getAllPlaces = async () => {
-  return await axios.get(`${API_URL}/places/get`);
+  return await axios.get(`${API_URL}`);
 };
 
 export const getAllIteneraries = async (userId) => {

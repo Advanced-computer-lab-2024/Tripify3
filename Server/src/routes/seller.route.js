@@ -1,10 +1,20 @@
 //https://www.postman.com/supply-technologist-59501949/84b5b4b2-11af-4baa-9cb5-027a8688a59c
 import express from "express";
-import { viewSeller, updateSeller,   findSeller, getSellerByUserName } from "../controllers/seller/seller.controller.js";
+import { upload } from "../middlewares/multer.middleware.js"; // Multer configuration file
+import {
+  viewSeller,
+  updateSeller,
+  findSeller,
+  getSellerByUserName,
+  getImage,
+  deleteImage,
+} from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
+  createProductM,
   searchAllProducts,
   searchMyProducts,
+  searchMyProductsArchived,
   searchAllArchivedProducts,
   editProduct,
   searchProduct,
@@ -19,6 +29,7 @@ import {
   decrementProductQuantity,
   getSalesHistory,
   searchaProduct,
+  SearchProductById,
 } from "../controllers/seller/seller.controller.js";
 const router = express.Router();
 //search for a seller by username
@@ -35,12 +46,17 @@ router.put("/access/seller/updateSeller", updateSeller);
 router.post("/access/seller/createProduct", createProduct);
 //search all products
 router.get("/access/seller/searchAllProducts", searchAllProducts);
+//search all products
+router.get("/access/seller/searchMyProductsArchived", searchMyProductsArchived);
 //search all my products
 router.get("/access/seller/searchMyProducts", searchMyProducts);
 //search all archived products
-router.get("/access/seller/searchAllArchivedProducts", searchAllArchivedProducts);
+router.get(
+  "/access/seller/searchAllArchivedProducts",
+  searchAllArchivedProducts
+);
 //edit product
-router.put("/access/seller/editProduct", editProduct);
+// router.put("/access/seller/editProduct", editProduct);
 // search a product
 router.get("/access/seller/searchProduct", searchProduct);
 //delete a product
@@ -65,4 +81,18 @@ router.put("/access/seller/decrementProductQuantity", decrementProductQuantity);
 router.get("/access/seller/getSalesHistory", getSalesHistory);
 //search for a product
 router.get("/access/seller/searchaProduct", searchaProduct);
+
+router.post(
+  "/access/seller/createProductM",
+  upload.array("images", 5),
+  createProductM
+);
+router.put(
+  "/access/seller/editProduct",
+  upload.array("images", 5),
+  editProduct
+);
+router.get("/uploads/:sellerId/:filename", getImage);
+router.delete("/uploads/:sellerId/:filename", deleteImage);
+router.get("/access/seller/SearchProductById", SearchProductById);
 export default router;

@@ -11,9 +11,13 @@ import BookingRoute from "./booking.route.js"
 import TripRoute from "./trip.route.js"
 import adminRoute from "./admin.route.js";
 import tagRoute from "./tag.route.js";
+import complaintRoute from "./complaint.route.js"; 
+
+
 
 
 export default (app) => {
+  app.use(complaintRoute)
   app.use(tourismGovernorRoute);
   app.use(userRoute);
   app.use(tagRoute);

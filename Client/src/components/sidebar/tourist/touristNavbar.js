@@ -1,13 +1,14 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from "@mui/material";
-import { AccountCircle, ShoppingCart, Favorite, Home, Hotel, Event, Flight, DirectionsRun, ListAlt, RoomService } from "@mui/icons-material"; // Add ListAlt here
+import { AccountCircle, ShoppingCart, Favorite, Home, Hotel, Event, Flight, DirectionsRun, ListAlt, RoomService, HelpOutline } from "@mui/icons-material"; 
 import { useNavigate, useLocation } from "react-router-dom";
 
 const TouristNavbar = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Get the current location
+  const location = useLocation();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [helpAnchorEl, setHelpAnchorEl] = React.useState(null);
 
   const handleServicesClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -15,6 +16,14 @@ const TouristNavbar = () => {
 
   const handleServicesClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleHelpClick = (event) => {
+    setHelpAnchorEl(event.currentTarget);
+  };
+
+  const handleHelpClose = () => {
+    setHelpAnchorEl(null);
   };
 
   const handleProfileClick = () => {
@@ -50,7 +59,6 @@ const TouristNavbar = () => {
               </Typography>
             </IconButton>
 
-            {/* Conditionally render "My Profile" and "My Wishlist" based on the route */}
             {!hideProfileAndWishlist && (
               <>
                 <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleProfileClick}>
@@ -78,7 +86,18 @@ const TouristNavbar = () => {
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleServicesClose}>
               <MenuItem onClick={() => navigate("/hotels")}>Hotels</MenuItem>
-              <MenuItem onClick={() => navigate("/flights")}>Flights</MenuItem>
+              <MenuItem onClick={() => navigate("/search_flights")}>Flights</MenuItem>
+            </Menu>
+
+            {/* Help Icon with Dropdown */}
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
+              <HelpOutline />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Help
+              </Typography>
+            </IconButton>
+            <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
+              <MenuItem onClick={() => navigate("/tourist/file-complaint")}>File a Complaint</MenuItem>
             </Menu>
 
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
@@ -101,28 +120,28 @@ const TouristNavbar = () => {
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate('/tourist/itineraries')}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}>
             <ListAlt />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Itineraries
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate('/tourist/events')} >
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/events")}>
             <Event />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Events
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate('/tourist/activities')}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}>
             <DirectionsRun />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Activities
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}>
             <Flight />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Flights

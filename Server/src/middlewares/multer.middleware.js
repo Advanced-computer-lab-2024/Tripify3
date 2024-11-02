@@ -18,8 +18,7 @@ if (!fs.existsSync(uploadsDir)) {
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Retrieve the user ID from the request
-    const userId = req.body.userId; // Use userId from req.body set in the signup controller
-
+    const userId = req.body.userId || req.headers["user-id"]; // Access userId from headers
     if (!userId) {
       return cb(new Error("User ID is not provided"), null);
     }
