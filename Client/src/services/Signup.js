@@ -13,3 +13,16 @@ export const signup = async (signupData) => {
     throw error;
   }
 };
+
+// Call the upload files API
+export const uploadFiles = async (formData) => {
+  try {
+    const response = await axios.post("http://localhost:8000/user/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data; // Return the response data from the API
+  } catch (error) {
+    console.error("File upload failed:", error);
+    throw error; // Rethrow the error to handle it in the calling function
+  }
+};

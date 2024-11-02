@@ -28,6 +28,16 @@ const tourGuideSchema = new mongoose.Schema({
     required: true,
     default: "Pending",
   },
+  profilePicture: {
+    type: String, // This will store the path or URL to the profile picture
+  },
+  files: [
+    {
+      filename: String,
+      filepath: String,
+      uploadedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 const TourGuide = User.discriminator("Tour Guide", tourGuideSchema);

@@ -1,86 +1,173 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SignupPage from "./pages/Auth/SignupPage.js";
-import Navbar from "./components/Navbar.js";
-import LoginPage from "./pages/Auth/LoginPage.js"; // Ensure this path is correct
-import PlacesList from "./pages/tourismGovernor/PlacesList.js"; // Ensure this path is correct
-import PlaceDetails from "./pages/tourismGovernor/PlaceDetails.js"; // Ensure this path is correct
-import AddPlace from "./pages/tourismGovernor/AddPlace.js"; // Ensure this path is correct
+import Signup from "./pages/Auth/Signup.js";
+import Login from "./pages/Auth/Login.js";
+import PlacesList from "./pages/tourismGovernor/PlacesList.js";
+import PlaceDetails from "./pages/tourismGovernor/PlaceDetails.js";
+import AddPlace from "./pages/tourismGovernor/AddPlace.js";
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
-import Itinerary from "./pages/TourGuide/TourGuideItinerary.js";
-import EditPlacTourismGovernor from "./pages/tourismGovernor/EditPlace.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
-import AdminHomepage from "./pages/admin/AdminHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-import TouristHomePage from "./pages/tourist/touristHomepage.js";
-// import DoctorInformation from "./pages/advertiser/addLocation.js";
-import AllItineraries from "./pages/tourist/allItineraries.js";
-import AllHistoricalPlaces from "./pages/tourist/allHistoricalPlaces.js";
-import ActivitySearchPage from "./pages/tourist/searchActivities.js";
-import PlaceSearchPage from "./pages/tourist/searchPlaces.js";
-import ProductList from "./pages/seller/ProductList.js";
+import TouristHomePage from "./pages/tourist/homepage.js";
+import TouristProfile from "./pages/tourist/profile.js";
+import SearchFlights from "./pages/tourist/searchFlights.js";
+import LoadFlights from "./pages/tourist/loadFlights.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
-import SearchProduct from "./pages/seller/SearchProduct.js";
-import FilterProduct from "./pages/seller/FilterProductCondition.js";
-import SortBy from "./pages/seller/SortByRating.js";
-import AllActivities from "./pages/tourist/allActivites.js";
-import SearchItineraries from "./pages/tourist/searchItineraries.js";
+import MyProducts from "./pages/seller/myProducts.js";
+import ComplaintForm from "./pages/tourist/ComplaintForm.js";
+
+import Itineraries from "./pages/tourist/itineraries.js";
+import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
+import Activities from "./pages/tourist/activities.js";
+import Products from "./pages/seller/products.js";
+
+// Layouts Import
+import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
+import SellerLayout from "./components/sidebar/seller/sellerLayout.js";
+import AdvertiserLayout from "./components/sidebar/advertiser/advertiserLayout.js";
+import AdminLayout from "./components/sidebar/admin/adminLayout.js";
+import TourGuideLayout from "./components/sidebar/tourGuide/tourGuideLayout.js";
+import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismGovernorLayout.js";
+
+import { getUserType } from "./utils/authUtils.js";
+import Chatbot from "./pages/AI/chatbot.js";
+
+// Mock function to get the current user role
+const getUserRole = () => {
+  return getUserType(); // can be "admin", "seller", etc.
+};
 
 const App = () => {
+  const [userRole, setUserRole] = useState(getUserRole()); // Get user role dynamically
+
+  // Function to return layout based on role
+  const getLayoutForRole = (role, children) => {
+    console.log(role);
+
+    switch (role) {
+      case "Tourist":
+        return <TouristLayout>{children}</TouristLayout>;
+      case "Seller":
+        return <SellerLayout>{children}</SellerLayout>;
+      case "Admin":
+        return <AdminLayout>{children}</AdminLayout>;
+      case "Advertiser":
+        return <AdvertiserLayout>{children}</AdvertiserLayout>;
+      case "Tour Guide":
+        return <TourGuideLayout>{children}</TourGuideLayout>;
+      case "Tourism Governor":
+        return <TourismGovernorLayout>{children}</TourismGovernorLayout>;
+      default:
+        return children; // Default layout if no specific role
+    }
+  };
+
+  // Base path based on user role
+  const basePath =
+    userRole === "Tourism Governor"
+      ? "/tourism-governor"
+      : userRole === "Tourist"
+      ? "/tourist"
+      : userRole === "Seller"
+      ? "/seller"
+      : userRole === "Admin"
+      ? "/admin"
+      : userRole === "Advertiser"
+      ? "/advertiser"
+      : userRole === "Tour Guide"
+      ? "/tour-guide"
+      : "";
+
   return (
     <Router>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/governor" element={<PlacesList />} />
-        <Route path="/governor/:id" element={<PlaceDetails />} />
-        <Route path="/governor/addPlace" element={<AddPlace />} />
-        <Route
-          path="/governor/edit/:id"
-          element={<EditPlacTourismGovernor />}
-        />
-        <Route path="/username-input" element={<EmailInput />} />
-        <Route path="/tourist" element={<TouristHomePage />} />
-        <Route path="/tourist/activities" element={<AllActivities />} />
-        <Route path="/tourist/itineraries" element={<AllItineraries />} />
-
-        <Route
-          path="/tourist/historicalplaces"
-          element={<AllHistoricalPlaces />}
-        />
-
+        {/* Auth Routes */}
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/email-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
-        <Route path="/tourGuide/profile" element={<TourGuideProfile />} />
-        <Route path="/advertiser/profile" element={<AdvertiserProfile />} />
+
+        {/* Tourism Governor Routes */}
         <Route
-          path="/advertiser/activities"
+          path={`${basePath}/tourism-governor`}
+          element={getLayoutForRole(userRole, <PlacesList />)}
+        />
+        {/* <Route path={`${basePath}/:id`} element={<PlaceDetails />} /> */}
+        {/* if u see this u have to change the path as it clashes with viewseller */}
+        <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
+
+        {/* Tourist Routes */}
+        <Route
+          path={`${basePath}/tourist`}
+          element={getLayoutForRole(userRole, <Activities />)}
+        />
+        <Route
+          path={`${basePath}/tourist/homepage`}
+          element={getLayoutForRole(userRole, <TouristHomePage />)}
+        />
+        <Route
+          path={`${basePath}/tourist/account`}
+          element={getLayoutForRole(userRole, <TouristProfile />)}
+        />
+        <Route path={"/search_flights"} element={<SearchFlights />} />
+        <Route path={"/load_flights"} element={<LoadFlights />} />
+
+        {/* Shared Routes */}
+        <Route
+          path={`${basePath}/activities`}
+          element={getLayoutForRole(userRole, <Activities />)}
+        />
+        <Route
+          path={`${basePath}/itineraries`}
+          element={getLayoutForRole(userRole, <Itineraries />)}
+        />
+              <Route
+        path={`${basePath}/file-complaint`}
+        element={getLayoutForRole(userRole, <ComplaintForm />)}
+      />
+        <Route
+          path={`${basePath}/historical-places`}
+          element={getLayoutForRole(userRole, <HistoricalPlaces />)}
+        />
+        <Route
+          path={`${basePath}/products`}
+          element={getLayoutForRole(userRole, <Products />)}
+        />
+
+        {/* Tour Guide Routes */}
+
+        {/* Advertiser Routes */}
+        <Route
+          path={`${basePath}/advertiser`}
+          element={<AdvertiserProfile />}
+        />
+        <Route
+          path={`${basePath}/activities`}
           element={<AdvertiserActivities />}
         />
-        <Route path="/seller/homepage" element={<SellerHomepage />} />
-        <Route path="/admin/homepage" element={<AdminHomepage />} />
-        {/* <Route path="/location-selection" element={<DoctorInformation />} /> */}
-        <Route path="/tourGuide/itinerary" element={<Itinerary />} />
 
-        <Route path="/search/activities/" element={<ActivitySearchPage />} />
-        <Route path="/search/places/" element={<PlaceSearchPage />} />
-        <Route path="/search/itinerary" element={<SearchItineraries />} />
-        <Route path="/tourist/ProductList" element={<ProductList />} />
-        <Route path="/tourist/searchProduct" element={<SearchProduct />} />
-        <Route path="/tourist/FilterProduct" element={<FilterProduct />} />
-        <Route path="/tourist/SortBy" element={<SortBy />} />
-        <Route path="/seller/:id" element={<ViewSellerprofile />} />
-        {/* <Route path="/search/itineraries/" element={<ActivitySearchPage />} /> */}
+        {/* Seller Routes */}
+        <Route
+          path={`${basePath}/seller`}
+          element={getLayoutForRole(userRole, <SellerHomepage />)}
+        />
+        <Route
+          path={`${basePath}/my-products`}
+          element={getLayoutForRole(userRole, <MyProducts />)}
+        />
+        <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
+
+        {/* Admin Routes */}
+        <Route path={"/chatbot"} element={<Chatbot />} />
+        <Route path={"admin/admin"} element={<SellerHomepage />} />
       </Routes>
     </Router>
   );
 };
 
 export default App;
-//App.js is the main component of your application where you define the structure of your app, including pages, routes, and other components

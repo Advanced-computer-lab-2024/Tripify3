@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
 
 const wishlistSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "Tourist", required: true }, // Associated with Tourist
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tourist",
+    required: true,
+  }, // Associated with Tourist
   items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }], // Refers to products
 });
 

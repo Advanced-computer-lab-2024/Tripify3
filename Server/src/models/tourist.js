@@ -6,9 +6,9 @@ const touristSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  name:{
-    type:String,
-    required:true
+  name: {
+    type: String,
+    required: true,
   },
   nationality: {
     type: String,
@@ -25,7 +25,15 @@ const touristSchema = new mongoose.Schema({
   loyaltyPoints: {
     type: Number,
     default: 0,
-  }, // Loyalty points earned by the user
+  },
+  walletAmount: {
+    type: Number,
+    default: 0,
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female"],
+  },
   complaints: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -34,11 +42,28 @@ const touristSchema = new mongoose.Schema({
   ],
   wishlist: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Wishlist", // References the Wishlist model
+    ref: "Wishlist",
+  },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Cart",
   },
   preferences: { type: [String], required: false },
   tripsTaken: { type: [String], required: false },
 });
+
+touristSchema.virtual("level").get(function () {
+  if (this.loyaltyPoints > 500000) {
+    return 3;
+  } else if (this.loyaltyPoints > 100000) {
+    return 2;
+  } else {
+    return 1;
+  }
+});
+
+touristSchema.set("toJSON", { virtuals: true });
+touristSchema.set("toObject", { virtuals: true });
 
 const Tourist = user.discriminator("Tourist", touristSchema);
 
