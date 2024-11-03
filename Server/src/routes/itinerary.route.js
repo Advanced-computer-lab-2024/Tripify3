@@ -1,5 +1,5 @@
 import express from "express";
-import { editItineraryAttribute, createItinerary, getAllItineraries, getItineraryById, updateItinerary, deleteItinerary, addActivityToItinerary } from "../controllers/itinerary/itinerary.controller.js";
+import { editItineraryAttribute, createItinerary, getAllItineraries, getItineraryById, updateItinerary, deleteItinerary, addActivityToItinerary , ActivateItinerary ,DeactivateItinerary} from "../controllers/itinerary/itinerary.controller.js";
 
 const router = express.Router();
 
@@ -12,6 +12,8 @@ router.delete("/itinerary/delete/:id", deleteItinerary); // Delete an itinerary 
 router.post("/itinerary/:id/addActivity", addActivityToItinerary);
 // Route to edit itinerary attribute
 router.put('/itineraries/:id/edit', editItineraryAttribute);
+router.put('/itinerary/activate/:id', ActivateItinerary); // tourguide activates or deactivaes it
+router.put('/itinerary/deactivate/:id', DeactivateItinerary); // tourguide activates or deactivaes it
 
 
 export default router;

@@ -30,6 +30,7 @@ import Products from "./pages/seller/products.js";
 import TourGuideUploadPhoto from "./pages/TourGuide/TourGuideUploadPhoto.js";
 import tourGuideItinerary from "./pages/TourGuide/TourGuideItinerary.js";
 import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
+import TourGuideActivateDeactivateItinerary from "./pages/TourGuide/ActivateDeactivateItinerary.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -158,7 +159,10 @@ const App = () => {
           path={`/tour-guide/UploadPhoto/:id`}
           element={<TourGuideUploadPhoto />}
         />
-
+        <Route
+          path={`/tour-guide/ActivateDeactivateItinerary/:id`}
+          element={<TourGuideActivateDeactivateItinerary />}
+        />
 
         <Route
           path={`/tour-guide/Itinerary`}
