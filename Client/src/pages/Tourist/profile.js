@@ -1,25 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Card,
-  CardContent,
-  CardHeader,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardHeader, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCheckCircle } from "react-icons/fa";
-import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js"; 
+import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
 import { getUserId } from "../../utils/authUtils.js";
-import Wallet from "./wallet"; 
+import Wallet from "./wallet";
 
 const TouristProfile = () => {
   const userId = getUserId();
@@ -39,13 +23,51 @@ const TouristProfile = () => {
   });
 
   const countries = [
-    "USA", "Canada", "UK", "Germany", "France", "Australia", "Egypt", "Italy",
-    "Spain", "Brazil", "Argentina", "Mexico", "India", "China", "Japan",
-    "South Korea", "Russia", "South Africa", "Nigeria", "Kenya", "Turkey",
-    "Saudi Arabia", "United Arab Emirates", "Sweden", "Norway", "Finland",
-    "Denmark", "Netherlands", "Belgium", "Switzerland", "Austria", "Greece",
-    "Portugal", "Czech Republic", "Ireland", "Iceland", "Palestine", "Chile",
-    "Colombia", "Peru", "Panama", "Costa Rica", "Cuba", "Honduras", "El Salvador",
+    "USA",
+    "Canada",
+    "UK",
+    "Germany",
+    "France",
+    "Australia",
+    "Egypt",
+    "Italy",
+    "Spain",
+    "Brazil",
+    "Argentina",
+    "Mexico",
+    "India",
+    "China",
+    "Japan",
+    "South Korea",
+    "Russia",
+    "South Africa",
+    "Nigeria",
+    "Kenya",
+    "Turkey",
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "Sweden",
+    "Norway",
+    "Finland",
+    "Denmark",
+    "Netherlands",
+    "Belgium",
+    "Switzerland",
+    "Austria",
+    "Greece",
+    "Portugal",
+    "Czech Republic",
+    "Ireland",
+    "Iceland",
+    "Palestine",
+    "Chile",
+    "Colombia",
+    "Peru",
+    "Panama",
+    "Costa Rica",
+    "Cuba",
+    "Honduras",
+    "El Salvador",
     "Paraguay",
   ];
 
@@ -109,7 +131,7 @@ const TouristProfile = () => {
       setRedeemSuccess(true); // Show success dialog
     } catch (error) {
       console.error("Error redeeming points:", error);
-      alert('Failed to redeem points. Please try again.');
+      alert("Failed to redeem points. Please try again.");
     }
   };
 
@@ -147,58 +169,53 @@ const TouristProfile = () => {
           </Box>
 
           <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 0 }}>
-  <CardHeader
-    title="Loyalty Points"
-    titleTypographyProps={{ variant: "h6" }}
-    subheader={userProfile.loyaltyPoints <= 10000 ? "You need at least 10,000 points to redeem your points to cash." : null}
-    subheaderTypographyProps={{
-      variant: "body2",
-      color: "text.secondary",
-      sx: { marginTop: 0, marginBottom: -3, fontSize: 12 },
-    }}
-  />
-  <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#E3F2FD",
-        borderRadius: "20px",
-        padding: "10px 20px",
-      }}
-    >
-      <FaCoins size={24} color="#1976d2" style={{ marginRight: "10px" }} />
-      <Typography variant="body1" sx={{ color: "#1976d2", fontWeight: "bold" }}>
-        {userProfile.loyaltyPoints} Points
-      </Typography>
-    </Box>
-    <Button
-      variant="outlined"
-      sx={{
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        borderColor: "#1976d2",
-        color: "#1976d2",
-        borderRadius: "20px",
-        padding: "8px 16px",
-        marginLeft: 2,
-        transition: "background-color 0.3s",
-        "&:hover": {
-          backgroundColor: "#1976D2",
-          color: "#fff",
-        },
-      }}
-      onClick={handleRedeem}
-      disabled={userProfile.loyaltyPoints < 10000}
-    >
-      Redeem
-    </Button>
-  </CardContent>
-</Card>
-
-
-
-
-
+            <CardHeader
+              title="Loyalty Points"
+              titleTypographyProps={{ variant: "h6" }}
+              subheader={userProfile.loyaltyPoints <= 10000 ? "You need at least 10,000 points to redeem your points to cash." : null}
+              subheaderTypographyProps={{
+                variant: "body2",
+                color: "text.secondary",
+                sx: { marginTop: 0, marginBottom: -3, fontSize: 12 },
+              }}
+            />
+            <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  backgroundColor: "#E3F2FD",
+                  borderRadius: "20px",
+                  padding: "10px 20px",
+                }}
+              >
+                <FaCoins size={24} color="#1976d2" style={{ marginRight: "10px" }} />
+                <Typography variant="body1" sx={{ color: "#1976d2", fontWeight: "bold" }}>
+                  {userProfile.loyaltyPoints} Points
+                </Typography>
+              </Box>
+              <Button
+                variant="outlined"
+                sx={{
+                  backgroundColor: "rgba(255, 255, 255, 0.8)",
+                  borderColor: "#1976d2",
+                  color: "#1976d2",
+                  borderRadius: "20px",
+                  padding: "8px 16px",
+                  marginLeft: 2,
+                  transition: "background-color 0.3s",
+                  "&:hover": {
+                    backgroundColor: "#1976D2",
+                    color: "#fff",
+                  },
+                }}
+                onClick={handleRedeem}
+                disabled={userProfile.loyaltyPoints < 10000}
+              >
+                Redeem
+              </Button>
+            </CardContent>
+          </Card>
 
           <Wallet walletAmount={userProfile.walletAmount} />
 
@@ -209,15 +226,7 @@ const TouristProfile = () => {
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
-            <TextField
-              label="Phone Number"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              disabled={!isEditing}
-              onChange={handleChange}
-              fullWidth={false}
-              sx={{ width: "30%", mr: 2 }} 
-            />
+            <TextField label="Phone Number" name="phoneNumber" value={formData.phoneNumber} disabled={!isEditing} onChange={handleChange} fullWidth={false} sx={{ width: "30%", mr: 2 }} />
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "30%" }}>
               <TextField
                 label="Birth Date"
@@ -228,22 +237,14 @@ const TouristProfile = () => {
                 fullWidth
                 disabled={!isEditing}
                 InputLabelProps={{ shrink: true }}
-                sx={{ mb: 0.01 }} 
+                sx={{ mb: 0.01 }}
               />
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Get a free gift on your birthday!
               </Typography>
             </Box>
 
-            <TextField
-              label="Occupation"
-              name="occupation"
-              value={formData.occupation}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ ml: 2 }}
-            />
+            <TextField label="Occupation" name="occupation" value={formData.occupation} onChange={handleChange} fullWidth disabled={!isEditing} sx={{ ml: 2 }} />
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
@@ -268,11 +269,7 @@ const TouristProfile = () => {
             </FormControl>
           </Box>
 
-          <Button
-            variant="contained"
-            onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
-            sx={{ backgroundColor: "#1976d2", color: "#fff", borderRadius: "20px" }}
-          >
+          <Button variant="contained" onClick={isEditing ? handleSubmit : () => setIsEditing(true)} sx={{ backgroundColor: "#1976d2", color: "#fff", borderRadius: "20px" }}>
             {isEditing ? "Save" : "Edit Profile"}
           </Button>
 
@@ -281,9 +278,7 @@ const TouristProfile = () => {
             <DialogContent>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <FaCheckCircle size={40} color="green" style={{ marginRight: "10px" }} />
-                <Typography variant="body1">
-                Your wallet balance is now {userProfile.walletAmount} EGP.
-                </Typography>
+                <Typography variant="body1">Your wallet balance is now {userProfile.walletAmount} EGP.</Typography>
               </Box>
             </DialogContent>
             <DialogActions>
