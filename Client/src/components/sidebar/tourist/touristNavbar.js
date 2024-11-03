@@ -64,7 +64,7 @@ const TouristNavbar = () => {
                 <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleProfileClick}>
                   <AccountCircle />
                   <Typography variant="body1" sx={{ ml: 1 }}>
-                    My Profile
+                    My Account
                   </Typography>
                 </IconButton>
 

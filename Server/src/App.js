@@ -42,7 +42,7 @@ class App {
     this.app.use(express.json()); // Parse incoming JSON requests
 
     // Serve static files from the 'uploads' directory
-    this.app.use('/uploads', express.static(path.join(this.__dirname, 'uploads')));
+    this.app.use("/uploads", express.static(path.join(this.__dirname, "uploads")));
 
     initializeRoutes(this.app); // Initialize routes
   }

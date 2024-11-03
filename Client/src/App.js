@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
 import PlacesList from "./pages/tourismGovernor/PlacesList.js";
-import PlaceDetails from "./pages/tourismGovernor/PlaceDetails.js";
 import AddPlace from "./pages/tourismGovernor/AddPlace.js";
 
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
@@ -25,12 +24,15 @@ import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
+import Categories from "./pages/admin/categories.js";
 
+import FileViewer from "./pages/admin/fileViewer.js";
+import Complaints from "./pages/admin/complaints.js";
 
-import TourGuideUploadPhoto from "./pages/TourGuide/TourGuideUploadPhoto.js";
-import tourGuideItinerary from "./pages/TourGuide/TourGuideItinerary.js";
-import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
-import TourGuideActivateDeactivateItinerary from "./pages/TourGuide/ActivateDeactivateItinerary.js";
+import TourGuideUploadPhoto from "./pages/tourGuide/uploadPhoto.js";
+import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
+import TourGuideProfile from "./pages/tourGuide/profile.js";
+import TourGuideActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -42,8 +44,8 @@ import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismG
 
 import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
-
-
+import Users from "./pages/admin/users.js";
+import Tags from "./pages/admin/tags.js";
 
 // Mock function to get the current user role
 const getUserRole = () => {
@@ -103,101 +105,45 @@ const App = () => {
         <Route path="/new-password" element={<NewPassword />} />
 
         {/* Tourism Governor Routes */}
-        <Route
-          path={`${basePath}/tourism-governor`}
-          element={getLayoutForRole(userRole, <PlacesList />)}
-        />
-        {/* <Route path={`${basePath}/:id`} element={<PlaceDetails />} /> */}
-        {/* if u see this u have to change the path as it clashes with viewseller */}
+        <Route path={`${basePath}/tourism-governor`} element={getLayoutForRole(userRole, <PlacesList />)} />
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
         {/* Tourist Routes */}
-        <Route
-          path={`${basePath}/tourist`}
-          element={getLayoutForRole(userRole, <Activities />)}
-        />
-        <Route
-          path={`${basePath}/tourist/homepage`}
-          element={getLayoutForRole(userRole, <TouristHomePage />)}
-        />
-        <Route
-          path={`${basePath}/tourist/account`}
-          element={getLayoutForRole(userRole, <TouristProfile />)}
-        />
-        <Route path={"/search_flights"} element={<SearchFlights />} />
-        <Route path={"/load_flights"} element={<LoadFlights />} />
+        <Route path={`${basePath}/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
+        <Route path={`${basePath}/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
+        <Route path={`${basePath}/tourist/account`} element={getLayoutForRole(userRole, <TouristProfile />)} />
+        <Route path={"/search/flights"} element={<SearchFlights />} />
+        <Route path={"/load/flights"} element={<LoadFlights />} />
 
         {/* Shared Routes */}
-        <Route
-          path={`${basePath}/activities`}
-          element={getLayoutForRole(userRole, <Activities />)}
-        />
-        <Route
-          path={`${basePath}/itineraries`}
-          element={getLayoutForRole(userRole, <Itineraries />)}
-        />
-              <Route
-        path={`${basePath}/file-complaint`}
-        element={getLayoutForRole(userRole, <ComplaintForm />)}
-      />
-                <Route
-          path="/tourist/view-complaints/:id"
-          element={getLayoutForRole(userRole, <ViewComplaints />)}
-        />
-        <Route
-          path={`${basePath}/historical-places`}
-          element={getLayoutForRole(userRole, <HistoricalPlaces />)}
-        />
-        <Route
-          path={`${basePath}/products`}
-          element={getLayoutForRole(userRole, <Products />)}
-        />
+        <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
+        <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} />
+        <Route path={`${basePath}/file-complaint`} element={getLayoutForRole(userRole, <ComplaintForm />)} />
+        <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
+        <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <Products />)} />
 
         {/* Tour Guide Routes */}
-
-        <Route
-          path={`/tour-guide/UploadPhoto/:id`}
-          element={<TourGuideUploadPhoto />}
-        />
-        <Route
-          path={`/tour-guide/ActivateDeactivateItinerary/:id`}
-          element={<TourGuideActivateDeactivateItinerary />}
-        />
-
-        <Route
-          path={`/tour-guide/Itinerary`}
-          element={<tourGuideItinerary />}
-        />
-         <Route
-          path={`/tour-guide/Profile`}
-          element={<TourGuideProfile />}
-        />
-
+        <Route path={`/tour-guide/upload/photo/`} element={<TourGuideUploadPhoto />} />
+        <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} />
+        <Route path={`/tour-guide/itinerary`} element={<tourGuideItinerary />} />
+        <Route path={`/tour-guide/profile`} element={<TourGuideProfile />} />
 
         {/* Advertiser Routes */}
-        <Route
-          path={`${basePath}/advertiser`}
-          element={<AdvertiserProfile />}
-        />
-        <Route
-          path={`${basePath}/activities`}
-          element={<AdvertiserActivities />}
-        />
+        <Route path={`${basePath}/advertiser`} element={<AdvertiserProfile />} />
+        <Route path={`${basePath}/activities`} element={<AdvertiserActivities />} />
 
         {/* Seller Routes */}
-        <Route
-          path={`${basePath}/seller`}
-          element={getLayoutForRole(userRole, <SellerHomepage />)}
-        />
-        <Route
-          path={`${basePath}/my-products`}
-          element={getLayoutForRole(userRole, <MyProducts />)}
-        />
+        <Route path={`${basePath}/seller`} element={getLayoutForRole(userRole, <SellerHomepage />)} />
+        <Route path={`${basePath}/my-products`} element={getLayoutForRole(userRole, <MyProducts />)} />
         <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
 
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={<Chatbot />} />
-        <Route path={"admin/admin"} element={<SellerHomepage />} />
+        <Route path={`${basePath}/users`} element={getLayoutForRole(userRole, <Users />)} />
+        <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
+        <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
+        <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />
+        <Route path={`${basePath}/complaints`} element={getLayoutForRole(userRole, <Complaints />)} />
       </Routes>
     </Router>
   );

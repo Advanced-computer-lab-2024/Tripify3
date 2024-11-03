@@ -1,16 +1,44 @@
 import Tourist from "../../models/tourist.js";
 import Complaint from "../../models/complaint.js";
+import User from "../../models/user.js";
+// controllers/complaintController.js
+import { sendAdminReplyEmail } from '../../middlewares/sendEmail.middleware.js'; 
+
+export const handleAdminReply = async (req, res) => {
+  const { touristId, reply } = req.body;
+
+  if (!touristId || !reply) {
+    return res.status(400).json({ message: "Tourist ID and reply comment are required." });
+  }
+
+  try {
+    // Find the user by touristId
+    const user = await User.findById(touristId); // Adjust based on your user model
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Send the reply email
+    await sendAdminReplyEmail(user, reply);
+
+    // Respond with success
+    return res.status(200).json({ message: "Reply sent successfully." });
+  } catch (error) {
+    console.error("Error handling admin reply:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 
 export const createComplaint = async (req, res) => {
   try {
-    console.log("reached here")
-    const { complainer, title, body, date } = req.body;
-    const tourist = await Tourist.findById(complainer);
+    const { touristId, title, body, date } = req.body;
+    const tourist = await Tourist.findById(touristId);
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });
     }
     const newComplaint = new Complaint({
-      complainer: tourist,
+      touristId,
       title,
       body,
       date,
@@ -23,8 +51,7 @@ export const createComplaint = async (req, res) => {
       complaint: newComplaint,
     });
   } catch (error) {
-    console.error("Error filing complainttttttt:", error);
-    res.status(500).json({ message: "Failed to file complainttttttt" });
+    res.status(500).json({ message: "Failed to file complaint" });
   }
 };
 
@@ -51,7 +78,7 @@ export const getTouristComplaints = async (req, res) => {
 
   try {
     // Find complaints associated with the tourist ID
-    const complaints = await Complaint.find({ complainer: id }).populate('complainer');
+    const complaints = await Complaint.find({ touristId: id }).populate('touristId');
     
     if (!complaints) {
       return res.status(404).json({ message: 'No complaints found for this tourist.' });
@@ -67,17 +94,14 @@ export const getTouristComplaints = async (req, res) => {
 
 export const getAllComplaints = async (req, res) => {
   try {
-    // Fetch all complaints from the database
-    const complaints = await Complaint.find().populate('complainer'); // Populate if you want to include complainer details
-
-    // Respond with the list of complaints
-    res.status(200).json({
-      message: 'Complaints retrieved successfully',
-      complaints,
+    const complaints = await Complaint.find();
+    return res.status(200).json({
+      message: "Complaints found successfully",
+      complaints: complaints,
     });
   } catch (error) {
-    console.error("Error retrieving complaints:", error);
-    res.status(500).json({ message: 'Failed to retrieve complaints' });
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

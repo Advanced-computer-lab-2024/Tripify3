@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { getUserId } from "../../utils/authUtils.js";
 import axios from "axios";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa"; // For icons
+import { useNavigate } from "react-router-dom";
 
 const ComplaintForm = () => {
   const [title, setTitle] = useState("");
@@ -10,12 +11,13 @@ const ComplaintForm = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(true);
-  const userId = getUserId();
+  const userId = getUserId();  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/complaints/create", {
+      const response = await axios.post("http://localhost:8000/complaint/create", {
         touristId: userId,
         title,
         body,
@@ -35,6 +37,9 @@ const ComplaintForm = () => {
 
   const closePopup = () => {
     setShowPopup(false);
+    if (isSuccess) {      
+      navigate("/tourist/tourist/homepage");
+    }
   };
 
   return (
