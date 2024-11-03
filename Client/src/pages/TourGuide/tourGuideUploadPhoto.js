@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import './styles/TourGuideUploadPhoto.css'
+
+import axios from 'axios';
 
 const ImageUploader = ({ tourGuideId }) => {
   const [image, setImage] = useState(null);
@@ -17,44 +20,51 @@ const ImageUploader = ({ tourGuideId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     if (!image) {
       setError('Please select an image to upload.');
       return;
     }
-
-    // Create a FormData object to send the image
+  
     const formData = new FormData();
     const fileInput = document.querySelector('input[type="file"]');
-    formData.append('profilePicture', fileInput.files[0]); // Append the image file
-
+  
+    if (fileInput.files.length === 0) {
+      setError('No file selected.');
+      return;
+    }
+  
+    formData.append('profilePicture', fileInput.files[0]);
+  
     try {
-        const response = await fetch(`localhost:8000/tourGuide/uploadPicture/${tourGuideId}`, {
-            method: 'PUT',
-        body: formData,
+      const response = await axios.put(`http://localhost:8000/tourGuide/uploadPicture/${tourGuideId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      const result = await response.json();
-      console.log('Image uploaded:', result);
-      setImage(null); // Clear the preview after successful upload
-      setError(''); // Clear any previous errors
+  
+      console.log('Image uploaded:', response.data);
+      setImage(null);
+      setError('');
     } catch (error) {
-      setError(error.message);
       console.error('Error uploading image:', error);
+      setError(error.response?.data?.message || error.message);
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        <button type="submit">Upload</button>
+    <div className="uploader">
+      <form className="form" onSubmit={handleSubmit}>
+        <input 
+          type="file" 
+          accept="image/*" 
+          onChange={handleImageChange} 
+          className="fileInput" 
+        />
+        <button type="submit" className="submitButton">Upload</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {image && <img src={image} alt="Uploaded Preview" style={{ width: '200px', height: 'auto' }} />}
+      {error && <p className="errorMessage">{error}</p>}
+      {image && <img src={image} alt="Uploaded Preview" className="imagePreview" />}
     </div>
   );
 };

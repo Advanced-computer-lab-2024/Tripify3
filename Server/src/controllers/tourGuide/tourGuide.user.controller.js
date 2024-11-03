@@ -21,12 +21,12 @@ export const updateTourGuideProfile = async (req, res) => {
 };
 
 
-// Upload Profile Picture for a Tour Guide
 export const uploadTourGuidePicture = async (req, res) => {
   try {
     const { id } = req.params; // Get the tour guide ID from the request parameters
     const file = req.file; // Access the uploaded file
 
+    // Check if a file is uploaded
     if (!file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
@@ -37,19 +37,29 @@ export const uploadTourGuidePicture = async (req, res) => {
       return res.status(400).json({ message: 'Invalid file type. Only JPEG, PNG, and GIF are allowed.' });
     }
 
+    // Use the uploaded file's path
+    const picturePath = file.path;
+
     // Find the tour guide by ID and update the profile picture
-    const updatedProfile = await TourGuide.findByIdAndUpdate(id, { profilePicture: file.path }, { new: true });
+    const updatedProfile = await TourGuide.findByIdAndUpdate(
+      id,
+      { profilePicture: picturePath },
+      { new: true }
+    );
 
     if (!updatedProfile) {
       return res.status(404).json({ message: 'Tour guide not found' });
     }
 
-    res.status(200).json(updatedProfile); // Respond with the updated profile
+    // Respond with the updated profile picture information
+    res.status(200).json({ message: 'Profile picture updated successfully', profilePicture: updatedProfile.profilePicture });
   } catch (error) {
     console.error("Error uploading profile picture:", error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+
 
 
 
@@ -70,4 +80,13 @@ export const getTourGuideProfile = async (req, res) => {
   }
 };
 
+
+export const getAllTourGuides = async (req, res) => {
+  try {
+    const tourGuides = await TourGuide.find(); // Fetch all tour guides
+    res.status(200).json(tourGuides); // Return as JSON
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving tour guides", error });
+  }
+};
 
