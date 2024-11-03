@@ -15,7 +15,7 @@ const TouristSidebar = () => {
     "/tourist/itineraries/my",
     "/tourist/historical-places",
     "/tourist/reviews",
-    "/tourist/tourist/profile",
+    "/tourist/tourist/account",
   ];
 
   // Check if the current route is in the list of visible routes
@@ -77,10 +77,16 @@ const TouristSidebar = () => {
           </ListItemButton>
         </ListItem>
 
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/tourist/historical-places" sx={linkStyle}>
+            Lo
+          </ListItemButton>
+        </ListItem>
+
         
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Wishlist
+            My Wishlist
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -98,6 +104,7 @@ const TouristSidebar = () => {
             Profile
           </ListItemButton>
         </ListItem>
+        
         
 
       </List>

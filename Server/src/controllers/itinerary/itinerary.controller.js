@@ -44,8 +44,55 @@ export const createItinerary = async (req, res) => {
   }
 };
 
+export const getAllItineraries = async (req, res) =>{
+ 
+  try {
+
+    const itineraries = await Itinerary.find()
+      .populate({
+        path: "activities",
+        populate: {
+          path: "tags", // Populate the tags within activities
+          select: "name", // Select only the 'name' field of the tags
+        },
+      })
+      .populate({
+        path: "places",
+        populate: {
+          path: "tags", // Populate the tags within locations
+          select: "name", // Select only the 'name' field of the tags
+        },
+      });
+
+    // Transform the itineraries to include a combined tags array
+    let response = itineraries.map((itinerary) => {
+      // Extract tags from activities
+      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
+      // Extract tags from locations
+      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
+
+      // Combine activity and location tags into one array
+      const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
+
+      return {
+        ...itinerary.toObject(), // Convert Mongoose document to plain object
+        tags: combinedTags, // Add combined tags array to the itinerary
+      };
+    });
+
+    res.status(200).json({
+      message: "Iteneraries found successfully",
+      data: response
+    });
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+
+};
+
 // Get all itineraries
-export const getAllItineraries = async (req, res) => {
+export const getAllItinerariesForTourGuide = async (req, res) => {
   const { id } = req.params;
   try {
     // Find the user by ID to determine their type
@@ -87,9 +134,7 @@ export const getAllItineraries = async (req, res) => {
       };
     });
 
-    console.log(user.type);
     
-    // If the user is a tourist, filter itineraries by inappropriate status
     if (user.type === "Tourist") {
       response = response.filter((itinerary) => !itinerary.inappropriate);
     }

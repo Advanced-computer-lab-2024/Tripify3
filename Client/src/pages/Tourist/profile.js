@@ -20,7 +20,7 @@ import {
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera,FaEdit, FaPen } from "react-icons/fa";
 import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js"; 
 import { getUserId } from "../../utils/authUtils.js";
-import Wallet from "./wallet"; 
+import Wallet from "./wallet";
 
 const TouristProfile = () => {
   const userId = getUserId();
@@ -40,13 +40,51 @@ const TouristProfile = () => {
   });
 
   const countries = [
-    "USA", "Canada", "UK", "Germany", "France", "Australia", "Egypt", "Italy",
-    "Spain", "Brazil", "Argentina", "Mexico", "India", "China", "Japan",
-    "South Korea", "Russia", "South Africa", "Nigeria", "Kenya", "Turkey",
-    "Saudi Arabia", "United Arab Emirates", "Sweden", "Norway", "Finland",
-    "Denmark", "Netherlands", "Belgium", "Switzerland", "Austria", "Greece",
-    "Portugal", "Czech Republic", "Ireland", "Iceland", "Palestine", "Chile",
-    "Colombia", "Peru", "Panama", "Costa Rica", "Cuba", "Honduras", "El Salvador",
+    "USA",
+    "Canada",
+    "UK",
+    "Germany",
+    "France",
+    "Australia",
+    "Egypt",
+    "Italy",
+    "Spain",
+    "Brazil",
+    "Argentina",
+    "Mexico",
+    "India",
+    "China",
+    "Japan",
+    "South Korea",
+    "Russia",
+    "South Africa",
+    "Nigeria",
+    "Kenya",
+    "Turkey",
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "Sweden",
+    "Norway",
+    "Finland",
+    "Denmark",
+    "Netherlands",
+    "Belgium",
+    "Switzerland",
+    "Austria",
+    "Greece",
+    "Portugal",
+    "Czech Republic",
+    "Ireland",
+    "Iceland",
+    "Palestine",
+    "Chile",
+    "Colombia",
+    "Peru",
+    "Panama",
+    "Costa Rica",
+    "Cuba",
+    "Honduras",
+    "El Salvador",
     "Paraguay",
   ];
 
@@ -121,7 +159,7 @@ const TouristProfile = () => {
       setRedeemSuccess(true);
     } catch (error) {
       console.error("Error redeeming points:", error);
-      alert('Failed to redeem points. Please try again.');
+      alert("Failed to redeem points. Please try again.");
     }
   };
 
