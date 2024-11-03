@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles/TourGuideUploadPhoto.css'
+import './styles/tourGuideUploadPhoto.css'
 
 import axios from 'axios';
 
