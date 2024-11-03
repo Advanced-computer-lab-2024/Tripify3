@@ -90,3 +90,23 @@ export const getAllTourGuides = async (req, res) => {
   }
 };
 
+
+export const getAllItinerariesByTourGuideId = async (req, res) => {
+  try {
+      const { id } = req.params; // Extract tour guide ID from request parameters
+      
+      // Find the tour guide by ID and populate the itineraries
+      const tourGuide = await TourGuide.findById(id).populate("itineraries");
+
+      // If tour guide is not found, return 404
+      if (!tourGuide) {
+          return res.status(404).json({ message: "Tour Guide not found" });
+      }
+
+      // Return the itineraries of the found tour guide
+      return res.status(200).json(tourGuide.itineraries);
+  } catch (error) {
+      console.error(error); // Log the error for debugging
+      return res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

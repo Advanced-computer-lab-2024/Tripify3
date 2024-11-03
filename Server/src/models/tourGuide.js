@@ -27,7 +27,13 @@ const tourGuideSchema = new mongoose.Schema({
     enum: ["Pending", "Rejected", "Accepted"],
     required: true,
     default: "Pending",
-  },
+  }, 
+  itineraries:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Itinerary",
+    },
+  ],
   profilePicture: {
     type: String, // This will store the path or URL to the profile picture
   },

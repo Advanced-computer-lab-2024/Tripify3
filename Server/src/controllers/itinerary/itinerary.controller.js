@@ -172,3 +172,56 @@ export const addActivityToItinerary = async (req, res) => {
     res.status(500).send({ message: "Server error", error: error.message });
   }
 };
+
+
+export const ActivateItinerary = async (req, res) => {
+  const itineraryId = req.params.id;
+
+  try {
+    const itinerary = await Itinerary.findById(itineraryId);
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    if (itinerary.status === "Active") {
+      return res.status(400).json({ message: "Itinerary is already active" });
+    }
+
+    itinerary.status = "Active";
+    await itinerary.save();
+
+    res.status(200).json({ message: "Itinerary activated successfully", itinerary });
+  } catch (error) {
+    res.status(500).json({ message: "Error activating itinerary", error });
+  }
+};
+
+// Deactivate Itinerary
+export const DeactivateItinerary = async (req, res) => {
+  const itineraryId = req.params.id;
+
+  try {
+    const itinerary = await Itinerary.findById(itineraryId);
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    if (itinerary.status === "Inactive") {
+      return res.status(400).json({ message: "Itinerary is already inactive" });
+    }
+
+    // Allow deactivation only if there are bookings
+    if (itinerary.bookings.length === 0) {
+      return res.status(400).json({ message: "Itinerary with no bookings cannot be deactivated" });
+    }
+
+    itinerary.status = "Inactive";
+    await itinerary.save();
+
+    res.status(200).json({ message: "Itinerary deactivated successfully", itinerary });
+  } catch (error) {
+    res.status(500).json({ message: "Error deactivating itinerary", error });
+  }
+};
