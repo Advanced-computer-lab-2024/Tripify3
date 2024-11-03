@@ -17,7 +17,7 @@ export const signup = async (signupData) => {
 // Call the upload files API
 export const uploadFiles = async (formData) => {
   try {
-    const response = await axios.post("http://localhost:8000/user/upload", formData, {
+    const response = await axios.post("http://localhost:8000/user/upload/documents", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data; // Return the response data from the API

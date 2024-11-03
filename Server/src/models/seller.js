@@ -13,8 +13,12 @@ const sellerSchema = new mongoose.Schema({
     required: false,
     default: "Pending",
   },
-   // Add a files field to store file information
-   files: [
+  profilePicture: {
+    filename: String,
+    filepath: String, // This will store the path or URL to the profile picture
+  },
+  // Add a files field to store file information
+  files: [
     {
       filename: String,
       filepath: String,
