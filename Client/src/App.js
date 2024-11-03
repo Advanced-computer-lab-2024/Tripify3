@@ -22,9 +22,12 @@ import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
+import Categories from "./pages/admin/categories.js";
 
 
 import FileViewer from "./pages/admin/fileViewer.js";
+import Complaints from "./pages/admin/complaints.js";
+
 
 
 // Layouts Import
@@ -38,6 +41,7 @@ import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismG
 import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
 import Users from "./pages/admin/users.js";
+import Tags from "./pages/admin/tags.js";
 
 // Mock function to get the current user role
 const getUserRole = () => {
@@ -98,8 +102,6 @@ const App = () => {
 
         {/* Tourism Governor Routes */}
         <Route path={`${basePath}/tourism-governor`} element={getLayoutForRole(userRole, <PlacesList />)} />
-        {/* <Route path={`${basePath}/:id`} element={<PlaceDetails />} /> */}
-        {/* if u see this u have to change the path as it clashes with viewseller */}
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
         {/* Tourist Routes */}
@@ -129,9 +131,11 @@ const App = () => {
 
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={<Chatbot />} />
-        {/* <Route path={"/admin/admin"} element={<SellerHomepage />} /> */}
-        <Route path={`${basePath}/admin`} element={getLayoutForRole(userRole, <Users />)} />
+        <Route path={`${basePath}/users`} element={getLayoutForRole(userRole, <Users />)} />
+        <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
+        <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />
+        <Route path={`${basePath}/complaints`} element={getLayoutForRole(userRole, <Complaints />)} />
       </Routes>
     </Router>
   );

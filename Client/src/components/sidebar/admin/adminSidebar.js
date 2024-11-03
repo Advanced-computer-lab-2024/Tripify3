@@ -4,7 +4,16 @@ import { Box, List, ListItem, ListItemButton, Typography, Collapse } from "@mui/
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 const AdminSidebar = () => {
-  const [showItineraries, setShowItineraries] = useState(false);
+  const [showServices, setShowServices] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+
+  const toggleServices = () => {
+    setShowServices((prev) => !prev);
+  };
+
+  const toggleAnalytics = () => {
+    setShowAnalytics((prev) => !prev);
+  };
 
   return (
     <Box
@@ -33,42 +42,69 @@ const AdminSidebar = () => {
           </ListItemButton>
         </ListItem>
 
+        {/* Services dropdown */}
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/activities" sx={linkStyle}>
-            Activities
+          <ListItemButton onClick={toggleServices} sx={linkStyle}>
+            Services
+            {showServices ? <ExpandLess sx={{ color: "#fff" }} /> : <ExpandMore sx={{ color: "#fff" }} />}
           </ListItemButton>
         </ListItem>
+        <Collapse in={showServices} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/activities" sx={subLinkStyle}>
+                Activities
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/itineraries" sx={subLinkStyle}>
+                Itineraries
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/historical-places" sx={subLinkStyle}>
+                Historical Places
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/products" sx={subLinkStyle}>
+                Products
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/tags" sx={subLinkStyle}>
+                Tags
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/categories" sx={subLinkStyle}>
+                Categories
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Collapse>
 
+        {/* Analytics dropdown */}
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/itineraries" sx={linkStyle}>
-            Itineraries
+          <ListItemButton onClick={toggleAnalytics} sx={linkStyle}>
+            Analytics
+            {showAnalytics ? <ExpandLess sx={{ color: "#fff" }} /> : <ExpandMore sx={{ color: "#fff" }} />}
           </ListItemButton>
         </ListItem>
-
-
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/historical-places" sx={linkStyle}>
-            Historical Places
-          </ListItemButton>
-        </ListItem>
-
-        
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/products" sx={linkStyle}>
-            Products
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/tags" sx={linkStyle}>
-            Tags
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/admin/categories" sx={linkStyle}>
-            Categories
-          </ListItemButton>
-        </ListItem>
+        <Collapse in={showAnalytics} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/complaints" sx={subLinkStyle}>
+                Complaints
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/ayahag" sx={subLinkStyle}>
+                Ayahag
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Collapse>
       </List>
     </Box>
   );
@@ -77,7 +113,7 @@ const AdminSidebar = () => {
 const linkStyle = {
   color: "#fff",
   padding: "10px",
-  fontSize: "16px", // Increase font size
+  fontSize: "16px",
   "&:hover": {
     backgroundColor: "#00509e",
   },

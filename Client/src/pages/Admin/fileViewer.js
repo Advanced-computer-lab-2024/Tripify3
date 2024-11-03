@@ -22,7 +22,7 @@ const FileViewer = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Button variant="contained" onClick={() => navigate("/admin/admin")} sx={{ mb: 2 }}>
+      <Button variant="contained" onClick={() => navigate("/admin/users")} sx={{ mb: 2 }}>
         Go Back
       </Button>
       {/* <Typography variant="h4" align="center" sx={{ mb: 4 }}>

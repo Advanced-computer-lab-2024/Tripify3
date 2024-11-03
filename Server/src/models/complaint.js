@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
 const complaintSchema = new mongoose.Schema({
-  complainer :{
+  touristId :{
     type :mongoose.Schema.Types.ObjectId,
     ref: 'Tourist',
-    // required : true
   },
   title: { 
     type: String, 
@@ -20,8 +19,8 @@ const complaintSchema = new mongoose.Schema({
   },
   status: { 
     type: String, 
-    enum: ['Open', 'In Progress', 'Resolved'], 
-    default: 'Open' 
+    enum: ['Pending', 'Resolved'], 
+    default: 'Pending' 
   }
 });
 

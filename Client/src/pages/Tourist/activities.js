@@ -42,7 +42,7 @@ const Activities = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [validationError, setValidationError] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
@@ -74,6 +74,7 @@ const Activities = () => {
     setActivities(sortedActivities);
   };
 
+  // Filter activities based on selected categories, budget, and search term
   const handleFilter = () => {
     let filteredActivities = [...originalActivities];
 
@@ -85,12 +86,24 @@ const Activities = () => {
       filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
     }
 
+    if (searchTerm) {
+      filteredActivities = filteredActivities.filter((activity) =>
+        activity.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
     setActivities(filteredActivities);
   };
+
+  // Automatically filter when search term, selected categories, or budget changes
+  useEffect(() => {
+    handleFilter();
+  }, [searchTerm, selectedCategories, budget]);
 
   const handleResetFilters = () => {
     setSelectedCategories([]);
     setBudget("");
+    setSearchTerm(""); // Reset search term
     setActivities(originalActivities);
   };
 
@@ -119,7 +132,13 @@ const Activities = () => {
       <Box sx={{ p: 4 }}>
         {/* Search, Sort, and Filter Section */}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-          <TextField label="Search by name" variant="outlined" sx={{ mr: 2, width: "300px" }} />
+          <TextField
+            label="Search by name"
+            variant="outlined"
+            sx={{ mr: 2, width: "300px" }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update search term on change
+          />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
             <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
@@ -158,7 +177,14 @@ const Activities = () => {
             </Select>
           </FormControl>
 
-          <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
+          <TextField
+            label="Budget"
+            type="number"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            variant="outlined"
+            sx={{ width: "150px", mr: 2 }}
+          />
 
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter

@@ -39,7 +39,7 @@ const Login = () => {
       } else if (data.user.type === "Seller") {
         navigate("/seller/seller");
       } else if (data.user.type === "Admin") {
-        navigate("/admin/admin");
+        navigate("/admin/users");
       } else if (data.user.type === "Tour Guide") {
         navigate("/tour-guide/tour-guide");
       } else if (data.user.type === "Advertiser") {
