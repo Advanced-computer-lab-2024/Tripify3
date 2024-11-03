@@ -10,9 +10,6 @@ import {
   deleteCategory,
   getAllAcceptedUsers,
   getAllPendingUsers,
-  replyToComplaint,
-  sortComplaintsByDate,
-  filterComplaintsByStatus,
 } from "../controllers/admin/admin.user.controller.js";
 import { PasswordSchema } from "../validation/users.auth.validation.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -28,8 +25,5 @@ router.get("/category/get", getAllCategories);
 router.put("/admin/category/update", updateCategory);
 router.delete("/admin/category/delete", deleteCategory);
 router.put("/user/update/status/:id", updateUserStatus);
-router.put("/complaint/reply/:complaintId", replyToComplaint);
-router.get("/complaint/sort", sortComplaintsByDate);
-router.get("/complaint/filter", filterComplaintsByStatus);
 
 export default router;

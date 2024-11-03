@@ -23,10 +23,6 @@ const complaintSchema = new mongoose.Schema({
     enum: ["Open", "In Progress", "Resolved"],
     default: "Open",
   },
-  reply: {
-    type: String,
-    default: "",
-  },
 });
 
 const Complaint = mongoose.model("Complaint", complaintSchema);

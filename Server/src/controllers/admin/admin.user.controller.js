@@ -4,7 +4,6 @@ import Advertiser from "../../models/advertiser.js";
 import Seller from "../../models/seller.js";
 import TourGuide from "../../models/tourGuide.js";
 import Tourist from "../../models/tourist.js";
-import Complaint from "../../models/complaint.js";
 
 export const getAllAcceptedUsers = async (req, res) => {
   try {
@@ -241,52 +240,5 @@ export const updateUserStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
-  }
-};
-
-export const replyToComplaint = async (req, res) => {
-  const { complaintId } = req.params;
-  const { reply, status } = req.body;
-
-  if (!reply) {
-    return res.status(400).json({ message: "Reply is required" });
-  }
-
-  try {
-    const updatedComplaint = await Complaint.findByIdAndUpdate(complaintId, { reply, status: status || "In Progress" }, { new: true });
-
-    if (!updatedComplaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
-
-    res.status(200).json(updatedComplaint);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating complaint reply", error });
-  }
-};
-
-export const sortComplaintsByDate = async (req, res) => {
-  const { order = "desc" } = req.query;
-
-  try {
-    const complaints = await Complaint.find().sort({ date: order === "asc" ? 1 : -1 });
-    res.status(200).json(complaints);
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving complaints", error });
-  }
-};
-
-export const filterComplaintsByStatus = async (req, res) => {
-  const { status } = req.query;
-
-  if (!status) {
-    return res.status(400).json({ message: "Status is required" });
-  }
-
-  try {
-    const complaints = await Complaint.find({ status });
-    res.status(200).json(complaints);
-  } catch (error) {
-    res.status(500).json({ message: "Error filtering complaints by status", error });
   }
 };
