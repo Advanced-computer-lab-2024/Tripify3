@@ -29,6 +29,8 @@ import {
   updateCart,
 } from "../controllers/tourist/cart.controller.js";
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
+
+import {getTouristComplaints , getAllTourists} from "../controllers/tourist/complaint.controller.js";
 const router = express.Router();
 
 // GET request to filter places by type and/or tags
@@ -38,6 +40,11 @@ router.get("/tourist/activity", getAllActivities); // Get all activities
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
 router.put("/tourist/profile/:id", editProfile); // Get filtered activities
 router.get("/flights", getFlightsData); // Get Flights
+
+
+//Complaints
+router.get("/tourist/get", getAllTourists)
+router.get("/tourist/complaints/:id", getTouristComplaints );
 
 router.post("/places/search", searchPlaces); // Search places
 router.post("/activities/search", searchActivities); // Search activities

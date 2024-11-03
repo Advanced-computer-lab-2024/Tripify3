@@ -15,7 +15,7 @@ class App {
     this.port = process.env.PORT || 8000;
     this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
     this.env = process.env.NODE_ENV || "development";
-
+    //"mongodb+srv://Ahmed:Ahmedhany1@tripify.cptnu.mongodb.net/?retryWrites=true&w=majority&appName=Tripify"
     // Get the directory name
     this.__dirname = path.dirname(fileURLToPath(import.meta.url)); // Set __dirname
   }

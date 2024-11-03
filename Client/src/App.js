@@ -5,6 +5,7 @@ import Login from "./pages/Auth/Login.js";
 import PlacesList from "./pages/tourismGovernor/PlacesList.js";
 import PlaceDetails from "./pages/tourismGovernor/PlaceDetails.js";
 import AddPlace from "./pages/tourismGovernor/AddPlace.js";
+
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
@@ -18,11 +19,17 @@ import LoadFlights from "./pages/tourist/loadFlights.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
 import ComplaintForm from "./pages/tourist/ComplaintForm.js";
+import ViewComplaints from "./pages/tourist/viewComplaints.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
+
+
+import TourGuideUploadPhoto from "./pages/TourGuide/TourGuideUploadPhoto.js";
+import tourGuideItinerary from "./pages/TourGuide/TourGuideItinerary.js";
+import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -34,6 +41,8 @@ import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismG
 
 import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
+
+
 
 // Mock function to get the current user role
 const getUserRole = () => {
@@ -130,6 +139,10 @@ const App = () => {
         path={`${basePath}/file-complaint`}
         element={getLayoutForRole(userRole, <ComplaintForm />)}
       />
+                <Route
+          path="/tourist/view-complaints/:id"
+          element={getLayoutForRole(userRole, <ViewComplaints />)}
+        />
         <Route
           path={`${basePath}/historical-places`}
           element={getLayoutForRole(userRole, <HistoricalPlaces />)}
@@ -140,6 +153,22 @@ const App = () => {
         />
 
         {/* Tour Guide Routes */}
+
+        <Route
+          path={`/tour-guide/UploadPhoto/:id`}
+          element={<TourGuideUploadPhoto />}
+        />
+
+
+        <Route
+          path={`/tour-guide/Itinerary`}
+          element={<tourGuideItinerary />}
+        />
+         <Route
+          path={`/tour-guide/Profile`}
+          element={<TourGuideProfile />}
+        />
+
 
         {/* Advertiser Routes */}
         <Route
