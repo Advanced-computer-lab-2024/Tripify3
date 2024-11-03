@@ -48,12 +48,9 @@ const Activities = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [activitiesResponse, categoriesResponse] = await Promise.all([
-          getAllActivities(),
-          getAllCategories(),
-        ]);
-        setActivities(activitiesResponse.data.activities);
-        setOriginalActivities(activitiesResponse.data.activities);
+        const [activitiesResponse, categoriesResponse] = await Promise.all([getAllActivities(), getAllCategories()]);
+        setActivities(activitiesResponse.data);
+        setOriginalActivities(activitiesResponse.data);
         setCategories(categoriesResponse.data);
         setLoading(false);
       } catch (error) {
@@ -81,15 +78,11 @@ const Activities = () => {
     let filteredActivities = [...originalActivities];
 
     if (selectedCategories.length > 0) {
-      filteredActivities = filteredActivities.filter((activity) =>
-        selectedCategories.includes(activity.category._id)
-      );
+      filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category));
     }
 
     if (budget) {
-      filteredActivities = filteredActivities.filter(
-        (activity) => activity.price <= parseFloat(budget)
-      );
+      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
     }
 
     setActivities(filteredActivities);
@@ -126,18 +119,10 @@ const Activities = () => {
       <Box sx={{ p: 4 }}>
         {/* Search, Sort, and Filter Section */}
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-          <TextField
-            label="Search by name"
-            variant="outlined"
-            sx={{ mr: 2, width: "300px" }}
-          />
+          <TextField label="Search by name" variant="outlined" sx={{ mr: 2, width: "300px" }} />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
-            <Select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              label="Sort by Price"
-            >
+            <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
               <MenuItem value="asc">Low to High</MenuItem>
               <MenuItem value="desc">High to Low</MenuItem>
             </Select>
@@ -173,14 +158,7 @@ const Activities = () => {
             </Select>
           </FormControl>
 
-          <TextField
-            label="Budget"
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            variant="outlined"
-            sx={{ width: "150px", mr: 2 }}
-          />
+          <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
 
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter
@@ -206,11 +184,7 @@ const Activities = () => {
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to activity ${activity._id}`)}
-                  >
+                  <Button variant="contained" sx={{ mt: 2 }} onClick={() => console.log(`Navigate to activity ${activity._id}`)}>
                     View Details
                   </Button>
                 </CardContent>

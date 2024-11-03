@@ -1,6 +1,4 @@
 import express from "express";
-import { getSortedItineraries, getFilteredItineraries } from "../controllers/tourist/itineraries.controller.js";
-import { getAllActivities } from "../controllers/tourist/activities.controller.js";
 import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
 import { getFlightsData } from "../controllers/tourist/search.controller.js";
 import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
@@ -8,10 +6,6 @@ import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor,
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 const router = express.Router();
 
-// GET request to filter places by type and/or tags
-router.get("/tourist/itinerary/sort", getSortedItineraries); // Get sorted itineraries
-router.get("/tourist/itinerary/filter", getFilteredItineraries); // Get filtered itineraries
-router.get("/tourist/activity", getAllActivities); // Get all activities
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
 router.put("/tourist/profile/:id", editProfile); // Get filtered activities
 router.get("/flights", getFlightsData); // Get Flights

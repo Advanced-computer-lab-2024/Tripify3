@@ -28,7 +28,7 @@ export const getAllIteneraries = async (userId) => {
 };
 
 export const getAllActivities = async () => {
-  return await axios.get(`${API_URL}/tourist/activity`);
+  return await axios.get(`${API_URL}/activity/get`);
 };
 
 export const getProfile = async (userId) => {
