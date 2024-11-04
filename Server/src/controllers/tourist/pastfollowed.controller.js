@@ -14,8 +14,9 @@ export const getFollowingTourGuides = async (req, res) => {
       return res.status(404).json({ message: "Tourist not found" });
     }
 
-    // Respond with the list of following tour guides
-    res.status(200).json(tourist.following);
+    return res.status(200).json({ message: "Successfully Found Following Tour Guides", following: tourist.following });
+ 
+    
   } catch (error) {
     // Handle errors
     res.status(500).json({ message: "Error fetching following tour guides", error: error.message });

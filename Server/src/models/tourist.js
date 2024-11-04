@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import user from "./user.js";
+import User from "./user.js";
 
 const touristSchema = new mongoose.Schema({
   phoneNumber: {
@@ -91,6 +91,6 @@ touristSchema.virtual("level").get(function () {
 touristSchema.set("toJSON", { virtuals: true });
 touristSchema.set("toObject", { virtuals: true });
 
-const Tourist = user.discriminator("Tourist", touristSchema);
+const Tourist = User.discriminator("Tourist", touristSchema);
 
 export default Tourist;

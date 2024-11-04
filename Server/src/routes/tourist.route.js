@@ -18,10 +18,10 @@ router.post("/tourist/profile/:id/redeem", redeemPoints);
 
 
 //rate and comment on tour guide 
-router.post('/rate/:tourGuideId', rateTourGuide);
-router.post('/comment/:tourGuideId', commentonTourGuide);
-router.get("/tourists/:touristId/following", getFollowingTourGuides);
-router.post('/tourists/:touristId/follow/:tourGuideId', followTourGuide);
+router.post('/tourist/rate/:tourGuideId', rateTourGuide);
+router.post('/tourist/comment/:tourGuideId', commentonTourGuide);
+router.get("/tourist/following/get/:touristId", getFollowingTourGuides);
+router.post('/tourist/follow/:touristId/:tourGuideId', followTourGuide);
 router.post('/itineraries/rate', rateItinerary);
 
 
