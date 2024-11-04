@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const ViewComplaints = () => {
   const { id } = useParams(); // Extract the ID from URL parameters
+  console.log(id);
   const [complaints, setComplaints] = useState([]); // State to hold complaints
   const [loading, setLoading] = useState(true); // State to manage loading state
   const [error, setError] = useState(null); // State to manage error
@@ -15,6 +16,7 @@ const ViewComplaints = () => {
     const fetchComplaints = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/tourist/complaints/${id}`);
+        console.log("fetch success");
         setComplaints(response.data); // Set the fetched complaints in state
         setFilteredComplaints(response.data); // Initialize filtered complaints
       } catch (error) {

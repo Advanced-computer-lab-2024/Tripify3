@@ -32,7 +32,7 @@ import Complaints from "./pages/admin/complaints.js";
 import TourGuideUploadPhoto from "./pages/tourGuide/uploadPhoto.js";
 import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
-import TourGuideActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
+import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -113,7 +113,9 @@ const App = () => {
         <Route path={`${basePath}/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
         <Route path={`${basePath}/tourist/account`} element={getLayoutForRole(userRole, <TouristProfile />)} />
         <Route path={"/search/flights"} element={<SearchFlights />} />
-        <Route path={"/load/flights"} element={<LoadFlights />} />
+        <Route path={"/load/flights"} element={<LoadFlights />} />   
+        <Route path={"/tourist/view/complaints/:id"} element={<ViewComplaints />} />
+
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
@@ -124,7 +126,7 @@ const App = () => {
 
         {/* Tour Guide Routes */}
         <Route path={`/tour-guide/upload/photo/`} element={<TourGuideUploadPhoto />} />
-        <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} />
+        <Route path="/tour-guide/activate-deactivate/itinerary/:tourGuideId" element={<ActivateDeactivateItinerary />} />
         <Route path={`/tour-guide/itinerary`} element={<tourGuideItinerary />} />
         <Route path={`/tour-guide/profile`} element={<TourGuideProfile />} />
 

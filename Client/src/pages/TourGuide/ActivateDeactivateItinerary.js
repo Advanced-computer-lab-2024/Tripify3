@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+
 const ActivateDeactivateItinerary = () => {
-  const { id: tourGuideId } = useParams(); // Extract the tour guide ID from the URL
+  const { tourGuideId } = useParams();
+  console.log('Tour Guide ID:', tourGuideId);  // Check if this is undefined
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,19 +13,24 @@ const ActivateDeactivateItinerary = () => {
 
   // Fetch itineraries when component mounts
   useEffect(() => {
-    const fetchItineraries = async () => {
-      try {
-        const response = await axios.get(`http://localhost:8000/tour-guide/itineraries/${tourGuideId}`);
-        setItineraries(response.data);
-      } catch (error) {
-        setError('Failed to fetch itineraries');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchItineraries();
+    if (tourGuideId) {  // Only fetch if tourGuideId is available
+      const fetchItineraries = async () => {
+        try {
+          const response = await axios.get(`http://localhost:8000/tourGuide/itineraries/${tourGuideId}`);
+          setItineraries(response.data);
+        } catch (error) {
+          setError('Failed to fetch itineraries');
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchItineraries();
+    } else {
+      setLoading(false);  // Avoid indefinite loading if tourGuideId is missing
+    }
   }, [tourGuideId]);
+  
 
   // Activate an itinerary
   const activateItinerary = async (id) => {
