@@ -1,7 +1,7 @@
 import Itinerary from "../../models/itinerary.js";
-import Tag from "../../models/tag.js";
 import User from "../../models/user.js";
-
+import Comment from "../../models/comment.js";
+import Tourist from "../../models/tourist.js";
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
@@ -170,5 +170,62 @@ export const addActivityToItinerary = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Server error", error: error.message });
+  }
+};
+export const createComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { text, userId } = req.body;
+    const itinerary = await Itinerary.findById(id).populate("tourGuide");
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    const user = await Tourist.findById(userId).populate("following");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const itineraryTourGuide = itinerary.tourGuide;
+
+    const followsTourGuide = user.following.some((followedTourGuide) =>
+      followedTourGuide.equals(itineraryTourGuide._id)
+    );
+    const attendedItinerary = user.itinerariesAttended.some(
+      (attendedItinerary) => attendedItinerary.equals(itinerary._id)
+    );
+
+    if (!followsTourGuide) {
+      return res
+        .status(403)
+        .json({
+          message:
+            "You must follow the tour guide to comment on this itinerary",
+        });
+    }
+    if (!attendedItinerary) {
+      return res
+        .status(403)
+        .json({ message: "You must attend the itinerary to comment on it" });
+    }
+
+    const newComment = new Comment({
+      user: userId,
+      content: text,
+      date: new Date(),
+    });
+
+    await newComment.save();
+
+    itinerary.comments.push(newComment._id);
+    await itinerary.save();
+
+    res.status(201).json({
+      message: "Comment added successfully",
+      itinerary: itinerary,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Failed to add comment" });
   }
 };

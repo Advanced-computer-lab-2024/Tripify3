@@ -50,6 +50,24 @@ const touristSchema = new mongoose.Schema({
   },
   preferences: { type: [String], required: false },
   tripsTaken: { type: [String], required: false },
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tour Guide",
+    },
+  ],
+  activitiesAttended: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Activity",
+    },
+  ],
+  itinerariesAttended: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Itinerary",
+    },
+  ],
 });
 
 touristSchema.virtual("level").get(function () {

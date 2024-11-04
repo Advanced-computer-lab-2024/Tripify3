@@ -64,6 +64,12 @@ const activitySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
   }, // Reference to the advertiser who posted the activity
+  bookings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+    },
+  ], // Array of bookings for the activity
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

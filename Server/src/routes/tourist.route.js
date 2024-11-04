@@ -2,8 +2,9 @@ import express from "express";
 import {
   getSortedItineraries,
   getFilteredItineraries,
+  bookItinerary
 } from "../controllers/tourist/itineraries.controller.js";
-import { getAllActivities } from "../controllers/tourist/activities.controller.js";
+import { getAllActivities,bookActivity } from "../controllers/tourist/activities.controller.js";
 import {
   getProfile,
   editProfile,
@@ -58,4 +59,9 @@ router.get("/tourist/cart", getTouristCart); // Get cart
 router.put("/tourist/cart/remove", removeFromCart); // Remove product from cart
 router.put("/tourist/cart/decrement", Decrementor); // Decrement product quantity in cart
 router.put("/tourist/cart/update", updateCart); // Update cart
+
+
+//Booking
+router.put("/book/activity/:activityId",bookActivity);
+router.put("/book/itinerary/:itineraryId",bookItinerary);
 export default router;

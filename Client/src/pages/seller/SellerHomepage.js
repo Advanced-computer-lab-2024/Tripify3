@@ -14,8 +14,8 @@ import ViewSellerPage from "./viewSeller.js"; // Ensure this path is correct
 import FilterSalesReport from "./filterSalesReport.js";
 import { useState } from "react";
 import EditProduct from "./EditProduct.js";
-import WishList from "../tourist/wishList.js";
-import Cart from "../tourist/cart2.js";
+import WishList from "../Tourist/wishList.js";
+import Cart from "../Tourist/cart2.js";
 import ProductNew from "../seller/new/product.js";
 import ProductPage2 from "../seller/new/product.js";
 import ProductPage from "../seller/new/productPage.js";
