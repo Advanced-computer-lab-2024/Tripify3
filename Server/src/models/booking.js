@@ -10,10 +10,12 @@ const bookingSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  totalPrice: {
+  price: {
     type: Number,
     required: true,
-  }, // Total price for the booking
+  }, 
+  itinerary: { type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' },
+  activity: { type:  mongoose.Schema.Types.ObjectId, ref: 'Activity' },
   type: { type: String, enum: ["Hotel", "Flight", "Activity", "Event", "Itinerary"], required: true },
 });
 

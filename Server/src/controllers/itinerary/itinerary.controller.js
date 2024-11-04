@@ -100,7 +100,7 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const itineraries = await Itinerary.find({ tourGuideId: id })
+    const itineraries = await Itinerary.find({ tourGuide: id })
       .populate({
         path: "activities",
         populate: {
