@@ -178,6 +178,11 @@ button:hover {
           <div key={itinerary._id} className="itinerary">
             <h2>{itinerary.name}</h2>
             <p>Status: {itinerary.status}</p>
+            <p>Price: {itinerary.price}</p>
+            <p>Language: {itinerary.language}</p>
+            <p>Pickup Location: {itinerary.pickupLocation}</p>
+            <p>Dropoff Location: {itinerary.dropoffLocation}</p>
+            <p>Accessibility: {itinerary.accessibility}</p>
             <p>Bookings: {itinerary.bookings.length}</p>
 
             {itinerary.status === 'Inactive' && (
