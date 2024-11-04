@@ -52,8 +52,30 @@ const touristSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Cart",
   },
-  preferences: { type: [String], required: false },
-  tripsTaken: { type: [String], required: false },
+  currencyPreference: {
+    type: String,
+    enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP", "BRL", "ARS"], // Modify as needed
+  },
+  preferences: { 
+    type: [String], 
+    required: false
+   },
+  tripsTaken: { 
+    type: [String], 
+    required: false 
+  },
+  following: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "tourGuide",
+  }],
+  activitiesAttended:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "activity",
+  }],
+  itinerariesAttended:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Itinerary",
+  }]
 });
 
 touristSchema.virtual("level").get(function () {
@@ -71,4 +93,4 @@ touristSchema.set("toObject", { virtuals: true });
 
 const Tourist = user.discriminator("Tourist", touristSchema);
 
-export default Tourist;
+export default Tourist;

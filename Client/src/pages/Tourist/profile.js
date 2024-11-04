@@ -22,6 +22,7 @@ const TouristProfile = () => {
     birthDate: "",
     occupation: "",
     gender: "",
+    currencyPreference: "", // Ensure this matches your profile field
   });
 
   const countries = [
@@ -76,6 +77,7 @@ const TouristProfile = () => {
           nationality: response.data.userProfile.nationality,
           birthDate: response.data.userProfile.birthDate,
           occupation: response.data.userProfile.occupation,
+          currencyPreference: response.data.userProfile.currencyPreference, // Ensure this matches the expected API field
           gender: response.data.userProfile.gender || "",
           filepath: response.data.userProfile.profilePicture ? `http://localhost:8000/uploads/${userId}/${response.data.userProfile.profilePicture.filename}` : "",
         });

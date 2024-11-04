@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import FollowedTourGuides from "./pages/tourist/followedtourguides.js";
 import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
 import PlacesList from "./pages/tourismGovernor/PlacesList.js";
@@ -8,7 +9,7 @@ import AddPlace from "./pages/tourismGovernor/AddPlace.js";
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import SellerHomepage from "./pages/seller/SellerHomepage.js";
+import SellerHomepage from "./pages/seller/sellerHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/homepage.js";
@@ -34,12 +35,12 @@ import TourGuideProfile from "./pages/tourGuide/profile.js";
 //import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
 // Layouts Import
-import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
-import SellerLayout from "./components/sidebar/seller/sellerLayout.js";
-import AdvertiserLayout from "./components/sidebar/advertiser/advertiserLayout.js";
-import AdminLayout from "./components/sidebar/admin/adminLayout.js";
-import TourGuideLayout from "./components/sidebar/tourGuide/tourGuideLayout.js";
-import TourismGovernorLayout from "./components/sidebar/tourismGoverner/tourismGovernorLayout.js";
+import TouristLayout from "./components/tourist/touristLayout.js";
+import SellerLayout from "./components/seller/sellerLayout.js";
+import AdvertiserLayout from "./components/advertiser/advertiserLayout.js";
+import AdminLayout from "./components/admin/adminLayout.js";
+import TourGuideLayout from "./components/tourGuide/tourGuideLayout.js";
+import TourismGovernorLayout from "./components/tourismGoverner/tourismGovernorLayout.js";
 
 import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
@@ -112,9 +113,8 @@ const App = () => {
         <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
         <Route path={`/tourist/profile`} element={getLayoutForRole(userRole, <TouristProfile />)} />
         <Route path={"/search/flights"} element={<SearchFlights />} />
-        <Route path={"/load/flights"} element={<LoadFlights />} />   
+        <Route path={"/load/flights"} element={<LoadFlights />} />
         <Route path={"/tourist/view/complaints/:id"} element={<ViewComplaints />} />
-
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />

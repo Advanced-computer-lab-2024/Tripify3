@@ -42,7 +42,7 @@ const Activities = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [searchTerm, setSearchTerm] = useState(""); // New state for search term
+  const [validationError, setValidationError] = useState("");
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
@@ -105,6 +105,20 @@ const Activities = () => {
     setBudget("");
     setSearchTerm(""); // Reset search term
     setActivities(originalActivities);
+  };
+
+  // Share functionality
+  const toggleShareDropdown = (activityId) => {
+    setCurrentActivityId(activityId);
+    setShareDropdownOpen((prev) => !prev);
+  };
+
+  const handleCopyLink = (activityId) => {
+    const link = `http://localhost:3000/Tourist/activities`; // Replace with actual activity link
+    navigator.clipboard.writeText(link).then(() => {
+      alert("Link copied to clipboard!");
+      setShareDropdownOpen(false); // Close dropdown after copying
+    });
   };
 
   if (loading) {
@@ -198,7 +212,7 @@ const Activities = () => {
         {/* Activities Section */}
         <Grid container spacing={3}>
           {activities.map((activity) => (
-            <Grid item xs={12} md={6} key={activity._id}>
+            <Grid item xs={12} key={activity._id}>
               <Card sx={{ display: "flex", justifyContent: "space-between" }}>
                 <CardContent>
                   <Typography variant="h6" color="secondary">
@@ -213,6 +227,38 @@ const Activities = () => {
                   <Button variant="contained" sx={{ mt: 2 }} onClick={() => console.log(`Navigate to activity ${activity._id}`)}>
                     View Details
                   </Button>
+                  {/* Share Button */}
+                  <Button
+                    variant="outlined"
+                    sx={{ mt: 2, ml: 2 }}
+                    onClick={() => toggleShareDropdown(activity._id)}
+                  >
+                    Share
+                  </Button>
+                  {shareDropdownOpen && currentActivityId === activity._id && (
+                    <Box sx={{ position: 'absolute', background: 'white', boxShadow: 1, p: 1, mt: 1 }}>
+                      <Button
+                        variant="text"
+                        onClick={() => handleCopyLink(activity._id)}
+                      >
+                        Copy Link
+                      </Button>
+                      <Button
+                        variant="text"
+                        href={`https://twitter.com/intent/tweet?url=https://example.com/activity/${activity._id}`}
+                        target="_blank"
+                      >
+                        Share on Twitter
+                      </Button>
+                      <Button
+                        variant="text"
+                        href={`https://www.facebook.com/sharer/sharer.php?u=https://example.com/activity/${activity._id}`}
+                        target="_blank"
+                      >
+                        Share on Facebook
+                      </Button>
+                    </Box>
+                  )}
                 </CardContent>
               </Card>
             </Grid>

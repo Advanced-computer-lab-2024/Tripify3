@@ -3,6 +3,8 @@ import { Grid, Box, Typography, Button, Card, CardMedia, CardContent, CardAction
 // Import the image from your local repo
 import homepageImage from "../../assets/homepageImage.jpeg"; // Adjust the path to your image file
 
+
+
 const hotels = [
   {
     id: 1,
@@ -35,6 +37,14 @@ const hotels = [
     image: "https://via.placeholder.com/400",
   },
 ];
+
+
+
+
+
+
+
+
 
 const TouristHomepage = () => {
   return (

@@ -13,7 +13,7 @@ class App {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8000;
-    this.DB = "mongodb+srv://ahmed:1hjIW2fvqI1VzdsR@tripify.wbf1o.mongodb.net/Tripify?retryWrites=true&w=majority&appName=Tripify "
+    this.DB = process.env.MONGO_URI.replace("<password>", process.env.MONGO_PASSWORD);
     this.env = process.env.NODE_ENV || "development";
 
     this.__dirname = path.dirname(fileURLToPath(import.meta.url)); // Set __dirname

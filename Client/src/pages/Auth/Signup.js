@@ -56,6 +56,27 @@ const nationalities = [
   // Add more nationalities as needed
 ];
 
+const currencies = [
+  { name: "US Dollar", symbol: "$" },
+  { name: "Euro", symbol: "€" },
+  { name: "British Pound", symbol: "£" },
+  { name: "Japanese Yen", symbol: "¥" },
+  { name: "Chinese Yuan", symbol: "¥" },
+  { name: "Swiss Franc", symbol: "CHF" },
+  { name: "Canadian Dollar", symbol: "C$" },
+  { name: "Australian Dollar", symbol: "A$" },
+  { name: "Indian Rupee", symbol: "₹" },
+  { name: "Russian Ruble", symbol: "₽" },
+  { name: "South Korean Won", symbol: "₩" },
+  { name: "Brazilian Real", symbol: "R$" },
+  { name: "Mexican Peso", symbol: "MX$" },
+  { name: "Turkish Lira", symbol: "₺" },
+  { name: "South African Rand", symbol: "R" }
+];
+
+
+
+
 const Signup = () => {
   const [formData, setFormData] = useState({
     type: "",
@@ -67,6 +88,7 @@ const Signup = () => {
     phoneNumber: "",
     nationality: "",
     birthDate: "",
+    currency:"",
     occupation: "",
     yearsOfExperience: "", // New field for Tour Guide
     previousWork: "", // New field for Tour Guide
@@ -116,6 +138,12 @@ const Signup = () => {
     setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+
+
+
+
+
+
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
@@ -135,7 +163,7 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, name, email, password, phoneNumber, nationality, birthDate, occupation, yearsOfExperience, previousWork, type, companyName, websiteLink, hotline, description, files } = formData;
+    const { username, name, email, password, phoneNumber, nationality, birthDate,currency, occupation, yearsOfExperience, previousWork, type, companyName, websiteLink, hotline, description, files } = formData;
 
     const newErrors = {};
     if (!username) newErrors.username = "Username is required";
@@ -147,10 +175,23 @@ const Signup = () => {
 
     console.log(files);
 
+
+
+
+
+
+
     // Validate file uploads for Advertiser, Seller, or Tour Guide
     if (["Tour Guide", "Seller", "Advertiser"].includes(type) && (!files || files.length < 2)) {
       newErrors.files = "Please upload at least 2 files";
     }
+
+
+
+
+
+
+
 
     // Validate fields based on user type
     if (type === "Tourist") {
@@ -165,6 +206,16 @@ const Signup = () => {
       }
       if (!occupation) newErrors.occupation = "Occupation is required";
     }
+
+
+
+
+
+
+
+
+
+
 
     if (type === "Tour Guide") {
       if (!phoneNumber) newErrors.phoneNumber = "Mobile Number is required";
@@ -213,6 +264,7 @@ const Signup = () => {
         phoneNumber,
         occupation,
         nationality,
+        currency,
         birthDate: formattedBirthDate, // Add formatted birthDate
       };
     }
@@ -326,58 +378,70 @@ const Signup = () => {
     }
     return null;
   };
-
-  const renderConditionalFields = () => {
-    if (formData.type === "Tourist") {
-      return (
-        <>
-          <TextField
-            label="Mobile Number"
-            name="phoneNumber"
-            fullWidth
-            margin="normal"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            placeholder="+20"
-            error={!!errors.phoneNumber}
-            helperText={errors.phoneNumber}
-          />
-          <FormControl fullWidth margin="normal" error={!!errors.nationality}>
-            <InputLabel>Nationality</InputLabel>
-            <Select name="nationality" value={formData.nationality} onChange={handleInputChange}>
-              {nationalities.map((nation) => (
-                <MenuItem key={nation} value={nation}>
-                  {nation}
-                </MenuItem>
-              ))}
-            </Select>
-            {errors.nationality && <Typography color="error">{errors.nationality}</Typography>}
-          </FormControl>
-          <TextField
-            label="Date of Birth"
-            name="birthDate"
-            type="date"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            value={formData.birthDate}
-            onChange={handleInputChange}
-            error={!!errors.birthDate}
-            helperText={errors.birthDate}
-          />
-          <TextField
-            label="Occupation"
-            name="occupation"
-            fullWidth
-            margin="normal"
-            value={formData.occupation}
-            onChange={handleInputChange}
-            error={!!errors.occupation}
-            helperText={errors.occupation}
-          />
-        </>
-      );
-    }
+const renderConditionalFields = () => {
+  if (formData.type === "Tourist") {
+    return (
+      <>
+        <TextField
+          label="Mobile Number"
+          name="phoneNumber"
+          fullWidth
+          margin="normal"
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
+          placeholder="+20"
+          error={!!errors.phoneNumber}
+          helperText={errors.phoneNumber}
+        />
+        <FormControl fullWidth margin="normal" error={!!errors.nationality}>
+          <InputLabel>Nationality</InputLabel>
+          <Select name="nationality" value={formData.nationality} onChange={handleInputChange}>
+            {nationalities.map((nation) => (
+              <MenuItem key={nation} value={nation}>
+                {nation}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.nationality && <Typography color="error">{errors.nationality}</Typography>}
+        </FormControl>
+        <TextField
+          label="Date of Birth"
+          name="birthDate"
+          type="date"
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+          value={formData.birthDate}
+          onChange={handleInputChange}
+          error={!!errors.birthDate}
+          helperText={errors.birthDate}
+        />
+        <TextField
+          label="Occupation"
+          name="occupation"
+          fullWidth
+          margin="normal"
+          value={formData.occupation}
+          onChange={handleInputChange}
+          error={!!errors.occupation}
+          helperText={errors.occupation}
+        />
+        
+        {/* Currency Dropdown */}
+        <FormControl fullWidth margin="normal" error={!!errors.currency}>
+          <InputLabel>Currency</InputLabel>
+          <Select name="currency" value={formData.currency} onChange={handleInputChange}>
+            {currencies.map((currency) => (
+              <MenuItem key={currency.name} value={currency.name}>
+                {currency.name} ({currency.symbol})
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.currency && <Typography color="error">{errors.currency}</Typography>}
+        </FormControl>
+      </>
+    );
+  }
 
     if (formData.type === "Seller") {
       return (
