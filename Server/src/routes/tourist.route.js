@@ -30,7 +30,6 @@ router.post('/products/rate', rateProduct);
 router.post('/products/review', reviewProduct);
 
 
-
 // Wishlist
 router.post("/initializeWishlist", initializeWishList);
 router.put("/tourist/wishlist/Add", AddProductToWishlist); // Add product to wishlist
