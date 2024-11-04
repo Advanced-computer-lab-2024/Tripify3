@@ -11,7 +11,7 @@ const TouristLayout = ({ children}) => (
     {/* Layout with Sidebar and Main Content */}
     <div style={{ display: "flex", flexGrow: 1, marginTop: "120px" }}> {/* Adjust for Navbar height */}
       {/* Conditionally Render Sidebar */}
-      {<TouristSidebar />}
+    
       
       {/* Scrollable Content Area */}
       <div
