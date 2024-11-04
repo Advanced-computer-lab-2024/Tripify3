@@ -31,7 +31,7 @@ import Complaints from "./pages/admin/complaints.js";
 
 import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
-import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
+//import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -124,7 +124,7 @@ const App = () => {
         <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <Products />)} />
 
         {/* Tour Guide Routes */}
-        <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} />
+        {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
         <Route path={`/tour-guide/profile`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />
 

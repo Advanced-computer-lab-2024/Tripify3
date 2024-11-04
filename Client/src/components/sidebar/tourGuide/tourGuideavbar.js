@@ -27,7 +27,7 @@ const TourGuideNavbar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate("/touri-guide/account");
+    navigate("/tour-guide/profile");
   };
 
   const handleHomeClick = () => {
