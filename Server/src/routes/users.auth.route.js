@@ -20,9 +20,9 @@ router.get('/user/:userId/files', getUploadedFiles);
 router.get('/user/:userId/profile/picture', getProfilePicture);
 
 
-router.post("/access/user/resetPassword", resetPassword); // Reset password after verification
-router.post("/access/user/sendVerificationCode", sendVerificationCode); // Send verification code
-router.post("/access/user/verifyVerificationCode", verifyVerificationCode); // Send verification code
-router.put("/access/user/changePassword", validate(changePasswordSchema, "body"), changePassword);
+router.post("/user/resetPassword", resetPassword); // Reset password after verification
+router.post("/user/sendVerificationCode", sendVerificationCode); // Send verification code
+router.post("/user/verifyVerificationCode", verifyVerificationCode); // Send verification code
+router.put("/user/changePassword", validate(changePasswordSchema, "body"), changePassword);
 
 export default router;

@@ -15,7 +15,7 @@ const EmailInput = () => {
     setErrorMessage(""); // Clear the previous error message
 
     try {
-        const response = await axios.post("http://localhost:8000/access/user/sendVerificationCode", 
+        const response = await axios.post("http://localhost:8000/user/sendVerificationCode", 
         { email });  // Use axios to send a POST request with the email
   
         if (response.status === 200) {
