@@ -2,11 +2,20 @@ import mongoose from "mongoose";
 import Tourist from "./tourist.js"; 
 
 const paymentSchema = new mongoose.Schema({
-  booking: { type: mongoose.Schema.Types.ObjectId, ref: "Booking", required: true },
+  tourist:   {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tourist",
+    required: true
+  },
   paymentDate: { type: Date, default: Date.now },
   amount: { type: Number, required: true },
   paymentMethod: { type: String, enum: ["Credit Card", "PayPal", "Bank Transfer"], required: true },
-  paymentStatus: { type: String, enum: ["Success", "Failed"], default: "Success" },
+  paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: "pending" },
+  items: [{
+    type: { type: String, enum: ['Product', 'Activity', 'Itinerary', 'Place', 'Event'] },
+    itemId: { type: Schema.Types.ObjectId },
+    price: Number,
+  }],
 });
 
 const Payment = mongoose.model("Payment", paymentSchema);

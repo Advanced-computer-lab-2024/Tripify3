@@ -52,20 +52,3 @@ export const getAllTourGuides = async (req, res) => {
 };
 
 
-export const getAllItinerariesByTourGuideId = async (req, res) => {
-  try {
-    const { id } = req.params;  // Change to id
-    const tourGuide = await TourGuide.findById(id).populate("itineraries");
-
-    if (!tourGuide) {
-      return res.status(404).json({ message: "Tour Guide not found" });
-    }
-
-    return res.status(200).json(tourGuide.itineraries);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-
