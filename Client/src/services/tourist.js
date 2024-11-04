@@ -9,7 +9,10 @@ export const redeemPoints = async (userId, pointsToRedeem) => {
 export const markItineraryInappropriate = async (id, data) => {
   return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
 };
-
+export const getActivityById = async (id) => {
+  const response = await axios.get(`${API_URL}/activities/${id}`); // Adjust the endpoint as necessary
+  return response;
+};
 export const getAllTags = async () => {
   return await axios.get(`${API_URL}/tag/get`);
 };
