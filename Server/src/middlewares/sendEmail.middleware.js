@@ -38,3 +38,35 @@ export const sendPasswordResetEmail = async (user, verificationCode) => {
     throw new Error('Error sending email');
   }
 };
+
+
+// Function to send admin reply to user complaint
+export const sendAdminReplyEmail = async (user, replyComment) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "Reply to Your Complaint",
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #00695c;">Response to Your Complaint</h2>
+        <p>Dear ${user.name || 'User'},</p>
+        <p>Thank you for reaching out to us. Below is our response to your complaint:</p>
+        <blockquote style="border-left: 3px solid #00695c; padding-left: 10px; margin: 20px 0; color: #555;">
+          ${replyComment}
+        </blockquote>
+        <p>If you have any further questions or need additional assistance, please do not hesitate to reach out to us.</p>
+        <p>Best regards,<br>Your Support Team</p>
+        <hr style="border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Reply email sent successfully');
+  } catch (error) {
+    console.error('Error sending reply email:', error);
+    throw new Error('Error sending reply email');
+  }
+};

@@ -23,7 +23,7 @@ const NewPassword = () => {
                 setErrorMessage("Passwords do not match.");
                 return;
             }
-            await fetch('http://localhost:8000/access/user/resetPassword', {
+            await fetch('http://localhost:8000/user/resetPassword', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

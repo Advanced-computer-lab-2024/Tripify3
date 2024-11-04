@@ -1,30 +1,34 @@
 import mongoose from "mongoose";
 
 const complaintSchema = new mongoose.Schema({
-  complainer :{
+  touristId :{
     type :mongoose.Schema.Types.ObjectId,
     ref: 'Tourist',
-    // required : true
   },
-  title: { 
-    type: String, 
-    required: true 
-  },  
-  body: { 
-    type: String, 
-    required: true 
-  },  
-  date: { 
-    type: Date, 
-    default: Date.now 
+  title: {
+    type: String,
+    required: true,
+  },
+  body: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    enum: ["Open", "In Progress", "Resolved"],
+    default: "Open",
   },
   status: { 
     type: String, 
-    enum: ['Open', 'In Progress', 'Resolved'], 
-    default: 'Open' 
+    enum: ['Pending', 'Resolved'], 
+    default: 'Pending' 
   }
 });
 
-const Complaint = mongoose.model('Complaint', complaintSchema);
+const Complaint = mongoose.model("Complaint", complaintSchema);
 
 export default Complaint;

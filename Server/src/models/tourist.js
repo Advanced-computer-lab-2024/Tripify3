@@ -44,6 +44,10 @@ const touristSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wishlist",
   },
+  profilePicture: {
+    filename: String,
+    filepath: String, // This will store the path or URL to the profile picture
+  },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Cart",

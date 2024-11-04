@@ -51,7 +51,6 @@ const Users = () => {
 
   const navigate = useNavigate(); // Use useNavigate for navigation
 
-
   // Fetch both accepted and pending users when the component mounts
   // Function to fetch users
   const fetchUsers = async () => {
@@ -155,7 +154,6 @@ const Users = () => {
           </Toolbar>
         </AppBar>
 
-    
         {/* Add User Button */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4 }}>
           <Button variant="contained" startIcon={<Add />} onClick={() => setOpenAddUserDialog(true)} color="primary">

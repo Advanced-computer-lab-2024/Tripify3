@@ -1,8 +1,10 @@
 import React from "react";
 import TourGuideSidebar from "./tourGuideSidebar.js";
+import TourGuideNavbar from "./tourGuideavbar.js"
 
 const TourGuideLayout = ({ children }) => (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+       <TourGuideNavbar />
       {/* Fixed sidebar */}
       <TourGuideSidebar />
       {/* Scrollable content area */}
@@ -11,3 +13,6 @@ const TourGuideLayout = ({ children }) => (
   );
 
   export default TourGuideLayout; 
+
+
+  

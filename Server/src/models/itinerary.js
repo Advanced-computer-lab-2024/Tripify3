@@ -79,6 +79,11 @@ const itinerarySchema = new mongoose.Schema({
     type: String,
     required: true, // Ensure accessibility is required
   },
+  status:{
+    type:String,
+    enum: ["Active", "Inactive"],
+    default: "Active"
+  },
   inappropriate:{
     type: Boolean,
     default: false
@@ -89,7 +94,7 @@ const itinerarySchema = new mongoose.Schema({
       ref: "Tag",
     },
   ],
-  tourGuide: {
+  tourGuideId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tour Guide",
   },

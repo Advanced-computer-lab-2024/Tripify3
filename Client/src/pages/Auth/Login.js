@@ -35,13 +35,13 @@ const Login = () => {
       if (data.user.type === "Tourism Governor") {
         navigate("/tourism-governor/tourism-governor");
       } else if (data.user.type === "Tourist") {
-        navigate("/tourist/tourist/homepage");
+        navigate("/tourist/homepage");
       } else if (data.user.type === "Seller") {
         navigate("/seller/seller");
       } else if (data.user.type === "Admin") {
-        navigate("/admin/admin");
+        navigate("/admin/users");
       } else if (data.user.type === "Tour Guide") {
-        navigate("/tour-guide/tour-guide");
+        navigate("/tour-guide/profile");
       } else if (data.user.type === "Advertiser") {
         navigate("/advertiser/advertiser");
       }

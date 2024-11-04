@@ -13,10 +13,9 @@ class App {
   constructor() {
     this.app = express();
     this.port = process.env.PORT || 8000;
-    this.DB = "mongodb+srv://basil:basil@cluster0.maedx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    this.DB = "mongodb+srv://ahmed:1hjIW2fvqI1VzdsR@tripify.wbf1o.mongodb.net/Tripify?retryWrites=true&w=majority&appName=Tripify "
     this.env = process.env.NODE_ENV || "development";
 
-    // Get the directory name
     this.__dirname = path.dirname(fileURLToPath(import.meta.url)); // Set __dirname
   }
 
@@ -42,7 +41,7 @@ class App {
     this.app.use(express.json()); // Parse incoming JSON requests
 
     // Serve static files from the 'uploads' directory
-    this.app.use('/uploads', express.static(path.join(this.__dirname, 'uploads')));
+    this.app.use("/uploads", express.static(path.join(this.__dirname, "uploads")));
 
     initializeRoutes(this.app); // Initialize routes
   }

@@ -43,19 +43,14 @@ const Activities = () => {
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [validationError, setValidationError] = useState("");
-  const [shareDropdownOpen, setShareDropdownOpen] = useState(false);
-  const [currentActivityId, setCurrentActivityId] = useState(null);
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [activitiesResponse, categoriesResponse] = await Promise.all([
-          getAllActivities(),
-          getAllCategories(),
-        ]);
-        setActivities(activitiesResponse.data.activities);
-        setOriginalActivities(activitiesResponse.data.activities);
+        const [activitiesResponse, categoriesResponse] = await Promise.all([getAllActivities(), getAllCategories()]);
+        setActivities(activitiesResponse.data);
+        setOriginalActivities(activitiesResponse.data);
         setCategories(categoriesResponse.data);
         setLoading(false);
       } catch (error) {
@@ -79,27 +74,36 @@ const Activities = () => {
     setActivities(sortedActivities);
   };
 
+  // Filter activities based on selected categories, budget, and search term
   const handleFilter = () => {
     let filteredActivities = [...originalActivities];
 
     if (selectedCategories.length > 0) {
-      filteredActivities = filteredActivities.filter((activity) =>
-        selectedCategories.includes(activity.category._id)
-      );
+      filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category));
     }
 
     if (budget) {
-      filteredActivities = filteredActivities.filter(
-        (activity) => activity.price <= parseFloat(budget)
+      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
+    }
+
+    if (searchTerm) {
+      filteredActivities = filteredActivities.filter((activity) =>
+        activity.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     setActivities(filteredActivities);
   };
 
+  // Automatically filter when search term, selected categories, or budget changes
+  useEffect(() => {
+    handleFilter();
+  }, [searchTerm, selectedCategories, budget]);
+
   const handleResetFilters = () => {
     setSelectedCategories([]);
     setBudget("");
+    setSearchTerm(""); // Reset search term
     setActivities(originalActivities);
   };
 
@@ -146,14 +150,12 @@ const Activities = () => {
             label="Search by name"
             variant="outlined"
             sx={{ mr: 2, width: "300px" }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update search term on change
           />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
-            <Select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              label="Sort by Price"
-            >
+            <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
               <MenuItem value="asc">Low to High</MenuItem>
               <MenuItem value="desc">High to Low</MenuItem>
             </Select>
@@ -222,11 +224,7 @@ const Activities = () => {
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to activity ${activity._id}`)}
-                  >
+                  <Button variant="contained" sx={{ mt: 2 }} onClick={() => console.log(`Navigate to activity ${activity._id}`)}>
                     View Details
                   </Button>
                   {/* Share Button */}
