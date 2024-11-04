@@ -13,7 +13,7 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: "pending" },
   items: [{
     type: { type: String, enum: ['Product', 'Activity', 'Itinerary', 'Place', 'Event'] },
-    itemId: { type: Schema.Types.ObjectId },
+    itemId: { type: mongoose.Schema.Types.ObjectId, },
     price: Number,
   }],
 });

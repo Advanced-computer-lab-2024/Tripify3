@@ -5,7 +5,7 @@ import Tourist from "../../models/tourist.js";
 import Itinerary from "../../models/itinerary.js"; // Adjust as per your file structure
 import TourGuide from "../../models/tourGuide.js";
 import Product from "../../models/product.js";
-import Payment from "../../models/payement.js";
+import Payment from "../../models/payment.js";
 export const rateTourGuide = async (req, res) => {
   const { user, value } = req.body; // Rating value from request body
   const tourGuideId = req.params.tourGuideId; // Get Tour Guide ID from route parameters
