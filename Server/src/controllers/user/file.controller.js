@@ -96,6 +96,8 @@ export const uploadProfilePicture = async (req, res) => {
   try {
     // Ensure userId is present
     const userId = req.body.userId;
+    console.log(req.body);
+    
     if (!userId) {
       return res.status(400).json({ message: "User ID is required." });
     }
@@ -135,9 +137,6 @@ export const uploadProfilePicture = async (req, res) => {
     // Find the user's existing profile picture
     const existingUser = await userModel.findById(userId).select("profilePicture").exec();
     const existingProfilePicture = existingUser?.profilePicture;
-
-    console.log(existingProfilePicture);
-    console.log(fs.existsSync(existingProfilePicture.filepath));
 
       // Ensure the filepath is defined before attempting to delete
       if (existingProfilePicture && existingProfilePicture.filepath) {
@@ -304,5 +303,53 @@ export const getUploadedFiles = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error fetching files", error: err.message });
+  }
+};
+
+
+export const getProfilePicture = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Fetch the user by ID to check if they exist
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Initialize an empty profilePicture object
+    let profilePicture = null;
+
+    // Check the user type and retrieve the profile picture
+    if (user.type === "Seller") {
+      const seller = await Seller.findById(userId).select("profilePicture");
+      profilePicture = seller ? seller.profilePicture : null;
+    } else if (user.type === "Advertiser") {
+      const advertiser = await Advertiser.findById(userId).select("profilePicture");
+      profilePicture = advertiser ? advertiser.profilePicture : null;
+    } else if (user.type === "Tourist") {
+      const tourist = await Tourist.findById(userId).select("profilePicture");
+      profilePicture = tourist ? tourist.profilePicture : null;
+    } else if (user.type === "Tour Guide") {
+      const tourGuide = await TourGuide.findById(userId).select("profilePicture");
+      profilePicture = tourGuide ? tourGuide.profilePicture : null;
+    }
+
+    // Check if profile picture exists
+    if (!profilePicture || !profilePicture.filepath) {
+      return res.status(404).json({ message: "No profile picture found for this user." });
+    }
+
+    // Construct the file URL
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${userId}/${profilePicture.filename}`;
+
+    res.status(200).json({
+      filename: profilePicture.filename,
+      filepath: profilePicture.filepath,
+      url: fileUrl,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching profile picture", error: err.message });
   }
 };

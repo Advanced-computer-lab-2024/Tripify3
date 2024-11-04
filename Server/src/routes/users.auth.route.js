@@ -1,7 +1,7 @@
 import express from "express";
 import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode } from "../controllers/user/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
-import { uploadFiles, getUploadedFiles, uploadProfilePicture } from "../controllers/user/file.controller.js";
+import { uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture } from "../controllers/user/file.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -17,6 +17,7 @@ router.put("/user/upload/picture", upload.fields([{ name: 'file', maxCount: 1 }]
 
 // Define the route to get user files
 router.get('/user/:userId/files', getUploadedFiles);
+router.get('/user/:userId/profile/picture', getProfilePicture);
 
 
 router.post("/access/user/resetPassword", resetPassword); // Reset password after verification
