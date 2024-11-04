@@ -4,7 +4,8 @@ import Comment from "../../models/comment.js";
 import Tourist from "../../models/tourist.js";
 import Itinerary from "../../models/itinerary.js"; // Adjust as per your file structure
 import TourGuide from "../../models/tourGuide.js";
-
+import Product from "../../models/product.js";
+import Payment from "../../models/payement.js";
 export const rateTourGuide = async (req, res) => {
   const { user, value } = req.body; // Rating value from request body
   const tourGuideId = req.params.tourGuideId; // Get Tour Guide ID from route parameters
@@ -108,6 +109,69 @@ const rateItinerary = async (req, res) => {
     await itinerary.save();
 
     return res.status(201).json({ message: "Rating added successfully", rating });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+// Controller Method to comment on Product
+export const rateProduct = async (req, res) => {
+  try {
+    const { productId, userId, rating } = req.body;
+
+    // Check if the user has made a successful payment for the product
+    const payment = await Payment.findOne({ booking: productId, paymentStatus: "Success" }).populate("booking");
+    if (!payment || payment.booking.tourist.toString() !== userId) {
+      return res.status(403).json({ message: "You can only rate products you have purchased" });
+    }
+
+    // Find the product and update its rating
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Calculate the new average rating
+    const totalRatings = product.reviews.length;
+    product.rating = (product.rating * totalRatings + rating) / (totalRatings + 1);
+
+    await product.save();
+
+    return res.status(201).json({ message: "Rating added successfully", rating });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// Controller Method to review a Product
+export const reviewProduct = async (req, res) => {
+  try {
+    const { productId, userId, comment } = req.body;
+
+    // Check if the user has made a successful payment for the product
+    const payment = await Payment.findOne({ booking: productId, paymentStatus: "Success" }).populate("booking");
+    if (!payment || payment.booking.tourist.toString() !== userId) {
+      return res.status(403).json({ message: "You can only review products you have purchased" });
+    }
+
+    // Create a new review object
+    const review = {
+      userId: mongoose.Types.ObjectId(userId),
+      comment,
+    };
+
+    // Find the product and update its reviews
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.reviews.push(review);
+
+    await product.save();
+
+    return res.status(201).json({ message: "Review added successfully", review });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error", error });

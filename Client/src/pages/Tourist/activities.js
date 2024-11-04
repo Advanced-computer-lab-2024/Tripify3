@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllActivities, getAllCategories } from "../../services/tourist.js";
-
+import { Link } from 'react-router-dom';
 const theme = createTheme({
   palette: {
     primary: {
@@ -43,7 +43,7 @@ const Activities = () => {
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentActivityId, setCurrentActivityId] = useState(null); // Current Activity ID state
+  
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
@@ -115,23 +115,7 @@ const Activities = () => {
     setActivities(originalActivities);
   };
 
-  // Share functionality
-  const toggleShareDropdown = (activityId) => {
-    // Toggle the dropdown: if the same activity is clicked, close it; otherwise, open it
-    if (currentActivityId === activityId) {
-      setCurrentActivityId(null); // Close the dropdown
-    } else {
-      setCurrentActivityId(activityId); // Open the dropdown for the selected activity
-    }
-  };
 
-  const handleCopyLink = (activityId) => {
-    const link = `http://localhost:3000/tourist/activities`; // Replace with actual activity link
-    navigator.clipboard.writeText(link).then(() => {
-      alert("Link copied to clipboard!");
-      setCurrentActivityId(null); // Close dropdown after copying
-    });
-  };
 
   if (loading) {
     return (
@@ -243,51 +227,15 @@ const Activities = () => {
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to activity ${activity._id}`)}
-                  >
-                    View Details
-                  </Button>
-                  {/* Share Button */}
-                  <Button
-                    variant="outlined"
-                    sx={{ mt: 2, ml: 2 }}
-                    onClick={() => toggleShareDropdown(activity._id)}
-                  >
-                    Share
-                  </Button>
-                  {currentActivityId === activity._id && (
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        background: "white",
-                        boxShadow: 1,
-                        p: 1,
-                        mt: 1,
-                        zIndex: 10, // Ensure the dropdown appears above other elements
-                      }}
-                    >
-                      <Button variant="text" onClick={() => handleCopyLink(activity._id)}>
-                        Copy Link
-                      </Button>
-                      <Button
-                        variant="text"
-                        href={`https://twitter.com/intent/tweet?url=http://localhost:3000/Tourist/activities/${activity._id}`}
-                        target="_blank"
-                      >
-                        Share on Twitter
-                      </Button>
-                      <Button
-                        variant="text"
-                        href={`https://www.facebook.com/sharer/sharer.php?u=http://localhost:3000/Tourist/activities/${activity._id}`}
-                        target="_blank"
-                      >
-                        Share on Facebook
-                      </Button>
-                    </Box>
-                  )}
+               
+<Button
+  component={Link}
+  to={`/tourist/activity/${activity._id}`}
+  variant="contained"
+  sx={{ mt: 2 }}
+>
+  View Details
+</Button>
                 </CardContent>
               </Card>
             </Grid>

@@ -6,6 +6,9 @@ import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor,
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 import {rateTourGuide,commentonTourGuide, rateItinerary} from "../controllers/tourist/rate&comment.controller.js";
 import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
+import {cancelBooking} from "../controllers/tourist/booking.controller.js";
+import { rateProduct } from "../controllers/tourist/rate&comment.controller.js";
+import { reviewProduct } from "../controllers/tourist/rate&comment.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -23,9 +26,8 @@ router.post('/tourist/comment/:tourGuideId', commentonTourGuide);
 router.get("/tourist/following/get/:touristId", getFollowingTourGuides);
 router.post('/tourist/follow/:touristId/:tourGuideId', followTourGuide);
 router.post('/itineraries/rate', rateItinerary);
-
-
-
+router.post('/products/rate', rateProduct);
+router.post('/products/review', reviewProduct);
 
 
 
@@ -42,4 +44,9 @@ router.get("/tourist/cart", getTouristCart); // Get cart
 router.put("/tourist/cart/remove", removeFromCart); // Remove product from cart
 router.put("/tourist/cart/decrement", Decrementor); // Decrement product quantity in cart
 router.put("/tourist/cart/update", updateCart); // Update cart
+
+//Bookings
+router.put("/tourist/booking/cancel", cancelBooking); // Cancel booking
+
+
 export default router;
