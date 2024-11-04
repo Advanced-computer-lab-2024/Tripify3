@@ -31,7 +31,7 @@ import Complaints from "./pages/admin/complaints.js";
 
 import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
-import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
+//import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
