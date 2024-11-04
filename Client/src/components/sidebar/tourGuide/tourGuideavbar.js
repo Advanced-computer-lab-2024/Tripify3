@@ -68,26 +68,11 @@ const TourGuideNavbar = () => {
                   </Typography>
                 </IconButton>
 
-                <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }}>
-                  <Favorite />
-                  <Typography variant="body1" sx={{ ml: 1 }}>
-                    My Wishlist
-                  </Typography>
-                </IconButton>
+                
               </>
             )}
 
-            {/* Services Icon with Dropdown */}
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleServicesClick}>
-              <RoomService />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Services
-              </Typography>
-            </IconButton>
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleServicesClose}>
-              <MenuItem onClick={() => navigate("/hotels")}>Hotels</MenuItem>
-              <MenuItem onClick={() => navigate("/search_flights")}>Flights</MenuItem>
-            </Menu>
+           
 
             {/* Help Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
@@ -100,12 +85,7 @@ const TourGuideNavbar = () => {
               <MenuItem onClick={() => navigate("/tourist/file-complaint")}>File a Complaint</MenuItem>
             </Menu>
 
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
-              <ShoppingCart />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Cart
-              </Typography>
-            </IconButton>
+            
           </Box>
         </Toolbar>
       </AppBar>
