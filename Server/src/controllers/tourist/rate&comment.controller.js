@@ -114,55 +114,7 @@ const rateItinerary = async (req, res) => {
     return res.status(500).json({ message: "Server error", error });
   }
 };
-// export const rateProduct = async (req, res) => {
-//   try {
-//     const { productId, rating } = req.body;
-
-//     // Find the product and update its rating
-//     const product = await Product.findById(productId);
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     product.rating = (product.rating * product.reviews.length + rating) / (product.reviews.length + 1);
-
-//     await product.save();
-
-//     return res.status(201).json({ message: "Rating added successfully", rating });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// export const reviewProduct = async (req, res) => {
-//   try {
-//     const { productId, userId, rating, comment } = req.body;
-
-//     // Create a new review object
-//     const review = {
-//       userId: mongoose.Types.ObjectId(userId),
-//       rating,
-//       comment,
-//     };
-
-//     // Find the product and update its reviews
-//     const product = await Product.findById(productId);
-//     if (!product) {
-//       return res.status(404).json({ message: "Product not found" });
-//     }
-
-//     product.reviews.push(review);
-
-//     await product.save();
-
-//     return res.status(201).json({ message: "Review added successfully", review });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
+// Controller Method to comment on Product
 export const rateProduct = async (req, res) => {
   try {
     const { productId, userId, rating } = req.body;
@@ -192,6 +144,7 @@ export const rateProduct = async (req, res) => {
   }
 };
 
+// Controller Method to review a Product
 export const reviewProduct = async (req, res) => {
   try {
     const { productId, userId, comment } = req.body;
