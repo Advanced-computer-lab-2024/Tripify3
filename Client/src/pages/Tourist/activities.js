@@ -43,6 +43,8 @@ const Activities = () => {
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [validationError, setValidationError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [shareDropdownOpen, setShareDropdownOpen] = useState(false);
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
@@ -87,9 +89,7 @@ const Activities = () => {
     }
 
     if (searchTerm) {
-      filteredActivities = filteredActivities.filter((activity) =>
-        activity.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filteredActivities = filteredActivities.filter((activity) => activity.name.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
     setActivities(filteredActivities);
@@ -191,14 +191,7 @@ const Activities = () => {
             </Select>
           </FormControl>
 
-          <TextField
-            label="Budget"
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            variant="outlined"
-            sx={{ width: "150px", mr: 2 }}
-          />
+          <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
 
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter
@@ -228,33 +221,18 @@ const Activities = () => {
                     View Details
                   </Button>
                   {/* Share Button */}
-                  <Button
-                    variant="outlined"
-                    sx={{ mt: 2, ml: 2 }}
-                    onClick={() => toggleShareDropdown(activity._id)}
-                  >
+                  <Button variant="outlined" sx={{ mt: 2, ml: 2 }} onClick={() => toggleShareDropdown(activity._id)}>
                     Share
                   </Button>
                   {shareDropdownOpen && currentActivityId === activity._id && (
-                    <Box sx={{ position: 'absolute', background: 'white', boxShadow: 1, p: 1, mt: 1 }}>
-                      <Button
-                        variant="text"
-                        onClick={() => handleCopyLink(activity._id)}
-                      >
+                    <Box sx={{ position: "absolute", background: "white", boxShadow: 1, p: 1, mt: 1 }}>
+                      <Button variant="text" onClick={() => handleCopyLink(activity._id)}>
                         Copy Link
                       </Button>
-                      <Button
-                        variant="text"
-                        href={`https://twitter.com/intent/tweet?url=https://example.com/activity/${activity._id}`}
-                        target="_blank"
-                      >
+                      <Button variant="text" href={`https://twitter.com/intent/tweet?url=https://example.com/activity/${activity._id}`} target="_blank">
                         Share on Twitter
                       </Button>
-                      <Button
-                        variant="text"
-                        href={`https://www.facebook.com/sharer/sharer.php?u=https://example.com/activity/${activity._id}`}
-                        target="_blank"
-                      >
+                      <Button variant="text" href={`https://www.facebook.com/sharer/sharer.php?u=https://example.com/activity/${activity._id}`} target="_blank">
                         Share on Facebook
                       </Button>
                     </Box>
