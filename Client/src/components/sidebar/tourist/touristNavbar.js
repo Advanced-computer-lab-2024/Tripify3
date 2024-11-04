@@ -120,7 +120,7 @@ const TouristNavbar = () => {
             </Typography>
           </IconButton>
 
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}>
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/followedtourguides")}>
             <ListAlt />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Itineraries

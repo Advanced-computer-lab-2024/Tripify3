@@ -29,6 +29,9 @@ import {
   updateCart,
 } from "../controllers/tourist/cart.controller.js";
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
+import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js"
+import { rateItinerary } from '../controllers/tourist/rate&comment.controller.js';
+import { commentonTourGuide, rateTourGuide } from '../controllers/tourist/rate&comment.controller.js';
 const router = express.Router();
 
 // GET request to filter places by type and/or tags
@@ -43,6 +46,19 @@ router.post("/places/search", searchPlaces); // Search places
 router.post("/activities/search", searchActivities); // Search activities
 router.post("/itineraries/search", searchItineraries); // Search itineraries
 router.post("/tourist/profile/:id/redeem", redeemPoints);
+
+
+
+//rate and comment on tour guide 
+router.post('/rate/:tourGuideId', rateTourGuide);
+router.post('/comment/:tourGuideId', commentonTourGuide);
+router.get("/tourists/:touristId/following", getFollowingTourGuides);
+router.post('/tourists/:touristId/follow/:tourGuideId', followTourGuide);
+router.post('/itineraries/rate', rateItinerary);
+
+
+
+
 
 
 // Wishlist

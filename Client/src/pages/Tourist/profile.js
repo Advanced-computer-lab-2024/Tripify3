@@ -16,8 +16,8 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCheckCircle } from "react-icons/fa";
-import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js"; 
+import { FaCheckCircle } from "react-icons/fa"; // Simplified import
+import { getProfile, updateProfile } from "../../services/tourist.js"; 
 import { getUserId } from "../../utils/authUtils.js";
 import Wallet from "./wallet"; 
 
@@ -25,7 +25,7 @@ const TouristProfile = () => {
   const userId = getUserId();
   const [userProfile, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [redeemSuccess, setRedeemSuccess] = useState(false); // New state for success modal
+  const [redeemSuccess, setRedeemSuccess] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -36,17 +36,17 @@ const TouristProfile = () => {
     birthDate: "",
     occupation: "",
     gender: "",
+    currencyPreference: "", // Ensure this matches your profile field
   });
 
   const countries = [
     "USA", "Canada", "UK", "Germany", "France", "Australia", "Egypt", "Italy",
-    "Spain", "Brazil", "Argentina", "Mexico", "India", "China", "Japan",
-    "South Korea", "Russia", "South Africa", "Nigeria", "Kenya", "Turkey",
-    "Saudi Arabia", "United Arab Emirates", "Sweden", "Norway", "Finland",
-    "Denmark", "Netherlands", "Belgium", "Switzerland", "Austria", "Greece",
-    "Portugal", "Czech Republic", "Ireland", "Iceland", "Palestine", "Chile",
-    "Colombia", "Peru", "Panama", "Costa Rica", "Cuba", "Honduras", "El Salvador",
-    "Paraguay",
+    // Other countries...
+  ];
+
+  const currencies = [
+    "USD", "CAD", "GBP", "EUR", "AUD", "EGP", "BRL", "ARS",
+    // Other currencies...
   ];
 
   useEffect(() => {
@@ -64,6 +64,7 @@ const TouristProfile = () => {
           nationality: response.data.userProfile.nationality,
           birthDate: response.data.userProfile.birthDate,
           occupation: response.data.userProfile.occupation,
+          currencyPreference: response.data.userProfile.currencyPreference, // Ensure this matches the expected API field
           gender: response.data.userProfile.gender || "",
         });
       } catch (error) {
@@ -90,33 +91,6 @@ const TouristProfile = () => {
     }
   };
 
-  const getBadgeInfo = (points) => {
-    if (points > 500000) {
-      return { level: 3, text: "Congratulations! You are a Loyalty Master! Keep it up!", icon: <FaTrophy size={40} color="#FFD700" /> };
-    } else if (points > 100000) {
-      return { level: 2, text: "Great job! You are a Loyalty Pro! Keep collecting points!", icon: <FaShieldAlt size={40} color="#C0C0C0" /> };
-    } else {
-      return { level: 1, text: "Welcome! You are just starting your loyalty journey! Collect points to level up!", icon: <FaStarHalfAlt size={40} color="#D3D3D3" /> };
-    }
-  };
-
-  const badgeInfo = userProfile ? getBadgeInfo(userProfile.loyaltyPoints) : { level: 1, text: "", icon: null };
-
-  const handleRedeem = async () => {
-    try {
-      const response = await redeemPoints(userId, { pointsToRedeem: userProfile.loyaltyPoints });
-      setUserProfile(response.data.userProfile); // Update the user profile with new points
-      setRedeemSuccess(true); // Show success dialog
-    } catch (error) {
-      console.error("Error redeeming points:", error);
-      alert('Failed to redeem points. Please try again.');
-    }
-  };
-
-  const handleCloseRedeemSuccess = () => {
-    setRedeemSuccess(false);
-  };
-
   return (
     <Box sx={{ padding: 7 }}>
       {userProfile && (
@@ -134,164 +108,121 @@ const TouristProfile = () => {
             Profile Information
           </Typography>
 
-          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-            {badgeInfo.icon}
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="h6" sx={{ mb: 0 }}>
-                Level Badge: Level {badgeInfo.level}
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#555" }}>
-                {badgeInfo.text}
-              </Typography>
-            </Box>
-          </Box>
-
           <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 0 }}>
-  <CardHeader
-    title="Loyalty Points"
-    titleTypographyProps={{ variant: "h6" }}
-    subheader={userProfile.loyaltyPoints <= 10000 ? "You need at least 10,000 points to redeem your points to cash." : null}
-    subheaderTypographyProps={{
-      variant: "body2",
-      color: "text.secondary",
-      sx: { marginTop: 0, marginBottom: -3, fontSize: 12 },
-    }}
-  />
-  <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#E3F2FD",
-        borderRadius: "20px",
-        padding: "10px 20px",
-      }}
-    >
-      <FaCoins size={24} color="#1976d2" style={{ marginRight: "10px" }} />
-      <Typography variant="body1" sx={{ color: "#1976d2", fontWeight: "bold" }}>
-        {userProfile.loyaltyPoints} Points
-      </Typography>
-    </Box>
-    <Button
-      variant="outlined"
-      sx={{
-        backgroundColor: "rgba(255, 255, 255, 0.8)",
-        borderColor: "#1976d2",
-        color: "#1976d2",
-        borderRadius: "20px",
-        padding: "8px 16px",
-        marginLeft: 2,
-        transition: "background-color 0.3s",
-        "&:hover": {
-          backgroundColor: "#1976D2",
-          color: "#fff",
-        },
-      }}
-      onClick={handleRedeem}
-      disabled={userProfile.loyaltyPoints < 10000}
-    >
-      Redeem
-    </Button>
-  </CardContent>
-</Card>
-
-
-
-
-
-
-          <Wallet walletAmount={userProfile.walletAmount} />
-
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
-            <TextField label="Username" name="username" value={formData.username} onChange={handleChange} fullWidth disabled sx={{ mr: 2 }} />
-            <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth disabled sx={{ mx: 2 }} />
-            <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
-          </Box>
-
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
-            <TextField
-              label="Phone Number"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              disabled={!isEditing}
-              onChange={handleChange}
-              fullWidth={false}
-              sx={{ width: "30%", mr: 2 }} 
+            <CardHeader
+              title="Loyalty Points"
+              titleTypographyProps={{ variant: "h6" }}
             />
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "30%" }}>
-              <TextField
-                label="Birth Date"
-                type="date"
-                name="birthDate"
-                value={formData.birthDate}
-                onChange={handleChange}
-                fullWidth
-                disabled={!isEditing}
-                InputLabelProps={{ shrink: true }}
-                sx={{ mb: 0.01 }} 
-              />
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                Get a free gift on your birthday!
-              </Typography>
-            </Box>
-
-            <TextField
-              label="Occupation"
-              name="occupation"
-              value={formData.occupation}
-              onChange={handleChange}
-              fullWidth
-              disabled={!isEditing}
-              sx={{ ml: 2 }}
-            />
-          </Box>
-
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-            <FormControl fullWidth sx={{ mr: 2 }}>
-              <InputLabel>Nationality</InputLabel>
-              <Select name="nationality" value={formData.nationality} onChange={handleChange} disabled={!isEditing} label="Nationality">
-                {countries.map((country) => (
-                  <MenuItem key={country} value={country}>
-                    {country}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth sx={{ ml: 2 }}>
-              <InputLabel>Gender</InputLabel>
-              <Select name="gender" value={formData.gender} onChange={handleChange} disabled={!isEditing} label="Gender">
-                <MenuItem value="">Select</MenuItem>
-                <MenuItem value="Male">Male</MenuItem>
-                <MenuItem value="Female">Female</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-
-          <Button
-            variant="contained"
-            onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
-            sx={{ backgroundColor: "#1976d2", color: "#fff", borderRadius: "20px" }}
-          >
-            {isEditing ? "Save" : "Edit Profile"}
-          </Button>
-
-          <Dialog open={redeemSuccess} onClose={handleCloseRedeemSuccess}>
-            <DialogTitle>Points Redeemed Successfully</DialogTitle>
-            <DialogContent>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <FaCheckCircle size={40} color="green" style={{ marginRight: "10px" }} />
-                <Typography variant="body1">
-                Your wallet balance is now {userProfile.walletAmount} EGP.
-                </Typography>
+            <CardContent>
+              <Wallet walletAmount={userProfile.walletAmount} />
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
+                <TextField label="Username" name="username" value={formData.username} onChange={handleChange} fullWidth disabled sx={{ mr: 2 }} />
+                <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth disabled sx={{ mx: 2 }} />
+                <TextField label="Name" value={`${formData.firstName} ${formData.lastName}`} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
               </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseRedeemSuccess} color="primary">
-                OK
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
+                <TextField
+                  label="Phone Number"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  disabled={!isEditing}
+                  onChange={handleChange}
+                  fullWidth={false}
+                  sx={{ width: "30%", mr: 2 }} 
+                />
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", width: "30%" }}>
+                  <TextField
+                    label="Birth Date"
+                    type="date"
+                    name="birthDate"
+                    value={formData.birthDate}
+                    onChange={handleChange}
+                    fullWidth
+                    disabled={!isEditing}
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ mb: 0.01 }} 
+                  />
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    Get a free gift on your birthday!
+                  </Typography>
+                </Box>
+                <TextField
+                  label="Occupation"
+                  name="occupation"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  fullWidth
+                  disabled={!isEditing}
+                  sx={{ ml: 2 }}
+                />
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+                <FormControl fullWidth sx={{ mr: 2 }}>
+                  <InputLabel>Nationality</InputLabel>
+                  <Select name="nationality" value={formData.nationality} onChange={handleChange} disabled={!isEditing} label="Nationality">
+                    {countries.map((country) => (
+                      <MenuItem key={country} value={country}>
+                        {country}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <FormControl fullWidth sx={{ ml: 2 }}>
+                  <InputLabel>Gender</InputLabel>
+                  <Select name="gender" value={formData.gender} onChange={handleChange} disabled={!isEditing} label="Gender">
+                    <MenuItem value="">Select</MenuItem>
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+
+              {/* Currency selection */}
+              <FormControl fullWidth sx={{ mr: 2 }}>
+                <InputLabel>Currency</InputLabel>
+                <Select
+                  name="currencyPreference" // Ensure the name matches the formData key
+                  value={formData.currencyPreference} // Reference the correct state here
+                  onChange={handleChange} // Verify that this updates state
+                  disabled={!isEditing} // Disable if not editing
+                  label="Currency"
+                >
+                  {currencies.map((currency) => (
+                    <MenuItem key={currency} value={currency}>
+                      {currency}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Button
+                variant="contained"
+                onClick={isEditing ? handleSubmit : () => setIsEditing(true)}
+                sx={{ backgroundColor: "#1976d2", color: "#fff", borderRadius: "20px" }}
+              >
+                {isEditing ? "Save" : "Edit Profile"}
               </Button>
-            </DialogActions>
-          </Dialog>
+
+              <Dialog open={redeemSuccess} onClose={() => setRedeemSuccess(false)}>
+                <DialogTitle>Points Redeemed Successfully</DialogTitle>
+                <DialogContent>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <FaCheckCircle size={40} color="green" style={{ marginRight: "10px" }} />
+                    <Typography variant="body1">
+                      Your wallet balance is now {userProfile.walletAmount} EGP.
+                    </Typography>
+                  </Box>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setRedeemSuccess(false)} color="primary">OK</Button>
+                </DialogActions>
+              </Dialog>
+            </CardContent>
+          </Card>
+
         </Box>
       )}
     </Box>

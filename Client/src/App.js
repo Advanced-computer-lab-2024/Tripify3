@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import FollowedTourGuides from "./pages/Tourist/followedtourguides.js";
 import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
 import PlacesList from "./pages/tourismGovernor/PlacesList.js";
@@ -11,17 +12,17 @@ import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
 import SellerHomepage from "./pages/seller/SellerHomepage.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
-import TouristHomePage from "./pages/tourist/homepage.js";
-import TouristProfile from "./pages/tourist/profile.js";
-import SearchFlights from "./pages/tourist/searchFlights.js";
-import LoadFlights from "./pages/tourist/loadFlights.js";
+import TouristHomePage from "./pages/Tourist/homepage.js";
+import TouristProfile from "./pages/Tourist/profile.js";
+import SearchFlights from "./pages/Tourist/searchFlights.js";
+import LoadFlights from "./pages/Tourist/loadFlights.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
-import ComplaintForm from "./pages/tourist/ComplaintForm.js";
+import ComplaintForm from "./pages/Tourist/ComplaintForm.js";
 
-import Itineraries from "./pages/tourist/itineraries.js";
-import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
-import Activities from "./pages/tourist/activities.js";
+import Itineraries from "./pages/Tourist/itineraries.js";
+import HistoricalPlaces from "./pages/Tourist/historicalPlaces.js";
+import Activities from "./pages/Tourist/activities.js";
 import Products from "./pages/seller/products.js";
 
 // Layouts Import
@@ -114,6 +115,9 @@ const App = () => {
           path={`${basePath}/tourist/account`}
           element={getLayoutForRole(userRole, <TouristProfile />)}
         />
+         <Route
+          path="/tourist/:touristId/followed" 
+          component={FollowedTourGuides} />
         <Route path={"/search_flights"} element={<SearchFlights />} />
         <Route path={"/load_flights"} element={<LoadFlights />} />
 
@@ -138,7 +142,6 @@ const App = () => {
           path={`${basePath}/products`}
           element={getLayoutForRole(userRole, <Products />)}
         />
-
         {/* Tour Guide Routes */}
 
         {/* Advertiser Routes */}

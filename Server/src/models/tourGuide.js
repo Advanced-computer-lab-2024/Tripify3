@@ -40,6 +40,5 @@ const tourGuideSchema = new mongoose.Schema({
   ],
 });
 
-const TourGuide = User.discriminator("Tour Guide", tourGuideSchema);
-
+const TourGuide = mongoose.model('Tour Guide', tourGuideSchema);
 export default TourGuide;
