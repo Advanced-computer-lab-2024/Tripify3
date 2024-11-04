@@ -26,16 +26,16 @@ const aSeller = () => {
     <>
       {/* <ProductNew /> */}
       {/* <ProductPage /> */}
-      <SideBar />
+      {/* <SideBar /> */}
       {/* <ProductPage /> */}
       {/* <ViewSellerPage />
       <CreateProductForm />
       <UpdateSellerForm />
 
       <ViewProductStockAndSales />
-      <EditProductForm />
+      <EditProductForm />*/}
       {toggle ? <Products /> : <ProductsA />}
-      <button onClick={() => setToggle(!toggle)}>Toggle</button>*/}
+      <button onClick={() => setToggle(!toggle)}>Toggle</button>
       {/* <FilterSalesReport />
       <CreatProdM />
       <EditProduct />

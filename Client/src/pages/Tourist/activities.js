@@ -42,15 +42,17 @@ const Activities = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [validationError, setValidationError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [shareDropdownOpen, setShareDropdownOpen] = useState(false);
+  const [currentActivityId, setCurrentActivityId] = useState(null); // Current Activity ID state
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [activitiesResponse, categoriesResponse] = await Promise.all([getAllActivities(), getAllCategories()]);
+        const [activitiesResponse, categoriesResponse] = await Promise.all([
+          getAllActivities(),
+          getAllCategories(),
+        ]);
         setActivities(activitiesResponse.data);
         setOriginalActivities(activitiesResponse.data);
         setCategories(categoriesResponse.data);
@@ -81,15 +83,21 @@ const Activities = () => {
     let filteredActivities = [...originalActivities];
 
     if (selectedCategories.length > 0) {
-      filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category));
+      filteredActivities = filteredActivities.filter((activity) =>
+        selectedCategories.includes(activity.category)
+      );
     }
 
     if (budget) {
-      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
+      filteredActivities = filteredActivities.filter(
+        (activity) => activity.price <= parseFloat(budget)
+      );
     }
 
     if (searchTerm) {
-      filteredActivities = filteredActivities.filter((activity) => activity.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      filteredActivities = filteredActivities.filter((activity) =>
+        activity.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
     setActivities(filteredActivities);
@@ -109,15 +117,19 @@ const Activities = () => {
 
   // Share functionality
   const toggleShareDropdown = (activityId) => {
-    setCurrentActivityId(activityId);
-    setShareDropdownOpen((prev) => !prev);
+    // Toggle the dropdown: if the same activity is clicked, close it; otherwise, open it
+    if (currentActivityId === activityId) {
+      setCurrentActivityId(null); // Close the dropdown
+    } else {
+      setCurrentActivityId(activityId); // Open the dropdown for the selected activity
+    }
   };
 
   const handleCopyLink = (activityId) => {
-    const link = `http://localhost:3000/Tourist/activities`; // Replace with actual activity link
+    const link = `http://localhost:3000/tourist/activities`; // Replace with actual activity link
     navigator.clipboard.writeText(link).then(() => {
       alert("Link copied to clipboard!");
-      setShareDropdownOpen(false); // Close dropdown after copying
+      setCurrentActivityId(null); // Close dropdown after copying
     });
   };
 
@@ -155,7 +167,11 @@ const Activities = () => {
           />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
-            <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
+            <Select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              label="Sort by Price"
+            >
               <MenuItem value="asc">Low to High</MenuItem>
               <MenuItem value="desc">High to Low</MenuItem>
             </Select>
@@ -177,7 +193,10 @@ const Activities = () => {
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
-                    <Chip key={value} label={categories.find((cat) => cat._id === value)?.name || value} />
+                    <Chip
+                      key={value}
+                      label={categories.find((cat) => cat._id === value)?.name || value}
+                    />
                   ))}
                 </Box>
               )}
@@ -191,7 +210,14 @@ const Activities = () => {
             </Select>
           </FormControl>
 
-          <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
+          <TextField
+            label="Budget"
+            type="number"
+            value={budget}
+            onChange={(e) => setBudget(e.target.value)}
+            variant="outlined"
+            sx={{ width: "150px", mr: 2 }}
+          />
 
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter
@@ -206,7 +232,7 @@ const Activities = () => {
         <Grid container spacing={3}>
           {activities.map((activity) => (
             <Grid item xs={12} key={activity._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
                 <CardContent>
                   <Typography variant="h6" color="secondary">
                     {activity.name}
@@ -217,22 +243,47 @@ const Activities = () => {
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
-                  <Button variant="contained" sx={{ mt: 2 }} onClick={() => console.log(`Navigate to activity ${activity._id}`)}>
+                  <Button
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    onClick={() => console.log(`Navigate to activity ${activity._id}`)}
+                  >
                     View Details
                   </Button>
                   {/* Share Button */}
-                  <Button variant="outlined" sx={{ mt: 2, ml: 2 }} onClick={() => toggleShareDropdown(activity._id)}>
+                  <Button
+                    variant="outlined"
+                    sx={{ mt: 2, ml: 2 }}
+                    onClick={() => toggleShareDropdown(activity._id)}
+                  >
                     Share
                   </Button>
-                  {shareDropdownOpen && currentActivityId === activity._id && (
-                    <Box sx={{ position: "absolute", background: "white", boxShadow: 1, p: 1, mt: 1 }}>
+                  {currentActivityId === activity._id && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        background: "white",
+                        boxShadow: 1,
+                        p: 1,
+                        mt: 1,
+                        zIndex: 10, // Ensure the dropdown appears above other elements
+                      }}
+                    >
                       <Button variant="text" onClick={() => handleCopyLink(activity._id)}>
                         Copy Link
                       </Button>
-                      <Button variant="text" href={`https://twitter.com/intent/tweet?url=https://example.com/activity/${activity._id}`} target="_blank">
+                      <Button
+                        variant="text"
+                        href={`https://twitter.com/intent/tweet?url=http://localhost:3000/Tourist/activities/${activity._id}`}
+                        target="_blank"
+                      >
                         Share on Twitter
                       </Button>
-                      <Button variant="text" href={`https://www.facebook.com/sharer/sharer.php?u=https://example.com/activity/${activity._id}`} target="_blank">
+                      <Button
+                        variant="text"
+                        href={`https://www.facebook.com/sharer/sharer.php?u=http://localhost:3000/Tourist/activities/${activity._id}`}
+                        target="_blank"
+                      >
                         Share on Facebook
                       </Button>
                     </Box>

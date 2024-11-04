@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormC
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera, FaEdit, FaPen } from "react-icons/fa";
 import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
 import { getUserId } from "../../utils/authUtils.js";
-import Wallet from "./wallet";
+import Wallet from "./wallet.js";
 
 const TouristProfile = () => {
   const userId = getUserId();
