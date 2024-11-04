@@ -236,15 +236,14 @@ const TouristProfile = () => {
             <Wallet walletAmount={userProfile.walletAmount} />
           </Card>
 
-          <Card sx={{ borderRadius: "2px", padding: 3 }}>
+          <Card sx={{ borderRadius: "10px", padding: 3 }}>
             <CardHeader title="Profile Information" titleTypographyProps={{ variant: "h6", sx: { marginLeft: -2 } }} />
             <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
               <Box sx={{ position: "relative", marginRight: 2 }}>
                 <Avatar
                   alt="Profile Picture"
                   src={
-                    profilePicUrl  ||
-                    "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
+                    profilePicUrl  || formData.filepath || "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
                   } // Use default image if no profile picture
                   sx={{ width: 70, height: 70 }}
                 />
