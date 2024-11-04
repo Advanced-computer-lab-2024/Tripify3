@@ -178,3 +178,22 @@ export const changePassword = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
+export const UserAcceptTerms = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Find the user by ID and update the `hasAcceptedTerms` field
+    const user = await User.findByIdAndUpdate(id, { hasAcceptedTerms: true }, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ message: "Terms accepted successfully.", user });
+  } catch (error) {
+    console.error("Error updating terms acceptance:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
