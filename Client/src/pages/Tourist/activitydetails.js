@@ -55,7 +55,7 @@ const ActivityDetails = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" color="secondary" gutterBottom>
+      <Typography variant="h4" color="black" gutterBottom>
         {activity.name}
       </Typography>
       <Typography variant="h6">
