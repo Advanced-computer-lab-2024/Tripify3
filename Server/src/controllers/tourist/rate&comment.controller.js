@@ -36,14 +36,15 @@
   export const commentonTourGuide = async (req, res) => {
     const { user, content } = req.body; // User ID from request body
     const tourGuideId = req.params.tourGuideId; // Get Tour Guide ID from route parameters
-
+console.log(req.body)
+console.log(tourGuideId)
     try {
       // Validate user existence and ensure it's a Tourist
-      const tourist = await Tourist.findById(user).populate('following'); // Fetch the tourist and populate the following field
+      const tourist = await Tourist.findById(user)// Fetch the tourist and populate the following field
+      console.log(tourist)
       if (!tourist) {
         return res.status(404).json({ message: "Tourist not found." });
       }
-      console.log(tourist)
       // Validate tour guide existence
       const tourGuide = await TourGuide.findById(tourGuideId);
       if (!tourGuide) {
