@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
+
 import {
   AppBar,
   Toolbar,
@@ -24,7 +26,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllItenerariesForTourGuide, getAllTags, markItineraryInappropriate } from "../../services/tourGuide.js";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
-import { toast } from "react-toastify";
 
 const theme = createTheme({
   palette: {
@@ -38,6 +39,7 @@ const theme = createTheme({
 });
 
 const TourGuideItineraries = () => {
+
   const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +50,9 @@ const TourGuideItineraries = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [dropoffLocation, setDropoffLocation] = useState("");
+  const [actionMessage, setActionMessage] = useState('');
   const userId = getUserId();
   const userType = getUserType();
 
@@ -57,10 +62,17 @@ const TourGuideItineraries = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllItenerariesForTourGuide(userId), getAllTags()]);
+        const [itinerariesResponse, tagsResponse] = await Promise.all([
+          getAllItenerariesForTourGuide(userId),
+          getAllTags(),
+        ]);
+
         setItineraries(itinerariesResponse.data.data);
         setFilteredItineraries(itinerariesResponse.data.data);
         setTags(tagsResponse.data.tags);
+        setPickupLocation(itinerariesResponse.data.pickupLocation);
+        setDropoffLocation(itinerariesResponse.data.dropoffLocation);
+
         setLoading(false);
       } catch (error) {
         setError("Error fetching itineraries or tags");
@@ -69,7 +81,7 @@ const TourGuideItineraries = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [userId]);
 
   // Filter itineraries based on selected criteria
   useEffect(() => {
@@ -97,6 +109,41 @@ const TourGuideItineraries = () => {
     });
     setFilteredItineraries(sorted);
   };
+  const activateItinerary = async (id) => {
+    try {
+      console.log(`Activating itinerary with ID: ${id}`); // Debugging log
+      const response = await axios.put(`http://localhost:8000/itinerary/activate/${id}`);
+      console.log(response.data); // Debugging log
+      setItineraries((prevItineraries) =>
+        prevItineraries.map((itinerary) =>
+          itinerary._id === id ? { ...itinerary, status: 'Active' } : itinerary
+        )
+      );
+      setActionMessage(response.data.message);
+    } catch (error) {
+      console.error(error); // Debugging log
+      setActionMessage(error.response?.data?.message || 'Error activating itinerary');
+    }
+  };
+  
+  const deactivateItinerary = async (id) => {
+    try {
+      console.log(`Deactivating itinerary with ID: ${id}`); // Debugging log
+      const response = await axios.put(`http://localhost:8000/itinerary/deactivate/${id}`);
+      console.log(response.data); // Debugging log
+      setItineraries((prevItineraries) =>
+        prevItineraries.map((itinerary) =>
+          itinerary._id === id ? { ...itinerary, status: 'Inactive' } : itinerary
+        )
+      );
+      setActionMessage(response.data.message);
+    } catch (error) {
+      console.error(error); // Debugging log
+      setActionMessage(error.response?.data?.message || 'Error deactivating itinerary');
+    }
+  };
+  
+  
 
   // Reset filters and refetch itineraries
   const handleResetFilters = () => {
@@ -105,6 +152,14 @@ const TourGuideItineraries = () => {
     setBudget("");
     setSearchQuery("");
     setFilteredItineraries(itineraries);
+  };
+
+  const formatAvailableDates = (availableDates) => {
+    if (!availableDates || availableDates.length === 0) return "No available dates";
+  
+    const startDate = new Date(availableDates[0].date);
+    const endDate = new Date(availableDates[availableDates.length - 1].date);
+    return `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`;
   };
 
   const handleFlagClick = async (itineraryId, currentInappropriateStatus) => {
@@ -140,7 +195,7 @@ const TourGuideItineraries = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" color="primary" sx={{ mb: 4 }}>
+      <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 8 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
             Upcoming Itineraries
@@ -194,6 +249,8 @@ const TourGuideItineraries = () => {
             </Select>
           </FormControl>
 
+         
+
           <FormControl variant="outlined" sx={{ mr: 2, width: "200px" }}>
             <InputLabel>Languages</InputLabel>
             <Select
@@ -218,6 +275,8 @@ const TourGuideItineraries = () => {
             </Select>
           </FormControl>
 
+                
+
           <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
 
           <Button variant="contained" color="secondary" onClick={handleResetFilters} sx={{ ml: 2 }}>
@@ -227,28 +286,57 @@ const TourGuideItineraries = () => {
 
         <Grid container spacing={3}>
           {filteredItineraries.map((itinerary) => (
-            <Grid item xs={12} md={6} key={itinerary._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Grid item xs={12} sm={6} md={4} key={itinerary._id}>
+              <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                  <Typography variant="h5" component="div">
                     {itinerary.name}
                   </Typography>
-                  <Typography>Price: ${itinerary.price}</Typography>
-                  <Typography><strong>Language:</strong> {itinerary.language}</Typography>
-                  <Typography><strong>Tags:</strong> {itinerary.tags.join(", ")}</Typography>
-               </CardContent>
+                  <Typography color="text.secondary">Duration: {itinerary.duration} hours</Typography>
+                  <Typography color="text.secondary">Language: {itinerary.language}</Typography>
+                  <Typography color="text.secondary">Price: ${itinerary.price}</Typography>
+                  <Typography color="text.secondary">Available Dates: {formatAvailableDates(itinerary.availableDates)}</Typography>
 
-                {userType === "touristGovernor" && (
-                  <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
-                    <FlagIcon />
-                  </IconButton>
-                )}
+                  <Typography color="text.secondary">Pickup Location: {itinerary.pickupLocation}</Typography>
+                  <Typography color="text.secondary">Drop-off Location: {itinerary.dropoffLocation}</Typography>
+                  <Typography color="text.secondary">Accessibility: {itinerary.accessibility}</Typography>
+                  <Typography color="text.secondary">bookings: {itinerary.bookings.length}</Typography>
+                  <Typography color="text.secondary">Places:</Typography>
+                  <Typography color="text.secondary">status: {itinerary.status}</Typography>
+
+
+                  <Typography color="text.secondary">Tags:</Typography>
+
+                  <Typography color="text.secondary">activities:</Typography>
+
+                    {itinerary.status === 'Inactive' && (
+                    <button onClick={() => activateItinerary(itinerary._id)}>Activate</button>
+                  )}
+
+                  {itinerary.status === 'Active' && itinerary.bookings.length > 0 && (
+                    <button onClick={() => deactivateItinerary(itinerary._id)}>Deactivate</button>
+                  )}
+
+                  {itinerary.status === 'Active' && itinerary.bookings.length === 0 && (
+                    <p>This itinerary cannot be deactivated as it has no bookings.</p>
+                  )}
+
+
+
+                 
+
+                  
+                </CardContent>
               </Card>
             </Grid>
           ))}
+
         </Grid>
       </Box>
+      {actionMessage && <div>{actionMessage}</div>}
+
     </ThemeProvider>
+
   );
 };
 
