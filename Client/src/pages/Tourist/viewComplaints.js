@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const ViewComplaints = () => {
   const { id } = useParams(); // Extract the ID from URL parameters
+  console.log(id);
   const [complaints, setComplaints] = useState([]); // State to hold complaints
   const [loading, setLoading] = useState(true); // State to manage loading state
   const [error, setError] = useState(null); // State to manage error
@@ -15,7 +16,9 @@ const ViewComplaints = () => {
     const fetchComplaints = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/tourist/complaints/${id}`);
+        console.log("fetch success");
         setComplaints(response.data); // Set the fetched complaints in state
+        console.log(complaints.length);
         setFilteredComplaints(response.data); // Initialize filtered complaints
       } catch (error) {
         console.error('Error fetching complaints:', error);
@@ -158,8 +161,7 @@ const ViewComplaints = () => {
         
         <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
           <option value="">All Statuses</option>
-          <option value="Open">Open</option>
-          <option value="In Progress">In Progress</option>
+          <option value="Pending">Pending</option>
           <option value="Resolved">Resolved</option>
         </select>
 
@@ -173,7 +175,6 @@ const ViewComplaints = () => {
               <h2>{complaint.title}</h2> 
               <p><strong>Date: </strong>{new Date(complaint.date).toLocaleDateString()}</p>
               <p><strong>Body: </strong>{complaint.body}</p>
-              <p><strong>Description: </strong>{complaint.description}</p>
               <p><strong>Status: </strong>{complaint.status}</p>
             </li>
           ))}

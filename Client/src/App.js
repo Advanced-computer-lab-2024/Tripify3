@@ -31,7 +31,7 @@ import Complaints from "./pages/admin/complaints.js";
 
 import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
-import TourGuideActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
+import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
 // Layouts Import
 import TouristLayout from "./components/sidebar/tourist/touristLayout.js";
@@ -112,7 +112,9 @@ const App = () => {
         <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
         <Route path={`/tourist/profile`} element={getLayoutForRole(userRole, <TouristProfile />)} />
         <Route path={"/search/flights"} element={<SearchFlights />} />
-        <Route path={"/load/flights"} element={<LoadFlights />} />
+        <Route path={"/load/flights"} element={<LoadFlights />} />   
+        <Route path={"/tourist/view/complaints/:id"} element={<ViewComplaints />} />
+
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />

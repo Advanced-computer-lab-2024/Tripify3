@@ -19,7 +19,10 @@ const userSchema = new mongoose.Schema({
     enum: ["Tourist", "Tour Guide", "Admin", "Seller", "Tourism Governor", "Advertiser"], // Possible user roles
     required: true,
   },
-
+  hasAcceptedTerms: {
+    type: Boolean,
+    default: false,  // Default to false, indicating they haven't accepted yet
+  }
 });
 
 const User = mongoose.model("User", userSchema);

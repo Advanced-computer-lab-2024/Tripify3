@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode } from "../controllers/user/user.auth.controller.js";
+import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,UserAcceptTerms} from "../controllers/user/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
 import { uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture } from "../controllers/user/file.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -18,6 +18,8 @@ router.put("/user/upload/picture", upload.fields([{ name: 'file', maxCount: 1 }]
 // Define the route to get user files
 router.get('/user/:userId/files', getUploadedFiles);
 router.get('/user/:userId/profile/picture', getProfilePicture);
+
+router.put('/users/accept-terms/:id', UserAcceptTerms);
 
 
 router.post("/user/resetPassword", resetPassword); // Reset password after verification
