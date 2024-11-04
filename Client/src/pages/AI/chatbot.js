@@ -5,23 +5,30 @@ import axios from "axios";
 import PersonIcon from "@mui/icons-material/Person";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 
-// Custom vibrant theme
+// Custom professional theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#4caf50", // Green color theme for buttons and user messages
+      main: "#003366", // Muted blue for buttons and user messages
     },
     secondary: {
-      main: "#81c784", // Lighter green for bot messages
+      main: "#e9ecef", // Light gray for bot messages, soft on the eyes
     },
     error: {
-      main: "#ff5722", // Add a bright orange for accents
+      main: "#dc3545", // Muted red for error accents
     },
     warning: {
-      main: "#ffeb3b", // Yellow for bright warning
+      main: "#ffc107", // Gold for warning messages
     },
     info: {
-      main: "#2196f3", // Blue for informational color
+      main: "#17a2b8", // Soft cyan for informational color
+    },
+    background: {
+      default: "#f5f5f5", // Very light gray background for a clean look
+    },
+    text: {
+      primary: "#343a40", // Dark gray for main text, readable and professional
+      secondary: "#6c757d", // Lighter gray for secondary text
     },
   },
 });
@@ -29,10 +36,9 @@ const theme = createTheme({
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [botTyping, setBotTyping] = useState(false); // Control typing animation
-  const chatWindowRef = useRef(null); // Reference to the chat window for auto-scrolling
+  const [botTyping, setBotTyping] = useState(false);
+  const chatWindowRef = useRef(null);
 
-  // Function to scroll to the bottom when a new message is added
   const scrollToBottom = () => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
@@ -44,15 +50,12 @@ const Chatbot = () => {
 
     const userMessage = { sender: "user", text: inputMessage };
     setMessages((prev) => [...prev, userMessage]);
-    setInputMessage(""); // Clear input field after sending message
+    setInputMessage("");
 
-    // Show typing indicator for bot
     setBotTyping(true);
 
     try {
       const response = await axios.post("http://localhost:5000/chat", { message: inputMessage });
-
-      // Remove typing indicator and add bot message
       setBotTyping(false);
       const botMessage = { sender: "bot", text: response.data.response };
       setMessages((prev) => [...prev, botMessage]);
@@ -62,7 +65,7 @@ const Chatbot = () => {
   };
 
   useEffect(() => {
-    scrollToBottom(); // Auto-scroll to bottom whenever messages are updated
+    scrollToBottom();
   }, [messages]);
 
   return (
@@ -72,7 +75,7 @@ const Chatbot = () => {
           display: "flex",
           flexDirection: "column",
           height: "100vh",
-          backgroundColor: "#fff3e0", // Light orange background
+          backgroundColor: theme.palette.background.default, // Light gray background
         }}
       >
         {/* Chat Display */}
@@ -85,9 +88,9 @@ const Chatbot = () => {
             flexDirection: "column",
             gap: 2,
             p: 2,
-            border: "2px solid #ffc107", // Bright yellow border for emphasis
+            border: "1px solid #ced4da", // Subtle gray border
             borderRadius: 3,
-            backgroundColor: "#ffe0b2", // Light orange for the chat window
+            backgroundColor: "#f1f3f5", // Very light gray for the chat window
           }}
         >
           {messages.map((msg, index) => (
@@ -96,29 +99,24 @@ const Chatbot = () => {
               sx={{
                 display: "flex",
                 justifyContent: msg.sender === "user" ? "flex-end" : "flex-start",
-                alignItems: "center", // Align icon and message
+                alignItems: "center",
               }}
             >
-              {/* Avatar/Icon */}
               {msg.sender === "bot" && (
-                <Avatar sx={{ bgcolor: "secondary.main", mr: 1 }}>
+                <Avatar sx={{ bgcolor: "primary.main", mr: 1 }}>
                   <SmartToyIcon />
                 </Avatar>
               )}
-
-              {/* Message Box */}
               <Paper
                 sx={{
                   p: 1.5,
-                  backgroundColor: msg.sender === "user" ? "#4caf50" : "#81c784", // Green for user, lighter green for bot
+                  backgroundColor: msg.sender === "user" ? "#007bff" : "#e9ecef", // Muted blue for user, light gray for bot
                   color: msg.sender === "user" ? "white" : "black",
                   maxWidth: "60%",
                 }}
               >
                 <Typography variant="body1">{msg.text}</Typography>
               </Paper>
-
-              {/* Avatar/Icon for user */}
               {msg.sender === "user" && (
                 <Avatar sx={{ bgcolor: "primary.main", ml: 1 }}>
                   <PersonIcon />
@@ -127,7 +125,6 @@ const Chatbot = () => {
             </Box>
           ))}
 
-          {/* Show typing indicator */}
           {botTyping && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar sx={{ bgcolor: "secondary.main", mr: 1 }}>
@@ -145,8 +142,8 @@ const Chatbot = () => {
             alignItems: "center",
             gap: 2,
             p: 1,
-            borderTop: "2px solid #ff9800", // Orange border at the top of the input section
-            backgroundColor: "#fff8e1", // Matching background for input section
+            borderTop: "1px solid #ced4da", // Subtle gray border at the top of the input section
+            backgroundColor: theme.palette.background.default, // Matching background for input section
             position: "fixed",
             bottom: 0,
             left: 0,

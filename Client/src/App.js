@@ -140,7 +140,7 @@ const App = () => {
         <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
 
         {/* Admin Routes */}
-        <Route path={"/chatbot"} element={<Chatbot />} />
+        <Route path={"/chatbot"} element={getLayoutForRole(userRole, <Chatbot />)} />
         <Route path={`${basePath}/users`} element={getLayoutForRole(userRole, <Users />)} />
         <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
         <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
