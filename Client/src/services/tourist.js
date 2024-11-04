@@ -2,14 +2,13 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8000"; // Replace with your API URL
 
-export const markItineraryInappropriate = async (id, data) => {
-  return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
-};
-
 export const redeemPoints = async (userId, pointsToRedeem) => {
   return await axios.post(`${API_URL}/tourist/profile/${userId}/redeem`, pointsToRedeem);
 };
 
+export const markItineraryInappropriate = async (id, data) => {
+  return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
+};
 
 export const getAllTags = async () => {
   return await axios.get(`${API_URL}/tag/get`);
@@ -24,7 +23,7 @@ export const getAllPlaces = async () => {
 };
 
 export const getAllIteneraries = async (userId) => {
-  return await axios.get(`${API_URL}/itineraries/get/${userId}`);
+  return await axios.get(`${API_URL}/itineraries/get`);
 };
 
 export const getAllActivities = async () => {

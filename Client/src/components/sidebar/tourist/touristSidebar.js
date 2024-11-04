@@ -78,13 +78,6 @@ const TouristSidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/historical-places" sx={linkStyle}>
-            Lo
-          </ListItemButton>
-        </ListItem>
-
-        
-        <ListItem disablePadding>
           <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
             My Wishlist
           </ListItemButton>

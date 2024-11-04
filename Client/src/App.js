@@ -17,7 +17,7 @@ import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
-import ComplaintForm from "./pages/tourist/ComplaintForm.js";
+import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
@@ -29,7 +29,6 @@ import Categories from "./pages/admin/categories.js";
 import FileViewer from "./pages/admin/fileViewer.js";
 import Complaints from "./pages/admin/complaints.js";
 
-import TourGuideUploadPhoto from "./pages/tourGuide/uploadPhoto.js";
 import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
 import TourGuideActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
@@ -109,9 +108,9 @@ const App = () => {
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
 
         {/* Tourist Routes */}
-        <Route path={`${basePath}/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
-        <Route path={`${basePath}/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
-        <Route path={`${basePath}/tourist/account`} element={getLayoutForRole(userRole, <TouristProfile />)} />
+        <Route path={`/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
+        <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
+        <Route path={`/tourist/profile`} element={getLayoutForRole(userRole, <TouristProfile />)} />
         <Route path={"/search/flights"} element={<SearchFlights />} />
         <Route path={"/load/flights"} element={<LoadFlights />} />
 
@@ -123,10 +122,9 @@ const App = () => {
         <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <Products />)} />
 
         {/* Tour Guide Routes */}
-        <Route path={`/tour-guide/upload/photo/`} element={<TourGuideUploadPhoto />} />
         <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} />
-        <Route path={`/tour-guide/itinerary`} element={<tourGuideItinerary />} />
-        <Route path={`/tour-guide/profile`} element={<TourGuideProfile />} />
+        <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
+        <Route path={`/tour-guide/profile`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />
 
         {/* Advertiser Routes */}
         <Route path={`${basePath}/advertiser`} element={<AdvertiserProfile />} />

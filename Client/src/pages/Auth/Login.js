@@ -41,7 +41,7 @@ const Login = () => {
       } else if (data.user.type === "Admin") {
         navigate("/admin/users");
       } else if (data.user.type === "Tour Guide") {
-        navigate("/tour-guide/tour-guide");
+        navigate("/tour-guide/profile");
       } else if (data.user.type === "Advertiser") {
         navigate("/advertiser/advertiser");
       }

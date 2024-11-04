@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from "@m
 import { AccountCircle, ShoppingCart, Favorite, Home, Hotel, Event, Flight, DirectionsRun, ListAlt, RoomService, HelpOutline } from "@mui/icons-material"; 
 import { useNavigate, useLocation } from "react-router-dom";
 
-const TouristNavbar = () => {
+const TourGuideNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,7 +27,7 @@ const TouristNavbar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate("/tourist/profile");
+    navigate("/touri-guide/account");
   };
 
   const handleHomeClick = () => {
@@ -38,7 +38,7 @@ const TouristNavbar = () => {
     navigate("/tourist/cart");
   };
 
-  const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
+  const hiddenRoutes = ["/tourist/account", "/tourist/wishlist"];
   const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
 
   return (
@@ -110,47 +110,8 @@ const TouristNavbar = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Bottom Navbar */}
-      <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
-          <IconButton color="inherit" sx={{ color: "#fff" }}>
-            <Hotel />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Hotels
-            </Typography>
-          </IconButton>
-
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}>
-            <ListAlt />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Itineraries
-            </Typography>
-          </IconButton>
-
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/events")}>
-            <Event />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Events
-            </Typography>
-          </IconButton>
-
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}>
-            <DirectionsRun />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Activities
-            </Typography>
-          </IconButton>
-
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}>
-            <Flight />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Flights
-            </Typography>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
     </>
   );
 };
 
-export default TouristNavbar;
+export default TourGuideNavbar;

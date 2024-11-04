@@ -35,7 +35,6 @@ export const editItineraryAttribute = async (req, res) => {
 export const createItinerary = async (req, res) => {
   try {
     const itinerary = new Itinerary(req.body);
-    console.log(req.body);
     await itinerary.save();
     res.status(201).json(itinerary);
   } catch (error) {
@@ -44,10 +43,8 @@ export const createItinerary = async (req, res) => {
   }
 };
 
-export const getAllItineraries = async (req, res) =>{
- 
+export const getAllItineraries = async (req, res) => {
   try {
-
     const itineraries = await Itinerary.find()
       .populate({
         path: "activities",
@@ -80,15 +77,13 @@ export const getAllItineraries = async (req, res) =>{
       };
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Iteneraries found successfully",
-      data: response
+      data: response,
     });
-    
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-
 };
 
 // Get all itineraries
@@ -98,11 +93,14 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
     // Find the user by ID to determine their type
     const user = await User.findById(id);
 
+    console.log(user);
+    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const itineraries = await Itinerary.find()
+    const itineraries = await Itinerary.find({ tourGuideId: id })
       .populate({
         path: "activities",
         populate: {
@@ -134,12 +132,16 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
       };
     });
 
-    
     if (user.type === "Tourist") {
       response = response.filter((itinerary) => !itinerary.inappropriate);
     }
 
-    res.status(200).json(response);
+    
+    return res.status(200).json({
+      message: "Iteneraries found successfully",
+      data: response,
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -152,7 +154,11 @@ export const getItineraryById = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-    res.status(200).json(itinerary);
+
+    return res.status(200).json({
+      message: "Itenerary found successfully",
+      data: itinerary,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -217,7 +223,6 @@ export const addActivityToItinerary = async (req, res) => {
     res.status(500).send({ message: "Server error", error: error.message });
   }
 };
-
 
 export const ActivateItinerary = async (req, res) => {
   const itineraryId = req.params.id;
