@@ -15,7 +15,7 @@ const TouristSidebar = () => {
     "/tourist/itineraries/my",
     "/tourist/historical-places",
     "/tourist/reviews",
-    "/tourist/tourist/account",
+    "/tourist/profile",
   ];
 
   // Check if the current route is in the list of visible routes
@@ -37,21 +37,13 @@ const TouristSidebar = () => {
       </Typography>
 
       <List>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/home" sx={linkStyle}>
-            Home
-          </ListItemButton>
-        </ListItem>
+       
 
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/activities" sx={linkStyle}>
-            Activities
-          </ListItemButton>
-        </ListItem>
+    
 
         <ListItem disablePadding>
           <ListItemButton onClick={() => setShowItineraries(!showItineraries)} sx={linkStyle}>
-            Itineraries
+            Bookings
             {showItineraries ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
         </ListItem>
@@ -60,23 +52,18 @@ const TouristSidebar = () => {
           <List component="div" disablePadding>
             <ListItem sx={{ pl: 4 }}>
               <ListItemButton component={Link} to="/tourist/itineraries" sx={subLinkStyle}>
-                All Itineraries
+               Itineraries
               </ListItemButton>
             </ListItem>
             <ListItem sx={{ pl: 4 }}>
-              <ListItemButton component={Link} to="/tourist/itineraries/my" sx={subLinkStyle}>
-                Booked Itineraries
+              <ListItemButton component={Link} to="/tourist/itineraries/" sx={subLinkStyle}>
+                Activities
               </ListItemButton>
             </ListItem>
           </List>
         </Collapse>
 
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/historical-places" sx={linkStyle}>
-            Historical Places
-          </ListItemButton>
-        </ListItem>
-
+        
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
             My Wishlist
@@ -93,7 +80,7 @@ const TouristSidebar = () => {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/tourist/profile" sx={linkStyle}>
+          <ListItemButton component={Link} to="/tourist/profile" sx={linkStyle}>
             Profile
           </ListItemButton>
         </ListItem>

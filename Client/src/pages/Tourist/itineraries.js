@@ -57,14 +57,15 @@ const Itineraries = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllIteneraries(userId), getAllTags()]);
-        setItineraries(itinerariesResponse.data);
-        setFilteredItineraries(itinerariesResponse.data);
+        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllIteneraries(), getAllTags()]);
+        setItineraries(itinerariesResponse.data.data);
+        setFilteredItineraries(itinerariesResponse.data.data);
         setTags(tagsResponse.data.tags);
         setLoading(false);
       } catch (error) {
         setError("Error fetching itineraries or tags");
         setLoading(false);
+        setFilteredItineraries([]);
       }
     };
     fetchData();
@@ -235,7 +236,7 @@ const Itineraries = () => {
                   <Typography>Price: ${itinerary.price}</Typography>
                   <Typography><strong>Language:</strong> {itinerary.language}</Typography>
                   <Typography><strong>Tags:</strong> {itinerary.tags.join(", ")}</Typography>
-                </CardContent>
+               </CardContent>
 
                 {userType === "touristGovernor" && (
                   <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>

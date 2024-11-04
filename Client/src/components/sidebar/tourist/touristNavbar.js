@@ -1,7 +1,8 @@
 import React from "react";
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from "@mui/material";
-import { AccountCircle, ShoppingCart, Favorite, Home, Hotel, Event, Flight, DirectionsRun, ListAlt, RoomService, HelpOutline } from "@mui/icons-material"; 
+import { AccountCircle, ShoppingCart, Favorite, Home, Hotel, Event, Flight, DirectionsRun, ListAlt, RoomService, HelpOutline } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance"; // Import a commonly used icon
 
 const TouristNavbar = () => {
   const navigate = useNavigate();
@@ -131,6 +132,13 @@ const TouristNavbar = () => {
             <Event />
             <Typography variant="body1" sx={{ ml: 1 }}>
               Events
+            </Typography>
+          </IconButton>
+
+          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/historical-places")}>
+            <AccountBalanceIcon /> {/* Use the AccountBalance icon */}
+            <Typography variant="body1" sx={{ ml: 1 }}>
+              Historical Places
             </Typography>
           </IconButton>
 
