@@ -424,6 +424,7 @@ const Products = () => {
     fetchProducts();
   };
   const handleCloseModal2 = () => {
+    console.log("thisis cvlosdffdg");
     setOpenCreate(false);
     fetchProducts();
   };
@@ -705,18 +706,7 @@ const Products = () => {
         setNewImage={setNewImage}
       />
       {openCreate && (
-        <ProductCreateModal
-          open={openCreate}
-          handleClose={handleCloseModal2}
-          product={selectedProduct}
-          setEditProduct={setEditProduct}
-          newImages={newImage}
-          setNewImages={setNewImage}
-          editProduct={editProduct}
-          handleUpdate={handleAdd}
-          setNewImage={setNewImage}
-          setOpenCreate={setOpenCreate}
-        />
+        <ProductCreateModal open={openCreate} handleClose={handleCloseModal2} />
       )}
       ;
     </ThemeProvider>

@@ -14,12 +14,7 @@ import AddFile from "./addFile"; // Use the actual component here
 import axios from "axios";
 import { getUserId } from "../../../utils/authUtils";
 
-const ProductCreateModal = ({
-  open,
-  handleClose,
-  handleCreate,
-  setOpenCreate,
-}) => {
+const ProductCreateModal = ({ open, handleClose }) => {
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -68,16 +63,13 @@ const ProductCreateModal = ({
           },
         }
       );
-      console.log("Product created successfully", response.data);
-      handleCreate(response.data.product); // Update product list
       handleClose();
+      console.log("Product created successfully", response.data);
     } catch (error) {
-      console.error(
-        "Error creating product",
-        error.response?.data || error.message
+      setErrorMessage(
+        error.response?.data?.message || error.response?.data || error.message
       );
     }
-    setOpenCreate(false);
   };
 
   return (
