@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, CircularProgress, List, ListItem, ListItemText } from '@mui/material';
-import { getUserId } from "../../utils/authUtils.js";  // Adjust the import path as necessary
+import { Box, Typography, Card, CardContent, CircularProgress, List, ListItem, ListItemText, TextField, Button } from '@mui/material';
+import { Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
+import { getUserId } from "../../utils/authUtils.js";
 
 const FollowedTourGuides = () => {
     const userId = getUserId(); // Get the tourist's user ID
@@ -9,6 +10,9 @@ const FollowedTourGuides = () => {
     const [tourGuideProfiles, setTourGuideProfiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    const [rating, setRating] = useState(0);
+    const [commentContent, setCommentContent] = useState('');
 
     useEffect(() => {
         const fetchFollowedGuides = async () => {
@@ -27,7 +31,7 @@ const FollowedTourGuides = () => {
     useEffect(() => {
         const fetchTourGuideProfiles = async () => {
             if (followedGuideIds.length === 0) return;
-    
+
             try {
                 const profiles = await Promise.all(
                     followedGuideIds.map(id => 
@@ -35,23 +39,51 @@ const FollowedTourGuides = () => {
                     )
                 );
 
-                // Logging received profiles for debugging
-                console.log(profiles);
-    
-                // Using optional chaining and filtering out undefined values
                 const profilesData = profiles.map(profile => profile?.data?.userProfile).filter(Boolean);
-                
                 setTourGuideProfiles(profilesData);
             } catch (error) {
                 console.error("Error fetching tour guide profiles:", error);
                 setError("Couldn't fetch tour guide profiles. Please try again later.");
             } finally {
-                setLoading(false); // Ensure loading state is managed correctly
+                setLoading(false);     
             }
         };
-    
+
         fetchTourGuideProfiles();
     }, [followedGuideIds]);
+
+    const handleRatingChange = (newRating) => {
+        setRating(newRating);
+    };
+
+    const handleCommentChange = (event) => {
+        setCommentContent(event.target.value);
+    };
+
+    const handleRatingSubmit = async (guideId) => {
+        try {
+            // Send both user ID and rating value
+            await axios.post(`http://localhost:8000/tourist/rate/${guideId}`, { 
+                user: userId,  // Include user ID
+                value: rating   // The rating value
+            });
+            setRating(0); // Reset rating after submitting
+        } catch (error) {
+            console.error("Error submitting rating:", error);
+        }
+    };
+
+    const handleCommentSubmit = async (guideId) => {
+        try {
+            await axios.post(`http://localhost:8000/tourist/comment/${guideId}`, { 
+                user: userId,  // Include user ID
+                content: commentContent // Content of the comment
+            });
+            setCommentContent(''); // Clear the input after submission
+        } catch (error) {
+            console.error("Error submitting comment:", error);
+        }
+    };
 
     if (loading) {
         return <CircularProgress />;
@@ -74,11 +106,9 @@ const FollowedTourGuides = () => {
                 <Card key={guide._id} sx={{ marginBottom: 2 }}>
                     <CardContent>
                         <Typography variant="h5">{guide.name}</Typography>
-                        <Typography variant="subtitle1">{guide.username}</Typography>
-                        <Typography variant="body2">{guide.email}</Typography>
-                        <Typography variant="body2">Phone: {guide.phoneNumber}</Typography>
+                        <Typography variant="body2">Email:  {guide.email}</Typography>
+                        <Typography variant="body2">Phone:  {guide.phoneNumber}</Typography>
                         <Typography variant="body2">Years of Experience: {guide.yearsOfExperience}</Typography>
-                        <Typography variant="body2">Status: {guide.status}</Typography>
                         <Typography variant="body1" sx={{ marginTop: 1 }}><strong>Previous Work:</strong></Typography>
                         <List>
                             {guide.previousWork && guide.previousWork.length > 0 ? (
@@ -93,20 +123,33 @@ const FollowedTourGuides = () => {
                                 </ListItem>
                             )}
                         </List>
-                       
-                        <List>
-                            {guide.comments && Array.isArray(guide.comments) && guide.comments.length > 0 ? (
-                                guide.comments.map((comment, index) => (
-                                    <ListItem key={comment._id || index}>
-                                        <ListItemText primary={`Comment ID: ${comment._id || comment}`} />
-                                    </ListItem>
-                                ))
-                            ) : (
-                                <ListItem>
-                                   
-                                </ListItem>
-                            )}
-                        </List>
+
+                        <Typography variant="body1" sx={{ marginTop: 2 }}><strong>Rate this Tour Guide:</strong></Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'start', marginBottom: 2 }}>
+                            {[...Array(5)].map((_, index) => {
+                                const starValue = index + 1;
+                                return (
+                                    <span key={starValue} onClick={() => handleRatingChange(starValue)} style={{ cursor: 'pointer' }}>
+                                        {starValue <= rating ? <StarIcon color="primary" /> : <StarBorderIcon />}
+                                    </span>
+                                );
+                            })}
+                        </Box>
+                        <Button variant="contained" onClick={() => handleRatingSubmit(guide._id)} disabled={rating === 0}>
+                            Submit Rating
+                        </Button>
+
+                        <TextField
+                            label="Comment"
+                            value={commentContent}
+                            onChange={handleCommentChange}
+                            margin="normal"
+                            variant="outlined"
+                            fullWidth
+                        />
+                        <Button variant="contained" onClick={() => handleCommentSubmit(guide._id)}>
+                            Submit Comment
+                        </Button>
                     </CardContent>
                 </Card>
             ))}
