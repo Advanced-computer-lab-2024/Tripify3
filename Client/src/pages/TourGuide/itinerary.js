@@ -289,22 +289,22 @@ const TourGuideItineraries = () => {
             <Grid item xs={12} sm={6} md={4} key={itinerary._id}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography sx={{marginBottom: 2}} variant="h5" component="div">
+                  <Typography sx={{marginBottom: 2}} variant="h5" color="secondary" component="div">
                     {itinerary.name}
                   </Typography>
-                  <Typography color="text.secondary">Duration: {itinerary.duration} hours</Typography>
-                  <Typography color="text.secondary">Language: {itinerary.language}</Typography>
-                  <Typography color="text.secondary">Price: ${itinerary.price}</Typography>
-                  <Typography color="text.secondary">Available Dates: {formatAvailableDates(itinerary.availableDates)}</Typography>
+                  <Typography ><strong>Duration: </strong>{itinerary.duration} hours</Typography>
+                  <Typography ><strong>Language:</strong>{itinerary.language}</Typography>
+                  <Typography ><strong>Price:</strong>${itinerary.price}</Typography>
+                  <Typography ><strong>Available Dates: </strong>{formatAvailableDates(itinerary.availableDates)}</Typography>
 
-                  <Typography color="text.secondary">Pickup Location: {itinerary.pickupLocation}</Typography>
-                  <Typography color="text.secondary">Drop-off Location: {itinerary.dropoffLocation}</Typography>
-                  <Typography color="text.secondary">Accessibility: {itinerary.accessibility}</Typography>
-                  <Typography color="text.secondary">bookings: {itinerary.bookings.length}</Typography>
-                  <Typography color="text.secondary">status: {itinerary.status}</Typography>
+                  <Typography ><strong>Pickup Location: </strong>{itinerary.pickupLocation}</Typography>
+                  <Typography ><strong>Drop-off Location:</strong> {itinerary.dropoffLocation}</Typography>
+                  <Typography ><strong>Accessibility: </strong>{itinerary.accessibility}</Typography>
+                  <Typography ><strong>bookings:</strong> {itinerary.bookings.length}</Typography>
+                  <Typography ><strong>status:</strong> {itinerary.status}</Typography>
 
 
-                  <Typography color="text.secondary">places:</Typography>
+                  <Typography ><strong>places:</strong></Typography>
                   {itinerary.places.length > 0 ? (
                     itinerary.places.map((places) => (
                       <div key={places._id}>
@@ -319,7 +319,7 @@ const TourGuideItineraries = () => {
                         
 
 
-                  <Typography color="text.secondary">Activities:</Typography>
+                  <Typography ><strong>Activities:</strong></Typography>
                   {itinerary.activities.length > 0 ? (
                     itinerary.activities.map((activity) => (
                       <div key={activity._id}>

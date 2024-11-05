@@ -131,7 +131,7 @@ const Activities = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" color="primary" sx={{ mb: 4 }}>
+      <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 8 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
             Upcoming Activities
