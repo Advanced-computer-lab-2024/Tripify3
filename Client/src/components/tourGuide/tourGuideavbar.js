@@ -31,7 +31,7 @@ const TourGuideNavbar = () => {
   };
 
   const handleHomeClick = () => {
-    navigate("/tourist/homepage");
+    navigate("/tour-guide/homepage");
   };
 
   const handleCartClick = () => {

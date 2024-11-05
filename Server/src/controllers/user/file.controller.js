@@ -353,3 +353,23 @@ export const getProfilePicture = async (req, res) => {
     res.status(500).json({ message: "Error fetching profile picture", error: err.message });
   }
 };
+
+
+export const getUserDetails = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      // Fetch the user by ID without restricting fields
+      const user = await User.findById(id);
+
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
+      }
+
+      // Respond with the user's name only
+      res.status(200).json({user }); // You can include the full user object if needed
+  } catch (error) {
+      console.error("Error fetching user details:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

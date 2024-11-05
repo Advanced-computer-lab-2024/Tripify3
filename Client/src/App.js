@@ -38,6 +38,8 @@ import TourGuideProfile from "./pages/tourGuide/profile.js";
 import TourGuideActivities from "./pages/tourGuide/activities.js";
 //import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 
+import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
+
 // Layouts Import
 import TouristLayout from "./components/tourist/touristLayout.js";
 import SellerLayout from "./components/seller/sellerLayout.js";
@@ -107,6 +109,10 @@ const App = () => {
         <Route path="/email-input" element={<EmailInput />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
+
+        <Route path="/termsAndAgreements" element={<TermsAndAgreements />} />
+
+        
 
         {/* Tourism Governor Routes */}
         <Route path={`${basePath}/tourism-governor`} element={getLayoutForRole(userRole, <PlacesList />)} />

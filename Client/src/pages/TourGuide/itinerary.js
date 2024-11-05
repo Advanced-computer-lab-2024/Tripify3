@@ -304,35 +304,35 @@ const TourGuideItineraries = () => {
                   <Typography ><strong>status:</strong> {itinerary.status}</Typography>
 
 
-                  <Typography ><strong>places:</strong></Typography>
-                  {itinerary.places.length > 0 ? (
-                    itinerary.places.map((places) => (
-                      <div key={places._id}>
-                        <Typography variant="body1">{places.name}</Typography>
-                
-                      </div>
-                    ))
-                  ) : (
-                    <Typography>No places found</Typography>
-                  )}
+                    <Typography><strong>Places:</strong></Typography>
+                      {itinerary.places.length > 0 ? (
+                        itinerary.places.map((place, index) => (
+                          <div key={place._id}>
+                            <Typography variant="body1">
+                              {index + 1}. {place.name}
+                            </Typography>
+                          </div>
+                        ))
+                      ) : (
+                        <Typography>No places found</Typography>
+                      )}
 
-                        
+                      <Typography><strong>Activities:</strong></Typography>
+                      {itinerary.activities.length > 0 ? (
+                        itinerary.activities.map((activity, index) => (
+                          <div key={activity._id}>
+                            <Typography variant="body1">
+                              {index + 1}. {activity.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {activity.description}
+                            </Typography>
+                          </div>
+                        ))
+                      ) : (
+                        <Typography>No activities found</Typography>
+                      )}
 
-
-                  <Typography ><strong>Activities:</strong></Typography>
-                  {itinerary.activities.length > 0 ? (
-                    itinerary.activities.map((activity) => (
-                      <div key={activity._id}>
-                        <Typography variant="body1">{activity.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {activity.description}
-                        </Typography>
-                      </div>
-                    ))
-                  ) : (
-                    <Typography>No activities found</Typography>
-
-                  )}
 
                         {/* <Typography color="text.secondary">Tags:</Typography>
                         {itinerary.tags.length > 0 ? (
