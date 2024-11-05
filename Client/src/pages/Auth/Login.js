@@ -33,7 +33,7 @@ const Login = () => {
       const data = await response.json();
       setUser(data.user); // Store user info in the utility file
       if (data.user.type === "Tourism Governor") {
-        navigate("/tourism-governor/tourism-governor");
+        navigate("/tourism-governor/profile");
       } else if (data.user.type === "Tourist") {
         navigate("/tourist/homepage");
       } else if (data.user.type === "Seller") {

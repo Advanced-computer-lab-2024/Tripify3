@@ -141,17 +141,7 @@ const TouristNavbar = () => {
 
            
 
-            {/* Help Icon with Dropdown */}
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
-              <HelpOutline />
-              <Typography variant="body1" sx={{ ml: 1 }}>Help</Typography>
-            </IconButton>
-            <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
-  <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
-    <Report sx={{ mr: 1 }} /> {/* Add this line for the complaint icon */}
-    File a Complaint
-  </MenuItem>
-</Menu>
+        
 
 
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
@@ -177,6 +167,17 @@ const TouristNavbar = () => {
   <MenuItem onClick={openDeleteDialog} sx={{ color: "red" }}>
     <Delete sx={{ mr: 1 }} />
     Delete Account
+  </MenuItem>
+</Menu>
+    {/* Help Icon with Dropdown */}
+    <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
+              <HelpOutline />
+              <Typography variant="body1" sx={{ ml: 1 }}>Help</Typography>
+            </IconButton>
+            <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
+  <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
+    <Report sx={{ mr: 1 }} /> {/* Add this line for the complaint icon */}
+    File a Complaint
   </MenuItem>
 </Menu>
 

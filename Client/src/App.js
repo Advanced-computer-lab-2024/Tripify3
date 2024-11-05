@@ -28,6 +28,8 @@ import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
 import Categories from "./pages/admin/categories.js";
 
+
+import ToursmGovernorProfile from "./pages/tourismGovernor/profile.js";
 import FileViewer from "./pages/admin/fileViewer.js";
 import Complaints from "./pages/admin/complaints.js";
 
@@ -116,6 +118,10 @@ const App = () => {
         <Route path={"/search/flights"} element={<SearchFlights />} />
         <Route path={"/load/flights"} element={<LoadFlights />} />
         <Route path={"/tourist/view/complaints/:id"} element={<ViewComplaints />} />
+
+        {/* Tourism Governor Routes */}
+        <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
+
 
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
