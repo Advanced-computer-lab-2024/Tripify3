@@ -7,22 +7,11 @@ const TourismGovernorSidebar = () => {
   const [showItineraries, setShowItineraries] = useState(false);
   const location = useLocation();
 
-  // Define the routes where the sidebar should be visible
-  const visibleRoutes = [
-    "/tourist/home",
-    "/tourist/activities",
-    "/tourist/itineraries",
-    "/tourist/itineraries/my",
-    "/tourist/historical-places",
-    "/tourist/reviews",
-    "/tourist/profile",
-  ];
 
-  // Check if the current route is in the list of visible routes
-  const isSidebarVisible = visibleRoutes.includes(location.pathname);
+
 
   // Conditionally render the sidebar based on the current route
-  return isSidebarVisible ? (
+  return (
     <Box
       sx={{
         width: 240,
@@ -65,31 +54,24 @@ const TourismGovernorSidebar = () => {
 
         
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            My Wishlist
+          <ListItemButton component={Link} to="/tourism-governor/historical-places" sx={linkStyle}>
+            My Places
           </ListItemButton>
         </ListItem>
+      
+        
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Places
+          <ListItemButton component={Link} to="/tourism-governor/tags" sx={linkStyle}>
+            Tags
           </ListItemButton>
         </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/reviews" sx={linkStyle}>
-            Gift Cards
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/profile" sx={linkStyle}>
-            Profile
-          </ListItemButton>
-        </ListItem>
+      
         
         
 
       </List>
     </Box>
-  ) : null; // Return null if the sidebar should not be visible
+  ); // Return null if the sidebar should not be visible
 };
 
 const linkStyle = {

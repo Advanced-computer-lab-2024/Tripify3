@@ -107,9 +107,7 @@ export const getPlacesByGovernor = async (req, res) => {
 
     res.status(http_code.OK).json({
       status: response_status.POSITIVE,
-      data: {
-        places: places,
-      },
+      places: places,
     });
   } catch (err) {
     res.status(http_code.BAD_REQUEST).json({

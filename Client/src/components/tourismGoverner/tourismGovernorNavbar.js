@@ -85,7 +85,7 @@ const TourismGovernorNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourist/profile");
+  const handleProfileClick = () => navigate("/tourism-governor/profile");
   const handleHomeClick = () => navigate("/tourist/homepage");
   const handleCartClick = () => navigate("/tourist/cart");
   const handleOrdersClick = () => navigate("/tourist/orders");
@@ -139,15 +139,7 @@ const TourismGovernorNavbar = () => {
               </MenuItem>
             </Menu>
 
-           
-
         
-
-
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
-              <ShoppingCart />
-              <Typography variant="body1" sx={{ ml: 1 }}>Cart</Typography>
-            </IconButton>
 
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
