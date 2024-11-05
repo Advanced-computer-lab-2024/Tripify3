@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Define routes for the itinerary
 router.post("/itinerary/create", createItinerary); // Create a new itinerary
-router.get("/itineraries/get/tour-guide/:id", getAllItinerariesForTourGuide); // Get all itineraries
+router.get("/itineraries/get/tourGuide/:id", getAllItinerariesForTourGuide); // Get all itineraries
 router.get("/itineraries/get", getAllItineraries); // Get all itineraries
 router.get("/itinerary/get/:id", getItineraryById); // Get an itinerary by ID
 router.put("/itinerary/update/:id", updateItinerary); // Update an itinerary by ID

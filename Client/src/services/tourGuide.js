@@ -11,7 +11,7 @@ export const updateProfile = async (userId, formData) => {
 };
 
 export const getAllItenerariesForTourGuide = async (userId) => {
-  return await axios.get(`${API_URL}/itineraries/get/tour-guide/${userId}`);
+  return await axios.get(`${API_URL}/itineraries/get/tourGuide/${userId}`);
 };
 
 export const getAllTags = async () => {
