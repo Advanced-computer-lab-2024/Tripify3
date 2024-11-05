@@ -34,7 +34,7 @@ const ActivityDetails = () => {
   };
 
   const handleCopyLink = (activityId) => {
-    const link = `http://localhost:3000/tourist/activities`; // Replace with actual activity link
+    const link = `http://localhost:3000/tourist/activity/${activityId}`; // Replace with actual activity link
     navigator.clipboard.writeText(link).then(() => {
       alert("Link copied to clipboard!");
       setCurrentActivityId(null); // Close dropdown after copying

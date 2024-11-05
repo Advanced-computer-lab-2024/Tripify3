@@ -68,3 +68,19 @@ export const getPlaces = async (req, res) => {
     });
   }
 };
+
+export const getPlaceById = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract ID from URL parameters
+    const place = await Place.findById(id); // Find place by ID
+
+    if (!place) {
+      return res.status(404).json({ message: 'Place not found' });
+    }
+
+    res.status(200).json(place); // Respond with the place data
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

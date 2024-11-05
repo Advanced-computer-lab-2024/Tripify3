@@ -5,7 +5,7 @@ import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
 import PlacesList from "./pages/tourismGovernor/PlacesList.js";
 import AddPlace from "./pages/tourismGovernor/AddPlace.js";
-
+import Placedetails from "./pages/tourist/placedetails.js"
 import ActivityDetails from './pages/tourist/activitydetails.js'; // Create this Component
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
@@ -121,6 +121,7 @@ const App = () => {
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
         <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} />
+        <Route path={`${basePath}/placedetails/:id`} element={getLayoutForRole(userRole, <Placedetails />)} />
         <Route path={`${basePath}/pasttourguides/:id`} element={getLayoutForRole(userRole, <FollowedTourGuides />)} />
         <Route path={`${basePath}/file-complaint`} element={getLayoutForRole(userRole, <ComplaintForm />)} />
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
