@@ -230,7 +230,12 @@ export const createProductM = async (req, res) => {
     if (!name || !price || !details || !quantity || !category || !sellerId) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
+    const prodM = await product.findOne({ name, sellerId });
+    if (prodM) {
+      return res
+        .status(400)
+        .json({ message: "A product already exist with the same name" });
+    }
     // Initialize the imageUrls array
     const imageUrls = [];
 
