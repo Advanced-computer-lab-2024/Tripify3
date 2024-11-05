@@ -4,9 +4,9 @@ import { upload } from '../middlewares/multer.middleware.js';
 const router = express.Router();
 
 // Route for updating a tour guide profile
-router.put('/tour-guide/profile/:id', updateTourGuideProfile);
+router.put('/tourGuide/profile/:id', updateTourGuideProfile);
 
-router.get('/tour-guide/profile/:id', getTourGuideProfile);
+router.get('/tourGuide/profile/:id', getTourGuideProfile);
 
 router.get("/tour-guide/getAll/", getAllTourGuides);
 

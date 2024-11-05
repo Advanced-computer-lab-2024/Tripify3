@@ -134,7 +134,7 @@ const HistoricalPlaces = () => {
           variant="h2"
           align="center"
           gutterBottom
-          sx={{ color: theme.palette.primary.main }}
+          sx={{ color: theme.palette.primary.main , marginTop: 8 }}
         >
           Historical Places
         </Typography>

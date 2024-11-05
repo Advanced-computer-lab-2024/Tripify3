@@ -37,7 +37,10 @@ import Complaints from "./pages/admin/complaints.js";
 
 import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
+import TourGuideActivities from "./pages/tourGuide/activities.js";
 //import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
+
+import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
 
 // Layouts Import
 import TouristLayout from "./components/tourist/touristLayout.js";
@@ -109,6 +112,10 @@ const App = () => {
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/new-password" element={<NewPassword />} />
 
+        <Route path="/termsAndAgreements" element={<TermsAndAgreements />} />
+
+        
+
         {/* Tourism Governor Routes */}
         <Route path={`/tourism-governor`} element={getLayoutForRole(userRole, <PlacesList />)} />
         <Route path={`/tourism-governor/historical-places`}  element={getLayoutForRole(userRole, <GovernorHistoricalPlaces />)}  />
@@ -138,7 +145,9 @@ const App = () => {
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
-        <Route path={`/tour-guide/profile`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />
+        <Route path={`/tour-guide/profile`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />  
+        <Route path={`/tour-guide/activities`} element={getLayoutForRole(userRole, <TourGuideActivities />)} />
+
 
         {/* Advertiser Routes */}
         <Route path={`${basePath}/advertiser`} element={<AdvertiserProfile />} />

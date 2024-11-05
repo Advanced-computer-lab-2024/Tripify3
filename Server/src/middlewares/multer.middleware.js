@@ -19,9 +19,6 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // Retrieve the user ID from the request
     const userId = req.body.userId || req.headers["user-id"]; // Access userId from headers
-    console.log("===================");
-    console.log(req.headers);
-    console.log("===================");
     if (!userId) {
       return cb(new Error("User ID is not provided"), null);
     }

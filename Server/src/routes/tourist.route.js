@@ -9,6 +9,7 @@ import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/past
 import {cancelBooking} from "../controllers/tourist/booking.controller.js";
 import { rateProduct } from "../controllers/tourist/rate&comment.controller.js";
 import { reviewProduct } from "../controllers/tourist/rate&comment.controller.js";
+import {getAllCategories} from "../controllers/tourist/category.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -18,6 +19,10 @@ router.get("/flights", getFlightsData); // Get Flights
 
 //Complaints
 router.post("/tourist/profile/:id/redeem", redeemPoints);
+
+
+//category
+router.get("/category/get" ,getAllCategories )
 
 
 //rate and comment on tour guide 
