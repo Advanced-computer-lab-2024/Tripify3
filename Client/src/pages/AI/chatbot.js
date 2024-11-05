@@ -14,15 +14,6 @@ const theme = createTheme({
     secondary: {
       main: "#e9ecef", // Light gray for bot messages, soft on the eyes
     },
-    error: {
-      main: "#dc3545", // Muted red for error accents
-    },
-    warning: {
-      main: "#ffc107", // Gold for warning messages
-    },
-    info: {
-      main: "#17a2b8", // Soft cyan for informational color
-    },
     background: {
       default: "#f5f5f5", // Very light gray background for a clean look
     },
@@ -51,6 +42,7 @@ const Chatbot = () => {
     const userMessage = { sender: "user", text: inputMessage };
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
+    scrollToBottom();
 
     setBotTyping(true);
 
@@ -59,6 +51,7 @@ const Chatbot = () => {
       setBotTyping(false);
       const botMessage = { sender: "bot", text: response.data.response };
       setMessages((prev) => [...prev, botMessage]);
+      scrollToBottom();
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -74,10 +67,27 @@ const Chatbot = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: "100vh",
-          backgroundColor: theme.palette.background.default, // Light gray background
+          height: "100vh - 100px",
+          backgroundColor: theme.palette.background.default,
         }}
       >
+        {/* Title */}
+        <Box
+          sx={{
+            py: 2,
+            px: 3,
+            backgroundColor: theme.palette.primary.main,
+            color: "white",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h4" fontWeight="bold">
+            Chat with Touri
+          </Typography>
+        </Box>
+
         {/* Chat Display */}
         <Box
           ref={chatWindowRef}
@@ -88,9 +98,11 @@ const Chatbot = () => {
             flexDirection: "column",
             gap: 2,
             p: 2,
-            border: "1px solid #ced4da", // Subtle gray border
+            maxHeight: "calc(100vh - 300px)",// Only set the height when messages are present
+            border: "1px solid #ced4da",
             borderRadius: 3,
-            backgroundColor: "#f1f3f5", // Very light gray for the chat window
+            backgroundColor: "#f1f3f5",
+            marginBottom: "20px", // Additional space above the input field
           }}
         >
           {messages.map((msg, index) => (
@@ -110,7 +122,7 @@ const Chatbot = () => {
               <Paper
                 sx={{
                   p: 1.5,
-                  backgroundColor: msg.sender === "user" ? "#007bff" : "#e9ecef", // Muted blue for user, light gray for bot
+                  backgroundColor: msg.sender === "user" ? "#003366" : "#e9ecef",
                   color: msg.sender === "user" ? "white" : "black",
                   maxWidth: "60%",
                 }}
@@ -142,8 +154,8 @@ const Chatbot = () => {
             alignItems: "center",
             gap: 2,
             p: 1,
-            borderTop: "1px solid #ced4da", // Subtle gray border at the top of the input section
-            backgroundColor: theme.palette.background.default, // Matching background for input section
+            borderTop: "1px solid #ced4da",
+            backgroundColor: theme.palette.background.default,
             position: "fixed",
             bottom: 0,
             left: 0,
@@ -160,9 +172,9 @@ const Chatbot = () => {
               if (e.key === "Enter" && inputMessage.trim()) handleSendMessage();
             }}
             sx={{
-              backgroundColor: "#ffffff", // White background for the text field
+              backgroundColor: "#ffffff",
               borderRadius: 1,
-              input: { color: "black" }, // Black text in the input field
+              input: { color: "black" },
             }}
           />
           {inputMessage.trim() && (

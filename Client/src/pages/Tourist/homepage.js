@@ -2,6 +2,13 @@ import React from "react";
 import { Grid, Box, Typography, Button, Card, CardMedia, CardContent, CardActionArea } from "@mui/material";
 // Import the image from your local repo
 import homepageImage from "../../assets/homepageImage.jpeg"; // Adjust the path to your image file
+import Fab from "@mui/material/Fab"; // Import Floating Action Button
+import ChatIcon from "@mui/icons-material/Chat"; // Import Chat Icon
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
+import RobotIcon from "@mui/icons-material/EmojiPeople"; 
+import AssistantIcon from "@mui/icons-material/Assistant"; // Import the Assistant icon
+import { FaRobot } from "react-icons/fa";
+
 
 
 
@@ -47,7 +54,10 @@ const hotels = [
 
 
 const TouristHomepage = () => {
+  const navigate = useNavigate(); // Hook to navigate to the chatbot page
+
   return (
+    
     // Remove the bigger surrounding Box
     <Card
       sx={{
@@ -250,6 +260,15 @@ const TouristHomepage = () => {
 
         
       </Box>
+       {/* Add the floating chatbot button */}
+       <Fab 
+        color="primary" 
+        aria-label="chatbot" 
+        sx={{ position: "fixed", bottom: 26, right: 26 }} // Positioned at the bottom right
+        onClick={() => navigate("/chatbot")} // Navigate to the chatbot page when clicked
+      >
+  <FaRobot style={{ width: '35px', height: '35px' }} /> {/* Set width and height */}
+  </Fab>
     </Card>
   );
 };
