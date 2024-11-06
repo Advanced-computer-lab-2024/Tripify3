@@ -94,10 +94,10 @@ const itinerarySchema = new mongoose.Schema({
       ref: "Tag",
     },
   ],
-  tourGuideId: {
+  tourGuide: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tour Guide",
-  },
+  }
 });
 
 const Itinerary = mongoose.model("Itinerary", itinerarySchema);

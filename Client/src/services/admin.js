@@ -11,7 +11,7 @@ export const updateActivity = async (advertiserId, activityId, activity) => {
 };
 
 export const getUploadedFiles = async (userId) => {
-  return await axios.get(`${API_URL}/user/${userId}/files`);
+  return await axios.get(`${API_URL}/user/files/${userId}`);
 };
 export const getAllAcceptedUsers = async () => {
   return await axios.get(`${API_URL}/users/accepted`);

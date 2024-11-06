@@ -289,25 +289,61 @@ const TourGuideItineraries = () => {
             <Grid item xs={12} sm={6} md={4} key={itinerary._id}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h5" component="div">
+                  <Typography sx={{marginBottom: 2}} variant="h5" color="secondary" component="div">
                     {itinerary.name}
                   </Typography>
-                  <Typography color="text.secondary">Duration: {itinerary.duration} hours</Typography>
-                  <Typography color="text.secondary">Language: {itinerary.language}</Typography>
-                  <Typography color="text.secondary">Price: ${itinerary.price}</Typography>
-                  <Typography color="text.secondary">Available Dates: {formatAvailableDates(itinerary.availableDates)}</Typography>
+                  <Typography ><strong>Duration: </strong>{itinerary.duration} hours</Typography>
+                  <Typography ><strong>Language:</strong>{itinerary.language}</Typography>
+                  <Typography ><strong>Price:</strong>${itinerary.price}</Typography>
+                  <Typography ><strong>Available Dates: </strong>{formatAvailableDates(itinerary.availableDates)}</Typography>
 
-                  <Typography color="text.secondary">Pickup Location: {itinerary.pickupLocation}</Typography>
-                  <Typography color="text.secondary">Drop-off Location: {itinerary.dropoffLocation}</Typography>
-                  <Typography color="text.secondary">Accessibility: {itinerary.accessibility}</Typography>
-                  <Typography color="text.secondary">bookings: {itinerary.bookings.length}</Typography>
-                  <Typography color="text.secondary">Places:</Typography>
-                  <Typography color="text.secondary">status: {itinerary.status}</Typography>
+                  <Typography ><strong>Pickup Location: </strong>{itinerary.pickupLocation}</Typography>
+                  <Typography ><strong>Drop-off Location:</strong> {itinerary.dropoffLocation}</Typography>
+                  <Typography ><strong>Accessibility: </strong>{itinerary.accessibility}</Typography>
+                  <Typography ><strong>bookings:</strong> {itinerary.bookings.length}</Typography>
+                  <Typography ><strong>status:</strong> {itinerary.status}</Typography>
 
 
-                  <Typography color="text.secondary">Tags:</Typography>
+                    <Typography><strong>Places:</strong></Typography>
+                      {itinerary.places.length > 0 ? (
+                        itinerary.places.map((place, index) => (
+                          <div key={place._id}>
+                            <Typography variant="body1">
+                              {index + 1}. {place.name}
+                            </Typography>
+                          </div>
+                        ))
+                      ) : (
+                        <Typography>No places found</Typography>
+                      )}
 
-                  <Typography color="text.secondary">activities:</Typography>
+                      <Typography><strong>Activities:</strong></Typography>
+                      {itinerary.activities.length > 0 ? (
+                        itinerary.activities.map((activity, index) => (
+                          <div key={activity._id}>
+                            <Typography variant="body1">
+                              {index + 1}. {activity.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {activity.description}
+                            </Typography>
+                          </div>
+                        ))
+                      ) : (
+                        <Typography>No activities found</Typography>
+                      )}
+
+
+                        {/* <Typography color="text.secondary">Tags:</Typography>
+                        {itinerary.tags.length > 0 ? (
+                          itinerary.tags.map((tag) => (
+                            <div key={tag._id}>
+                              <Typography variant="body1">{tag.name}</Typography>
+                            </div>
+                          ))
+                        ) : (
+                          <Typography>No tags found</Typography>
+                        )} */}
 
                     {itinerary.status === 'Inactive' && (
                     <button onClick={() => activateItinerary(itinerary._id)}>Activate</button>

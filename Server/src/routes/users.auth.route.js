@@ -1,7 +1,7 @@
 import express from "express";
-import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,UserAcceptTerms} from "../controllers/user/user.auth.controller.js";
+import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,userAcceptTerms, userDeleteAccount, getProfile} from "../controllers/user/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
-import { uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture } from "../controllers/user/file.controller.js";
+import { uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture ,getUserDetails } from "../controllers/user/file.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -16,15 +16,22 @@ router.post("/user/upload/documents", upload.fields([{ name: 'files', maxCount: 
 router.put("/user/upload/picture", upload.fields([{ name: 'file', maxCount: 1 }]), uploadProfilePicture);
 
 // Define the route to get user files
-router.get('/user/:userId/files', getUploadedFiles);
-router.get('/user/:userId/profile/picture', getProfilePicture);
+router.get('/user/files/:userId', getUploadedFiles);
+router.get('/user/profile/picture/:userId', getProfilePicture);
 
-router.put('/users/accept-terms/:id', UserAcceptTerms);
+router.put('/user/accept-terms/:id', userAcceptTerms);
 
 
 router.post("/user/resetPassword", resetPassword); // Reset password after verification
 router.post("/user/sendVerificationCode", sendVerificationCode); // Send verification code
 router.post("/user/verifyVerificationCode", verifyVerificationCode); // Send verification code
-router.put("/user/changePassword", validate(changePasswordSchema, "body"), changePassword);
+router.get("/user/get/profile/:userId", getProfile); // Send verification code
+router.put("/user/change/password",  changePassword);
+// Route to delete user account
+router.delete("/users/delete/:userId", userDeleteAccount);
+
+router.get('/user/get/:id', getUserDetails); // Add this route to fetch user details
+
+
 
 export default router;

@@ -73,6 +73,49 @@ const tourGuideSchema = new mongoose.Schema({
             ref: "comment" // Reference to Rating model
         }
     ]
+  name: {
+    type: String,
+    required: true,
+  },
+  yearsOfExperience: {
+    type: Number,
+    required: true,
+  },
+  previousWork: [
+    {
+      type: String,
+    },
+  ],
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  licenseNumber: {
+    type: String,
+  },
+  status: {
+    type: String,
+    enum: ["Pending", "Rejected", "Accepted"],
+    required: true,
+    default: "Pending",
+  }, 
+  itineraries:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Itinerary",
+    },
+  ],
+  profilePicture: {
+    filename: String,
+    filepath: String, // This will store the path or URL to the profile picture
+  },
+  files: [
+    {
+      filename: String,
+      filepath: String,
+      uploadedAt: { type: Date, default: Date.now },
+    },
+  ]
 });
 
 const TourGuide = User.discriminator('Tour Guide', tourGuideSchema);

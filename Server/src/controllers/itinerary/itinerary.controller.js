@@ -1,7 +1,7 @@
 import Itinerary from "../../models/itinerary.js";
-import Tag from "../../models/tag.js";
 import User from "../../models/user.js";
-
+import Comment from "../../models/comment.js";
+import Tourist from "../../models/tourist.js";
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
@@ -100,7 +100,7 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const itineraries = await Itinerary.find({ tourGuideId: id })
+    const itineraries = await Itinerary.find({ tourGuide: id })
       .populate({
         path: "activities",
         populate: {

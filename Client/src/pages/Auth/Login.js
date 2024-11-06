@@ -17,39 +17,56 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8000/access/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+        const response = await fetch("http://localhost:8000/access/user/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+        });
 
-      if (!response.ok) {
-        setErrorMessage("Invalid username or password.");
-        return;
-      }
+        if (!response.ok) {
+            setErrorMessage("Invalid username or password.");
+            return;
+        }
 
-      const data = await response.json();
-      setUser(data.user); // Store user info in the utility file
-      if (data.user.type === "Tourism Governor") {
-        navigate("/tourism-governor/tourism-governor");
-      } else if (data.user.type === "Tourist") {
-        navigate("/tourist/homepage");
-      } else if (data.user.type === "Seller") {
-        navigate("/seller/seller");
-      } else if (data.user.type === "Admin") {
-        navigate("/admin/users");
-      } else if (data.user.type === "Tour Guide") {
-        navigate("/tour-guide/profile");
-      } else if (data.user.type === "Advertiser") {
-        navigate("/advertiser/advertiser");
-      }
+        const data = await response.json();
+        setUser(data.user); // Store user info in the utility file
+
+        // Check if the user needs to accept terms
+        if ((data.user.type === "Seller" || data.user.type === "Tour Guide" || data.user.type === "Advertiser") && !data.user.hasAcceptedTerms) {
+            navigate("/TermsAndAgreements");
+            return; // Ensure that we exit the function after navigating
+        }
+
+        // Navigate based on user type
+        switch (data.user.type) {
+            case "Tourism Governor":
+                navigate("/tourism-governor/profile");
+                break;
+            case "Tourist":
+                navigate("/tourist/homepage");
+                break;
+            case "Seller":
+                navigate("/seller/seller");
+                break;
+            case "Admin":
+                navigate("/admin/users");
+                break;
+            case "Tour Guide":
+                navigate("/tour-guide/profile");
+                break;
+            case "Advertiser":
+                navigate("/advertiser/advertiser");
+                break;
+            default:
+                console.error("Unknown user type:", data.user.type);
+        }
     } catch (error) {
-      console.error("Error:", error);
-      setErrorMessage("An error occurred while logging in.");
+        console.error("Error:", error);
+        setErrorMessage("An error occurred while logging in.");
     }
-  };
+};
 
   return (
     <Container
