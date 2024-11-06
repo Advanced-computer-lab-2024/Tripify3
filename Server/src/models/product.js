@@ -20,12 +20,6 @@ const productSchema = new Schema(
       required: false,
       default: 0,
     },
-    reviews: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Review",
-      },
-    ],
     quantity: {
       type: Number,
       required: true,
