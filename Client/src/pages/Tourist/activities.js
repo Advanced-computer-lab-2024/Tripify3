@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllActivities, getAllCategories } from "../../services/tourist.js";
-
+import { Link } from 'react-router-dom';
 const theme = createTheme({
   palette: {
     primary: {
@@ -42,7 +42,8 @@ const Activities = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
-  const [validationError, setValidationError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
@@ -52,8 +53,8 @@ const Activities = () => {
           getAllActivities(),
           getAllCategories(),
         ]);
-        setActivities(activitiesResponse.data.activities);
-        setOriginalActivities(activitiesResponse.data.activities);
+        setActivities(activitiesResponse.data);
+        setOriginalActivities(activitiesResponse.data);
         setCategories(categoriesResponse.data);
         setLoading(false);
       } catch (error) {
@@ -77,12 +78,13 @@ const Activities = () => {
     setActivities(sortedActivities);
   };
 
+  // Filter activities based on selected categories, budget, and search term
   const handleFilter = () => {
     let filteredActivities = [...originalActivities];
 
     if (selectedCategories.length > 0) {
       filteredActivities = filteredActivities.filter((activity) =>
-        selectedCategories.includes(activity.category._id)
+        selectedCategories.includes(activity.category)
       );
     }
 
@@ -92,14 +94,28 @@ const Activities = () => {
       );
     }
 
+    if (searchTerm) {
+      filteredActivities = filteredActivities.filter((activity) =>
+        activity.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
     setActivities(filteredActivities);
   };
+
+  // Automatically filter when search term, selected categories, or budget changes
+  useEffect(() => {
+    handleFilter();
+  }, [searchTerm, selectedCategories, budget]);
 
   const handleResetFilters = () => {
     setSelectedCategories([]);
     setBudget("");
+    setSearchTerm(""); // Reset search term
     setActivities(originalActivities);
   };
+
+
 
   if (loading) {
     return (
@@ -115,7 +131,7 @@ const Activities = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" color="primary" sx={{ mb: 4 }}>
+      <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 8 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
             Upcoming Activities
@@ -130,6 +146,8 @@ const Activities = () => {
             label="Search by name"
             variant="outlined"
             sx={{ mr: 2, width: "300px" }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update search term on change
           />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
@@ -159,7 +177,10 @@ const Activities = () => {
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
-                    <Chip key={value} label={categories.find((cat) => cat._id === value)?.name || value} />
+                    <Chip
+                      key={value}
+                      label={categories.find((cat) => cat._id === value)?.name || value}
+                    />
                   ))}
                 </Box>
               )}
@@ -194,8 +215,8 @@ const Activities = () => {
         {/* Activities Section */}
         <Grid container spacing={3}>
           {activities.map((activity) => (
-            <Grid item xs={12} md={6} key={activity._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Grid item xs={12} key={activity._id}>
+              <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
                 <CardContent>
                   <Typography variant="h6" color="secondary">
                     {activity.name}
@@ -206,13 +227,15 @@ const Activities = () => {
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to activity ${activity._id}`)}
-                  >
-                    View Details
-                  </Button>
+               
+<Button
+  component={Link}
+  to={`/tourist/activity/${activity._id}`}
+  variant="contained"
+  sx={{ mt: 2 }}
+>
+  View Details
+</Button>
                 </CardContent>
               </Card>
             </Grid>

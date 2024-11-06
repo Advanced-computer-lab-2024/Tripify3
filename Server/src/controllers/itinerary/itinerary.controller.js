@@ -35,7 +35,6 @@ export const editItineraryAttribute = async (req, res) => {
 export const createItinerary = async (req, res) => {
   try {
     const itinerary = new Itinerary(req.body);
-    console.log(req.body);
     await itinerary.save();
     res.status(201).json(itinerary);
   } catch (error) {
@@ -44,17 +43,8 @@ export const createItinerary = async (req, res) => {
   }
 };
 
-// Get all itineraries
 export const getAllItineraries = async (req, res) => {
-  const { id } = req.params;
   try {
-    // Find the user by ID to determine their type
-    const user = await User.findById(id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const itineraries = await Itinerary.find()
       .populate({
         path: "activities",
@@ -87,14 +77,71 @@ export const getAllItineraries = async (req, res) => {
       };
     });
 
-    console.log(user.type);
+    return res.status(200).json({
+      message: "Iteneraries found successfully",
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get all itineraries
+export const getAllItinerariesForTourGuide = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Find the user by ID to determine their type
+    const user = await User.findById(id);
+
+    console.log(user);
     
-    // If the user is a tourist, filter itineraries by inappropriate status
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const itineraries = await Itinerary.find({ tourGuide: id })
+      .populate({
+        path: "activities",
+        populate: {
+          path: "tags", // Populate the tags within activities
+          select: "name", // Select only the 'name' field of the tags
+        },
+      })
+      .populate({
+        path: "places",
+        populate: {
+          path: "tags", // Populate the tags within locations
+          select: "name", // Select only the 'name' field of the tags
+        },
+      });
+
+    // Transform the itineraries to include a combined tags array
+    let response = itineraries.map((itinerary) => {
+      // Extract tags from activities
+      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
+      // Extract tags from locations
+      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
+
+      // Combine activity and location tags into one array
+      const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
+
+      return {
+        ...itinerary.toObject(), // Convert Mongoose document to plain object
+        tags: combinedTags, // Add combined tags array to the itinerary
+      };
+    });
+
     if (user.type === "Tourist") {
       response = response.filter((itinerary) => !itinerary.inappropriate);
     }
 
-    res.status(200).json(response);
+    
+    return res.status(200).json({
+      message: "Iteneraries found successfully",
+      data: response,
+    });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -107,7 +154,11 @@ export const getItineraryById = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-    res.status(200).json(itinerary);
+
+    return res.status(200).json({
+      message: "Itenerary found successfully",
+      data: itinerary,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -172,60 +223,55 @@ export const addActivityToItinerary = async (req, res) => {
     res.status(500).send({ message: "Server error", error: error.message });
   }
 };
-export const createComment = async (req, res) => {
+
+export const ActivateItinerary = async (req, res) => {
+  const itineraryId = req.params.id;
+
   try {
-    const { id } = req.params;
-    const { text, userId } = req.body;
-    const itinerary = await Itinerary.findById(id).populate("tourGuide");
+    const itinerary = await Itinerary.findById(itineraryId);
+
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
 
-    const user = await Tourist.findById(userId).populate("following");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (itinerary.status === "Active") {
+      return res.status(400).json({ message: "Itinerary is already active" });
     }
 
-    const itineraryTourGuide = itinerary.tourGuide;
-
-    const followsTourGuide = user.following.some((followedTourGuide) =>
-      followedTourGuide.equals(itineraryTourGuide._id)
-    );
-    const attendedItinerary = user.itinerariesAttended.some(
-      (attendedItinerary) => attendedItinerary.equals(itinerary._id)
-    );
-
-    if (!followsTourGuide) {
-      return res
-        .status(403)
-        .json({
-          message:
-            "You must follow the tour guide to comment on this itinerary",
-        });
-    }
-    if (!attendedItinerary) {
-      return res
-        .status(403)
-        .json({ message: "You must attend the itinerary to comment on it" });
-    }
-
-    const newComment = new Comment({
-      user: userId,
-      content: text,
-      date: new Date(),
-    });
-
-    await newComment.save();
-
-    itinerary.comments.push(newComment._id);
+    itinerary.status = "Active";
     await itinerary.save();
 
-    res.status(201).json({
-      message: "Comment added successfully",
-      itinerary: itinerary,
-    });
+    res.status(200).json({ message: "Itinerary activated successfully", itinerary });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ message: "Failed to add comment" });
+    res.status(500).json({ message: "Error activating itinerary", error });
+  }
+};
+
+// Deactivate Itinerary
+export const DeactivateItinerary = async (req, res) => {
+  const itineraryId = req.params.id;
+
+  try {
+    const itinerary = await Itinerary.findById(itineraryId);
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    if (itinerary.status === "Inactive") {
+      return res.status(400).json({ message: "Itinerary is already inactive" });
+    }
+
+    // Allow deactivation only if there are bookings
+    if (itinerary.bookings.length === 0) {
+      return res.status(400).json({ message: "Itinerary with no bookings cannot be deactivated" });
+    }
+
+    itinerary.status = "Inactive";
+    await itinerary.save();
+
+    res.status(200).json({ message: "Itinerary deactivated successfully", itinerary });
+  } catch (error) {
+    res.status(500).json({ message: "Error deactivating itinerary", error });
   }
 };

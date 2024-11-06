@@ -46,8 +46,6 @@ export const getAllProductImages = (req, res) => {
 
 export const deleteImage = async (req, res) => {
   const { sellerId, filename } = req.params;
-  const { indexToRemove } = req.query;
-  console.log("this is delete", __dirname);
 
   // Construct the full file path to the requested image
   const filePath = path.join(__dirname, "src", "uploads", sellerId, filename);
@@ -66,36 +64,30 @@ export const deleteImage = async (req, res) => {
         console.error("Error deleting file:", err);
         return res.status(500).json({ message: "Error deleting file" });
       }
-      const [nameA, numberWithExtension] = filename.split("-");
 
-      // Step 2: Split "1.png" on the period to get just the "1"
-      const [number] = numberWithExtension.split(".");
       try {
-        // Step 1: Find the product by sellerId and name
+        // Extract the product name (without the suffix) by splitting at the hyphen
+        const [nameA] = filename.split("-");
+
+        // Find the product by sellerId and name
         const product2 = await product.findOne({ sellerId, name: nameA });
 
         if (!product2) {
           return res.status(404).json({ message: "Product not found" });
         }
 
-        // Step 2: Remove the image URL at index (number - 1)
+        // Remove the image URL that matches the filename
+        product2.imageUrl = product2.imageUrl.filter(
+          (imgUrl) => !imgUrl.includes(filename)
+        );
 
-        console.log("this is the index", indexToRemove);
-        if (indexToRemove >= 0 && indexToRemove < product2.imageUrl.length) {
-          product2.imageUrl.splice(indexToRemove, 1); // Remove the image at the specified index
-        } else {
-          return res.status(400).json({ message: "Invalid image index" });
-        }
-
-        // Step 3: Save the updated product
+        // Save the updated product
         await product2.save();
 
         // Return success message after deleting the image file and updating the database
         return res.status(200).json({
-          message: `File deleted successfully and image at index ${
-            indexToRemove + 1
-          } removed from product`,
-          product2, // Optionally return the updated product
+          message: `File ${filename} deleted successfully and removed from product`,
+          product: product2, // Optionally return the updated product
         });
       } catch (error) {
         console.error("Error updating product:", error);
@@ -103,8 +95,6 @@ export const deleteImage = async (req, res) => {
           .status(500)
           .json({ message: "Error updating product after file deletion" });
       }
-      // If deletion is successful, return a success response
-      return res.status(200).json({ message: "File deleted successfully" });
     });
   });
 };
@@ -240,7 +230,12 @@ export const createProductM = async (req, res) => {
     if (!name || !price || !details || !quantity || !category || !sellerId) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
+    const prodM = await product.findOne({ name, sellerId });
+    if (prodM) {
+      return res
+        .status(400)
+        .json({ message: "A product already exist with the same name" });
+    }
     // Initialize the imageUrls array
     const imageUrls = [];
 

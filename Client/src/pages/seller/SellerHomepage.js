@@ -14,28 +14,28 @@ import ViewSellerPage from "./viewSeller.js"; // Ensure this path is correct
 import FilterSalesReport from "./filterSalesReport.js";
 import { useState } from "react";
 import EditProduct from "./EditProduct.js";
-import WishList from "../Tourist/wishList.js";
-import Cart from "../Tourist/cart2.js";
-import ProductNew from "../seller/new/product.js";
-import ProductPage2 from "../seller/new/product.js";
-import ProductPage from "../seller/new/productPage.js";
-import SideBar from "../seller/new/sideBars.js";
+import WishList from "../tourist/wishList.js";
+import Cart from "../tourist/cart2.js";
+import ProductNew from "./new/product.js";
+import ProductPage2 from "./new/product.js";
+import ProductPage from "./new/productPage.js";
+import SideBar from "./new/sideBars.js";
 const aSeller = () => {
   const [toggle, setToggle] = useState(true);
   return (
     <>
       {/* <ProductNew /> */}
       {/* <ProductPage /> */}
-      <SideBar />
+      {/* <SideBar /> */}
       {/* <ProductPage /> */}
       {/* <ViewSellerPage />
       <CreateProductForm />
       <UpdateSellerForm />
 
       <ViewProductStockAndSales />
-      <EditProductForm />
+      <EditProductForm />*/}
       {toggle ? <Products /> : <ProductsA />}
-      <button onClick={() => setToggle(!toggle)}>Toggle</button>*/}
+      <button onClick={() => setToggle(!toggle)}>Toggle</button>
       {/* <FilterSalesReport />
       <CreatProdM />
       <EditProduct />

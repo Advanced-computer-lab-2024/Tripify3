@@ -79,6 +79,11 @@ const itinerarySchema = new mongoose.Schema({
     type: String,
     required: true, // Ensure accessibility is required
   },
+  status:{
+    type:String,
+    enum: ["Active", "Inactive"],
+    default: "Active"
+  },
   inappropriate:{
     type: Boolean,
     default: false

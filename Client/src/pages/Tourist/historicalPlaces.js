@@ -55,8 +55,8 @@ const HistoricalPlaces = () => {
     const fetchPlaces = async () => {
       try {
         const response = await axios.get("http://localhost:8000/places/get");
-        setPlaces(response.data.data);
-        setFilteredPlaces(response.data.data); // Initialize with all places
+        setPlaces(response.data.places);
+        setFilteredPlaces(response.data.places); // Initialize with all places
         setLoading(false);
       } catch (err) {
         setError("Error fetching places data");
@@ -134,7 +134,7 @@ const HistoricalPlaces = () => {
           variant="h2"
           align="center"
           gutterBottom
-          sx={{ color: theme.palette.primary.main }}
+          sx={{ color: theme.palette.primary.main , marginTop: 8 }}
         >
           Historical Places
         </Typography>

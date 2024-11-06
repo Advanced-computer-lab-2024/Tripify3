@@ -6,6 +6,11 @@ import { IconButton } from "@mui/material";
 import ArchiveIcon from "@mui/icons-material/Archive"; // Import an archive icon
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import AddIcon from "@mui/icons-material/Add";
+import AddFile from "./new/addFile";
+import ProductEditModal from "./new/modal";
+import ProductCreateModal from "./new/modalCreate";
+
 import {
   AppBar,
   Toolbar,
@@ -30,6 +35,89 @@ import {
   createTheme,
   ThemeProvider,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import { ArrowBack, ArrowForward } from "@mui/icons-material";
+
+const ImageFlipper = ({ images }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    // Adjust currentImageIndex if it goes out of bounds after images update
+    if (currentImageIndex >= images.length) {
+      setCurrentImageIndex(images.length - 1);
+    }
+  }, [images, currentImageIndex]);
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {/* Left Button */}
+      <IconButton
+        style={{
+          position: "absolute",
+          left: 10,
+          zIndex: 1,
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+        }}
+        onClick={handlePrevImage}
+      >
+        <ArrowBack />
+      </IconButton>
+
+      {/* Display Current Image */}
+      <CardMedia
+        component="img"
+        image={`http://localhost:8000/${images[currentImageIndex]?.substring(
+          images[currentImageIndex].indexOf("uploads/")
+        )}`}
+        alt="Product image"
+        style={{
+          objectFit: "cover",
+          borderRadius: "8px",
+          minWidth: "200px",
+          minHeight: "200px",
+          maxWidth: "200px",
+          maxHeight: "200px",
+          margin: "auto",
+          marginTop: "15px",
+        }}
+      />
+
+      {/* Right Button */}
+      <IconButton
+        style={{
+          position: "absolute",
+          right: 10,
+          zIndex: 1,
+          backgroundColor: "rgba(255, 255, 255, 0.7)",
+        }}
+        onClick={handleNextImage}
+      >
+        <ArrowForward />
+      </IconButton>
+    </div>
+  );
+};
 
 const theme = createTheme({
   palette: {
@@ -52,6 +140,11 @@ const Products = () => {
   const [budget, setBudget] = useState(""); // State for budget
   const [effect, setEffect] = useState("");
   const [wishArray, setWishArray] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editProduct, setEditProduct] = useState([]);
+  const [newImage, setNewImage] = useState([]);
+  const [openCreate, setOpenCreate] = useState(false);
 
   const fetchProducts = async () => {
     try {
@@ -168,6 +261,186 @@ const Products = () => {
     }
   };
 
+  const handleUpdate = async (product) => {
+    try {
+      console.log("Updating product", product);
+      const response = await axios.put(
+        `http://localhost:8000/access/seller/editProduct3?productId=${product._id}`, // Don't pass the productId in the URL
+        product, // Pass the product object in the request body
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "user-id": getUserId(), // Pass userId in the headers
+          },
+        }
+      );
+      fetchProducts();
+      console.log("Product updated successfully", response.data);
+    } catch (error) {
+      console.error(
+        "Error updating product",
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  const handleAdd2 = async (product) => {
+    // Prepare the form data
+    const newFormData = new FormData();
+    newFormData.append("productId", product._id); // Include productId in the request body
+    newFormData.append("name", product.name);
+    newFormData.append("price", product.price);
+    newFormData.append("details", product.details);
+    newFormData.append("quantity", product.quantity);
+    newFormData.append("category", product.category);
+    newFormData.append("sellerId", product.sellerId);
+
+    // Append existing images as URLs
+    product.imageUrl.forEach((url) => {
+      newFormData.append("existingImages", url); // Assuming your backend handles "existingImages" for URLs
+    });
+
+    // Append new images (files uploaded by the user)
+    // Append new images (files uploaded by the user)
+    newImage.forEach((image, index) => {
+      newFormData.append(
+        "images", // Ensure this field name matches with multer's expected field
+        image,
+        `${product.name}-${index + product.imageUrl.length + 1}.${image.name
+          .split(".")
+          .pop()}`
+      );
+    });
+
+    // Debug: Log the FormData content to verify its structure
+
+    try {
+      // Send the PUT request with the form data to update the product
+      const response = await axios.put(
+        `http://localhost:8000/access/seller/editProduct`, // Don't pass the productId in the URL
+        newFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "user-id": getUserId(), // Pass userId in the headers
+          },
+        }
+      );
+
+      console.log("Product updated successfully", response.data);
+
+      // Optionally, update the UI or reset states here if needed
+      // Example: refresh product data or clear form states
+      setNewImage([]);
+    } catch (error) {
+      console.error(
+        "Error updating product",
+        error.response?.data || error.message
+      );
+    }
+    fetchProducts();
+  };
+
+  const handleAdd = async (product) => {
+    const newFormData = new FormData();
+    newFormData.append("productId", product._id);
+    newFormData.append("name", product.name);
+    newFormData.append("price", product.price);
+    newFormData.append("details", product.details);
+    newFormData.append("quantity", product.quantity);
+    newFormData.append("category", product.category);
+    newFormData.append("sellerId", product.sellerId);
+
+    product.imageUrl.forEach((url) => {
+      newFormData.append("existingImages", url);
+    });
+
+    // Extract all current indices from existing image URLs
+    const currentIndices = product.imageUrl
+      .map((url) => {
+        const match = url.match(/-(\d+)\./);
+        return match ? parseInt(match[1], 10) : null;
+      })
+      .filter((index) => index !== null)
+      .sort((a, b) => a - b);
+
+    // Identify gaps (missing indices) in the current indices
+    const missingIndices = [];
+    for (let i = 1; i <= Math.max(...currentIndices); i++) {
+      if (!currentIndices.includes(i)) {
+        missingIndices.push(i);
+      }
+    }
+
+    // Start index for new images from the next highest number
+    let nextIndex = Math.max(...currentIndices, 0) + 1;
+
+    // Append new images using missing indices first, then increment
+    newImage.forEach((image, idx) => {
+      console.log("this is image", image);
+      const useIndex =
+        missingIndices.length > 0 ? missingIndices.shift() : nextIndex++;
+      newFormData.append(
+        "images",
+        image,
+        `${product.name}-${useIndex}.${image.name.split(".").pop()}`
+      );
+    });
+
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/access/seller/editProduct`,
+        newFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "user-id": getUserId(),
+          },
+        }
+      );
+
+      console.log("Product updated successfully", response.data);
+      setNewImage([]);
+    } catch (error) {
+      console.error(
+        "Error updating product",
+        error.response?.data || error.message
+      );
+      fetchProducts();
+    }
+  };
+
+  const handleEdit = (product) => {
+    handleEdits(product);
+    setSelectedProduct(product); // Set the selected product for the modal
+    setOpenModal(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setEditProduct([]);
+    setNewImage([]);
+    setSelectedProduct(null);
+    fetchProducts();
+  };
+  const handleCloseModal2 = () => {
+    console.log("thisis cvlosdffdg");
+    setOpenCreate(false);
+    fetchProducts();
+  };
+
+  const handleEdits = (product) => {
+    setEditProduct((prev) => {
+      const productExists = prev.find((p) => p._id === product._id);
+      if (productExists) {
+        return prev.filter((p) => p._id !== product._id);
+      } else {
+        return [...prev, { ...product }];
+      }
+    });
+    console.log("this is the image", newImage);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <div>
@@ -244,8 +517,6 @@ const Products = () => {
               </Select>
             </FormControl>
           </Box>
-
-          {/* Products Display */}
           <div>
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             {filteredProducts.length > 0 ? (
@@ -255,18 +526,48 @@ const Products = () => {
                     <Card style={{ position: "relative" }}>
                       {/* Archive Button in Top Right */}
                       {getUserType() !== "Tourist" ? (
-                        <IconButton
-                          style={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            zIndex: 1,
-                            backgroundColor: "#fff",
-                          }}
-                          onClick={() => handleArchive(product._id)} // Function to handle archiving
-                        >
-                          <ArchiveIcon />
-                        </IconButton>
+                        <>
+                          {!editProduct.some((p) => p._id === product._id) ? (
+                            <IconButton
+                              style={{
+                                position: "absolute",
+                                top: 8,
+                                left: 8,
+                                zIndex: 1,
+                                backgroundColor: "#fff",
+                              }}
+                              onClick={() => handleArchive(product._id)} // Function to handle archiving
+                            >
+                              <ArchiveIcon />
+                            </IconButton>
+                          ) : (
+                            <Box
+                              style={{
+                                position: "absolute",
+                                top: 8,
+                                left: 8,
+                                zIndex: 1,
+                                backgroundColor: "#fff",
+                              }}
+                            >
+                              <AddFile setNewImage={setNewImage} />
+                            </Box>
+                          )}
+                          <IconButton
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 8,
+                              zIndex: 1,
+                              backgroundColor: "#fff",
+                            }}
+                            onClick={() => {
+                              handleEdit(product);
+                            }}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </>
                       ) : (
                         <IconButton
                           style={{
@@ -276,7 +577,7 @@ const Products = () => {
                             zIndex: 1,
                             backgroundColor: "#fff",
                           }}
-                          onClick={() => handleWishlist(product._id)} // Function to handle archiving
+                          onClick={() => handleWishlist(product._id)}
                         >
                           {wishArray.includes(product._id) ? (
                             <FavoriteIcon style={{ color: "red" }} />
@@ -288,29 +589,7 @@ const Products = () => {
 
                       {Array.isArray(product.imageUrl) &&
                       product.imageUrl.length > 0 ? (
-                        (() => {
-                          const indexOfUploads =
-                            product.imageUrl[0].indexOf("uploads/");
-                          const relativePath =
-                            product.imageUrl[0].substring(indexOfUploads);
-                          return (
-                            <CardMedia
-                              component="img"
-                              image={`http://localhost:8000/${relativePath}`}
-                              style={{
-                                objectFit: "cover",
-                                borderRadius: "8px",
-                                minWidth: "200px",
-                                minHeight: "200px",
-                                maxWidth: "200px",
-                                maxHeight: "200px",
-                                margin: "auto",
-                                marginTop: "20px",
-                              }}
-                              alt={product.name}
-                            />
-                          );
-                        })()
+                        <ImageFlipper images={product.imageUrl} />
                       ) : (
                         <CircularProgress
                           style={{
@@ -365,13 +644,71 @@ const Products = () => {
                     </Card>
                   </Grid>
                 ))}
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card
+                    style={{
+                      position: "relative",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%", // Set a fixed height if desired
+                      backgroundColor: "#f0f0f0", // Light gray background
+                      cursor: "pointer",
+                    }}
+                    onClick={() => console.log("Open modal or perform action")}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        setOpenCreate(true);
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Card>
+                </Grid>
               </Grid>
             ) : (
-              <p>No products found.</p>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%", // Set a fixed height if desired
+                    backgroundColor: "#f0f0f0", // Light gray background
+                    cursor: "pointer",
+                  }}
+                  onClick={() => console.log("Open modal or perform action")}
+                >
+                  <IconButton
+                    onClick={() => {
+                      setOpenCreate(true);
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Card>
+              </Grid>
             )}
           </div>
         </Box>
       </div>
+      <ProductEditModal
+        open={openModal}
+        handleClose={handleCloseModal}
+        product={selectedProduct}
+        setEditProduct={setEditProduct}
+        newImages={newImage}
+        setNewImages={setNewImage}
+        editProduct={editProduct}
+        handleUpdate={handleAdd}
+        setNewImage={setNewImage}
+      />
+      {openCreate && (
+        <ProductCreateModal open={openCreate} handleClose={handleCloseModal2} />
+      )}
+      ;
     </ThemeProvider>
   );
 };

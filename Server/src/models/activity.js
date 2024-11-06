@@ -26,6 +26,11 @@ const activitySchema = new mongoose.Schema({
     type: Number, // Could be a percentage or fixed amount
     default: 0,
   },
+  status:{
+    type:String,
+    enum: ["Active", "Inactive"],
+    default: "Active"
+  },
   duration: {
     type: Number, // Duration in minutes
     required: true,

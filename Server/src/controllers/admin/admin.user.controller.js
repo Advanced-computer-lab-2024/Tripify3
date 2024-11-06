@@ -5,7 +5,6 @@ import Seller from "../../models/seller.js";
 import TourGuide from "../../models/tourGuide.js";
 import Tourist from "../../models/tourist.js";
 
-
 export const getAllAcceptedUsers = async (req, res) => {
   try {
     const users = await User.find({ status: "Accepted" });
@@ -65,8 +64,6 @@ export const getAllPendingUsers = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 export const findUser = async (req, res) => {
   const { username } = req.body;
