@@ -17,6 +17,8 @@ import TouristHomePage from "./pages/tourist/homepage.js";
 import TouristProfile from "./pages/tourist/profile.js";
 import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
+import SearchHotels from "./pages/tourist/searchHotels.js";
+import LoadHotels from "./pages/tourist/loadHotels.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
 import ComplaintForm from "./pages/tourist/complaintForm.js";
@@ -54,6 +56,7 @@ import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
 import Users from "./pages/admin/users.js";
 import Tags from "./pages/admin/tags.js";
+import loadHotels from "./pages/tourist/loadHotels.js";
 
 // Mock function to get the current user role
 const getUserRole = () => {
@@ -128,8 +131,10 @@ const App = () => {
         <Route path={`/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
         <Route path={`/tourist/profile`} element={getLayoutForRole(userRole, <TouristProfile />)} />
-        <Route path={"/search/flights"} element={<SearchFlights />} />
-        <Route path={"/load/flights"} element={<LoadFlights />} />
+        <Route path={"/search_flights"} element={getLayoutForRole(userRole,<SearchFlights />)} />
+        <Route path={"/load_flights"} element={getLayoutForRole(userRole,<LoadFlights />)} />
+        <Route path={"/search_hotels"} element={getLayoutForRole(userRole,<SearchHotels />)} />
+        <Route path={"/load_hotels"} element={getLayoutForRole(userRole,<LoadHotels />)} />
         <Route path={"/tourist/view/complaints/:id"} element={<ViewComplaints />} />
 
       
