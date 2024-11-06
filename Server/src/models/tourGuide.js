@@ -44,7 +44,7 @@ const tourGuideSchema = new mongoose.Schema({
       filepath: String,
       uploadedAt: { type: Date, default: Date.now },
     },
-  ],
+  ]
 });
 
 const TourGuide = User.discriminator('Tour Guide', tourGuideSchema);

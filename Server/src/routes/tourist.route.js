@@ -1,8 +1,34 @@
 import express from "express";
-import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
-import { getFlightsData } from "../controllers/tourist/search.controller.js";
-import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
-import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor, updateCart } from "../controllers/tourist/cart.controller.js";
+import {
+  getSortedItineraries,
+  getFilteredItineraries,
+  bookItinerary
+} from "../controllers/tourist/itineraries.controller.js";
+import { getAllActivities,bookActivity } from "../controllers/tourist/activities.controller.js";
+import {
+  getProfile,
+  editProfile,
+} from "../controllers/tourist/profile.controller.js";
+import {
+  searchPlaces,
+  searchActivities,
+  searchItineraries,
+  getFlightsData,
+} from "../controllers/tourist/search.controller.js";
+import {
+  initializeWishList,
+  AddProductToWishlist,
+  getWishlist,
+  removeProductFromWishlist,
+} from "../controllers/tourist/wishList.contoller.js";
+import {
+  initializeCart,
+  addToCart,
+  getTouristCart,
+  removeFromCart,
+  Decrementor,
+  updateCart,
+} from "../controllers/tourist/cart.controller.js";
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 import {touristReview} from "../controllers/tourist/rate&comment.controller.js";
 import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
