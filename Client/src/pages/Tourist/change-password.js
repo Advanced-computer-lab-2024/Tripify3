@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Container, Paper } from '@mui/material';
+import { Box, TextField, Button, Typography, Container, Paper, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-// Define custom styles using the `sx` prop
 const ChangePassword = () => {
   const [email, setEmail] = useState('');
+  const [openPopup, setOpenPopup] = useState(false); // State for controlling the popup visibility
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logic for sending email to change password goes here
     console.log('Password change request for email:', email);
+    setOpenPopup(true); 
+  };
+
+  const handleClosePopup = () => {
+    setOpenPopup(false); 
   };
 
   return (
@@ -16,18 +21,18 @@ const ChangePassword = () => {
       sx={{
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'flex-start', // Align items to the top of the page
-        minHeight: '100vh', // Keeps the full height of the viewport
+        alignItems: 'flex-start',
+        minHeight: '100vh',
         backgroundColor: '#f4f7fa',
-        paddingTop: '50px', // Move the content higher from the top
+        paddingTop: '50px',
       }}
     >
       <Paper
         sx={{
-          padding: '50px', // Increased padding for more spacious design
+          padding: '50px',
           width: '100%',
-          maxWidth: '600px', // Increased width for larger card
-          minHeight: '400px', // Increased card height
+          maxWidth: '600px',
+          minHeight: '400px',
           borderRadius: '15px',
           boxShadow: 3,
           backgroundColor: '#ffffff',
@@ -40,7 +45,7 @@ const ChangePassword = () => {
           Enter your email address and we will send you a link to change your password.
         </Typography>
         <form onSubmit={handleSubmit}>
-          <Box mb={3}> {/* Increased bottom margin for spacing */}
+          <Box mb={3}>
             <TextField
               label="Email Address"
               type="email"
@@ -64,7 +69,7 @@ const ChangePassword = () => {
                 '&:hover': {
                   backgroundColor: '#0056b3',
                 },
-                padding: '15px', // Increased padding for button
+                padding: '15px',
               }}
             >
               Send Reset Link
@@ -75,6 +80,25 @@ const ChangePassword = () => {
           We'll send you an email with a link to reset your password.
         </Typography>
       </Paper>
+
+      {/* Popup Dialog */}
+      <Dialog open={openPopup} onClose={handleClosePopup}>
+  <DialogTitle sx={{ textAlign: 'center', fontSize: '20px', fontWeight: 600 }}>
+    Email Sent
+  </DialogTitle>
+  <DialogContent sx={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+    <CheckCircleIcon sx={{ fontSize: '80px', color: '#4caf50', marginBottom: '20px' }} /> {/* Increased size of the icon */}
+    <Typography variant="h6" sx={{ color: '#333' }}>
+      A password reset link has been sent to your email address.
+    </Typography>
+  </DialogContent>
+  <DialogActions sx={{ justifyContent: 'center' }}>
+    <Button onClick={handleClosePopup} color="primary" variant="contained" sx={{ fontWeight: 'bold' }}>
+      Close
+    </Button>
+  </DialogActions>
+</Dialog>
+
     </Container>
   );
 };
