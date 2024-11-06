@@ -41,7 +41,7 @@ import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
 
 import { useNavigate, useLocation } from "react-router-dom";
 
-const TourismGovernorNavbar = () => {
+const TourGuideNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -85,7 +85,7 @@ const TourismGovernorNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourism-governor/profile");
+  const handleProfileClick = () => navigate("/tourist/profile");
   const handleHomeClick = () => navigate("/tourist/homepage");
   const handleCartClick = () => navigate("/tourist/cart");
   const handleOrdersClick = () => navigate("/tourist/orders");
@@ -138,9 +138,6 @@ const TourismGovernorNavbar = () => {
                 <CardGiftcard sx={{ mr: 1 }} /> Gift Cards
               </MenuItem>
             </Menu>
-
-        
-
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />
@@ -148,7 +145,7 @@ const TourismGovernorNavbar = () => {
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
   
-  <MenuItem onClick={() => navigate("/tourist/changePassword")}>
+  <MenuItem onClick={() => navigate("/tourist/change-password")}>
     <LockOpen sx={{ mr: 1 }} />
     Change Password
   </MenuItem>
@@ -202,18 +199,9 @@ const TourismGovernorNavbar = () => {
           <Button onClick={confirmLogout} color="primary" variant="contained">Logout</Button>
         </DialogActions>
       </Dialog>
-      <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
-          <IconButton color="inherit" sx={{ color: "#fff" }}><Hotel /><Typography variant="body1" sx={{ ml: 1 }}>Hotels</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}><ListAlt /><Typography variant="body1" sx={{ ml: 1 }}>Itineraries</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/events")}><Event /><Typography variant="body1" sx={{ ml: 1 }}>Events</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/historical-places")}><AccountBalanceIcon /><Typography variant="body1" sx={{ ml: 1 }}>Historical Places</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}><DirectionsRun /><Typography variant="body1" sx={{ ml: 1 }}>Activities</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}><Flight /><Typography variant="body1" sx={{ ml: 1 }}>Flights</Typography></IconButton>
-        </Toolbar>
-      </AppBar>
+   
     </>
   );
 };
 
-export default TourismGovernorNavbar;
+export default TourGuideNavbar;

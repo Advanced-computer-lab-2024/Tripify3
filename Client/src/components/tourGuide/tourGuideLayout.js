@@ -1,6 +1,6 @@
 import React from "react";
 import TourGuideSidebar from "./tourGuideSidebar.js";
-import TourGuideNavbar from "./tourGuideavbar.js"
+import TourGuideNavbar from "./tourGuideNavbar.js"
 
 const TourGuideLayout = ({ children }) => (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>

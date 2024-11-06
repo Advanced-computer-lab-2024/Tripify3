@@ -58,7 +58,7 @@ export const getPlaces = async (req, res) => {
     // Send response with the fetched places
     res.status(200).json({
       message: "Places found Successfully",
-      data: places,
+      places: places,
     });
   } catch (err) {
     console.error("Error fetching places:", err);

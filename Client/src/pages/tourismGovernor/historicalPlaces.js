@@ -20,6 +20,8 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
+import { getUserId } from "../../utils/authUtils.js";
+
 
 const theme = createTheme({
   palette: {
@@ -32,7 +34,9 @@ const theme = createTheme({
   },
 });
 
-const HistoricalPlaces = () => {
+const GovernorHistoricalPlaces = () => {
+  
+  const userId = getUserId();
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,7 +58,7 @@ const HistoricalPlaces = () => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/places/get");
+        const response = await axios.get(`http://localhost:8000/governor/get/places/${userId}`);
         setPlaces(response.data.places);
         setFilteredPlaces(response.data.places); // Initialize with all places
         setLoading(false);
@@ -134,7 +138,7 @@ const HistoricalPlaces = () => {
           variant="h2"
           align="center"
           gutterBottom
-          sx={{ color: theme.palette.primary.main , marginTop: 8 }}
+          sx={{ color: theme.palette.primary.main }}
         >
           Historical Places
         </Typography>
@@ -241,4 +245,4 @@ const HistoricalPlaces = () => {
   );
 };
 
-export default HistoricalPlaces;
+export default GovernorHistoricalPlaces;
