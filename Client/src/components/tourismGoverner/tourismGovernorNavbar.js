@@ -156,7 +156,7 @@ const TourismGovernorNavbar = () => {
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
   
-  <MenuItem onClick={() => navigate("/tourist/change-password")}>
+  <MenuItem onClick={() => navigate("/tourist/changePassword")}>
     <LockOpen sx={{ mr: 1 }} />
     Change Password
   </MenuItem>

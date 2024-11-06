@@ -8,8 +8,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import StarIcon from '@mui/icons-material/Star';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import ShareIcon from '@mui/icons-material/Share';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import FacebookIcon from '@mui/icons-material/Facebook';
+import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -44,6 +43,13 @@ const ActivityDetails = () => {
       alert("Link copied to clipboard!");
       setShareOpen(false);
     });
+  };
+
+  const handleEmailShare = () => {
+    const emailSubject = `Check out this activity: ${activity.name}`;
+    const emailBody = `I thought you might be interested in this activity!\n\n${activity.name}\nLocation: ${activity.location}\nDate: ${new Date(activity.date).toLocaleDateString()} at ${activity.time}\n\nView more details here: http://localhost:3000/tourist/activity/${activity._id}`;
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = mailtoLink;
   };
 
   if (loading) {
@@ -174,21 +180,9 @@ const ActivityDetails = () => {
                 <LinkIcon fontSize="large" />
                 <Typography variant="body2">Copy Link</Typography>
               </IconButton>
-              <IconButton
-                href={`https://twitter.com/intent/tweet?url=http://localhost:3000/tourist/activities/${activity._id}`}
-                target="_blank"
-                sx={{ flexDirection: 'column' }}
-              >
-                <TwitterIcon fontSize="large" />
-                <Typography variant="body2">Twitter</Typography>
-              </IconButton>
-              <IconButton
-                href={`https://www.facebook.com/sharer/sharer.php?u=http://localhost:3000/tourist/activities/${activity._id}`}
-                target="_blank"
-                sx={{ flexDirection: 'column' }}
-              >
-                <FacebookIcon fontSize="large" />
-                <Typography variant="body2">Facebook</Typography>
+              <IconButton onClick={handleEmailShare} sx={{ flexDirection: 'column' }}>
+                <EmailIcon fontSize="large" />
+                <Typography variant="body2">Email</Typography>
               </IconButton>
             </Box>
           </Box>
