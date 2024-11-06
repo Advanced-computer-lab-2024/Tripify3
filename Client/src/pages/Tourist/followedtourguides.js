@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Card, CardContent, CircularProgress, List, ListItem, ListItemText, TextField, Button } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Card,
+    CardContent,
+    CircularProgress,
+    List,
+    ListItem,
+    ListItemText,
+    TextField,
+    Button,
+} from '@mui/material';
 import { Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
 import { getUserId } from "../../utils/authUtils.js";
 
@@ -34,7 +45,7 @@ const FollowedTourGuides = () => {
 
             try {
                 const profiles = await Promise.all(
-                    followedGuideIds.map(id => 
+                    followedGuideIds.map(id =>
                         axios.get(`http://localhost:8000/tourguide/profile/${id}`)
                     )
                 );
@@ -62,12 +73,11 @@ const FollowedTourGuides = () => {
 
     const handleRatingSubmit = async (guideId) => {
         try {
-            // Send both user ID and rating value
             await axios.post(`http://localhost:8000/tourist/rate/${guideId}`, { 
-                user: userId,  // Include user ID
-                value: rating   // The rating value
+                user: userId,
+                value: rating
             });
-            setRating(0); // Reset rating after submitting
+            setRating(0);
         } catch (error) {
             console.error("Error submitting rating:", error);
         }
@@ -76,10 +86,10 @@ const FollowedTourGuides = () => {
     const handleCommentSubmit = async (guideId) => {
         try {
             await axios.post(`http://localhost:8000/tourist/comment/${guideId}`, { 
-                user: userId,  // Include user ID
-                content: commentContent // Content of the comment
+                user: userId,
+                content: commentContent
             });
-            setCommentContent(''); // Clear the input after submission
+            setCommentContent('');
         } catch (error) {
             console.error("Error submitting comment:", error);
         }
@@ -98,44 +108,54 @@ const FollowedTourGuides = () => {
     }
 
     return (
-        <Box sx={{ padding: 4 }}>
-            <Typography variant="h4" gutterBottom>
+        <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#3f51b5' }}>
                 Followed Tour Guides
             </Typography>
             {tourGuideProfiles.map(guide => (
-                <Card key={guide._id} sx={{ marginBottom: 2 }}>
-                    <CardContent>
-                        <Typography variant="h5">{guide.name}</Typography>
-                        <Typography variant="body2">Email:  {guide.email}</Typography>
-                        <Typography variant="body2">Phone:  {guide.phoneNumber}</Typography>
-                        <Typography variant="body2">Years of Experience: {guide.yearsOfExperience}</Typography>
-                        <Typography variant="body1" sx={{ marginTop: 1 }}><strong>Previous Work:</strong></Typography>
+                <Card key={guide._id} sx={{ marginBottom: 3, elevation: 3, borderRadius: 2, boxShadow: 3 }}>
+                    <CardContent sx={{ backgroundColor: '#fff', borderRadius: 2 }}>
+                        <Typography variant="h5" sx={{ color: '#3f51b5', marginBottom: 1 }}>{guide.name}</Typography>
+                        <Typography variant="body2" color="textSecondary">Email:  {guide.email}</Typography>
+                        <Typography variant="body2" color="textSecondary">Phone:  {guide.phoneNumber}</Typography>
+                        <Typography variant="body2" color="textSecondary">Years of Experience: {guide.yearsOfExperience}</Typography>
+
+                        <Typography variant="h6" sx={{ marginTop: 2, fontWeight: 'bold' }}>Previous Work:</Typography>
                         <List>
                             {guide.previousWork && guide.previousWork.length > 0 ? (
                                 guide.previousWork.map((work, index) => (
-                                    <ListItem key={index}>
+                                    <ListItem key={index} sx={{ padding: 0 }}>
                                         <ListItemText primary={work} />
                                     </ListItem>
                                 ))
                             ) : (
-                                <ListItem>
+                                <ListItem sx={{ padding: 0 }}>
                                     <ListItemText primary="No previous work listed." />
                                 </ListItem>
                             )}
                         </List>
 
-                        <Typography variant="body1" sx={{ marginTop: 2 }}><strong>Rate this Tour Guide:</strong></Typography>
+                        <Typography variant="h6" sx={{ marginTop: 2, fontWeight: 'bold' }}>Rate this Tour Guide:</Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'start', marginBottom: 2 }}>
                             {[...Array(5)].map((_, index) => {
                                 const starValue = index + 1;
                                 return (
-                                    <span key={starValue} onClick={() => handleRatingChange(starValue)} style={{ cursor: 'pointer' }}>
-                                        {starValue <= rating ? <StarIcon color="primary" /> : <StarBorderIcon />}
+                                    <span key={starValue} onClick={() => handleRatingChange(starValue)} style={{ cursor: 'pointer', marginRight: 0.5 }}>
+                                        {starValue <= rating ? (
+                                            <StarIcon color="primary" fontSize="large" />
+                                        ) : (
+                                            <StarBorderIcon fontSize="large" />
+                                        )}
                                     </span>
                                 );
                             })}
                         </Box>
-                        <Button variant="contained" onClick={() => handleRatingSubmit(guide._id)} disabled={rating === 0}>
+                        <Button 
+                            variant="contained" 
+                            onClick={() => handleRatingSubmit(guide._id)} 
+                            disabled={rating === 0}
+                            sx={{ marginBottom: 2, backgroundColor: '#3f51b5', '&:hover': { backgroundColor: '#303f9f' } }}
+                        >
                             Submit Rating
                         </Button>
 
@@ -146,8 +166,13 @@ const FollowedTourGuides = () => {
                             margin="normal"
                             variant="outlined"
                             fullWidth
+                            sx={{ marginBottom: 2 }}
                         />
-                        <Button variant="contained" onClick={() => handleCommentSubmit(guide._id)}>
+                        <Button 
+                            variant="contained" 
+                            onClick={() => handleCommentSubmit(guide._id)} 
+                            sx={{ backgroundColor: '#3f51b5', '&:hover': { backgroundColor: '#303f9f' } }}
+                        >
                             Submit Comment
                         </Button>
                     </CardContent>

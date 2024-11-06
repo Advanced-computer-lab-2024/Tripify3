@@ -29,41 +29,45 @@ const activitySchema = new mongoose.Schema({
   duration: {
     type: Number, // Duration in minutes
     required: true,
-  }, // Duration of the activity
+  },
   rating: {
     type: Number,
     default: 0,
-  }, // Average rating for the activity
+  },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
-  }, // Category of the activity
+  },
   price: {
     type: Number,
-  }, // Price of the activity
-  // Price of the activity
+    required: true, // Mark this as required if it should always have a price
+  },
   ratings: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Rating",
     },
-  ], // Array of ratings for the activity
+  ],
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
     },
-  ], // Array of comments related to the activity
+  ],
   tags: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tag",
     },
-  ], // Array of comments related to the activity
+  ],
   advertiser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
-  }, // Reference to the advertiser who posted the activity
+  },
+  images: {  // New field for images
+    type: [String], // Array of strings to hold URLs of the images
+    required: true, // Optional: mark as required if needed
+  }
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

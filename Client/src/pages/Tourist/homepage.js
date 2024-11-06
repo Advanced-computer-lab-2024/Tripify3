@@ -1,9 +1,8 @@
 import React from "react";
 import { Grid, Box, Typography, Button, Card, CardMedia, CardContent, CardActionArea } from "@mui/material";
-// Import the image from your local repo
+import { Carousel } from 'react-responsive-carousel'; // Install this package with `npm install react-responsive-carousel`
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import homepageImage from "../../assets/homepageImage.jpeg"; // Adjust the path to your image file
-
-
 
 const hotels = [
   {
@@ -30,225 +29,92 @@ const hotels = [
     location: "Cairo, Egypt",
     image: homepageImage,
   },
-  {
-    id: 5,
-    name: "Kempinski Nile Hotel",
-    location: "Cairo, Egypt",
-    image: "https://via.placeholder.com/400",
-  },
 ];
-
-
-
-
-
-
-
-
 
 const TouristHomepage = () => {
   return (
-    // Remove the bigger surrounding Box
     <Card
       sx={{
-        width: "80%",
-        margin: "auto", // Center the card horizontally
-        backgroundColor: "#fff",
+        width: "90%",
+        margin: "auto",
+        backgroundColor: "#f5f5f5", // Light background for better contrast
         padding: "30px",
-        boxShadow: 3,
-        borderRadius: "16px", // Add border radius here
+        boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
+        borderRadius: "16px",
       }}
     >
-      {/* Header Section */}
       <Box sx={{ textAlign: "center", marginBottom: "30px" }}>
-        <Typography variant="h4">Welcome to Tripify!</Typography>
+        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#3f51b5" }}>Welcome to Tripify!</Typography>
       </Box>
 
-      {/* Image Placeholder (instead of search fields) */}
-      <CardMedia
-        component="img"
-        height="250"
-        image={homepageImage}
-        alt="Search Placeholder"
-        sx={{ width: "100%", marginBottom: "30px", borderRadius: "8px" }} // Add border radius to the image
-      />
+      {/* Image Carousel */}
+      <Carousel autoPlay infiniteLoop showArrows={false} showThumbs={false}>
+        {hotels.map((hotel) => (
+          <div key={hotel.id}>
+            <CardMedia
+              component="img"
+              height="250"
+              image={hotel.image}
+              alt={hotel.name}
+              sx={{ borderRadius: "8px" }}
+            />
+            <Typography className="legend">{hotel.name}</Typography>
+          </div>
+        ))}
+      </Carousel>
 
-      {/* Hotel and Airbnb Suggestions */}
+      {/* Section for Iternaries */}
       <Box sx={{ marginTop: "30px" }}>
-        <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+        <Typography variant="h5" sx={{ marginBottom: "20px", fontWeight: "bold", color: "#3f51b5" }}>
           Iternaries
         </Typography>
-
-        {/* Scrollable Horizontal Section */}
-        <Box
-          sx={{
-            display: "flex",
-            overflowX: "auto",
-            paddingBottom: "80px",
-            "&::-webkit-scrollbar": {
-              display: "none", // Hides the scrollbar for WebKit browsers (Chrome, Safari)
-            },
-          }}
-        >
+        <Grid container spacing={2}>
           {hotels.map((hotel) => (
-            <Card
-              key={hotel.id}
-              sx={{
-                minWidth: "300px",
-                marginRight: "15px",
-                boxShadow: 2,
-                borderRadius: "12px",
-              }}
-            >
-              <CardActionArea>
-                <CardMedia component="img" height="140" image={hotel.image} alt={hotel.name} sx={{ borderRadius: "12px" }} />
-                <CardContent>
-                  <Typography gutterBottom variant="h6">
-                    {hotel.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {hotel.location}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+            <Grid item xs={12} sm={6} md={3} key={hotel.id}>
+              <Card sx={{ borderRadius: "12px" }}>
+                <CardActionArea>
+                  <CardMedia component="img" height="140" image={hotel.image} alt={hotel.name} sx={{ borderRadius: "12px" }} />
+                  <CardContent>
+                    <Typography gutterBottom variant="h6" sx={{ fontWeight: "600" }}>
+                      {hotel.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {hotel.location}
+                    </Typography>
+                    <Button variant="contained" sx={{ marginTop: 1 }} color="primary">View More</Button>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
           ))}
-        </Box>        
+        </Grid>
       </Box>
 
-      {/* Hotel and Airbnb Suggestions */}
+      {/* Section for Activities */}
       <Box sx={{ marginTop: "30px" }}>
-        <Typography variant="h5" sx={{ marginBottom: "20px" }}>
-          Iternaries
-        </Typography>
-
-        {/* Scrollable Horizontal Section */}
-        <Box
-          sx={{
-            display: "flex",
-            overflowX: "auto",
-            paddingBottom: "80px",
-            "&::-webkit-scrollbar": {
-              display: "none", // Hides the scrollbar for WebKit browsers (Chrome, Safari)
-            },
-          }}
-        >
-          {hotels.map((hotel) => (
-            <Card
-              key={hotel.id}
-              sx={{
-                minWidth: "300px",
-                marginRight: "15px",
-                boxShadow: 2,
-                borderRadius: "12px",
-              }}
-            >
-              <CardActionArea>
-                <CardMedia component="img" height="140" image={hotel.image} alt={hotel.name} sx={{ borderRadius: "12px" }} />
-                <CardContent>
-                  <Typography gutterBottom variant="h6">
-                    {hotel.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {hotel.location}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          ))}
-        </Box>
-
-        
-      </Box>
-
-      {/* Hotel and Airbnb Suggestions */}
-      <Box sx={{ marginTop: "30px" }}>
-        <Typography variant="h5" sx={{ marginBottom: "20px" }}>
+        <Typography variant="h5" sx={{ marginBottom: "20px", fontWeight: "bold", color: "#3f51b5" }}>
           Activities
         </Typography>
-
-        {/* Scrollable Horizontal Section */}
-        <Box
-          sx={{
-            display: "flex",
-            overflowX: "auto",
-            paddingBottom: "80px",
-            "&::-webkit-scrollbar": {
-              display: "none", // Hides the scrollbar for WebKit browsers (Chrome, Safari)
-            },
-          }}
-        >
+        <Grid container spacing={2}>
           {hotels.map((hotel) => (
-            <Card
-              key={hotel.id}
-              sx={{
-                minWidth: "300px",
-                marginRight: "15px",
-                boxShadow: 2,
-                borderRadius: "12px",
-              }}
-            >
-              <CardActionArea>
-                <CardMedia component="img" height="140" image={hotel.image} alt={hotel.name} sx={{ borderRadius: "12px" }} />
-                <CardContent>
-                  <Typography gutterBottom variant="h6">
-                    {hotel.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {hotel.location}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+            <Grid item xs={12} sm={6} md={3} key={hotel.id}>
+              <Card sx={{ borderRadius: "12px" }}>
+                <CardActionArea>
+                  <CardMedia component="img" height="140" image={hotel.image} alt={hotel.name} sx={{ borderRadius: "12px" }} />
+                  <CardContent>
+                    <Typography gutterBottom variant="h6" sx={{ fontWeight: "600" }}>
+                      {hotel.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {hotel.location}
+                    </Typography>
+                    <Button variant="contained" sx={{ marginTop: 1 }} color="primary">Explore</Button>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
           ))}
-        </Box>
-
-        
-      </Box>
-
-      {/* Hotel and Airbnb Suggestions */}
-      <Box sx={{ marginTop: "30px" }}>
-        <Typography variant="h5" sx={{ marginBottom: "20px" }}>
-          Hotels
-        </Typography>
-
-        {/* Scrollable Horizontal Section */}
-        <Box
-          sx={{
-            display: "flex",
-            overflowX: "auto",
-            paddingBottom: "80px",
-            "&::-webkit-scrollbar": {
-              display: "none", // Hides the scrollbar for WebKit browsers (Chrome, Safari)
-            },
-          }}
-        >
-          {hotels.map((hotel) => (
-            <Card
-              key={hotel.id}
-              sx={{
-                minWidth: "300px",
-                marginRight: "15px",
-                boxShadow: 2,
-                borderRadius: "12px",
-              }}
-            >
-              <CardActionArea>
-                <CardMedia component="img" height="140" image={hotel.image} alt={hotel.name} sx={{ borderRadius: "12px" }} />
-                <CardContent>
-                  <Typography gutterBottom variant="h6">
-                    {hotel.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {hotel.location}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          ))}
-        </Box>
-
-        
+        </Grid>
       </Box>
     </Card>
   );
