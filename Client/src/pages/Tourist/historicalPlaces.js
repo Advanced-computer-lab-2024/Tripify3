@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
-
+import { Link } from 'react-router-dom';
 const theme = createTheme({
   palette: {
     primary: {
@@ -224,12 +224,13 @@ const HistoricalPlaces = () => {
                   <Typography>
                     <strong>Description:</strong> {place.description}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to place ${place._id}`)}
-                  >
-                    View Details
+                    <Button
+                        component={Link}
+                        to={`/tourist/placedetails/${place._id}`}
+                        variant="contained"
+                        sx={{ mt: 2 }}
+                      >
+                        View Details
                   </Button>
                 </CardContent>
               </Card>
