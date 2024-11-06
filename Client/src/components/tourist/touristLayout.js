@@ -2,6 +2,7 @@
 import React from "react";
 import TouristSidebar from "./touristSidebar.js";
 import TouristNavbar from "./touristNavbar.js";
+import { CenterFocusStrong } from "@mui/icons-material";
 
 const TouristLayout = ({ children}) => (
   <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>

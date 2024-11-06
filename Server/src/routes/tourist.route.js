@@ -1,15 +1,39 @@
 import express from "express";
-import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
-import { getFlightsData, getHotels } from "../controllers/tourist/search.controller.js";
-import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
-import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor, updateCart } from "../controllers/tourist/cart.controller.js";
+import {
+  getSortedItineraries,
+  getFilteredItineraries,
+  bookItinerary
+} from "../controllers/tourist/itineraries.controller.js";
+import { getAllActivities,bookActivity } from "../controllers/tourist/activities.controller.js";
+import {
+  getProfile,
+  editProfile,
+} from "../controllers/tourist/profile.controller.js";
+import {
+  searchPlaces,
+  searchActivities,
+  searchItineraries,
+  getFlightsData, getHotels,
+} from "../controllers/tourist/search.controller.js";
+import {
+  initializeWishList,
+  AddProductToWishlist,
+  getWishlist,
+  removeProductFromWishlist,
+} from "../controllers/tourist/wishList.contoller.js";
+import {
+  initializeCart,
+  addToCart,
+  getTouristCart,
+  removeFromCart,
+  Decrementor,
+  updateCart,
+} from "../controllers/tourist/cart.controller.js";
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
-import { rateTourGuide, commentonTourGuide, rateItinerary } from "../controllers/tourist/rate&comment.controller.js";
-import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js";
-import { cancelBooking } from "../controllers/tourist/booking.controller.js";
-import { rateProduct } from "../controllers/tourist/rate&comment.controller.js";
-import { reviewProduct } from "../controllers/tourist/rate&comment.controller.js";
-import { getAllCategories } from "../controllers/tourist/category.controller.js";
+import {touristReview} from "../controllers/tourist/rate&comment.controller.js";
+import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
+import {cancelBooking} from "../controllers/tourist/booking.controller.js";
+import {getAllCategories} from "../controllers/tourist/category.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -23,14 +47,11 @@ router.post("/tourist/profile/:id/redeem", redeemPoints);
 //category
 router.get("/category/get", getAllCategories);
 
-//rate and comment on tour guide
-router.post("/tourist/rate/:tourGuideId", rateTourGuide);
-router.post("/tourist/comment/:tourGuideId", commentonTourGuide);
+//rate and comment on t 
+router.post('/tourist/review', touristReview);
 router.get("/tourist/following/get/:touristId", getFollowingTourGuides);
-router.post("/tourist/follow/:touristId/:tourGuideId", followTourGuide);
-router.post("/itineraries/rate", rateItinerary);
-router.post("/products/rate", rateProduct);
-router.post("/products/review", reviewProduct);
+router.post('/tourist/follow/:touristId/:tourGuideId', followTourGuide);
+
 
 // Wishlist
 router.post("/initializeWishlist", initializeWishList);
