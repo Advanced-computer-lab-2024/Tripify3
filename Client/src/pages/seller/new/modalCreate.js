@@ -22,7 +22,7 @@ const ProductCreateModal = ({ open, handleClose }) => {
     quantity: "",
     category: "",
     imageUrl: [],
-    sellerId: getUserType === "Seller" ? getUserId() : "",
+    sellerId: getUserType() === "Seller" ? getUserId() : "",
   });
   const [newImages, setNewImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -53,7 +53,7 @@ const ProductCreateModal = ({ open, handleClose }) => {
         `${newProduct.name}-${index + 1}.${image.name.split(".").pop()}`
       );
     });
-
+    console.log("thus is the new form data", newFormData);
     try {
       const response = await axios.post(
         `http://localhost:8000/access/seller/createProductM`,
@@ -61,7 +61,8 @@ const ProductCreateModal = ({ open, handleClose }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "user-id": newProduct.sellerId,
+            "user-id":
+              getUserType() === "Seller" ? getUserId() : newProduct.sellerId,
           },
         }
       );
