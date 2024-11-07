@@ -39,7 +39,6 @@ const Login = () => {
             return; // Ensure that we exit the function after navigating
         }
 
-        // Navigate based on user type
         switch (data.user.type) {
             case "Tourism Governor":
                 navigate("/tourism-governor/profile");

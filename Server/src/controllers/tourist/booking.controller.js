@@ -1,9 +1,9 @@
-import Trip from "../../models/Trip.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
+import Booking from "../../models/booking.js";
 
 export const createBooking = async (req, res) => {
-  const { tourist, price, type, itemId } = req.body;
+  const { tourist, price, type, itemId, details, number } = req.body;
 
   try {
     let item;
@@ -16,15 +16,19 @@ export const createBooking = async (req, res) => {
       case "Itinerary":
         item = await Itinerary.findById(itemId);
         break;
-      case "Trip":
-        item = await Trip.findById(itemId);
+      case "Hotel":
+        item = null;
+        break;
+      case "Flight":
+        item = null;
         break;
       default:
         return res.status(400).json({ message: "Invalid booking type" });
     }
 
     // Check if the item was found
-    if (!item) {
+    
+    if (!item && item !== 'Hotel' && item !== 'Flight') {
       return res.status(404).json({ message: `${type} not found` });
     }
 
@@ -33,6 +37,7 @@ export const createBooking = async (req, res) => {
       tourist,
       price,
       type,
+      details
     });
 
     await booking.save();
@@ -49,6 +54,7 @@ export const createBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const cancelBooking = async (req, res) => {
   try {
@@ -90,15 +96,6 @@ export const cancelBooking = async (req, res) => {
       // Remove the booking ID from the itinerary's bookings array
       activity.bookings = activity.bookings.filter((id) => id.toString() !== bookingId);
       await activity.save();
-    } else if (booking.type === "Trip") {
-      const trip = await Trip.findById(booking.itemId);
-      if (!trip) {
-        return res.status(404).json({ message: "Trip not found" });
-      }
-
-      // Remove the booking ID from the itinerary's bookings array
-      trip.bookings = trip.bookings.filter((id) => id.toString() !== bookingId);
-      await trip.save();
     }
 
     // Delete the booking from the Booking model

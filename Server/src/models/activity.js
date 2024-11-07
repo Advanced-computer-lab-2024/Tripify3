@@ -51,7 +51,7 @@ const activitySchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    required: true, // Mark this as required if it should always have a price
+    required: true,
   },
   ratings: [
     {
