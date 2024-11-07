@@ -73,11 +73,30 @@ const TouristNavbar = () => {
   };
   const closeLogoutDialog = () => setLogoutDialogOpen(false);
 
-  const confirmDeleteAccount = () => {
-    // Add delete account logic here
-    setDeleteDialogOpen(false);
-    navigate("/goodbye"); // Redirect after account deletion
+  const confirmDeleteAccount = async () => {
+    try {
+  
+      // API call to delete the user account
+      const response = await fetch(`http://localhost:8000/users/delete/${userId}`, {
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        // Handle successful deletion
+        //alert('Account successfully deleted.');
+        setDeleteDialogOpen(false); // Close the delete confirmation dialog
+        navigate('/goodbye'); // Redirect after account deletion
+      } else {
+        // Handle errors
+        const errorData = await response.json();
+        alert(`Failed to delete account: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('An unexpected error occurred. Please try again later.');
+    }
   };
+  
 
   const confirmLogout = () => {
     // Add logout logic here
