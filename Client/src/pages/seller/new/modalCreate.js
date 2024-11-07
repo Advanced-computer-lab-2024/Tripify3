@@ -12,7 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddFile from "./addFile"; // Use the actual component here
 import axios from "axios";
-import { getUserId } from "../../../utils/authUtils";
+import { getUserType, getUserId } from "../../../utils/authUtils";
 
 const ProductCreateModal = ({ open, handleClose }) => {
   const [newProduct, setNewProduct] = useState({
@@ -22,6 +22,7 @@ const ProductCreateModal = ({ open, handleClose }) => {
     quantity: "",
     category: "",
     imageUrl: [],
+    sellerId: getUserType === "Seller" ? getUserId() : "",
   });
   const [newImages, setNewImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -43,6 +44,7 @@ const ProductCreateModal = ({ open, handleClose }) => {
     newFormData.append("details", newProduct.details);
     newFormData.append("quantity", newProduct.quantity);
     newFormData.append("category", newProduct.category);
+    newFormData.append("sellerId", newProduct.sellerId);
 
     newImages.forEach((image, index) => {
       newFormData.append(
@@ -59,7 +61,7 @@ const ProductCreateModal = ({ open, handleClose }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "user-id": getUserId(),
+            "user-id": newProduct.sellerId,
           },
         }
       );
@@ -144,6 +146,17 @@ const ProductCreateModal = ({ open, handleClose }) => {
             value={newProduct.category}
             onChange={(e) => handleChange("category", e.target.value)}
           />
+          {getUserType() == "Admin" ? (
+            <TextField
+              label="sellerId"
+              fullWidth
+              margin="normal"
+              value={newProduct.sellerId}
+              onChange={(e) => handleChange("sellerId", e.target.value)}
+            />
+          ) : (
+            <></>
+          )}
 
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             Images
