@@ -52,6 +52,7 @@ import AdvertiserLayout from "./components/advertiser/advertiserLayout.js";
 import AdminLayout from "./components/admin/adminLayout.js";
 import TourGuideLayout from "./components/tourGuide/tourGuideLayout.js";
 import TourismGovernorLayout from "./components/tourismGoverner/tourismGovernorLayout.js";
+import Goodbye from "./components/goodbye.js";
 
 import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
@@ -117,6 +118,8 @@ const App = () => {
         <Route path="/new-password" element={<NewPassword />} />
 
         <Route path="/termsAndAgreements" element={<TermsAndAgreements />} />
+        <Route path="/goodbye" element={<Goodbye />} />
+
 
         
 
