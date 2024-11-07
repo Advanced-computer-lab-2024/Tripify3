@@ -31,6 +31,7 @@ import {touristReview} from "../controllers/tourist/rate&comment.controller.js";
 import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
 import {cancelBooking} from "../controllers/tourist/booking.controller.js";
 import {getAllCategories} from "../controllers/tourist/category.controller.js";
+import {updateItinerariesAttended} from "../controllers/tourist/itineraries.controller.js"
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -66,5 +67,6 @@ router.put("/tourist/cart/update", updateCart); // Update cart
 
 //Bookings
 router.put("/tourist/booking/cancel", cancelBooking); // Cancel booking
+router.put("/tourist/itinerary/attend",updateItinerariesAttended)//attend itinerary
 
 export default router;

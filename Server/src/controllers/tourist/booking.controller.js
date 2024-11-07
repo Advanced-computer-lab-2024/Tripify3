@@ -1,4 +1,4 @@
-import Trip from "../../models/Trip.js";
+
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 
@@ -15,9 +15,6 @@ export const createBooking = async (req, res) => {
         break;
       case "Itinerary":
         item = await Itinerary.findById(itemId);
-        break;
-      case "Trip":
-        item = await Trip.findById(itemId);
         break;
       default:
         return res.status(400).json({ message: "Invalid booking type" });

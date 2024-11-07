@@ -8,7 +8,6 @@ import placeRoute from './place.route.js';
 import activityRoute from './activity.route.js'
 import ItineraryRoute  from "./itinerary.route.js";
 import BookingRoute from "./booking.route.js"
-import TripRoute from "./trip.route.js"
 import adminRoute from "./admin.route.js";
 import tagRoute from "./tag.route.js";
 import complaintRoute from "./complaint.route.js"; 
@@ -29,9 +28,7 @@ export default (app) => {
   app.use(activityRoute)
   app.use(ItineraryRoute)
   app.use(BookingRoute)
-  app.use(TripRoute)
   app.use(ItineraryRoute)
   app.use(adminRoute);
   app.use(BookingRoute)
-  app.use(TripRoute)
 };
