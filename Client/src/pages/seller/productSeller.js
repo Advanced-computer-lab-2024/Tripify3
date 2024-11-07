@@ -681,13 +681,17 @@ const Products = () => {
                   }}
                   onClick={() => console.log("Open modal or perform action")}
                 >
-                  <IconButton
-                    onClick={() => {
-                      setOpenCreate(true);
-                    }}
-                  >
-                    <AddIcon />
-                  </IconButton>
+                  {getUserType() == "Seller" || getUserType() == "Admin" ? (
+                    <IconButton
+                      onClick={() => {
+                        setOpenCreate(true);
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  ) : (
+                    <></>
+                  )}
                 </Card>
               </Grid>
             )}
@@ -708,7 +712,6 @@ const Products = () => {
       {openCreate && (
         <ProductCreateModal open={openCreate} handleClose={handleCloseModal2} />
       )}
-      ;
     </ThemeProvider>
   );
 };

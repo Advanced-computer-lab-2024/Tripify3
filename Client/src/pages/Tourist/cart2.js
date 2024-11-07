@@ -38,7 +38,7 @@ export default function QuantityEdit() {
   const getCart = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/tourist/cart/?touristId=671588c2d1737e8194e237c5"
+        "http://localhost:8000/tourist/cart/?touristId=672cdfadfd4e3f89e7e69c81"
       );
       setCart(response.data);
     } catch (error) {
@@ -199,10 +199,7 @@ export default function QuantityEdit() {
                           Shopping Cart
                         </MDBTypography>
                         <MDBTypography className="mb-0 text-muted">
-                          {cart && cart.products && cart.products.length > 0
-                            ? cart.products.length
-                            : 0}{" "}
-                          items
+                          {cart ? cart.itemCount : 0} items
                         </MDBTypography>
                       </div>
 
@@ -346,10 +343,7 @@ export default function QuantityEdit() {
 
                       <div className="d-flex justify-content-between mb-4">
                         <MDBTypography tag="h5" className="text-uppercase">
-                          {cart && cart.products && cart.products.length > 0
-                            ? cart.products.length
-                            : 0}{" "}
-                          items
+                          {cart ? cart.itemCount : 0} items
                         </MDBTypography>
                         <MDBTypography tag="h5">
                           ${cart && cart.totalPrice}.00
