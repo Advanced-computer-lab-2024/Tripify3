@@ -1,7 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardHeader, Dialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
-import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera, FaEdit, FaPen } from "react-icons/fa";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Avatar,
+} from "@mui/material";
+import {
+  FaTrophy,
+  FaShieldAlt,
+  FaStarHalfAlt,
+  FaCoins,
+  FaCamera,
+} from "react-icons/fa";
 import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
 import { getUserId } from "../../utils/authUtils.js";
 import Wallet from "./wallet.js";
@@ -64,7 +87,6 @@ const TouristProfile = () => {
     const fetchProfile = async () => {
       try {
         const response = await getProfile(userId);
-        console.log(response);
         const fullName = response.data.userProfile.name.split(" ");
         setUserProfile(response.data.userProfile);
 
@@ -77,7 +99,7 @@ const TouristProfile = () => {
           nationality: response.data.userProfile.nationality,
           birthDate: response.data.userProfile.birthDate,
           occupation: response.data.userProfile.occupation,
-          currencyPreference: response.data.userProfile.currencyPreference, // Ensure this matches the expected API field
+          currencyPreference: response.data.userProfile.currencyPreference || '', // Ensure this matches the expected API field
           gender: response.data.userProfile.gender || "",
           filepath: response.data.userProfile.profilePicture ? `http://localhost:8000/uploads/${userId}/${response.data.userProfile.profilePicture.filename}` : "",
         });
@@ -99,15 +121,13 @@ const TouristProfile = () => {
     if (file) {
       // Create a FileReader to preview the image
       const reader = new FileReader();
-      reader.onloadend = () => {
-        // setProfilePic(reader.result); // Set the preview URL
-      };
+      reader.onloadend = () => {};
       reader.readAsDataURL(file);
 
       // Upload the image to the server using axios
       const formData = new FormData();
-      formData.append("userId", userId); // Append the user ID
-      formData.append("file", file); // Append the image f
+      formData.append("userId", userId);
+      formData.append("file", file);
 
       try {
         const response = await axios({
@@ -115,15 +135,11 @@ const TouristProfile = () => {
           url: "http://localhost:8000/user/upload/picture",
           data: formData,
           headers: {
-            "Content-Type": "multipart/form-data", // Set the content type for file upload
+            "Content-Type": "multipart/form-data",
           },
         });
-         // Assuming your server responds with the file path
-         const uploadedFilepath = response.data.profilePicture.filepath;
-         const uploadedImageUrl = `http://localhost:8000/uploads/${userId}/${response.data.profilePicture.filename}`;
-         
-         // Update the profile picture URL in state to refresh the avatar
-         setProfilePicUrl(uploadedImageUrl);
+        const uploadedImageUrl = `http://localhost:8000/uploads/${userId}/${response.data.profilePicture.filename}`;
+        setProfilePicUrl(uploadedImageUrl);
       } catch (error) {
         console.error("Error uploading the image:", error);
       }
@@ -131,7 +147,6 @@ const TouristProfile = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     try {
       const response = await updateProfile(userId, formData);
       setUserProfile(response.data.userProfile);
@@ -245,7 +260,7 @@ const TouristProfile = () => {
                 <Avatar
                   alt="Profile Picture"
                   src={
-                    profilePicUrl  || formData.filepath || "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
+                    profilePicUrl || formData.filepath || "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
                   } // Use default image if no profile picture
                   sx={{ width: 90, height: 90 }}
                 />
@@ -255,7 +270,7 @@ const TouristProfile = () => {
                 <input id="profile-pic-upload" type="file" accept="image/*" onChange={handleProfilePicChange} style={{ display: "none" }} />
               </Box>
               <Typography variant="h5" marginLeft={-1}>
-              @{formData.username}
+                @{formData.username}
               </Typography>
             </Box>
 
@@ -290,6 +305,17 @@ const TouristProfile = () => {
             </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
+              <FormControl fullWidth sx={{ mx: 2 }}>
+                <InputLabel>Currency Preference</InputLabel>
+                <Select name="currencyPreference" value={formData.currencyPreference} disabled={!isEditing} onChange={handleChange}>
+                  <MenuItem value="USD">USD</MenuItem>
+                  <MenuItem value="EUR">EUR</MenuItem>
+                  <MenuItem value="GBP">GBP</MenuItem>
+                  <MenuItem value="AUD">AUD</MenuItem>
+                  <MenuItem value="CAD">CAD</MenuItem>
+                </Select>
+              </FormControl>
+           
               <TextField label="Occupation" name="occupation" value={formData.occupation} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ mr: 2 }} />
               <FormControl fullWidth sx={{ mx: 2 }}>
                 <InputLabel>Gender</InputLabel>
@@ -300,8 +326,8 @@ const TouristProfile = () => {
                 </Select>
               </FormControl>
             </Box>
-
-            <Button variant="contained" onClick={() => setIsEditing(!isEditing)} sx={{ marginBottom: 2 }}>
+            
+            <Button variant="contained" onClick={() => { if (isEditing) handleSubmit(); setIsEditing(!isEditing); }} sx={{ marginBottom: 2 }}>
               {isEditing ? "Save" : "Edit"}
             </Button>
           </Card>

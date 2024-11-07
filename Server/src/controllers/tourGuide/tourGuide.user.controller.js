@@ -1,5 +1,4 @@
 import TourGuide from '../../models/tourGuide.js'; // Import your Tour Guide model
-
 // Update Tour Guide Profile
 export const updateTourGuideProfile = async (req, res) => {
   try {
@@ -38,6 +37,27 @@ export const getTourGuideProfile = async (req, res) => {
   } catch (error) {
     console.error('Error fetching profile:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
+export const getCommentById = async (req, res) => {
+  const commentId = req.params.id;
+
+  try {
+      // Find the comment based on the ID
+      const comment = await Comment.findById(commentId);
+      
+      // If no comment is found, return a 404 error
+      if (!comment) {
+          return res.status(404).json({ message: 'Comment not found' });
+      }
+
+      // Return the comment's content (or the full comment object if needed)
+      return res.status(200).json(comment);
+  } catch (error) {
+      console.error('Error fetching comment:', error);
+      return res.status(500).json({ message: 'Internal server error' });
   }
 };
 

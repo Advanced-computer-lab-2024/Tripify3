@@ -1,7 +1,6 @@
 import Itinerary from "../../models/itinerary.js";
-import Tag from "../../models/tag.js";
 import User from "../../models/user.js";
-
+import Tourist from "../../models/tourist.js";
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters

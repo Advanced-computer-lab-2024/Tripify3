@@ -1,10 +1,9 @@
-import Booking from "../../models/Booking.js"; // Assuming you have a Booking model
 import Trip from "../../models/Trip.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 
 export const createBooking = async (req, res) => {
-  const { touristId, price, type, itemId } = req.body;
+  const { tourist, price, type, itemId } = req.body;
 
   try {
     let item;
@@ -31,13 +30,12 @@ export const createBooking = async (req, res) => {
 
     // Create a new booking
     const booking = new Booking({
-      tourist: touristId,
+      tourist,
       price,
       type,
     });
 
     await booking.save();
-
 
     // Add the booking ID to the bookings array in the associated model
     item.bookings.push(booking._id);
@@ -81,31 +79,25 @@ export const cancelBooking = async (req, res) => {
       }
 
       // Remove the booking ID from the itinerary's bookings array
-      itinerary.bookings = itinerary.bookings.filter(
-        (id) => id.toString() !== bookingId
-      );
+      itinerary.bookings = itinerary.bookings.filter((id) => id.toString() !== bookingId);
       await itinerary.save();
-    } else if(booking.type === "Activity"){
+    } else if (booking.type === "Activity") {
       const activity = await Activity.findById(booking.itemId);
       if (!activity) {
         return res.status(404).json({ message: "Activity not found" });
       }
 
       // Remove the booking ID from the itinerary's bookings array
-      activity.bookings = activity.bookings.filter(
-        (id) => id.toString() !== bookingId
-      );
+      activity.bookings = activity.bookings.filter((id) => id.toString() !== bookingId);
       await activity.save();
-    } else if(booking.type === "Trip"){
+    } else if (booking.type === "Trip") {
       const trip = await Trip.findById(booking.itemId);
       if (!trip) {
         return res.status(404).json({ message: "Trip not found" });
       }
 
       // Remove the booking ID from the itinerary's bookings array
-      trip.bookings = trip.bookings.filter(
-        (id) => id.toString() !== bookingId
-      );
+      trip.bookings = trip.bookings.filter((id) => id.toString() !== bookingId);
       await trip.save();
     }
 

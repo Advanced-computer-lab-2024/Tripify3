@@ -17,7 +17,7 @@ export const redeemPoints = async (req, res) => {
           return res.status(404).json({ message: "User not found" });
       }
 
-      if (pointsToRedeem > userProfile.loyaltyPoints) {
+      if (pointsToRedeem >= userProfile.loyaltyPoints) {
           return res.status(400).json({ message: "Not enough loyalty points" });
       }
 

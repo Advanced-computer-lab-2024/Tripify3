@@ -52,6 +52,26 @@ const touristSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Cart",
   },
+  preferences: { type: [String], required: false },
+  tripsTaken: { type: [String], required: false },
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tour Guide",
+    },
+  ],
+  activitiesAttended: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Activity",
+    },
+  ],
+  itinerariesAttended: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Itinerary",
+    },
+  ],
   currencyPreference: {
     type: String,
     enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP", "BRL", "ARS"], // Modify as needed

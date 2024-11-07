@@ -1,9 +1,10 @@
-import Booking from '../../models/Booking.js';
+import Booking from '../../models/booking.js';
 
 export const createBooking = async (req, res) => {
-    const { trip, tourist, totalPrice } = req.body;
+    const { tourist, price, type, details, paymentStatus} = req.body;
+
     try {
-        const newBooking = new Booking({ trip, tourist, totalPrice });
+        const newBooking = new Booking({ type, details, tourist, price , paymentStatus});
         await newBooking.save();
         res.status(201).json(newBooking);
     } catch (error) {
