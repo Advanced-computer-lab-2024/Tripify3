@@ -16,7 +16,8 @@ const bookingSchema = new mongoose.Schema({
   }, 
   itinerary: { type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' },
   activity: { type:  mongoose.Schema.Types.ObjectId, ref: 'Activity' },
-  type: { type: String, enum: ["Hotel", "Flight", "Activity", "Event", "Itinerary"], required: true },
+  trip: { type:  mongoose.Schema.Types.ObjectId, ref: 'Trip' },
+  type: { type: String, enum: ["Activity", "Trip", "Itinerary"], required: true },
 });
 
 const Booking = mongoose.model("Booking", bookingSchema);

@@ -11,6 +11,12 @@ const tripSchema = new mongoose.Schema({
   tourGuide: { type: mongoose.Schema.Types.ObjectId, ref: 'TourGuide', required: true },  // Reference to the Tour Guide
   tourists: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' }],  // Array of tourists booked on the trip
   availableSpots: { type: Number, required: true },
+  bookings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+    },
+  ],
 }, { timestamps: true });
 
 const Trip = mongoose.model('Trip', tripSchema);

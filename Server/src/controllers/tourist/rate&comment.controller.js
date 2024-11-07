@@ -9,6 +9,11 @@ import Review from "../../models/review.js";
 export const touristReview = async (req, res) => {
   const { touristId, rating, comment, type, itemId } = req.body;
 
+  const user = await Tourist.findById(touristId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
   // Check that either rating or comment exists
   if (!rating && !comment) {
     return res.status(400).json({ message: "Either rating or comment must be provided." });
@@ -21,6 +26,7 @@ export const touristReview = async (req, res) => {
 
   try {
     // Verify payment
+    if(type != 'Tour Guide'){    
     const paymentExists = await Payment.findOne({
       tourist: touristId,
       'items.type': type,
@@ -31,6 +37,18 @@ export const touristReview = async (req, res) => {
     if (!paymentExists) {
       return res.status(403).json({ message: "You must pay for this item before rating or commenting." });
     }
+  }else{
+      // Check if the tour guide exists
+      const tourGuide = await TourGuide.findById(itemId);
+      if (!tourGuide) {
+        return res.status(404).json({ message: "Tour guide not found." });
+      }
+  
+      // Check if the tourist is already following the tour guide
+      if (!user.following.includes(itemId)) {
+        return res.status(400).json({ message: "You are not following this tour guide." });
+      }
+  }
 
     // Prepare review data
     const reviewData = { 
@@ -42,9 +60,17 @@ export const touristReview = async (req, res) => {
 
     switch (type) {
       case 'Itinerary':
+        const itineraryHasAttended = Tourist.itinerariesAttended.some(attendedItinerary => attendedItinerary.equals(itemId));
+        if (!itineraryHasAttended) {
+          return res.status(403).json({ message: "You must attend the itinerary to comment on it" });
+        }
         reviewData.itinerary = itemId;
         break;
       case 'Activity':
+        const activityHasAttended = Tourist.activitiesAttended.some(attendedactivity => attendedactivity.equals(itemId));
+        if (!activityHasAttended) {
+          return res.status(403).json({ message: "You must attend the itinerary to comment on it" });
+        }
         reviewData.activity = itemId;
         break;
       case 'Product':
@@ -67,9 +93,6 @@ export const touristReview = async (req, res) => {
     return res.status(500).json({ message: "Error adding review." });
   }
 };
-
-
-
 
 export const touristEditReview = async (req, res) => {
   const { touristId, rating, comment, type, itemId } = req.body;

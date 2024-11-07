@@ -10,6 +10,12 @@ const activitySchema = new mongoose.Schema({
     required: true,
     default: false,
   },
+  bookings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Booking",
+    },
+  ],
   location: {
     type: String,
     required: true,
