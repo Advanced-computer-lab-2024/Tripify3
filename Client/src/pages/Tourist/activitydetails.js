@@ -18,6 +18,7 @@ const ActivityDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [currentActivityId, setCurrentActivityId] = useState(null); // Added this state for dropdown handling
 
   useEffect(() => {
     const fetchActivity = async () => {
@@ -34,16 +35,12 @@ const ActivityDetails = () => {
   }, [id]);
 
   const toggleShareDropdown = (activityId) => {
-    // Toggle the dropdown: if the same activity is clicked, close it; otherwise, open it
     if (currentActivityId === activityId) {
-      setCurrentActivityId(null); // Close the dropdown
+      setCurrentActivityId(null);
     } else {
-      setCurrentActivityId(activityId); // Open the dropdown for the selected activity
+      setCurrentActivityId(activityId);
     }
   };
-
-  const handleCopyLink = (activityId) => {
-    const link = `http://localhost:3000/tourist/activity/${activityId}`; // Replace with actual activity link
 
   const handleShareToggle = () => {
     setShareOpen(!shareOpen);
@@ -90,28 +87,26 @@ const ActivityDetails = () => {
       <Typography variant="body1">
         <strong>Description:</strong> {activity.description}
       </Typography>
-      {/* Modified styles for the Back to Activities button */}
       <Button variant="contained" color="primary" href="/tourist/activities" sx={{ mt: 2 }}>
         Back to Activities
       </Button>
-      {/* Share button with modified styles */}
       <Button
         variant="outlined"
         sx={{
           mt: 2,
           ml: 2,
-          color: 'blue', // Text color
-          borderColor: 'blue', // Border color
+          color: 'blue',
+          borderColor: 'blue',
           '&:hover': {
-            backgroundColor: 'lightblue', // Background color on hover
-            color: 'white', // Text color on hover
+            backgroundColor: 'lightblue',
+            color: 'white',
           },
         }}
         onClick={() => toggleShareDropdown(activity._id)}
       >
         Share
       </Button>
-      
+
       {currentActivityId === activity._id && (
         <Box
           sx={{
@@ -120,7 +115,7 @@ const ActivityDetails = () => {
             boxShadow: 1,
             p: 1,
             mt: 1,
-            zIndex: 10, // Ensure the dropdown appears above other elements
+            zIndex: 10,
           }}
         >
           <Button variant="text" onClick={() => handleCopyLink(activity._id)}>
@@ -143,129 +138,127 @@ const ActivityDetails = () => {
         </Box>
       )}
 
-    <Box sx={{ p: 3, backgroundColor: '#F5F7FA', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-      <Card sx={{ width: '100%', maxWidth: '900px', borderRadius: 3, boxShadow: 5, padding: 4, minHeight: '500px' }}>
-        <CardContent>
-          <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
-            {activity.name}
-          </Typography>
+      <Box sx={{ p: 3, backgroundColor: '#F5F7FA', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
+        <Card sx={{ width: '100%', maxWidth: '900px', borderRadius: 3, boxShadow: 5, padding: 4, minHeight: '500px' }}>
+          <CardContent>
+            <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
+              {activity.name}
+            </Typography>
 
-          {/* Special Discount */}
-          {activity.specialDiscount > 0 && (
-            <Box
-              sx={{
-                backgroundColor: '#E2F0E6',
-                color: '#2C7A7B',
-                borderRadius: 2,
-                padding: '12px',
-                textAlign: 'center',
-                mb: 4,
-                fontWeight: 600,
-                fontSize: '1.15rem',
-              }}
+            {activity.specialDiscount > 0 && (
+              <Box
+                sx={{
+                  backgroundColor: '#E2F0E6',
+                  color: '#2C7A7B',
+                  borderRadius: 2,
+                  padding: '12px',
+                  textAlign: 'center',
+                  mb: 4,
+                  fontWeight: 600,
+                  fontSize: '1.15rem',
+                }}
+              >
+                Special Discount: ${activity.specialDiscount}
+              </Box>
+            )}
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <LocationOnIcon sx={{ color: '#5A67D8', mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.location}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <EventNoteIcon sx={{ color: '#5A67D8', mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>
+                    {new Date(activity.date).toLocaleDateString()} at {activity.time}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <AccessTimeIcon sx={{ color: '#5A67D8', mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.duration} minutes</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.status}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <MonetizationOnIcon sx={{ color: '#5A67D8', mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>${activity.price}</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <StarIcon sx={{ color: '#ECC94B', mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.rating.toFixed(1)} / 5</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </CardContent>
+
+          <CardActions sx={{ justifyContent: 'space-between', padding: '24px 32px' }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              href="/tourist/activities"
+              sx={{ fontSize: '1rem', fontWeight: 500 }}
             >
-              Special Discount: ${activity.specialDiscount}
-            </Box>
-          )}
+              Back to Activities
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleShareToggle}
+              startIcon={<ShareIcon />}
+              sx={{ fontSize: '1rem', fontWeight: 500 }}
+            >
+              Share
+            </Button>
+          </CardActions>
 
-          {/* Two-column layout for details */}
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <LocationOnIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.location}</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <EventNoteIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>
-                  {new Date(activity.date).toLocaleDateString()} at {activity.time}
+          <Dialog
+            open={shareOpen}
+            onClose={handleShareToggle}
+            TransitionComponent={Slide}
+            TransitionProps={{ direction: 'up' }}
+            sx={{
+              "& .MuiPaper-root": {
+                borderRadius: "20px 20px 0 0",
+                minHeight: "250px",
+                backgroundColor: "#FFF",
+              },
+            }}
+          >
+            <Box sx={{ p: 3 }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h6" fontWeight="600">
+                  Share this Activity
                 </Typography>
+                <IconButton onClick={handleShareToggle}>
+                  <CloseIcon />
+                </IconButton>
               </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <AccessTimeIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.duration} minutes</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.status}</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <MonetizationOnIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>${activity.price}</Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <StarIcon sx={{ color: '#ECC94B', mr: 1 }} />
-                <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.rating.toFixed(1)} / 5</Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
 
-        <CardActions sx={{ justifyContent: 'space-between', padding: '24px 32px' }}>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            href="/tourist/activities"
-            sx={{ fontSize: '1rem', fontWeight: 500 }}
-          >
-            Back to Activities
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleShareToggle}
-            startIcon={<ShareIcon />}
-            sx={{ fontSize: '1rem', fontWeight: 500 }}
-          >
-            Share
-          </Button>
-        </CardActions>
-
-        {/* Share Bottom Sheet */}
-        <Dialog
-          open={shareOpen}
-          onClose={handleShareToggle}
-          TransitionComponent={Slide}
-          TransitionProps={{ direction: 'up' }}
-          sx={{
-            "& .MuiPaper-root": {
-              borderRadius: "20px 20px 0 0",
-              minHeight: "250px",
-              backgroundColor: "#FFF",
-            },
-          }}
-        >
-          <Box sx={{ p: 3 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6" fontWeight="600">
-                Share this Activity
-              </Typography>
-              <IconButton onClick={handleShareToggle}>
-                <CloseIcon />
-              </IconButton>
+              <Box display="flex" justifyContent="space-around" mt={2}>
+                <IconButton onClick={handleCopyLink} sx={{ flexDirection: 'column' }}>
+                  <LinkIcon fontSize="large" />
+                  <Typography variant="body2">Copy Link</Typography>
+                </IconButton>
+                <IconButton onClick={handleEmailShare} sx={{ flexDirection: 'column' }}>
+                  <EmailIcon fontSize="large" />
+                  <Typography variant="body2">Email</Typography>
+                </IconButton>
+              </Box>
             </Box>
-
-            <Box display="flex" justifyContent="space-around" mt={2}>
-              <IconButton onClick={handleCopyLink} sx={{ flexDirection: 'column' }}>
-                <LinkIcon fontSize="large" />
-                <Typography variant="body2">Copy Link</Typography>
-              </IconButton>
-              <IconButton onClick={handleEmailShare} sx={{ flexDirection: 'column' }}>
-                <EmailIcon fontSize="large" />
-                <Typography variant="body2">Email</Typography>
-              </IconButton>
-            </Box>
-          </Box>
-        </Dialog>
-      </Card>
+          </Dialog>
+        </Card>
+      </Box>
     </Box>
   );
 };

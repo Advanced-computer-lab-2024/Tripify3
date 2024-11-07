@@ -100,6 +100,7 @@ const LoadHotels = () => {
         type: "Hotel",
         date: currentDate,
         details: hotelDetails,
+        paymentStatus: "Paid"
       });
       
        // Show booking confirmation dialog

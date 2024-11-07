@@ -7,7 +7,7 @@ export const getFlightsData = async (req, res) => {
   try {
     const { departure_id, arrival_id, outbound_date, currency, adults, children, travel_class } = req.query;
 
-    const api_key = "de80a715fb7b2a263088186c9dfee87c570a478b991ed8ada2eb4de009f86ad5";
+    const api_key = "d0095c615344617157dfe45da9319422ea9c254df3193f040ba0eb4d975ea6d5";
 
     const apiUrl = `https://serpapi.com/search.json?engine=google_flights&departure_id=${departure_id}&arrival_id=${arrival_id}&outbound_date=${outbound_date}&currency=${currency}&hl=en&api_key=${api_key}&adults=${adults}&children=${children}&travel_class=${travel_class}&stops=1&type=2`;
     console.log(apiUrl);
@@ -98,7 +98,7 @@ const getCityFromCoordinates = (latitude, longitude) => {
 export const getHotels = async (req, res) => {
   try {
     const { check_in_date, check_out_date, adults, children, children_ages } = req.query;
-    const api_key = "de80a715fb7b2a263088186c9dfee87c570a478b991ed8ada2eb4de009f86ad5";
+    const api_key = "d0095c615344617157dfe45da9319422ea9c254df3193f040ba0eb4d975ea6d5";
 
     let apiUrl = `https://serpapi.com/search?engine=google_hotels&gl=eg&hl=en&q=egypt hotels&api_key=${api_key}&check_in_date=${check_in_date}&check_out_date=${check_out_date}&adults=${adults}`;
 

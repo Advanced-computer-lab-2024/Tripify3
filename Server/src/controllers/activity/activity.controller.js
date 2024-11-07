@@ -1,7 +1,5 @@
 import Activity from '../../models/activity.js';
 import Itinerary  from "../../models/itinerary.js"; // Assuming you have an Itinerary model
-import Rating from '../../models/rating.js';
-import Comment from '../../models/comment.js';
 import Tourist from "../../models/tourist.js";
 
 // Get all activities

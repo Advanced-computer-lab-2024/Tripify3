@@ -73,7 +73,7 @@ const activitySchema = new mongoose.Schema({
     type: [String], // Array of strings to hold URLs of the images
     required: true, // Optional: mark as required if needed
   }
-  }, // Reference to the advertiser who posted the activity
+  , // Reference to the advertiser who posted the activity
   bookings: [
     {
       type: mongoose.Schema.Types.ObjectId,

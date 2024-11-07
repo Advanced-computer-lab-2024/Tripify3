@@ -1,6 +1,5 @@
 import Itinerary from "../../models/itinerary.js";
 import User from "../../models/user.js";
-import Comment from "../../models/comment.js";
 import Tourist from "../../models/tourist.js";
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {

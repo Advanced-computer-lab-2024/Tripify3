@@ -1,5 +1,4 @@
 import TourGuide from '../../models/tourGuide.js'; // Import your Tour Guide model
-import Comment from '../../models/comment.js'
 // Update Tour Guide Profile
 export const updateTourGuideProfile = async (req, res) => {
   try {

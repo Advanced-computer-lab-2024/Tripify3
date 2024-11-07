@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  Card,
-  Typography,
-  CardMedia,
-  Grid,
-  Box,
-  CircularProgress,
-  Divider,
-  Button,
-  Modal,
-  IconButton,
-  Dialog,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Card, Typography, CardMedia, Grid, Box, CircularProgress, Divider, Button, Modal, IconButton, Dialog, DialogContent, DialogActions } from "@mui/material";
 import { AccessTime, Luggage, Star, Close, CheckCircleOutline } from "@mui/icons-material";
 
 const LoadFlights = () => {
@@ -82,7 +68,6 @@ const LoadFlights = () => {
   const handleBookFlight = async () => {
     const currentDate = new Date().toISOString();
     const flightDetails = `${selectedFlight.airline} - ${selectedFlight.flightNumber}`;
-    
 
     try {
       await axios.post("http://localhost:8000/booking/create", {
@@ -150,11 +135,26 @@ const LoadFlights = () => {
         <Grid container spacing={2} direction="column">
           {flights.map((flight, index) => (
             <Grid item xs={12} key={index}>
-              <Card sx={{ display: "flex", flexDirection: "column", boxShadow: 3, p: 2, borderRadius: 3 }}>
+              <Card
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  boxShadow: 3,
+                  p: 2,
+                  borderRadius: 3,
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease", // Add transition for smooth effect
+                  "&:hover": {
+                    transform: "scale(1.03)", // Slightly scale up on hover
+                    boxShadow: 6, // Increase shadow on hover
+                  },
+                }}
+              >
                 <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                   <CardMedia component="img" sx={{ width: 60, height: 60, borderRadius: 2, mr: 2 }} image={flight.airlineLogo} alt={`${flight.airline} logo`} />
                   <Box>
-                    <Typography variant="h6">{flight.airline} - {flight.flightNumber}</Typography>
+                    <Typography variant="h6">
+                      {flight.airline} - {flight.flightNumber}
+                    </Typography>
                     <Box display="flex" alignItems="center" color="text.secondary" mt={0.5}>
                       <Star fontSize="small" sx={{ mr: 0.5 }} />
                       <Typography variant="body2">{flight.travelClass}</Typography>
@@ -170,7 +170,9 @@ const LoadFlights = () => {
                       {formatDate(flight.departure.time)}
                     </Typography>
                     <Typography variant="h5">{new Date(flight.departure.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</Typography>
-                    <Typography variant="body2" color="text.secondary">{flight.departure.airport} ({departure})</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {flight.departure.airport} ({departure})
+                    </Typography>
                   </Box>
                   <Box textAlign="center" mx={2}>
                     <Typography variant="body2" color="text.secondary" sx={{ display: "flex", alignItems: "center" }}>
@@ -179,7 +181,9 @@ const LoadFlights = () => {
                       <span style={{ borderBottom: "1px dashed", width: "40px", marginLeft: "4px" }}></span>
                     </Typography>
                     <Box sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px", padding: "2px 8px", mt: 1 }}>
-                      <Typography variant="body2" color="text.secondary">{formatDuration(flight.duration)}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {formatDuration(flight.duration)}
+                      </Typography>
                     </Box>
                   </Box>
                   <Box textAlign="center" flex={1}>
@@ -187,7 +191,9 @@ const LoadFlights = () => {
                       {formatDate(flight.arrival.time)}
                     </Typography>
                     <Typography variant="h5">{new Date(flight.arrival.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</Typography>
-                    <Typography variant="body2" color="text.secondary">{flight.arrival.airport} ({arrival})</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {flight.arrival.airport} ({arrival})
+                    </Typography>
                   </Box>
                 </Box>
                 <Divider />
@@ -214,17 +220,27 @@ const LoadFlights = () => {
       <Modal open={open} onClose={handleClose} aria-labelledby="flight-details-title" aria-describedby="flight-details-description">
         <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 400, bgcolor: "background.paper", boxShadow: 24, p: 4, borderRadius: 2 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-            <Typography id="flight-details-title" variant="h6" component="h2">Flight Details</Typography>
-            <IconButton onClick={handleClose}><Close /></IconButton>
+            <Typography id="flight-details-title" variant="h6" component="h2">
+              Flight Details
+            </Typography>
+            <IconButton onClick={handleClose}>
+              <Close />
+            </IconButton>
           </Box>
           {selectedFlight && (
             <Box sx={{ mt: 2 }}>
-              <Typography variant="h5" color="primary" fontWeight="bold" textAlign="center" mb={2}>{selectedFlight.airline} - {selectedFlight.flightNumber}</Typography>
+              <Typography variant="h5" color="primary" fontWeight="bold" textAlign="center" mb={2}>
+                {selectedFlight.airline} - {selectedFlight.flightNumber}
+              </Typography>
               <Divider sx={{ mb: 2 }} />
               <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
                 <Box textAlign="center" sx={{ flex: 1 }}>
-                  <Typography variant="body2" color="text.secondary">Departure</Typography>
-                  <Typography variant="h6" fontWeight="bold" color="black">{selectedFlight.departure.airport} ({departure})</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Departure
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" color="black">
+                    {selectedFlight.departure.airport} ({departure})
+                  </Typography>
                   <Typography variant="body2">{new Date(selectedFlight.departure.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -233,21 +249,38 @@ const LoadFlights = () => {
                   <Box sx={{ height: 10, width: 10, backgroundColor: "secondary.main", borderRadius: "50%", ml: 1 }} />
                 </Box>
                 <Box textAlign="center" sx={{ flex: 1 }}>
-                  <Typography variant="body2" color="text.secondary">Arrival</Typography>
-                  <Typography variant="h6" fontWeight="bold" color="black">{selectedFlight.arrival.airport} ({arrival})</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Arrival
+                  </Typography>
+                  <Typography variant="h6" fontWeight="bold" color="black">
+                    {selectedFlight.arrival.airport} ({arrival})
+                  </Typography>
                   <Typography variant="body2">{new Date(selectedFlight.arrival.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</Typography>
                 </Box>
               </Box>
               <Divider sx={{ mb: 2 }} />
               <Box sx={{ textAlign: "center", mb: 2 }}>
-                <Typography variant="body1" color="text.secondary">Travel Class: <strong>{selectedFlight.travelClass}</strong></Typography>
-                <Typography variant="body1" color="text.secondary">Baggage Allowance: <strong>{selectedFlight.baggageAllowance || "2 bag"}</strong></Typography>
-                <Typography variant="body1" color="text.secondary">Total Passengers: <strong>{totalTickets} (Adults: {adults}, Children: {kids})</strong></Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Travel Class: <strong>{selectedFlight.travelClass}</strong>
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Baggage Allowance: <strong>{selectedFlight.baggageAllowance || "2 bag"}</strong>
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Total Passengers:{" "}
+                  <strong>
+                    {totalTickets} (Adults: {adults}, Children: {kids})
+                  </strong>
+                </Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
               <Box textAlign="center" sx={{ mt: 3 }}>
-                <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>Price: {formatPrice(selectedFlight.price)}</Typography>
-                <Button variant="contained" color="secondary" sx={{ mt: 1 }} onClick={handleBookFlight}>Book</Button>
+                <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
+                  Price: {formatPrice(selectedFlight.price)}
+                </Typography>
+                <Button variant="contained" color="secondary" sx={{ mt: 1 }} onClick={handleBookFlight}>
+                  Book
+                </Button>
               </Box>
             </Box>
           )}
@@ -258,11 +291,17 @@ const LoadFlights = () => {
       <Dialog open={bookingDialog} onClose={closeBookingDialog}>
         <DialogContent sx={{ textAlign: "center", p: 4 }}>
           <CheckCircleOutline color="success" sx={{ fontSize: 60, mb: 2 }} />
-          <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>Booked</Typography>
-          <Typography variant="body1" color="text.secondary" gutterBottom>Your flight has been successfully booked!</Typography>
+          <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
+            Booked
+          </Typography>
+          <Typography variant="body1" color="text.secondary" gutterBottom>
+            Your flight has been successfully booked!
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="primary" fullWidth onClick={closeBookingDialog}>Return to Home</Button>
+          <Button variant="contained" color="primary" fullWidth onClick={closeBookingDialog}>
+            Return to Home
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

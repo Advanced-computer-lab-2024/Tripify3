@@ -10,9 +10,6 @@ import {
   editProfile,
 } from "../controllers/tourist/profile.controller.js";
 import {
-  searchPlaces,
-  searchActivities,
-  searchItineraries,
   getFlightsData, getHotels,
 } from "../controllers/tourist/search.controller.js";
 import {
