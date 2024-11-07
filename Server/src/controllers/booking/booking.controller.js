@@ -1,18 +1,50 @@
 import Booking from '../../models/booking.js';
 
 export const createBooking = async (req, res) => {
-    const { tourist, price, type, details, paymentStatus} = req.body;
-
     try {
-        const newBooking = new Booking({ type, details, tourist, price , paymentStatus});
-        await newBooking.save();
-        res.status(201).json(newBooking);
+      const {
+        tourist,
+        price,
+        type,
+        itinerary,
+        trip,
+        activity,
+        details,
+        paymentStatus // Optional, defaults to "Unpaid"
+      } = req.body;
+  
+      // Validate required fields
+      if (!tourist || !price || !type) {
+        return res.status(400).json({ message: 'Tourist, Price, and Type are required.' });
+      }
+  
+      // Create the booking object
+      const newBooking = new Booking({
+        tourist,
+        price,
+        type,
+        itinerary,
+        trip,
+        activity,
+        details,
+        paymentStatus,
+        date: new Date() // This will set the date to the current date
+      });
+  
+      // Save the booking to the database
+      const savedBooking = await newBooking.save();
+  
+      // Respond with the created booking
+      return res.status(201).json(savedBooking);
     } catch (error) {
-        console.error('Error creating booking:', error);
-        res.status(500).json({ message: 'Failed to create booking', error });
+      console.error('Error creating booking:', error);
+      return res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-};
+  }
 
+
+
+  
 // Get all bookings
 export const getBookings = async (req, res) => {
     try {

@@ -26,24 +26,29 @@ const touristSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+
   walletAmount: {
     type: Number,
     default: 0,
   },
+
   gender: {
     type: String,
     enum: ["Male", "Female"],
   },
+
   complaints: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Complaint",
     },
   ],
+
   wishlist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wishlist",
   },
+
   profilePicture: {
     filename: String,
     filepath: String, // This will store the path or URL to the profile picture
@@ -52,51 +57,58 @@ const touristSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Cart",
   },
-  preferences: { type: [String], required: false },
-  tripsTaken: { type: [String], required: false },
-  following: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tour Guide",
-    },
-  ],
-  activitiesAttended: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Activity",
-    },
-  ],
-  itinerariesAttended: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Itinerary",
-    },
-  ],
+  preferences: { type: [String],
+     required: false },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//added by basil 
   currencyPreference: {
     type: String,
     enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP", "BRL", "ARS"], // Modify as needed
   },
-  preferences: { 
-    type: [String], 
-    required: false
-   },
-  tripsTaken: { 
-    type: [String], 
-    required: false 
-  },
+
   following: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "tourGuide",
   }],
+
   activitiesAttended:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "activity",
   }],
+
   itinerariesAttended:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Itinerary",
-  }]
+  }],
+
+  tripsTaken: { type: [String], 
+    required: false }
 });
+
+
+
+
+
+
+
+
 
 touristSchema.virtual("level").get(function () {
   if (this.loyaltyPoints > 500000) {

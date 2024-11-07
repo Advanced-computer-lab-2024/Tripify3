@@ -23,6 +23,8 @@ export const getFollowingTourGuides = async (req, res) => {
   }
 };
 
+
+
 export const followTourGuide = async (req, res) => {
   const { touristId, tourGuideId } = req.params; // Extract touristId and tourGuideId from parameters
 
