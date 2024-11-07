@@ -122,10 +122,116 @@ const ImageFlipper = ({ images }) => {
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#1e3a5f", // Dark blue
+      main: "#1e3a5f",
+      contrastText: "#ffffff", // Ensures readable text on primary background
     },
     secondary: {
-      main: "#ff6f00", // Orange
+      main: "#ff6f00",
+      contrastText: "#ffffff", // Ensures readable text on secondary background
+    },
+    background: {
+      default: "#f5f5f5", // Light gray background for the app
+      paper: "#ffffff", // White background for cards
+    },
+    text: {
+      primary: "#333333", // Dark gray text for readability
+      secondary: "#666666", // Lighter gray for secondary text
+    },
+  },
+  typography: {
+    fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+    h4: {
+      fontWeight: 700, // Bold for headings
+      fontSize: "1.8rem",
+      color: "#1e3a5f",
+    },
+    body1: {
+      fontSize: "1rem",
+      color: "#333333",
+    },
+    button: {
+      fontWeight: 600, // Makes buttons more prominent
+    },
+  },
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#1e3a5f",
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          transition: "transform 0.3s, box-shadow 0.3s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.15)", // Increased shadow on hover
+          },
+          borderRadius: "12px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", // Default shadow for cards
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+          textTransform: "none", // Disables uppercase text for readability
+          padding: "8px 16px",
+          fontWeight: 600,
+          boxShadow: "none",
+          "&:hover": {
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Soft shadow on hover
+          },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "#1e3a5f",
+            },
+            "&:hover fieldset": {
+              borderColor: "#ff6f00", // Secondary color on hover
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "#ff6f00", // Secondary color when focused
+            },
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: "#1e3a5f", // Primary color for icons
+          "&:hover": {
+            backgroundColor: "rgba(30, 58, 95, 0.08)", // Light primary color on hover
+          },
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: "#1e3a5f", // Primary color for tooltip
+          color: "#ffffff",
+          fontSize: "0.9rem",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: "12px",
+          boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)", // Soft shadow for dialogs and menus
+        },
+      },
     },
   },
 });
@@ -586,61 +692,67 @@ const Products = () => {
                           )}
                         </IconButton>
                       )}
-
-                      {Array.isArray(product.imageUrl) &&
-                      product.imageUrl.length > 0 ? (
-                        <ImageFlipper images={product.imageUrl} />
-                      ) : (
-                        <CircularProgress
-                          style={{
-                            margin: "auto",
-                            display: "block",
-                          }}
-                          size={50}
-                        />
-                      )}
-                      <CardContent>
-                        <Typography variant="h5">{product.name}</Typography>
-                        <Typography>Price: ${product.price}</Typography>
-                        <Typography>Details: {product.details}</Typography>
-                        <Rating
-                          name="read-only"
-                          value={product.rating}
-                          readOnly
-                        />
-                        <Typography>Quantity: {product.quantity}</Typography>
-                        <Typography>Category: {product.category}</Typography>
-                        <Typography>Sales: {product.sales}</Typography>
-
-                        {product.reviews && product.reviews.length > 0 ? (
-                          <div>
-                            <Typography variant="h6">Sales History</Typography>
-                            <ul>
-                              {product.reviews.map((review, index) => (
-                                <li key={index}>
-                                  Review ID: {review._id}, Rating:{" "}
-                                  {review.rating}, {review.comment}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                      <Link
+                        to={`/product/${product._id}`} // Link to the product page
+                        style={{ textDecoration: "none", color: "inherit" }} // Ensures link doesn't affect card styling
+                      >
+                        {Array.isArray(product.imageUrl) &&
+                        product.imageUrl.length > 0 ? (
+                          <ImageFlipper images={product.imageUrl} />
                         ) : (
-                          <Typography>
-                            No reviews, be the first one to give feedback.
-                          </Typography>
+                          <CircularProgress
+                            style={{
+                              margin: "auto",
+                              display: "block",
+                            }}
+                            size={50}
+                          />
                         )}
+                        <CardContent>
+                          <Typography variant="h5">{product.name}</Typography>
+                          <Typography>Price: ${product.price}</Typography>
+                          <Typography>Details: {product.details}</Typography>
+                          <Rating
+                            name="read-only"
+                            value={product.rating}
+                            readOnly
+                          />
+                          <Typography>Quantity: {product.quantity}</Typography>
+                          <Typography>Category: {product.category}</Typography>
+                          <Typography>Sales: {product.sales}</Typography>
 
-                        <Typography>
-                          Seller:{" "}
-                          {sellerNames[product.sellerId] ? (
-                            <Link to={`/seller/${product.sellerId}`}>
-                              {sellerNames[product.sellerId]}
-                            </Link>
+                          {product.reviews && product.reviews.length > 0 ? (
+                            <div>
+                              <Typography variant="h6">
+                                Sales History
+                              </Typography>
+                              <ul>
+                                {product.reviews.map((review, index) => (
+                                  <li key={index}>
+                                    Review ID: {review._id}, Rating:{" "}
+                                    {review.rating}, {review.comment}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                           ) : (
-                            "Loading seller name..."
+                            <Typography>
+                              No reviews, be the first one to give feedback.
+                            </Typography>
                           )}
-                        </Typography>
-                      </CardContent>
+
+                          <Typography>
+                            Seller:{" "}
+                            {sellerNames[product.sellerId] ? (
+                              <Link to={`/seller/${product.sellerId}`}>
+                                {sellerNames[product.sellerId]}
+                              </Link>
+                            ) : (
+                              "Loading seller name..."
+                            )}
+                          </Typography>
+                        </CardContent>
+                      </Link>
                     </Card>
                   </Grid>
                 ))}
