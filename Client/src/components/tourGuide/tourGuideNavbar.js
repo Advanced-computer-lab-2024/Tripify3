@@ -78,30 +78,32 @@ const TourGuideNavbar = () => {
   };
   const closeLogoutDialog = () => setLogoutDialogOpen(false);
 
-
-const confirmDeleteAccount = async () => {
-  try {
-
-    // API call to delete the user account
-    const response = await fetch(`http://localhost:8000/users/delete/${userId}`, {
-      method: 'DELETE',
-    });
-
-    if (response.ok) {
-      // Handle successful deletion
-      //alert('Account successfully deleted.');
-      setDeleteDialogOpen(false); // Close the delete confirmation dialog
-      navigate('/goodbye'); // Redirect after account deletion
-    } else {
-      // Handle errors
-      const errorData = await response.json();
-      alert(`Failed to delete account: ${errorData.message}`);
+  const confirmDeleteAccount = async () => {
+    try {
+      // Check for upcoming itineraries for the user (tour guide)
+      const itineraryResponse = await axios.get(`http://localhost:8000/itineraries/check-upcoming/${userId}`);
+      const { hasUpcoming } = itineraryResponse.data;
+  
+      if (hasUpcoming) {
+        alert('You have upcoming itineraries and cannot delete your account.');
+        return;
+      }
+  
+      // Proceed with the account deletion if no upcoming itineraries are found
+      const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
+  
+      if (response.status === 200) {
+        setDeleteDialogOpen(false); // Close the delete confirmation dialog
+        navigate('/goodbye'); // Redirect after account deletion
+      } else {
+        alert(`Failed to delete account: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('An unexpected error occurred. Please try again later.');
     }
-  } catch (error) {
-    console.error('Error deleting account:', error);
-    alert('An unexpected error occurred. Please try again later.');
-  }
-};
+  };
+  
 
   
   
