@@ -14,12 +14,6 @@ const activitySchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ],
   location: {
     type: String,
     required: true,
@@ -36,11 +30,6 @@ const activitySchema = new mongoose.Schema({
     type: Number, // Could be a percentage or fixed amount
     default: 0,
   },
-  // status:{
-  //   type:String,
-  //   enum: ["Active", "Inactive"],
-  //   default: "Active"
-  // },
   duration: {
     type: Number, // Duration in minutes
     required: true,

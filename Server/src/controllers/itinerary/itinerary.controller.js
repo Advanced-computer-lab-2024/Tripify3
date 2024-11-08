@@ -190,7 +190,11 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
 // Get an itinerary by ID
 export const getItineraryById = async (req, res) => {
   try {
-    const itinerary = await Itinerary.findById(req.params.id).populate("activities");
+    const itinerary = await Itinerary.findById(req.params.id).populate("activities")
+    .populate({ path: 'tags', select: 'name' }) // Populate tags with their names only
+    // .populate({ path: 'category', select: 'name' }) // Populate category with its name only
+
+
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }

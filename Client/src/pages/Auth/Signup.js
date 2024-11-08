@@ -30,29 +30,9 @@ const nationalities = [
   "Turkey",
   "Saudi Arabia",
   "United Arab Emirates",
-  "Sweden",
-  "Norway",
-  "Finland",
-  "Denmark",
-  "Netherlands",
-  "Belgium",
-  "Switzerland",
-  "Austria",
-  "Greece",
-  "Portugal",
-  "Czech Republic",
-  "Ireland",
-  "Iceland",
-  "Palestine",
-  "Chile",
-  "Colombia",
-  "Peru",
-  "Panama",
-  "Costa Rica",
-  "Cuba",
-  "Honduras",
-  "El Salvador",
-  "Paraguay",
+
+
+ 
   // Add more nationalities as needed
 ];
 
@@ -64,14 +44,7 @@ const currencies = [
   { name: "Chinese Yuan", symbol: "¥" },
   { name: "Swiss Franc", symbol: "CHF" },
   { name: "Canadian Dollar", symbol: "C$" },
-  { name: "Australian Dollar", symbol: "A$" },
-  { name: "Indian Rupee", symbol: "₹" },
-  { name: "Russian Ruble", symbol: "₽" },
-  { name: "South Korean Won", symbol: "₩" },
-  { name: "Brazilian Real", symbol: "R$" },
-  { name: "Mexican Peso", symbol: "MX$" },
-  { name: "Turkish Lira", symbol: "₺" },
-  { name: "South African Rand", symbol: "R" }
+
 ];
 
 

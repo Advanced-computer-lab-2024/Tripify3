@@ -1,45 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Box, Typography, Button, CircularProgress, Grid, Card, CardContent, CardActions, IconButton, Dialog, Slide } from '@mui/material';
-import { getActivityById } from '../../services/tourist';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import StarIcon from '@mui/icons-material/Star';
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import ShareIcon from '@mui/icons-material/Share';
-import EmailIcon from '@mui/icons-material/Email';
-import LinkIcon from '@mui/icons-material/Link';
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import { Book } from '@mui/icons-material';
-import axios from 'axios';
-import { getUserId } from '../../utils/authUtils';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, Typography, Button, CircularProgress, Grid, Card, CardContent, CardActions, IconButton, Dialog, Slide } from "@mui/material";
+import {
+  LocationOn as LocationOnIcon,
+  AccessTime as AccessTimeIcon,
+  MonetizationOn as MonetizationOnIcon,
+  Star as StarIcon,
+  EventNote as EventNoteIcon,
+  Share as ShareIcon,
+  Email as EmailIcon,
+  Link as LinkIcon,
+  Close as CloseIcon,
+  Add as AddIcon,
+  Remove as RemoveIcon,
+} from "@mui/icons-material";
+import { getActivityById } from "../../services/tourist";
+import axios from "axios";
+import { getUserId } from "../../utils/authUtils";
+
 const ActivityDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
-  const [currentActivityId, setCurrentActivityId] = useState(null); // Added this state for dropdown handling
+  const [currentActivityId, setCurrentActivityId] = useState(null);
   const [ticketCount, setTicketCount] = useState(1);
 
+  const handleIncrease = () => setTicketCount(ticketCount + 1);
+  const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
 
-  const handleIncrease = () => {
-    setTicketCount(ticketCount + 1);
-  };
-
-  const handleDecrease = () => {
-    if (ticketCount > 1) {
-      setTicketCount(ticketCount - 1);
-    }
-  };
   useEffect(() => {
     const fetchActivity = async () => {
       try {
         const response = await getActivityById(id);
-        setActivity(response.data);
+        setActivity(response.data.data);
         setLoading(false);
       } catch (error) {
         setError("Error fetching activity details");
@@ -50,16 +46,10 @@ const ActivityDetails = () => {
   }, [id]);
 
   const toggleShareDropdown = (activityId) => {
-    if (currentActivityId === activityId) {
-      setCurrentActivityId(null);
-    } else {
-      setCurrentActivityId(activityId);
-    }
+    setCurrentActivityId(currentActivityId === activityId ? null : activityId);
   };
 
-  const handleShareToggle = () => {
-    setShareOpen(!shareOpen);
-  };
+  const handleShareToggle = () => setShareOpen(!shareOpen);
 
   const handleCopyLink = () => {
     const link = `http://localhost:3000/tourist/activity/${activity._id}`;
@@ -68,31 +58,31 @@ const ActivityDetails = () => {
       setShareOpen(false);
     });
   };
-  const BookActivity = async() => {
-    const tourist = getUserId();
-    const price = ticketCount*(activity.price);
-    const type = "Activity";
-    const itemId = activity._id;
-    const booking = { tourist, price, type, itemId };
 
-      try {
-        const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking );
-        alert(response.data.message);
-      } catch (error) {
-        console.error("Error sending message:", error);
-      }
-    
+  const BookActivity = async () => {
+    const tourist = getUserId();
+    const price = ticketCount * activity.price;
+    const booking = { tourist, price, type: "Activity", itemId: activity._id };
+
+    try {
+      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
+      alert(response.data.message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
+
   const handleEmailShare = () => {
     const emailSubject = `Check out this activity: ${activity.name}`;
-    const emailBody = `I thought you might be interested in this activity!\n\n${activity.name}\nLocation: ${activity.location}\nDate: ${new Date(activity.date).toLocaleDateString()} at ${activity.time}\n\nView more details here: http://localhost:3000/tourist/activity/${activity._id}`;
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-    window.location.href = mailtoLink;
+    const emailBody = `I thought you might be interested in this activity!\n\n${activity.name}\nLocation: ${activity.location}\nDate: ${new Date(activity.date).toLocaleDateString()} at ${
+      activity.time
+    }\n\nView more details here: http://localhost:3000/tourist/activity/${activity._id}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
   };
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
         <CircularProgress />
       </Box>
     );
@@ -103,10 +93,13 @@ const ActivityDetails = () => {
   }
 
   return (
-    
+    <Box sx={{ p: 3, backgroundColor: "#F5F7FA", minHeight: "100vh", position: "relative" }}>
+      <Button variant="contained" color="primary" onClick={() => navigate("/tourist/activities")} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
+        Back to Activities
+      </Button>
 
-      <Box sx={{ p: 3, backgroundColor: '#F5F7FA', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
-        <Card sx={{ width: '100%', maxWidth: '900px', borderRadius: 3, boxShadow: 5, padding: 4, minHeight: '500px' }}>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start", mt: 5 }}>
+        <Card sx={{ width: "100%", maxWidth: "900px", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
           <CardContent>
             <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
               {activity.name}
@@ -115,95 +108,96 @@ const ActivityDetails = () => {
             {activity.specialDiscount > 0 && (
               <Box
                 sx={{
-                  backgroundColor: '#E2F0E6',
-                  color: '#2C7A7B',
+                  backgroundColor: "#E2F0E6",
+                  color: "#2C7A7B",
                   borderRadius: 2,
-                  padding: '12px',
-                  textAlign: 'center',
+                  padding: "12px",
+                  textAlign: "center",
                   mb: 4,
                   fontWeight: 600,
-                  fontSize: '1.15rem',
+                  fontSize: "1.15rem",
                 }}
               >
-                Special Discount: ${activity.specialDiscount}
+                Special Discount: {activity.specialDiscount}%
               </Box>
             )}
 
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <LocationOnIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.location}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
+                    {activity.location}
+                  </Typography>
                 </Box>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <EventNoteIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
                     {new Date(activity.date).toLocaleDateString()} at {activity.time}
                   </Typography>
                 </Box>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <AccessTimeIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.duration} minutes</Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <AccessTimeIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
+                    {activity.duration} minutes
+                  </Typography>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <MonetizationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                  <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
+                    {activity.price}
+                  </Typography>
                 </Box>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.status}</Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <StarIcon
+                      key={index}
+                      sx={{
+                        color: index < activity.rating ? "#ECC94B" : "#E2E8F0", // Highlighted stars for rating, gray for others
+                        mr: 0.5,
+                      }}
+                    />
+                  ))}
+                 
                 </Box>
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <MonetizationOnIcon sx={{ color: '#5A67D8', mr: 1 }} />
-                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>${activity.price}</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <StarIcon sx={{ color: '#ECC94B', mr: 1 }} />
-                  <Typography variant="body1" sx={{ color: '#4A5568', fontWeight: 500 }}>{activity.rating.toFixed(1)} / 5</Typography>
-                </Box>
+
+              <Grid item xs={12}>
+                <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
+                  Category: {activity.category.name}
+                </Typography>
+                <Typography variant="h6" color="#333" sx={{ mt: 1 }}>
+                  Tags: {activity.tags.map((tag) => tag.name).join(", ")}
+                </Typography>
               </Grid>
             </Grid>
           </CardContent>
 
-          <CardActions sx={{ justifyContent: 'space-between', padding: '24px 32px' }}>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              href="/tourist/activities"
-              sx={{ fontSize: '1rem', fontWeight: 500 }}
-            >
-              Back to Activities
-            </Button>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
-        <RemoveIcon />
-      </IconButton>
-      <Typography variant="h6" sx={{ mx: 1 }}>
-        {ticketCount}
-      </Typography>
-      <IconButton onClick={handleIncrease}>
-        <AddIcon />
-      </IconButton>
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={BookActivity}
-        sx={{ fontSize: '1rem', fontWeight: 500, ml: 2 }}
-      >
-        Book Activity
-      </Button>
-    </Box>
-            <Button
-              variant="outlined"
-              onClick={handleShareToggle}
-              startIcon={<ShareIcon />}
-              sx={{ fontSize: '1rem', fontWeight: 500 }}
-            >
+          <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px" }}>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
+                <RemoveIcon />
+              </IconButton>
+              <Typography variant="h6" sx={{ mx: 1 }}>
+                {ticketCount}
+              </Typography>
+              <IconButton onClick={handleIncrease}>
+                <AddIcon />
+              </IconButton>
+              <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500, ml: 2 }}>
+                Book Activity
+              </Button>
+            </Box>
+            <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem", fontWeight: 500 }}>
               Share
             </Button>
           </CardActions>
@@ -212,39 +206,33 @@ const ActivityDetails = () => {
             open={shareOpen}
             onClose={handleShareToggle}
             TransitionComponent={Slide}
-            TransitionProps={{ direction: 'up' }}
+            TransitionProps={{ direction: "up" }}
             sx={{
               "& .MuiPaper-root": {
                 borderRadius: "20px 20px 0 0",
-                minHeight: "250px",
-                backgroundColor: "#FFF",
+                padding: 3,
+                backgroundColor: "#F5F7FA",
               },
             }}
           >
-            <Box sx={{ p: 3 }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" fontWeight="600">
-                  Share this Activity
-                </Typography>
-                <IconButton onClick={handleShareToggle}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-
-              <Box display="flex" justifyContent="space-around" mt={2}>
-                <IconButton onClick={handleCopyLink} sx={{ flexDirection: 'column' }}>
-                  <LinkIcon fontSize="large" />
-                  <Typography variant="body2">Copy Link</Typography>
-                </IconButton>
-                <IconButton onClick={handleEmailShare} sx={{ flexDirection: 'column' }}>
-                  <EmailIcon fontSize="large" />
-                  <Typography variant="body2">Email</Typography>
-                </IconButton>
-              </Box>
+            <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 8, right: 8 }}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h6" color="#333" textAlign="center" sx={{ mt: 2 }}>
+              Share Activity
+            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 3 }}>
+              <IconButton onClick={handleEmailShare}>
+                <EmailIcon sx={{ color: "#5A67D8" }} />
+              </IconButton>
+              <IconButton onClick={handleCopyLink}>
+                <LinkIcon sx={{ color: "#5A67D8" }} />
+              </IconButton>
             </Box>
           </Dialog>
         </Card>
       </Box>
+    </Box>
   );
 };
 

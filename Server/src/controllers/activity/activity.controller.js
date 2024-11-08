@@ -1,6 +1,7 @@
 import Activity from '../../models/activity.js';
 import Itinerary  from "../../models/itinerary.js"; // Assuming you have an Itinerary model
 import Tourist from "../../models/tourist.js";
+import Review from "../../models/review.js";
 
 // Get all activities
 export const getActivities = async (req, res) => {
@@ -12,16 +13,31 @@ export const getActivities = async (req, res) => {
   }
 };
 
-// Get a single activity by ID
+// Get a single activity by ID with reviews
 export const getActivityById = async (req, res) => {
   try {
-    const activity = await Activity.findById(req.params.id).populate('location');
+    // Fetch the activity by ID, with populated fields for tags, category, and location
+    const activity = await Activity.findById(req.params.id)
+      .populate({ path: 'tags', select: 'name' }) // Populate tags with their names only
+      .populate({ path: 'category', select: 'name' }) // Populate category with its name only
+      .populate('location'); // Assuming location might also be populated if needed
+
     if (!activity) {
       return res.status(404).json({ error: 'Activity not found' });
     }
+
+    // Fetch reviews for the activity by its ID
+    const reviews = await Review.find({ activity: req.params.id })
+      .populate('tourist', 'name') // Populate tourist name (or any other fields)
+      .populate('tourGuide', 'name') // Populate tour guide name (or any other fields)
+      .select('rating comment reviewDate'); // Select only the relevant review fields
+
     return res.status(200).json({
       message: "Activity found successfully",
-      data: activity,
+      data: {
+        activity,
+        reviews, // Add the reviews array to the response
+      },
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

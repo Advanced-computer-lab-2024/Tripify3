@@ -143,7 +143,7 @@ const SellerNavbar = () => {
                 Delete Account
               </MenuItem>
             </Menu>
-            {/* Help Icon with Dropdown */}
+       
           </Box>
         </Toolbar>
       </AppBar>

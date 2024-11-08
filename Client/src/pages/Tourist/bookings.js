@@ -61,8 +61,9 @@ const Bookings = () => {
         aria-label="View selection"
         style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}
       >
-        <ToggleButton value="upcoming">Upcoming</ToggleButton>
         <ToggleButton value="past">Past</ToggleButton>
+        <ToggleButton value="upcoming">Upcoming</ToggleButton>
+        
       </ToggleButtonGroup>
 
       <Grid container spacing={3}>
