@@ -30,7 +30,7 @@ router.put("/user/change/password",  changePassword);
 // Route to delete user account
 router.delete("/users/delete/:userId", userDeleteAccount);
 
-router.get('/user/get/:id', getUserDetails); // Add this route to fetch user details
+router.get('/user/get/profile/:id', getUserDetails); // Add this route to fetch user details
 
 
 

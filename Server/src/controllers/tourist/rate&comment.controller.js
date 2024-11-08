@@ -1,13 +1,10 @@
 import User from "../../models/user.js";
 import Tourist from "../../models/tourist.js";
-import Itinerary from "../../models/itinerary.js"; 
-import TourGuide from "../../models/tourGuide.js";
-import Product from "../../models/product.js";
-import Payment from "../../models/payment.js";
+
 import Review from "../../models/review.js";
 
 export const touristReview = async (req, res) => {
-  const {tourGuide, activity, itinerary, touristId, rating, comment } = req.body;
+  const {tourGuideId, activity, itinerary, touristId, rating, comment } = req.body;
 
   try {
     // 1. Validate input
@@ -24,9 +21,9 @@ export const touristReview = async (req, res) => {
     }
   
     // 3. Check if the reviewed tourist is followed
-    const reviewedTouristId = tourGuide; // This should be passed in the request body
+   // This should be passed in the request body
     
-    const isFollowing = tourist.following.some(followedTourist => followedTourist.equals(reviewedTouristId));
+    const isFollowing = tourist.following.some(followedTourist => followedTourist.equals(tourGuideId));
 
     if (!isFollowing) {
       return res.status(403).json({ message: 'You can only review tour guides you follow.' });
@@ -34,7 +31,7 @@ export const touristReview = async (req, res) => {
 
     // 4. Create a new review
     const newReview = new Review({
-      tourGuide,
+      tourGuide: tourGuideId,
       activity,
       itinerary,
       tourist: touristId,

@@ -11,8 +11,6 @@ router.get('/tourGuide/profile/:id', getTourGuideProfile);
 router.get('/comment/:id', getCommentById);
 router.get("/tourGuide/getAll/", getAllTourGuides);
 
-router.get("/tour-guide/getAll/", getAllTourGuides);
-
 router.get('/itineraries/check-upcoming/:userId', checkUpcomingItineraries); // check if tour guide has upcoming itinerariees by end time
 
 router.delete('/tourGuide/delete/:userId', deleteTourGuideAccount);

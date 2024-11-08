@@ -126,6 +126,8 @@ export const getImage = (req, res) => {
 export const findSeller = async (req, res) => {
   try {
     const { id } = req.query;
+    console.log(id);
+    
     const seller2 = await seller.findById(id);
     if (!seller2) {
       return res.status(404).json({ message: "Seller not found." });

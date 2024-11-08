@@ -110,7 +110,6 @@ export const bookItinerary = async (req, res) => {
 
 
 export const updateItinerariesAttended = async (req, res) => {
-  console.log("aaaaaaaaaaaaaaaa")
   const { touristId, itineraryId } = req.body; // Expect `touristId` and `itineraryId` in the request body
 
   try {

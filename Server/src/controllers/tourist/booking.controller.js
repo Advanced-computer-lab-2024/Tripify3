@@ -1,9 +1,12 @@
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 import Booking from "../../models/booking.js";
+import User from "../../models/user.js";
 
 export const createBooking = async (req, res) => {
-  const { tourist, price, type, itemId, details, number } = req.body;
+  const { tourist, price, type, itemId, details } = req.body;
+
+  console.log(req.body);
 
   try {
     let item;
@@ -148,7 +151,7 @@ export const getAllBookings = async (req, res) => {
           pastBookings.push(booking);
         }
       } else if (booking.type === "Itinerary" && booking.itinerary) {
-        if (new Date(booking.itinerary.timeline.startTime) > now) {
+        if (new Date(booking.itinerary.timeline.endTime) > now) {
           upcomingBookings.push(booking);
         } else {
           pastBookings.push(booking);
@@ -162,5 +165,39 @@ export const getAllBookings = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+export const getTourGuideProfile = async (req, res) => {
+  const { tourGuideId, touristId } = req.params;
+
+  try {
+      // Fetch the tour guide by ID
+      const tourGuide = await User.findById(tourGuideId);
+
+      if (!tourGuide) {
+          return res.status(404).json({ message: "Tour Guide not found" });
+      }
+
+      // Fetch the tourist by ID to check following status
+      const tourist = await User.findById(touristId);
+
+      if (!tourist) {
+          return res.status(404).json({ message: "Tourist not found" });
+      }
+
+      // Check if the tour guide is in the tourist's following list
+      const isFollowing = tourist.following.includes(tourGuideId);
+
+      // Respond with the tour guide's details and following status
+      res.status(200).json({
+          tourGuide,
+          isFollowing
+      });
+  } catch (error) {
+      console.error("Error fetching user details:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
   }
 };

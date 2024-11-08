@@ -11,7 +11,7 @@ import ActivityDetails from "./pages/tourist/activitydetails.js"; // Create this
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
 import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js";
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
-import SellerHomepage from "./pages/seller/SellerHomepage.js";
+import ProductsLists from "./pages/seller/productsList.js";
 import AdvertiserProfile from "./pages/advertiser/AdvertiserProfile.js";
 import AdvertiserActivities from "./pages/advertiser/AdvertiserActivities.js";
 import TouristHomePage from "./pages/tourist/homepage.js";
@@ -21,7 +21,6 @@ import LoadFlights from "./pages/tourist/loadFlights.js";
 import SearchHotels from "./pages/tourist/searchHotels.js";
 import LoadHotels from "./pages/tourist/loadHotels.js";
 import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
-import MyProducts from "./pages/seller/myProducts.js";
 import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import PaymentWrapper from "./pages/tourist/payment.js";
@@ -30,7 +29,7 @@ import ActiveItineraries from "./pages/tourist/itineraries.js";
 import Itineraries from "./pages/admin/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
-import Products from "./pages/seller/products.js";
+
 import Categories from "./pages/admin/categories.js";
 import ItinerariesDetails from "./pages/tourist/itinerarydetails.js";
 
@@ -45,6 +44,7 @@ import TourGuideItinerary from "./pages/tourGuide/itinerary.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
 import TourGuideActivities from "./pages/tourGuide/activities.js";
 //import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
+import BookingDetails from "./pages/tourist/bookingDetails.js";
 
 import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
 
@@ -63,6 +63,7 @@ import Users from "./pages/admin/users.js";
 import Tags from "./pages/admin/tags.js";
 import loadHotels from "./pages/tourist/loadHotels.js";
 import ProductPage from "./pages/seller/new/productPage.js";
+import Bookings from "./pages/tourist/bookings.js";
 // Mock function to get the current user role
 const getUserRole = () => {
   return getUserType(); // can be "admin", "seller", etc.
@@ -138,7 +139,9 @@ const App = () => {
         <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
         <Route path={"/tourist/view/complaints"} element={getLayoutForRole(userRole, <ViewComplaints />)} />
         <Route path={"/tourist/itinerary/:id"} element={getLayoutForRole(userRole, <ItinerariesDetails />)} />
-
+        <Route path={"/tourist/bookings"} element={getLayoutForRole(userRole, <Bookings />)} />
+        {/* Add the BookingDetails route with dynamic id and type parameters */}
+        <Route path="/tourist/booking-details/:itemId/:type" element={getLayoutForRole(userRole, <BookingDetails />)} />
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
@@ -148,7 +151,7 @@ const App = () => {
         <Route path={`${basePath}/file-complaint`} element={getLayoutForRole(userRole, <ComplaintForm />)} />
         <Route path={`${basePath}/change-password`} element={getLayoutForRole(userRole, <ChangePassword />)} />
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
-        <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <Products />)} />
+        <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
@@ -158,8 +161,7 @@ const App = () => {
         <Route path={`${basePath}/advertiser`} element={<AdvertiserProfile />} />
         <Route path={`${basePath}/activities`} element={<AdvertiserActivities />} />
         {/* Seller Routes */}
-        <Route path={`${basePath}/seller`} element={getLayoutForRole(userRole, <SellerHomepage />)} />
-        <Route path={`${basePath}/my-products`} element={getLayoutForRole(userRole, <MyProducts />)} />
+        <Route path={`${basePath}/homepage`} element={getLayoutForRole(userRole, <ProductsLists />)} />
         <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
         <Route path={"product/:productId"} element={<ProductPage />} />
         {/* Admin Routes */}

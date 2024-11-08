@@ -68,7 +68,7 @@ const touristSchema = new mongoose.Schema({
 
   following: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "tourGuide",
+    ref: "Tour Guide",
   }],
 
 });

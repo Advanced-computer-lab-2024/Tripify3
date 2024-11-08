@@ -85,7 +85,7 @@ const ItineraryDetails = () => {
     const price = ticketCount * itinerary.price;
     const type = "Itinerary";
     const itemId = itinerary._id;
-    const booking = { tourist, price, type, itemId };
+    const booking = { tourist, price, type, itemId, tickets: ticketCount };
     console.log(booking);
     try {
       const response = await axios.post(
@@ -128,20 +128,7 @@ const ItineraryDetails = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" color="black" gutterBottom>
-        {itinerary.name}
-      </Typography>
-      <Typography variant="h6">
-        <strong>Price:</strong> ${itinerary.price}
-      </Typography>
-      <Typography variant="body1">
-        <strong>Start Date:</strong>{" "}
-        {new Date(itinerary.timeline.startTime).toLocaleDateString()}
-      </Typography>
-      <Typography variant="body1">
-        <strong>End Date:</strong>{" "}
-        {new Date(itinerary.timeline.endTime).toLocaleDateString()}
-      </Typography>
+     
       <Button
         variant="contained"
         color="primary"
@@ -150,22 +137,7 @@ const ItineraryDetails = () => {
       >
         Back to Itineraries
       </Button>
-      <Button
-        variant="outlined"
-        sx={{
-          mt: 2,
-          ml: 2,
-          color: "blue",
-          borderColor: "blue",
-          "&:hover": {
-            backgroundColor: "lightblue",
-            color: "white",
-          },
-        }}
-        onClick={() => toggleShareDropdown(itinerary._id)}
-      >
-        Share
-      </Button>
+     
 
       {currentItineraryId === itinerary._id && (
         <Box
@@ -292,14 +264,7 @@ const ItineraryDetails = () => {
           <CardActions
             sx={{ justifyContent: "space-between", padding: "24px 32px" }}
           >
-            <Button
-              variant="contained"
-              color="primary"
-              href="/tourist/Itineraries"
-              sx={{ fontSize: "1rem", fontWeight: 500 }}
-            >
-              Back to Itineraries
-            </Button>
+           
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
                 <RemoveIcon />

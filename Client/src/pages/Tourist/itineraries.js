@@ -50,8 +50,7 @@ const Itineraries = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const userId = getUserId();
-  const userType = getUserType();
+
 
   const languageOptions = ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"];
 

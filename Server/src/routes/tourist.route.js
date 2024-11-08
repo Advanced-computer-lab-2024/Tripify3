@@ -1,39 +1,18 @@
 import express from "express";
-import {
-  getSortedItineraries,
-  getFilteredItineraries,
-  bookItinerary
-} from "../controllers/tourist/itineraries.controller.js";
+
 import { getAllActivitiesAttended } from "../controllers/tourist/activities.controller.js";
-import {
-  getProfile,
-  editProfile,
-} from "../controllers/tourist/profile.controller.js";
-import {
-  getFlightsData, getHotels,
-} from "../controllers/tourist/search.controller.js";
-import {
-  initializeWishList,
-  AddProductToWishlist,
-  getWishlist,
-  removeProductFromWishlist,
-} from "../controllers/tourist/wishList.contoller.js";
-import {
-  initializeCart,
-  addToCart,
-  getTouristCart,
-  removeFromCart,
-  Decrementor,
-  updateCart,
-} from "../controllers/tourist/cart.controller.js";
+import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
+import { getFlightsData, getHotels } from "../controllers/tourist/search.controller.js";
+import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
+import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor, updateCart } from "../controllers/tourist/cart.controller.js";
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
-import {touristReview} from "../controllers/tourist/rate&comment.controller.js";
-import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
-import {getConfig, createPayment, createPaymentIntent, confirmOTP } from "../controllers/tourist/payment.controller.js"; 
-import {cancelBooking,createBooking} from "../controllers/tourist/booking.controller.js";
-import {getAllCategories} from "../controllers/tourist/category.controller.js";
-import {updateItinerariesAttended} from "../controllers/tourist/itineraries.controller.js"
-import {getComplaintsForTourist} from "../controllers/tourist/complaint.controller.js";
+import { touristReview } from "../controllers/tourist/rate&comment.controller.js";
+import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js";
+import { getConfig, createPayment, createPaymentIntent, confirmOTP } from "../controllers/tourist/payment.controller.js";
+import { cancelBooking, createBooking } from "../controllers/tourist/booking.controller.js";
+import { getAllCategories } from "../controllers/tourist/category.controller.js";
+import { updateItinerariesAttended } from "../controllers/tourist/itineraries.controller.js";
+import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -42,17 +21,16 @@ router.get("/flights", getFlightsData); // Get Flights
 router.get("/hotels", getHotels); //Get Hotels
 router.get("/activitiesAttended/get/:userId", getAllActivitiesAttended); // Get all activities attended by a tourist
 //Complaints
-router.get("/tourist/complaints/:id" , getComplaintsForTourist)
+router.get("/tourist/complaints/:id", getComplaintsForTourist);
 router.post("/tourist/profile/:id/redeem", redeemPoints);
 
 //category
 router.get("/category/get", getAllCategories);
 
-//rate and comment on t 
-router.post('/tourist/review', touristReview);
+//rate and comment on t
+router.post("/tourist/review", touristReview);
 router.get("/tourist/following/get/:touristId", getFollowingTourGuides);
-router.post('/tourist/follow/:touristId/:tourGuideId', followTourGuide);
-
+router.post("/tourist/follow/:touristId/:tourGuideId", followTourGuide);
 
 // Wishlist
 router.post("/initializeWishlist", initializeWishList);
@@ -70,7 +48,7 @@ router.put("/tourist/cart/update", updateCart); // Update cart
 
 //Bookings
 router.put("/tourist/booking/cancel", cancelBooking); // Cancel booking
-router.put("/tourist/itinerary/attend",updateItinerariesAttended)//attend itinerary
+router.put("/tourist/itinerary/attend", updateItinerariesAttended); //attend itinerary
 router.post("/tourist/booking/create", createBooking); // Create a booking
 
 //
@@ -78,6 +56,5 @@ router.get("/tourist/payment/config", getConfig); // Cancel booking
 // // router.post("/tourist/create/payment", getConfig); // Cancel booking
 // router.post("/tourist/create/payment/intent", getConfig); // Cancel booking
 // router.post("/tourist/config", getConfig); // Cancel booking
-
 
 export default router;

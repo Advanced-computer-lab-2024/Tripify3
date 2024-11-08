@@ -6,9 +6,8 @@ export const redeemPoints = async (userId, pointsToRedeem) => {
   return await axios.post(`${API_URL}/tourist/profile/${userId}/redeem`, pointsToRedeem);
 };
 
-
 export const getActivityById = async (id) => {
-  const response = await axios.get(`${API_URL}/activity/get${id}`); // Adjust the endpoint as necessary
+  const response = await axios.get(`${API_URL}/activity/get/${id}`); // Adjust the endpoint as necessary
   return response;
 };
 export const getItineraryById = async (id) => {

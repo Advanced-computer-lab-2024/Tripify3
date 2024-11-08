@@ -20,7 +20,7 @@ const TermsAndAgreements = () => {
   useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/user/get/${userId}`);
+        const response = await axios.get(`http://localhost:8000/user/get/profile/${userId}`);
         setUserName(response.data.user.name);
         setUserDetails(response.data.user);
       } catch (error) {
@@ -35,6 +35,8 @@ const TermsAndAgreements = () => {
     try {
       await axios.put(`http://localhost:8000/user/accept-terms/${userId}`);
       if (userDetails && userDetails.type) {
+        console.log(userDetails.type);
+        
         switch (userDetails.type) {
           case "Tourism Governor":
             navigate("/tourism-governor/profile");

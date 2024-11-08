@@ -17,7 +17,7 @@ const SellerSidebar = () => {
       }}
     >
       <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
-        Tourist Menu
+        Seller Menu
       </Typography>
 
       <List>
@@ -25,23 +25,12 @@ const SellerSidebar = () => {
           <ListItemButton component={Link} to="/seller/seller" sx={linkStyle}>
             Home
           </ListItemButton>
-        </ListItem>
+        </ListItem>        
 
+     
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/seller/activities" sx={linkStyle}>
-            Activities
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-        <ListItemButton component={Link} to="/seller/itineraries" sx={linkStyle}>
-            Itineraries
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-        <ListItemButton component={Link} to="/seller/historical-places" sx={linkStyle}>
-            Historical Places
+        <ListItemButton component={Link} to="/seller/homepage" sx={linkStyle}>
+           My Products
           </ListItemButton>
         </ListItem>
 
