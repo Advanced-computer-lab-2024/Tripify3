@@ -4,7 +4,7 @@ import {
   getFilteredItineraries,
   bookItinerary
 } from "../controllers/tourist/itineraries.controller.js";
-import { getAllActivities,bookActivity } from "../controllers/tourist/activities.controller.js";
+import { getAllActivitiesAttended } from "../controllers/tourist/activities.controller.js";
 import {
   getProfile,
   editProfile,
@@ -29,7 +29,7 @@ import {
 import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 import {touristReview} from "../controllers/tourist/rate&comment.controller.js";
 import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
-import {cancelBooking} from "../controllers/tourist/booking.controller.js";
+import {cancelBooking,createBooking} from "../controllers/tourist/booking.controller.js";
 import {getAllCategories} from "../controllers/tourist/category.controller.js";
 import {updateItinerariesAttended} from "../controllers/tourist/itineraries.controller.js"
 const router = express.Router();
@@ -38,7 +38,7 @@ router.get("/tourist/profile/:id", getProfile); // Get filtered activities
 router.put("/tourist/profile/:id", editProfile); // Get filtered activities
 router.get("/flights", getFlightsData); // Get Flights
 router.get("/hotels", getHotels); //Get Hotels
-
+router.get("/activitiesAttended/get/:userId", getAllActivitiesAttended); // Get all activities attended by a tourist
 //Complaints
 router.post("/tourist/profile/:id/redeem", redeemPoints);
 
@@ -68,5 +68,6 @@ router.put("/tourist/cart/update", updateCart); // Update cart
 //Bookings
 router.put("/tourist/booking/cancel", cancelBooking); // Cancel booking
 router.put("/tourist/itinerary/attend",updateItinerariesAttended)//attend itinerary
+router.post("/tourist/booking/create", createBooking); // Create a booking
 
 export default router;

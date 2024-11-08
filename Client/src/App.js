@@ -30,9 +30,10 @@ import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
 import Categories from "./pages/admin/categories.js";
-
+import ItineraryDetails from "./pages/tourist/itinerarydetails.js";
 import GovernorHistoricalPlaces from "./pages/tourismGovernor/historicalPlaces.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
+import ActivitesAttended from "./pages/tourist/attendedActivites.js";
 
 import ToursmGovernorProfile from "./pages/tourismGovernor/profile.js";
 import FileViewer from "./pages/admin/fileViewer.js";
@@ -141,6 +142,10 @@ const App = () => {
           path={`/tourist`}
           element={getLayoutForRole(userRole, <Activities />)}
         />
+         <Route
+          path={`/tourist/activitesAttended`}
+          element={getLayoutForRole(userRole, <ActivitesAttended />)}
+        />
         <Route
           path={`/tourist/homepage`}
           element={getLayoutForRole(userRole, <TouristHomePage />)}
@@ -183,6 +188,10 @@ const App = () => {
           path={`${basePath}/itineraries`}
           element={getLayoutForRole(userRole, <Itineraries />)}
         />
+        <Route
+          path={`${basePath}/itinerary/:id`}
+          element={getLayoutForRole(userRole, <ItineraryDetails />)}
+        />{" "}
         <Route
           path={`${basePath}/placedetails/:id`}
           element={getLayoutForRole(userRole, <Placedetails />)}

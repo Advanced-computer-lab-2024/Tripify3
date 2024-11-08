@@ -1,17 +1,18 @@
 
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
-
+import Booking from "../../models/booking.js";
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId } = req.body;
 
   try {
     let item;
-
+    
     // Use a switch statement to find the correct model based on the type
     switch (type) {
       case "Activity":
         item = await Activity.findById(itemId);
+        
         break;
       case "Itinerary":
         item = await Itinerary.findById(itemId);
@@ -26,17 +27,23 @@ export const createBooking = async (req, res) => {
     }
 
     // Create a new booking
-    const booking = new Booking({
+    let booking = new Booking({
       tourist,
       price,
       type,
     });
-
+    if(type === "Itinerary") {
+      booking.itinerary = itemId;
+    }
+    if(type === "Trip") {
+      booking.trip = itemId;
+    }
+    if(type === "Activity") {
+      booking.activity = itemId;
+    }
     await booking.save();
 
     // Add the booking ID to the bookings array in the associated model
-    item.bookings.push(booking._id);
-    await item.save();
 
     return res.status(201).json({
       message: `${type} booked successfully`,
