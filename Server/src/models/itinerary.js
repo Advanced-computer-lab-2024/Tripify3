@@ -49,12 +49,6 @@ const itinerarySchema = new mongoose.Schema({
       ],
     },  
   ],
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ],
   pickupLocation: {
     type: String,
     required: true, // Ensure pickup location is required

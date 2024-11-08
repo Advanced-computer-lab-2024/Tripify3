@@ -114,3 +114,53 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: "Failed to cancel booking" });
   }
 };
+
+
+
+
+export const getAllBookings = async (req, res) => {
+
+  try {
+    const { touristId } = req.params;
+
+    // Get the current date
+    const now = new Date();
+
+    // Find bookings related to activities and itineraries
+    const bookings = await Booking.find({ tourist: touristId })
+      .populate("activity")
+      .populate({
+        path: "itinerary",
+        populate: {
+          path: "timeline",
+        },
+      });
+
+    // Separate upcoming and past bookings
+    const upcomingBookings = [];
+    const pastBookings = [];
+
+    bookings.forEach((booking) => {
+      if (booking.type === "Activity" && booking.activity) {
+        if (new Date(booking.activity.date) > now) {
+          upcomingBookings.push(booking);
+        } else {
+          pastBookings.push(booking);
+        }
+      } else if (booking.type === "Itinerary" && booking.itinerary) {
+        if (new Date(booking.itinerary.timeline.startTime) > now) {
+          upcomingBookings.push(booking);
+        } else {
+          pastBookings.push(booking);
+        }
+      }
+    });
+
+    res.status(200).json({
+      message: "Bookings retrieved successfully",
+      data: { upcoming: upcomingBookings, past: pastBookings },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

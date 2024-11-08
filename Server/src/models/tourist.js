@@ -74,13 +74,6 @@ const touristSchema = new mongoose.Schema({
 });
 
 
-
-
-
-
-
-
-
 touristSchema.virtual("level").get(function () {
   if (this.loyaltyPoints > 500000) {
     return 3;
