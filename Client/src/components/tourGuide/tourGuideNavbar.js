@@ -114,7 +114,7 @@ const TourGuideNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourist/profile");
+  const handleProfileClick = () => navigate("tour-guide/profile");
   const handleHomeClick = () => navigate("/tourist/homepage");
   const handleCartClick = () => navigate("/tourist/cart");
   const handleOrdersClick = () => navigate("/tourist/orders");

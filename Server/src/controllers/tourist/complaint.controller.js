@@ -128,3 +128,24 @@ export const getAllTourists = async (req, res) => {
     res.status(500).json({ message: 'Error fetching tourists', error: error.message });
   }
 };
+
+export const getComplaintsForTourist = async (req, res) => {
+  const { id } = req.params; // Extract the tourist ID from the request params
+
+  try {
+    // Find complaints for the specified tourist
+    const complaints = await Complaint.find({ touristId: id })
+      .sort({ date: -1 })  // Sort complaints by date, most recent first
+      .populate('touristId', 'name email'); // Optionally populate tourist data (e.g., name and email)
+
+    // Return the complaints in the response
+    return res.status(200).json({
+      message: complaints.length > 0 ? "Complaints found successfully" : "No complaints found for this tourist",
+      data: complaints, // Return the complaints, or an empty array if none exist
+    });
+  } catch (error) {
+    console.error('Error fetching complaints:', error);
+    res.status(500).json({ message: 'Error fetching complaints' });
+  }
+};
+

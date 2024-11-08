@@ -166,7 +166,7 @@ const App = () => {
           element={getLayoutForRole(userRole, <LoadHotels />)}
         />
         <Route
-          path={"/tourist/view/complaints/:id"}
+          path={"/tourist/view/complaints"}
           element={<ViewComplaints />}
         />
         {/* Shared Routes */}

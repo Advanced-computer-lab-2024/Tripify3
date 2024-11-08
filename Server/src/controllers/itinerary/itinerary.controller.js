@@ -84,21 +84,10 @@ export const getAllItineraries = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-// Get all itineraries
 export const getAllItinerariesForTourGuide = async (req, res) => {
   const { id } = req.params;
   try {
-    // Find the user by ID to determine their type
-    const user = await User.findById(id);
-
-    console.log(user);
-    
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+    // Find the tour guide's itineraries directly from the Itinerary model
     const itineraries = await Itinerary.find({ tourGuide: id })
       .populate({
         path: "activities",
@@ -114,6 +103,14 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
           select: "name", // Select only the 'name' field of the tags
         },
       });
+
+    // Check if no itineraries were found
+    if (itineraries.length === 0) {
+      return res.status(200).json({
+        message: "No itineraries found for this tour guide",
+        data: [], // Return an empty array for consistency
+      });
+    }
 
     // Transform the itineraries to include a combined tags array
     let response = itineraries.map((itinerary) => {
@@ -131,20 +128,23 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
       };
     });
 
-    if (user.type === "Tourist") {
+    // Assuming 'user' variable is not needed anymore (as you no longer need to filter by user type)
+    const user = await User.findById(id);
+    if (user && user.type === "Tourist") {
+      // Filter itineraries for tourists to exclude inappropriate ones
       response = response.filter((itinerary) => !itinerary.inappropriate);
     }
 
-    
     return res.status(200).json({
-      message: "Iteneraries found successfully",
-      data: response,
+      message: "Itineraries found successfully",
+      data: response, // Return the itineraries data
     });
-
   } catch (error) {
+    console.error('Error fetching itineraries:', error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get an itinerary by ID
 export const getItineraryById = async (req, res) => {

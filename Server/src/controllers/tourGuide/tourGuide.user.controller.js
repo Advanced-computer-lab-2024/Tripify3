@@ -79,14 +79,16 @@ export const checkUpcomingItineraries = async (req, res) => {
 
     console.log('Current Date:', currentDate); // Log current date for debugging
 
-    // Find itineraries with an end time in the future
+    // Find itineraries with an end time in the future associated with the given tour guide
     const itineraries = await Itinerary.find({
-      tourGuide: userId,
-      'timeline.endTime': { $gt: currentDate },
+      tourGuide: userId, // Filter itineraries by tourGuide ID
+      'timeline.endTime': { $gt: currentDate }, // Check if the endTime is greater than currentDate
+      status: 'Active', // Ensure the itinerary is active
     });
 
     console.log('Upcoming Itineraries:', itineraries); // Log found itineraries
 
+    // If there are any itineraries, return true; else, return false
     const hasUpcomingItineraries = itineraries.length > 0;
 
     res.status(200).json({ hasUpcoming: hasUpcomingItineraries });
@@ -115,12 +117,17 @@ export const deleteTourGuideAccount = async (req, res) => {
       return res.status(400).json({ message: 'Cannot delete account. You have upcoming itineraries.' });
     }
 
+    // Delete all itineraries associated with the tour guide
+    await Itinerary.deleteMany({ tourGuide: userId });
+
     // Proceed to delete the tour guide's account
     await TourGuide.findByIdAndDelete(userId);
-    res.status(200).json({ message: 'Account successfully deleted.' });
+
+    res.status(200).json({ message: 'Account and associated itineraries successfully deleted.' });
   } catch (error) {
     console.error('Error deleting account:', error);
-    res.status(500).json({ message: 'Error deleting the account' });
+    res.status(500).json({ message: 'Error deleting the account and itineraries' });
   }
 };
+
 
