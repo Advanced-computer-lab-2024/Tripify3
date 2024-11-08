@@ -550,11 +550,11 @@ const Products = () => {
   return (
     <ThemeProvider theme={theme}>
       <div>
-        <AppBar position="static">
+        <AppBar position="static" sx={{ mb: 4 }}>
           <Toolbar sx={{ justifyContent: "center" }}>
             <Typography
               variant="h4"
-              sx={{ fontWeight: "bold", textAlign: "center" }}
+              sx={{ fontWeight: "bold", textAlign: "center", color: "white" }}
             >
               Product List
             </Typography>
@@ -692,22 +692,23 @@ const Products = () => {
                           )}
                         </IconButton>
                       )}
+
+                      {Array.isArray(product.imageUrl) &&
+                      product.imageUrl.length > 0 ? (
+                        <ImageFlipper images={product.imageUrl} />
+                      ) : (
+                        <CircularProgress
+                          style={{
+                            margin: "auto",
+                            display: "block",
+                          }}
+                          size={50}
+                        />
+                      )}
                       <Link
                         to={`/product/${product._id}`} // Link to the product page
                         style={{ textDecoration: "none", color: "inherit" }} // Ensures link doesn't affect card styling
                       >
-                        {Array.isArray(product.imageUrl) &&
-                        product.imageUrl.length > 0 ? (
-                          <ImageFlipper images={product.imageUrl} />
-                        ) : (
-                          <CircularProgress
-                            style={{
-                              margin: "auto",
-                              display: "block",
-                            }}
-                            size={50}
-                          />
-                        )}
                         <CardContent>
                           <Typography variant="h5">{product.name}</Typography>
                           <Typography>Price: ${product.price}</Typography>
@@ -767,15 +768,18 @@ const Products = () => {
                       backgroundColor: "#f0f0f0", // Light gray background
                       cursor: "pointer",
                     }}
-                    onClick={() => console.log("Open modal or perform action")}
-                  >
-                    <IconButton
-                      onClick={() => {
+                    onClick={() => {
+                      if (
+                        getUserType() === "Seller" ||
+                        getUserType() === "Admin"
+                      ) {
                         setOpenCreate(true);
-                      }}
-                    >
+                      }
+                    }}
+                  >
+                    {getUserType() === "Seller" || getUserType() === "Admin" ? (
                       <AddIcon />
-                    </IconButton>
+                    ) : null}
                   </Card>
                 </Grid>
               </Grid>
