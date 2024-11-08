@@ -32,6 +32,7 @@ import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
 import Categories from "./pages/admin/categories.js";
+import ItinerariesDetails from "./pages/tourist/itinerarydetails.js";
 
 import GovernorHistoricalPlaces from "./pages/tourismGovernor/historicalPlaces.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
@@ -136,6 +137,8 @@ const App = () => {
         <Route path={"/search_hotels"} element={getLayoutForRole(userRole, <SearchHotels />)} />
         <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
         <Route path={"/tourist/view/complaints"} element={getLayoutForRole(userRole, <ViewComplaints />)} />
+        <Route path={"/tourist/itinerary/:id"} element={getLayoutForRole(userRole, <ItinerariesDetails />)} />
+
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
