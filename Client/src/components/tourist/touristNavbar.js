@@ -37,6 +37,8 @@ import Assignment from "@mui/icons-material/Assignment"; // Add this import for 
 import LockOpen from "@mui/icons-material/LockOpen"; // For Forget Password
 import Delete from "@mui/icons-material/Delete"; // For Delete Account
 import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
+import ReportProblemIcon from '@mui/icons-material/ReportProblem'; // Import the complaint icon
+
 
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -73,11 +75,30 @@ const TouristNavbar = () => {
   };
   const closeLogoutDialog = () => setLogoutDialogOpen(false);
 
-  const confirmDeleteAccount = () => {
-    // Add delete account logic here
-    setDeleteDialogOpen(false);
-    navigate("/goodbye"); // Redirect after account deletion
+  const confirmDeleteAccount = async () => {
+    try {
+  
+      // API call to delete the user account
+      const response = await fetch(`http://localhost:8000/users/delete/${userId}`, {
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        // Handle successful deletion
+        //alert('Account successfully deleted.');
+        setDeleteDialogOpen(false); // Close the delete confirmation dialog
+        navigate('/goodbye'); // Redirect after account deletion
+      } else {
+        // Handle errors
+        const errorData = await response.json();
+        alert(`Failed to delete account: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('An unexpected error occurred. Please try again later.');
+    }
   };
+  
 
   const confirmLogout = () => {
     // Add logout logic here
@@ -93,6 +114,7 @@ const TouristNavbar = () => {
   const handleBookingsClick = () => navigate("/tourist/bookings");
   const handleWishlistClick = () => navigate("/tourist/wishlist");
   const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
+  const handleComplaintsClick = () => navigate("/tourist/view/complaints/")
 
   const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
   const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
@@ -127,6 +149,9 @@ const TouristNavbar = () => {
               </MenuItem>
               <MenuItem onClick={handlePaymentsClick}>
                 <MonetizationOn sx={{ mr: 1 }} /> Payments
+              </MenuItem>
+              <MenuItem onClick={handleComplaintsClick}>
+                <ReportProblemIcon  sx={{ mr: 1 }} /> My Complaints
               </MenuItem>
               <MenuItem onClick={handleBookingsClick}>
                 <ListAlt sx={{ mr: 1 }} /> Bookings

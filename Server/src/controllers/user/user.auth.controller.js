@@ -2,7 +2,7 @@ import crypto from "crypto";
 import Seller from "../../models/seller.js";
 import Advertiser from "../../models/advertiser.js";
 import TourGuide from "../../models/tourGuide.js";
-// import Booking from "../../models/booking.js";
+import Booking from "../../models/booking.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 import User from "../../models/user.js"; // Assuming this is the User model
@@ -215,17 +215,15 @@ export const userDeleteAccount = async (req, res) => {
     // Check user type and get associated entities
     let upcomingBookings = [];
     if (user.type === "Advertiser") {
-      // Find all upcoming bookings for activities posted by this advertiser
       const activities = await Activity.find({ advertiser: user._id });
       const activityIds = activities.map(activity => activity._id);
 
       upcomingBookings = await Booking.find({
         activity: { $in: activityIds },
         date: { $gt: new Date() },
-        price: { $gt: 0 } // Only consider bookings that are paid
+        price: { $gt: 0 }
       });
     } else if (user.type === "Tour Guide") {
-      // Find all upcoming bookings for itineraries posted by this tour guide
       const itineraries = await Itinerary.find({ tourGuide: user._id });
       const itineraryIds = itineraries.map(itinerary => itinerary._id);
 
@@ -236,22 +234,19 @@ export const userDeleteAccount = async (req, res) => {
       });
     }
 
-    // If there are upcoming bookings, deny account deletion
     if (upcomingBookings.length > 0) {
       return res.status(400).json({
         message: "Cannot delete account with upcoming paid bookings."
       });
     }
 
-    // Soft-delete associated activities/itineraries and set user to inactive
     if (user.type === "Advertiser") {
       await Activity.updateMany({ advertiser: user._id }, { status: "Inactive" });
     } else if (user.type === "Tour Guide") {
-      await Itinerary.updateMany({ tourGuideId: user._id }, { status: "Inactive" });
+      await Itinerary.updateMany({ tourGuide: user._id }, { status: "Inactive" });
     }
 
-    // Mark user as deleted (soft delete)
-    await User.findByIdAndDelete(id);
+    await User.findByIdAndDelete(userId);
 
     res.status(200).json({ message: "Account deleted successfully and associated records inactivated." });
   } catch (error) {
@@ -259,6 +254,7 @@ export const userDeleteAccount = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 

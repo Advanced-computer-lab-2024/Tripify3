@@ -32,6 +32,8 @@ import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/past
 import {cancelBooking} from "../controllers/tourist/booking.controller.js";
 import {getAllCategories} from "../controllers/tourist/category.controller.js"; 
 import {getConfig, createPayment, createPaymentIntent, confirmOTP } from "../controllers/tourist/payment.controller.js"; 
+import {updateItinerariesAttended} from "../controllers/tourist/itineraries.controller.js"
+import {getComplaintsForTourist} from "../controllers/tourist/complaint.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -40,6 +42,7 @@ router.get("/flights", getFlightsData); // Get Flights
 router.get("/hotels", getHotels); //Get Hotels
 
 //Complaints
+router.get("/tourist/complaints/:id" , getComplaintsForTourist)
 router.post("/tourist/profile/:id/redeem", redeemPoints);
 
 //category
@@ -67,6 +70,7 @@ router.put("/tourist/cart/update", updateCart); // Update cart
 
 //Bookings
 router.put("/tourist/booking/cancel", cancelBooking); // Cancel booking
+router.put("/tourist/itinerary/attend",updateItinerariesAttended)//attend itinerary
 
 //
 router.get("/tourist/payment/config", getConfig); // Cancel booking

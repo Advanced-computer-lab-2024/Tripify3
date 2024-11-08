@@ -26,4 +26,8 @@ export default (app) => {
   app.use(itineraryRoute);
   app.use(bookingRoute);
   app.use(adminRoute);
+  app.use(tourGuideRoute)
+  app.use(placeRoute)
+  app.use(activityRoute)
+  app.use(adminRoute);
 };

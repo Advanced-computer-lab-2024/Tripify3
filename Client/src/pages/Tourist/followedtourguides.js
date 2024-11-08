@@ -71,27 +71,23 @@ const FollowedTourGuides = () => {
         setCommentContent(event.target.value);
     };
 
-    const handleRatingSubmit = async (guideId) => {
+    const handleReviewSubmit = async (guideId) => {
         try {
-            await axios.post(`http://localhost:8000/tourist/rate/${guideId}`, { 
-                user: userId,
-                value: rating
+            await axios.post(`http://localhost:8000/tourist/review`, { 
+                trip: null, // Add trip ID if applicable, or set it to null
+                tourGuide: guideId,
+                activity: null, // Add activity ID if applicable, or set it to null
+                itinerary: null, // Add itinerary ID if applicable, or set it to null
+                product: null, // Add product ID if applicable, or set it to null
+                touristId: userId,
+                rating,
+                comment: commentContent
             });
+            // Reset the rating and comment input fields after submission
             setRating(0);
-        } catch (error) {
-            console.error("Error submitting rating:", error);
-        }
-    };
-
-    const handleCommentSubmit = async (guideId) => {
-        try {
-            await axios.post(`http://localhost:8000/tourist/comment/${guideId}`, { 
-                user: userId,
-                content: commentContent
-            });
             setCommentContent('');
         } catch (error) {
-            console.error("Error submitting comment:", error);
+            console.error("Error submitting review:", error);
         }
     };
 
@@ -152,11 +148,11 @@ const FollowedTourGuides = () => {
                         </Box>
                         <Button 
                             variant="contained" 
-                            onClick={() => handleRatingSubmit(guide._id)} 
-                            disabled={rating === 0}
+                            onClick={() => handleReviewSubmit(guide._id)} 
+                            disabled={rating === 0 || commentContent.trim() === ""}
                             sx={{ marginBottom: 2, backgroundColor: '#3f51b5', '&:hover': { backgroundColor: '#303f9f' } }}
                         >
-                            Submit Rating
+                            Submit Review
                         </Button>
 
                         <TextField
@@ -168,13 +164,6 @@ const FollowedTourGuides = () => {
                             fullWidth
                             sx={{ marginBottom: 2 }}
                         />
-                        <Button 
-                            variant="contained" 
-                            onClick={() => handleCommentSubmit(guide._id)} 
-                            sx={{ backgroundColor: '#3f51b5', '&:hover': { backgroundColor: '#303f9f' } }}
-                        >
-                            Submit Comment
-                        </Button>
                     </CardContent>
                 </Card>
             ))}

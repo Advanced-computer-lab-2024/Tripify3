@@ -345,19 +345,6 @@ const Gallery = ({ products }) => {
     setOpen(false);
   };
 
-  // Determine the number of images to display (up to 4)
-  const totalImages = products.imageUrl.length;
-  const visibleThumbnailsCount = Math.min(totalImages, 4);
-
-  // Create the circular array of thumbnails
-  const circularThumbnails = Array.from(
-    { length: visibleThumbnailsCount },
-    (_, i) => {
-      const index = (activeThumbnail + i) % totalImages;
-      return products.imageUrl[index];
-    }
-  );
-
   return (
     <section className="gallery-holder hide-in-mobile">
       <section className="gallery">
@@ -383,13 +370,15 @@ const Gallery = ({ products }) => {
         />
 
         <div className="thumbnails">
-          {circularThumbnails.map((imageUrl, i) => {
-            const index = (activeThumbnail + i) % totalImages; // Actual index in products.imageUrl
-            return (
+          {products.imageUrl &&
+            products.imageUrl.length > 0 &&
+            products.imageUrl.map((imageUrl, index) => (
               <div
                 className="img-holder"
                 key={index}
-                onClick={() => handleClick(index)}
+                onClick={(e) => {
+                  handleClick(index);
+                }}
               >
                 <div
                   className={`outlay ${
@@ -401,21 +390,15 @@ const Gallery = ({ products }) => {
                     imageUrl.indexOf("uploads/")
                   )}`}
                   alt={`${products.name}-${index + 1}`}
-                  style={{
-                    maxHeight: "70px",
-                    maxWidth: "70px",
-                    borderRadius: "50%",
-                  }}
+                  style={{ maxHeight: "70px", maxWidth: "70px" }}
                 />
               </div>
-            );
-          })}
+            ))}
         </div>
       </section>
     </section>
   );
 };
-
 const BackdropGallery = ({
   open,
   handleClose,
@@ -444,19 +427,25 @@ const BackdropGallery = ({
 
   const handleIncrement = () => {
     if (products?.imageUrl?.length > 0) {
-      const newIndex = (currentPassedImageIndex + 1) % products.imageUrl.length;
-      setBackdropImage(products.imageUrl[newIndex]);
-      setCurrentPassedImageIndex(newIndex);
+      if (currentPassedImageIndex === products.imageUrl.length - 1) {
+        setBackdropImage(products.imageUrl[0]);
+        setCurrentPassedImageIndex(0);
+      } else {
+        setBackdropImage(products.imageUrl[currentPassedImageIndex + 1]);
+        setCurrentPassedImageIndex(currentPassedImageIndex + 1);
+      }
     }
   };
 
   const handleDecrement = () => {
     if (products?.imageUrl?.length > 0) {
-      const newIndex =
-        (currentPassedImageIndex - 1 + products.imageUrl.length) %
-        products.imageUrl.length;
-      setBackdropImage(products.imageUrl[newIndex]);
-      setCurrentPassedImageIndex(newIndex);
+      if (currentPassedImageIndex === 0) {
+        setBackdropImage(products.imageUrl[products.imageUrl.length - 1]);
+        setCurrentPassedImageIndex(products.imageUrl.length - 1);
+      } else {
+        setBackdropImage(products.imageUrl[currentPassedImageIndex - 1]);
+        setCurrentPassedImageIndex(currentPassedImageIndex - 1);
+      }
     }
   };
 
@@ -466,17 +455,6 @@ const BackdropGallery = ({
     setActiveThumbnail(newActiveIndex); // Update the active thumbnail when closing
     handleClose();
   };
-
-  // Get the 4 thumbnails around the current image index in a circular way
-  const totalImages = products.imageUrl.length;
-  const visibleThumbnailsCount = Math.min(totalImages, 4); // Up to 4 thumbnails
-  const circularThumbnails = Array.from(
-    { length: visibleThumbnailsCount },
-    (_, i) => {
-      const index = (currentPassedImageIndex + i) % totalImages;
-      return products.imageUrl[index];
-    }
-  );
 
   return (
     <Backdrop
@@ -537,14 +515,15 @@ const BackdropGallery = ({
           />
         </div>
         <div className="thumbnails">
-          {circularThumbnails.map((imageUrl, i) => {
-            const index =
-              (currentPassedImageIndex + i) % products.imageUrl.length; // Actual index in the products.imageUrl array
-            return (
+          {products.imageUrl &&
+            products.imageUrl.length > 0 &&
+            products.imageUrl.map((imageUrl, index) => (
               <div
                 className="img-holder-backd"
                 key={index}
-                onClick={() => handleClick(index)}
+                onClick={(e) => {
+                  handleClick(index);
+                }}
               >
                 <div
                   className={`outlay ${
@@ -556,14 +535,10 @@ const BackdropGallery = ({
                     imageUrl.indexOf("uploads/")
                   )}`}
                   alt={`${products.name}-${index + 1}`}
-                  style={{
-                    maxHeight: "70px",
-                    maxWidth: "70px",
-                  }}
+                  style={{ maxHeight: "70px", maxWidth: "70px" }}
                 />
               </div>
-            );
-          })}
+            ))}
         </div>
       </section>
     </Backdrop>

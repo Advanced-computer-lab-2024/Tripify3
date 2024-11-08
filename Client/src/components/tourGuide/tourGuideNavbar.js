@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { getUserId } from "../../utils/authUtils.js";
+
 import {
   AppBar,
   Toolbar,
@@ -42,6 +45,8 @@ import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
 import { useNavigate, useLocation } from "react-router-dom";
 
 const TourGuideNavbar = () => {
+  const userId = getUserId();
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -73,11 +78,35 @@ const TourGuideNavbar = () => {
   };
   const closeLogoutDialog = () => setLogoutDialogOpen(false);
 
-  const confirmDeleteAccount = () => {
-    // Add delete account logic here
-    setDeleteDialogOpen(false);
-    navigate("/goodbye"); // Redirect after account deletion
+  const confirmDeleteAccount = async () => {
+    try {
+      // Check for upcoming itineraries for the user (tour guide)
+      const itineraryResponse = await axios.get(`http://localhost:8000/itineraries/check-upcoming/${userId}`);
+      const { hasUpcoming } = itineraryResponse.data;
+  
+      if (hasUpcoming) {
+        alert('You have upcoming itineraries and cannot delete your account.');
+        return;
+      }
+  
+      // Proceed with the account deletion if no upcoming itineraries are found
+      const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
+  
+      if (response.status === 200) {
+        setDeleteDialogOpen(false); // Close the delete confirmation dialog
+        navigate('/goodbye'); // Redirect after account deletion
+      } else {
+        alert(`Failed to delete account: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('An unexpected error occurred. Please try again later.');
+    }
   };
+  
+
+  
+  
 
   const confirmLogout = () => {
     // Add logout logic here
@@ -85,7 +114,7 @@ const TourGuideNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourist/profile");
+  const handleProfileClick = () => navigate("tour-guide/profile");
   const handleHomeClick = () => navigate("/tourist/homepage");
   const handleCartClick = () => navigate("/tourist/cart");
   const handleOrdersClick = () => navigate("/tourist/orders");

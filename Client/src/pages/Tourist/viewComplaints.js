@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { getUserId } from "../../utils/authUtils.js";
 import axios from 'axios';
 
 const ViewComplaints = () => {
-  const { id } = useParams(); // Extract the ID from URL parameters
+  const id = getUserId();
   console.log(id);
+  
   const [complaints, setComplaints] = useState([]); // State to hold complaints
   const [loading, setLoading] = useState(true); // State to manage loading state
   const [error, setError] = useState(null); // State to manage error
@@ -16,17 +17,23 @@ const ViewComplaints = () => {
     const fetchComplaints = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/tourist/complaints/${id}`);
-        console.log("fetch success");
-        setComplaints(response.data); // Set the fetched complaints in state
-        console.log(complaints.length);
-        setFilteredComplaints(response.data); // Initialize filtered complaints
+        console.log("Response from API:", response.data); // Log the data to check the format
+        
+        if (Array.isArray(response.data.data)) {
+          setComplaints(response.data.data); // Access the 'data' field if the response is structured this way
+          setFilteredComplaints(response.data.data);
+        } else {
+          setError('Unexpected data format');
+        }
       } catch (error) {
         console.error('Error fetching complaints:', error);
-        setError('Failed to fetch complaints.'); // Set error message in state
+        setError('Failed to fetch complaints.');
       } finally {
-        setLoading(false); // Set loading to false regardless of success or failure
+        setLoading(false);
       }
     };
+    
+    
 
     if (id) { // Check if id is defined before fetching
       fetchComplaints();
@@ -47,8 +54,8 @@ const ViewComplaints = () => {
   }, [searchName, selectedStatus, complaints]);
 
   const resetFilters = () => {
-    setSearchName('');
-    setSelectedStatus('');
+    setSearchName(''); // Reset search input
+    setSelectedStatus(''); // Reset selected status
     setFilteredComplaints(complaints); // Reset to original complaints
   };
 

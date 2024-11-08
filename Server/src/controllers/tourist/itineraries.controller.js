@@ -1,5 +1,6 @@
 import Itinerary from "../../models/itinerary.js";
 import Booking from "../../models/booking.js";
+import Tourist from "../../models/tourist.js";
 
 import mongoose from "mongoose";
 
@@ -105,3 +106,46 @@ export const bookItinerary = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+
+
+export const updateItinerariesAttended = async (req, res) => {
+  console.log("aaaaaaaaaaaaaaaa")
+  const { touristId, itineraryId } = req.body; // Expect `touristId` and `itineraryId` in the request body
+
+  try {
+    // Validate input
+    if (!touristId || !itineraryId) {
+      return res.status(400).json({ message: 'Tourist ID and Itinerary ID are required.' });
+    }
+
+    // Find the itinerary to get the tour guide ID
+    const itinerary = await Itinerary.findById(itineraryId).select('tourGuide');
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found.' });
+    }
+
+    const tourGuideId = itinerary.tourGuide;
+
+    // Update the Tourist's itinerariesAttended array
+    const updatedTourist = await Tourist.findByIdAndUpdate(
+      touristId,
+      { 
+        $addToSet: { itinerariesAttended: itineraryId, following: tourGuideId } // Use $addToSet to avoid duplicates
+      },
+      { new: true } // Return the updated document
+    );
+
+    // Check if tourist was found
+    if (!updatedTourist) {
+      return res.status(404).json({ message: 'Tourist not found.' });
+    }
+
+    // Respond with the updated tourist data
+    return res.status(200).json(updatedTourist);
+  } catch (error) {
+    console.error('Error updating itineraries attended:', error);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
