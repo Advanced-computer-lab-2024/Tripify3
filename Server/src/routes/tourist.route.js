@@ -30,7 +30,8 @@ import { redeemPoints } from "../controllers/tourist/profile.controller.js";
 import {touristReview} from "../controllers/tourist/rate&comment.controller.js";
 import {getFollowingTourGuides,followTourGuide}from "../controllers/tourist/pastfollowed.controller.js"
 import {cancelBooking} from "../controllers/tourist/booking.controller.js";
-import {getAllCategories} from "../controllers/tourist/category.controller.js";
+import {getAllCategories} from "../controllers/tourist/category.controller.js"; 
+import {getConfig, createPayment, createPaymentIntent, confirmOTP } from "../controllers/tourist/payment.controller.js"; 
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -66,5 +67,12 @@ router.put("/tourist/cart/update", updateCart); // Update cart
 
 //Bookings
 router.put("/tourist/booking/cancel", cancelBooking); // Cancel booking
+
+//
+router.get("/tourist/payment/config", getConfig); // Cancel booking
+// // router.post("/tourist/create/payment", getConfig); // Cancel booking
+// router.post("/tourist/create/payment/intent", getConfig); // Cancel booking
+// router.post("/tourist/config", getConfig); // Cancel booking
+
 
 export default router;

@@ -70,3 +70,36 @@ export const sendAdminReplyEmail = async (user, replyComment) => {
     throw new Error('Error sending reply email');
   }
 };
+
+
+// Function to send OTP email for payment verification
+export const sendPaymentOTPEmail = async (user, OTP) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "Your OTP for Payment Verification",
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #00695c;">Payment Verification OTP</h2>
+        <p>Dear ${user.name || 'User'},</p>
+        <p>To complete your payment, please use the following One-Time Password (OTP):</p>
+        <div style="font-size: 24px; font-weight: bold; color: #00695c; text-align: center; margin: 20px 0;">
+          ${OTP}
+        </div>
+        <p>This OTP is valid for the next 10 minutes. Please do not share this code with anyone.</p>
+        <p>If you did not request this OTP, please ignore this email.</p>
+        <p>Best regards,<br>Your Support Team</p>
+        <hr style="border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('OTP email sent successfully');
+  } catch (error) {
+    console.error('Error sending OTP email:', error);
+    throw new Error('Error sending OTP email');
+  }
+};

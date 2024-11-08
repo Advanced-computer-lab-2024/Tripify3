@@ -24,6 +24,8 @@ import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import MyProducts from "./pages/seller/myProducts.js";
 import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
+import PaymentWrapper from "./pages/tourist/payment.js";
+
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -137,6 +139,7 @@ const App = () => {
         <Route path={"/search_hotels"} element={getLayoutForRole(userRole,<SearchHotels />)} />
         <Route path={"/load_hotels"} element={getLayoutForRole(userRole,<LoadHotels />)} />
         <Route path={"/tourist/view/complaints/:id"} element={<ViewComplaints />} />
+        <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
 
       
 
