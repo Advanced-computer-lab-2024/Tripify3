@@ -126,51 +126,6 @@ const ItineraryDetails = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-<<<<<<< HEAD
-     
-      <Button
-        variant="contained"
-        color="primary"
-        href="/tourist/Itineraries"
-        sx={{ mt: 2 }}
-      >
-        Back to Itineraries
-      </Button>
-     
-
-      {currentItineraryId === itinerary._id && (
-        <Box
-          sx={{
-            position: "absolute",
-            background: "white",
-            boxShadow: 1,
-            p: 1,
-            mt: 1,
-            zIndex: 10,
-          }}
-        >
-          <Button variant="text" onClick={() => handleCopyLink(itinerary._id)}>
-            Copy Link
-          </Button>
-          <Button
-            variant="text"
-            href={`https://twitter.com/intent/tweet?url=http://localhost:3000/Tourist/Itineraries/${itinerary._id}`}
-            target="_blank"
-          >
-            Share on Twitter
-          </Button>
-          <Button
-            variant="text"
-            href={`https://www.facebook.com/sharer/sharer.php?u=http://localhost:3000/Tourist/Itineraries/${itinerary._id}`}
-            target="_blank"
-          >
-            Share on Facebook
-          </Button>
-        </Box>
-      )}
-
-=======
->>>>>>> Sakr
       <Box
         sx={{
           p: 3,
@@ -226,95 +181,7 @@ const ItineraryDetails = () => {
                 color: "#2D3748",
               }}
             >
-<<<<<<< HEAD
-              {itinerary.name}
-            </Typography>
-
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <LocationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "#4A5568", fontWeight: 500 }}
-                  >
-                    {itinerary.dropoffLocation}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                  <Typography variant="body1">
-                    <strong>Start Date:</strong>{" "}
-                    {new Date(
-                      itinerary.timeline.startTime
-                    ).toLocaleDateString()}
-                  </Typography>
-                  <br />
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                  <Typography variant="body1">
-                    <strong>End Date:</strong>{" "}
-                    {new Date(itinerary.timeline.endTime).toLocaleDateString()}
-                  </Typography>
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "#4A5568", fontWeight: 500 }}
-                  >
-                    <strong>Status:</strong>{" "}
-                    {itinerary.status}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <MonetizationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                  <Typography
-                    variant="body1"
-                    sx={{ color: "#4A5568", fontWeight: 500 }}
-                  >
-                    ${itinerary.price}
-                  </Typography>
-                </Box>
-              </Grid>
-            
-            </Grid>
-          </CardContent>
-
-          <CardActions
-            sx={{ justifyContent: "space-between", padding: "24px 32px" }}
-          >
-           
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
-                <RemoveIcon />
-              </IconButton>
-              <Typography variant="h6" sx={{ mx: 1 }}>
-                {ticketCount}
-              </Typography>
-              <IconButton onClick={handleIncrease}>
-                <AddIcon />
-              </IconButton>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={BookItinerary}
-                sx={{ fontSize: "1rem", fontWeight: 500, ml: 2 }}
-              >
-                Book itinerary
-              </Button>
-=======
               <Typography variant="body2">{tag.name}</Typography>
->>>>>>> Sakr
             </Box>
           ))}
         </Box>
