@@ -2,6 +2,13 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8000"; // Replace with your API URL
 
+export const getAllIteneraries = async (userId) => {
+  return await axios.get(`${API_URL}/itineraries/get`);
+};
+export const markItineraryInappropriate = async (id, data) => {
+  return await axios.put(`${API_URL}/itineraries/edit/${id}`, data);
+};
+
 export const createActivity = async (activity) => {
   return await axios.post(`${API_URL}/activity/create`, activity);
 };

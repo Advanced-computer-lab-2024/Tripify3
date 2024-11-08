@@ -35,18 +35,6 @@ const itinerarySchema = new mongoose.Schema({
       required: true, // Ensure end time is required
     },
   },
-  ratings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Rating",
-    },
-  ],
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
-  ],
   availableDates: [
     {
       date: {
@@ -59,7 +47,7 @@ const itinerarySchema = new mongoose.Schema({
           required: true, // Ensure times are required
         },
       ],
-    },
+    },  
   ],
   bookings: [
     {

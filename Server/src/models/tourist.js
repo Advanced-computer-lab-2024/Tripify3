@@ -60,23 +60,6 @@ const touristSchema = new mongoose.Schema({
   preferences: { type: [String],
      required: false },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //added by basil 
   currencyPreference: {
     type: String,
@@ -88,18 +71,6 @@ const touristSchema = new mongoose.Schema({
     ref: "tourGuide",
   }],
 
-  activitiesAttended:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "activity",
-  }],
-
-  itinerariesAttended:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Itinerary",
-  }],
-
-  tripsTaken: { type: [String], 
-    required: false }
 });
 
 

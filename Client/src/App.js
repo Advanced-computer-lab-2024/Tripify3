@@ -26,7 +26,8 @@ import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import PaymentWrapper from "./pages/tourist/payment.js";
 
-import Itineraries from "./pages/tourist/itineraries.js";
+import ActiveItineraries from "./pages/tourist/itineraries.js";
+import Itineraries from "./pages/admin/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
@@ -128,12 +129,13 @@ const App = () => {
         {/* Tourist Routes */}
         <Route path={`/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
+        <Route path={`/tourist/active/itineraries`} element={getLayoutForRole(userRole, <ActiveItineraries />)} />
         <Route path={`/tourist/profile`} element={getLayoutForRole(userRole, <TouristProfile />)} />
         <Route path={"/search_flights"} element={getLayoutForRole(userRole, <SearchFlights />)} />
         <Route path={"/load_flights"} element={getLayoutForRole(userRole, <LoadFlights />)} />
         <Route path={"/search_hotels"} element={getLayoutForRole(userRole, <SearchHotels />)} />
         <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
-        <Route path={"/tourist/view/complaints"} element={<ViewComplaints />} />
+        <Route path={"/tourist/view/complaints"} element={getLayoutForRole(userRole, <ViewComplaints />)} />
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}

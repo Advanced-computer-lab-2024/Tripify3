@@ -17,7 +17,7 @@ export const touristReview = async (req, res) => {
 
     // 2. Find the tourist to check if they follow the tourist being reviewed
     const tourist = await Tourist.findById(touristId)
-    console.log(tourist)
+
 
     if (!tourist) {
       return res.status(404).json({ message: 'Tourist not found.' });
@@ -25,11 +25,11 @@ export const touristReview = async (req, res) => {
   
     // 3. Check if the reviewed tourist is followed
     const reviewedTouristId = tourGuide; // This should be passed in the request body
-    console.log(reviewedTouristId)
+    
     const isFollowing = tourist.following.some(followedTourist => followedTourist.equals(reviewedTouristId));
 
     if (!isFollowing) {
-      return res.status(403).json({ message: 'You can only review tourists you follow.' });
+      return res.status(403).json({ message: 'You can only review tour guides you follow.' });
     }
 
     // 4. Create a new review

@@ -6,9 +6,7 @@ export const redeemPoints = async (userId, pointsToRedeem) => {
   return await axios.post(`${API_URL}/tourist/profile/${userId}/redeem`, pointsToRedeem);
 };
 
-export const markItineraryInappropriate = async (id, data) => {
-  return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
-};
+
 export const getActivityById = async (id) => {
   const response = await axios.get(`${API_URL}/activity/get${id}`); // Adjust the endpoint as necessary
   return response;
@@ -25,8 +23,8 @@ export const getAllPlaces = async () => {
   return await axios.get(`${API_URL}`);
 };
 
-export const getAllIteneraries = async (userId) => {
-  return await axios.get(`${API_URL}/itineraries/get`);
+export const getAllActiveAppropriateIteneraries = async (userId) => {
+  return await axios.get(`${API_URL}/itineraries/active/appropriate/get`);
 };
 
 export const getAllActivities = async () => {

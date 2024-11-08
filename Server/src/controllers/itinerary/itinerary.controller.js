@@ -84,6 +84,47 @@ export const getAllItineraries = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllActiveAppropriateItineraries = async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false })
+      .populate({
+        path: "activities",
+        populate: {
+          path: "tags",
+          select: "name",
+        },
+      })
+      .populate({
+        path: "places",
+        populate: {
+          path: "tags",
+          select: "name",
+        },
+      });
+
+    // Transform the itineraries to include a combined tags array
+    let response = itineraries.map((itinerary) => {
+      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
+      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
+      const combinedTags = [...new Set([...activityTags, ...locationTags])];
+
+      return {
+        ...itinerary.toObject(),
+        tags: combinedTags,
+      };
+    });
+
+    return res.status(200).json({
+      message: "Itineraries found successfully",
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 export const getAllItinerariesForTourGuide = async (req, res) => {
   const { id } = req.params;
   try {

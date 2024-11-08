@@ -10,6 +10,10 @@ const activitySchema = new mongoose.Schema({
     required: true,
     default: false,
   },
+  inappropriate:{
+    type: Boolean,
+    default: false
+  },
   bookings: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -32,11 +36,11 @@ const activitySchema = new mongoose.Schema({
     type: Number, // Could be a percentage or fixed amount
     default: 0,
   },
-  status:{
-    type:String,
-    enum: ["Active", "Inactive"],
-    default: "Active"
-  },
+  // status:{
+  //   type:String,
+  //   enum: ["Active", "Inactive"],
+  //   default: "Active"
+  // },
   duration: {
     type: Number, // Duration in minutes
     required: true,
@@ -53,18 +57,6 @@ const activitySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  ratings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Rating",
-    },
-  ],
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-    },
-  ],
   tags: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -79,13 +71,6 @@ const activitySchema = new mongoose.Schema({
     type: [String], // Array of strings to hold URLs of the images
     required: true, // Optional: mark as required if needed
   }
-  , // Reference to the advertiser who posted the activity
-  bookings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-    },
-  ], // Array of bookings for the activity
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

@@ -21,7 +21,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
+import { getAllIteneraries, getAllTags, markItineraryInappropriate } from "../../services/admin.js";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
@@ -57,7 +57,7 @@ const Itineraries = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllActiveAppropriateIteneraries(), getAllTags()]);
+        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllIteneraries(), getAllTags()]);
         setItineraries(itinerariesResponse.data.data);
         setFilteredItineraries(itinerariesResponse.data.data);
         setTags(tagsResponse.data.tags);
@@ -238,7 +238,11 @@ const Itineraries = () => {
                   <Typography><strong>Tags:</strong> {itinerary.tags.join(", ")}</Typography>
                </CardContent>
 
-            
+                {userType === "Admin" && (
+                  <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
+                    <FlagIcon />
+                  </IconButton>
+                )}
               </Card>
             </Grid>
           ))}
