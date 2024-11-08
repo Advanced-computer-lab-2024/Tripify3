@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import { sendPaymentOTPEmail } from "../../middlewares/sendEmail.middleware.js";
 dotenv.config(); // Load environment variables
 
-const stripe = stripeLib(process.env.STRIPE_SECRET_KEY);
+const stripe = stripeLib("sk_test_51QIKbEDs2P5nqTg9Xm6A0hN0s6QVSQbRAbxIQs1hZtWcAaNQm0v7GyL331AHniPzQnRb5nxRhmv0BtPNLevyWCMN008eSoRtpv");
 const OTPStore = {};
 
 

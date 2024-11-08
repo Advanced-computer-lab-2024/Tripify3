@@ -4,6 +4,8 @@ import Seller from "../../models/seller.js";
 import Advertiser from "../../models/advertiser.js";
 import TourGuide from "../../models/tourGuide.js";
 import mongoose from "mongoose";
+import Booking from '../../models/booking.js';
+import itinerary from '../../models/itinerary.js';
 
 
 export const redeemPoints = async (req, res) => {
@@ -145,3 +147,37 @@ export const editProfile = async (req, res) => {
   }
 };
 
+
+
+
+export const deleteTouristAccount = async (req, res) => {
+  const { id } = req.params; // Extract the tourist ID from the request params
+
+  try {
+    // Check for bookings linked to the tourist
+    const bookings = await Booking.find({ tourist: id }).populate('itinerary');
+
+    // Filter bookings for itineraries that have an endTime greater than the current date
+    const currentDate = new Date();
+    const activeBookings = bookings.filter(
+      (booking) => booking.itinerary && new Date(booking.itinerary.timeline.endTime) > currentDate
+    );
+
+    // If there are active bookings, prevent account deletion
+    if (activeBookings.length > 0) {
+      return res.status(403).json({
+        message: 'Account deletion is not allowed. You have active bookings with future end dates.',
+      });
+    }
+
+    // Delete the tourist account if there are no active bookings
+    await Tourist.findByIdAndDelete(id);
+    return res.status(200).json({
+      message: 'Tourist account deleted successfully.',
+    });
+
+  } catch (error) {
+    console.error('Error deleting tourist account:', error);
+    return res.status(500).json({ message: 'Error processing the request.' });
+  }
+};

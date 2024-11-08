@@ -5,7 +5,7 @@ import { getProfile, editProfile } from "../controllers/tourist/profile.controll
 import { getFlightsData, getHotels } from "../controllers/tourist/search.controller.js";
 import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
 import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor, updateCart } from "../controllers/tourist/cart.controller.js";
-import { redeemPoints } from "../controllers/tourist/profile.controller.js";
+import { redeemPoints,deleteTouristAccount } from "../controllers/tourist/profile.controller.js";
 import { touristReview } from "../controllers/tourist/rate&comment.controller.js";
 import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js";
 import { getConfig, createPayment, createPaymentIntent, confirmOTP } from "../controllers/tourist/payment.controller.js";
@@ -20,6 +20,8 @@ router.put("/tourist/profile/:id", editProfile); // Get filtered activities
 router.get("/flights", getFlightsData); // Get Flights
 router.get("/hotels", getHotels); //Get Hotels
 router.get("/activitiesAttended/get/:userId", getAllActivitiesAttended); // Get all activities attended by a tourist
+
+router.delete('/tourist/delete/:id', deleteTouristAccount);
 //Complaints
 router.get("/tourist/complaints/:id", getComplaintsForTourist);
 router.post("/tourist/profile/:id/redeem", redeemPoints);
