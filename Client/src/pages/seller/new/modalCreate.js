@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddFile from "./addFile"; // Use the actual component here
 import axios from "axios";
 import { getUserType, getUserId } from "../../../utils/authUtils";
+import { Alert } from "@mui/material";
 
 const ProductCreateModal = ({ open, handleClose }) => {
   const [newProduct, setNewProduct] = useState({
@@ -26,6 +27,15 @@ const ProductCreateModal = ({ open, handleClose }) => {
   });
   const [newImages, setNewImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(""); // Clear the error message after 5 seconds
+      }, 3000);
+
+      return () => clearTimeout(timer); // Cleanup timer if component unmounts
+    }
+  }, [errorMessage]);
 
   const handleChange = (field, value) => {
     setNewProduct((prev) => ({ ...prev, [field]: value }));
@@ -191,6 +201,11 @@ const ProductCreateModal = ({ open, handleClose }) => {
             ))}
             <AddFile setNewImage={setNewImages} />
           </Box>
+          {errorMessage && (
+            <Alert severity="error" style={{ marginBottom: "1rem" }}>
+              {errorMessage}
+            </Alert>
+          )}
         </Box>
 
         <Box
