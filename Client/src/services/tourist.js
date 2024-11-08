@@ -11,6 +11,10 @@ export const getActivityById = async (id) => {
   const response = await axios.get(`${API_URL}/activity/get${id}`); // Adjust the endpoint as necessary
   return response;
 };
+export const getItineraryById = async (id) => {
+  const response = await axios.get(`${API_URL}/itinerary/get/${id}`); // Adjust the endpoint as necessary
+  return response;
+}
 export const getAllTags = async () => {
   return await axios.get(`${API_URL}/tag/get`);
 };
@@ -30,7 +34,10 @@ export const getAllActiveAppropriateIteneraries = async (userId) => {
 export const getAllActivities = async () => {
   return await axios.get(`${API_URL}/activity/get`);
 };
-
+export const getAllActivitiesAttended = async (userId) => {
+  console.log("hrns:"+ userId)
+  return await axios.get(`${API_URL}/activitiesAttended/get/${userId}`);
+};
 export const getProfile = async (userId) => {
   return await axios.get(`${API_URL}/tourist/profile/${userId}`);
 };

@@ -30,6 +30,7 @@ const FollowedTourGuides = () => {
             try {
                 const response = await axios.get(`http://localhost:8000/tourist/following/get/${userId}`);
                 setFollowedGuideIds(response.data.following || []);
+                console.log(response.data.following);
             } catch (error) {
                 console.error("Error fetching followed tour guides:", error);
                 setError("Couldn't fetch followed guides. Please try again later.");
@@ -90,18 +91,19 @@ const FollowedTourGuides = () => {
             console.error("Error submitting review:", error);
         }
     };
-
+    if (tourGuideProfiles.length === 0) {
+        return <Typography>No followed tour guides found.</Typography>;
+    }
+    if (error) {
+        return <Typography color="red">{error}</Typography>;
+    }
     if (loading) {
         return <CircularProgress />;
     }
 
-    if (error) {
-        return <Typography color="red">{error}</Typography>;
-    }
+    
 
-    if (tourGuideProfiles.length === 0) {
-        return <Typography>No followed tour guides found.</Typography>;
-    }
+   
 
     return (
         <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', minHeight: '100vh' }}>

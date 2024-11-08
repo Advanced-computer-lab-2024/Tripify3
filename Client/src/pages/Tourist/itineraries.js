@@ -20,6 +20,8 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
+import { Link } from 'react-router-dom';
+
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
@@ -236,6 +238,14 @@ const Itineraries = () => {
                   <Typography>Price: ${itinerary.price}</Typography>
                   <Typography><strong>Language:</strong> {itinerary.language}</Typography>
                   <Typography><strong>Tags:</strong> {itinerary.tags.join(", ")}</Typography>
+                  <Button
+                    component={Link}
+                    to={`/tourist/itinerary/${itinerary._id}`}
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                  >
+  View Details
+</Button>
                </CardContent>
 
             
