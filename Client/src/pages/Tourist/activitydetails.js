@@ -11,7 +11,11 @@ import ShareIcon from '@mui/icons-material/Share';
 import EmailIcon from '@mui/icons-material/Email';
 import LinkIcon from '@mui/icons-material/Link';
 import CloseIcon from '@mui/icons-material/Close';
-
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { Book } from '@mui/icons-material';
+import axios from 'axios';
+import { getUserId } from '../../utils/authUtils';
 const ActivityDetails = () => {
   const { id } = useParams();
   const [activity, setActivity] = useState(null);
@@ -19,7 +23,18 @@ const ActivityDetails = () => {
   const [error, setError] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [currentActivityId, setCurrentActivityId] = useState(null); // Added this state for dropdown handling
+  const [ticketCount, setTicketCount] = useState(1);
 
+
+  const handleIncrease = () => {
+    setTicketCount(ticketCount + 1);
+  };
+
+  const handleDecrease = () => {
+    if (ticketCount > 1) {
+      setTicketCount(ticketCount - 1);
+    }
+  };
   useEffect(() => {
     const fetchActivity = async () => {
       try {
@@ -53,7 +68,21 @@ const ActivityDetails = () => {
       setShareOpen(false);
     });
   };
+  const BookActivity = async() => {
+    const tourist = getUserId();
+    const price = ticketCount*(activity.price);
+    const type = "Activity";
+    const itemId = activity._id;
+    const booking = { tourist, price, type, itemId };
 
+      try {
+        const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking );
+        alert(response.data.message);
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    
+  };
   const handleEmailShare = () => {
     const emailSubject = `Check out this activity: ${activity.name}`;
     const emailBody = `I thought you might be interested in this activity!\n\n${activity.name}\nLocation: ${activity.location}\nDate: ${new Date(activity.date).toLocaleDateString()} at ${activity.time}\n\nView more details here: http://localhost:3000/tourist/activity/${activity._id}`;
@@ -150,6 +179,25 @@ const ActivityDetails = () => {
             >
               Back to Activities
             </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
+        <RemoveIcon />
+      </IconButton>
+      <Typography variant="h6" sx={{ mx: 1 }}>
+        {ticketCount}
+      </Typography>
+      <IconButton onClick={handleIncrease}>
+        <AddIcon />
+      </IconButton>
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={BookActivity}
+        sx={{ fontSize: '1rem', fontWeight: 500, ml: 2 }}
+      >
+        Book Activity
+      </Button>
+    </Box>
             <Button
               variant="outlined"
               onClick={handleShareToggle}

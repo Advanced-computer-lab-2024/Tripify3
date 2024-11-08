@@ -31,9 +31,10 @@ import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
 import Products from "./pages/seller/products.js";
 import Categories from "./pages/admin/categories.js";
-
+import ItineraryDetails from "./pages/tourist/itinerarydetails.js";
 import GovernorHistoricalPlaces from "./pages/tourismGovernor/historicalPlaces.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
+import ActivitesAttended from "./pages/tourist/attendedActivites.js";
 
 import ToursmGovernorProfile from "./pages/tourismGovernor/profile.js";
 import FileViewer from "./pages/admin/fileViewer.js";
@@ -126,12 +127,6 @@ const App = () => {
         <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
         <Route path={`/tourism-governor/tags`} element={getLayoutForRole(userRole, <GovernorTags />)} />
         {/* Tourist Routes */}
-        <Route path={`/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
-        <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
-        <Route path={`/tourist/profile`} element={getLayoutForRole(userRole, <TouristProfile />)} />
-        <Route path={"/search_flights"} element={getLayoutForRole(userRole, <SearchFlights />)} />
-        <Route path={"/load_flights"} element={getLayoutForRole(userRole, <LoadFlights />)} />
-        <Route path={"/search_hotels"} element={getLayoutForRole(userRole, <SearchHotels />)} />
         <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
         <Route path={"/tourist/view/complaints"} element={<ViewComplaints />} />
         {/* Shared Routes */}
@@ -144,6 +139,9 @@ const App = () => {
         <Route path={`${basePath}/change-password`} element={getLayoutForRole(userRole, <ChangePassword />)} />
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
         <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <Products />)} />
+
+   
+      
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />

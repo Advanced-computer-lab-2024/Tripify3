@@ -21,36 +21,28 @@ export const getAllActivities = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-export const bookActivity = async (req, res) => {
-  const { activityId} = req.params;
-  const { touristId, totalPrice } = req.body;
-
+export const getAllActivitiesAttended = async (req, res) => {
   try {
-    // Find the activity by ID
-    const activity = await Activity.findById(activityId);
-
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found" });
+    const currentDate = new Date();
+    const { userId } = req.params;
+    const tourist = await Tourist.findById(userId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
     }
 
+    const bookings = await Booking.find({ tourist: userId, type: "Activity" });
+    console.log(bookings);
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ message: "No bookings found" });
+    }
 
-    // Create a new booking
-    const booking = new Booking({
-      tourist: touristId,
-      price: totalPrice,
+    const attendedActivities = bookings.filter((booking) => {
+      return booking.activity.date < currentDate;
     });
 
-    await booking.save();
-    activity.bookings.push(booking._id);
-    await activity.save();
-
-    res.status(201).json({
-      message: "Activity booked successfully",
-      booking: booking,
-    });
-    res.status(201).json({ booking: booking });
+    res.status(200).json({ activities: attendedActivities });
   } catch (error) {
+    console.error(error.message);
     res.status(500).json({ message: error.message });
   }
-}
+};
