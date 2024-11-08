@@ -74,69 +74,7 @@ const ActivityDetails = () => {
   }
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" color="black" gutterBottom>
-        {activity.name}
-      </Typography>
-      <Typography variant="h6">
-        <strong>Price:</strong> ${activity.price}
-      </Typography>
-      <Typography variant="body1">
-        <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-      </Typography>
-      <Typography variant="body1">
-        <strong>Description:</strong> {activity.description}
-      </Typography>
-      <Button variant="contained" color="primary" href="/tourist/activities" sx={{ mt: 2 }}>
-        Back to Activities
-      </Button>
-      <Button
-        variant="outlined"
-        sx={{
-          mt: 2,
-          ml: 2,
-          color: 'blue',
-          borderColor: 'blue',
-          '&:hover': {
-            backgroundColor: 'lightblue',
-            color: 'white',
-          },
-        }}
-        onClick={() => toggleShareDropdown(activity._id)}
-      >
-        Share
-      </Button>
-
-      {currentActivityId === activity._id && (
-        <Box
-          sx={{
-            position: "absolute",
-            background: "white",
-            boxShadow: 1,
-            p: 1,
-            mt: 1,
-            zIndex: 10,
-          }}
-        >
-          <Button variant="text" onClick={() => handleCopyLink(activity._id)}>
-            Copy Link
-          </Button>
-          <Button
-            variant="text"
-            href={`https://twitter.com/intent/tweet?url=http://localhost:3000/Tourist/activities/${activity._id}`}
-            target="_blank"
-          >
-            Share on Twitter
-          </Button>
-          <Button
-            variant="text"
-            href={`https://www.facebook.com/sharer/sharer.php?u=http://localhost:3000/Tourist/activities/${activity._id}`}
-            target="_blank"
-          >
-            Share on Facebook
-          </Button>
-        </Box>
-      )}
+    
 
       <Box sx={{ p: 3, backgroundColor: '#F5F7FA', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start' }}>
         <Card sx={{ width: '100%', maxWidth: '900px', borderRadius: 3, boxShadow: 5, padding: 4, minHeight: '500px' }}>
@@ -259,7 +197,6 @@ const ActivityDetails = () => {
           </Dialog>
         </Card>
       </Box>
-    </Box>
   );
 };
 
