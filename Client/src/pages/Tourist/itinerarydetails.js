@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Box, Paper,Dialog,Slide, Rating, Divider, CardActions, Typography, Button, CircularProgress, Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
+import { Box, Paper, Dialog, Slide, Rating, Divider, CardActions, Typography, Button, CircularProgress, Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
 import { getItineraryById } from "../../services/tourist";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { Favorite  } from "@mui/icons-material";
-import { Close as CloseIcon, Link as LinkIcon, Email as EmailIcon, } from '@mui/icons-material';
+import { Favorite } from "@mui/icons-material";
+import { Close as CloseIcon, Link as LinkIcon, Email as EmailIcon } from "@mui/icons-material";
 import ShareIcon from "@mui/icons-material/Share";
 import IconButton from "@mui/material/IconButton";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { getUserId } from "../../utils/authUtils";
-
 
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
@@ -97,9 +96,10 @@ const ItineraryDetails = () => {
 
   const handleEmailShare = () => {
     const emailSubject = `Check out this itinerary: ${itinerary.name}`;
-  
+
     // Construct email body with additional itinerary details
-    const emailBody = `I thought you might be interested in this itinerary!\n\n` +
+    const emailBody =
+      `I thought you might be interested in this itinerary!\n\n` +
       `Itinerary Name: ${itinerary.name}\n` +
       `Location: ${itinerary.location}\n` +
       `Date: From ${new Date(itinerary.timeline.startTime).toLocaleDateString()} to ${new Date(itinerary.timeline.endTime).toLocaleDateString()} ` +
@@ -109,18 +109,18 @@ const ItineraryDetails = () => {
       `Pickup Location: ${itinerary.pickupLocation}\n` +
       `Drop-off Location: ${itinerary.dropoffLocation}\n\n` +
       `Available Dates:\n` +
-     `Price: ${itinerary.price} USD\n` +
+      `Price: ${itinerary.price} USD\n` +
       `Status: ${itinerary.status}\n\n` +
       `Reviews:\n` +
       `View more details here: http://localhost:3000/tourist/itinerary/${itinerary._id}`;
-  
+
     // Construct Gmail URL for pre-filled subject and body
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-  
+
     // Open Gmail in a new window or tab in Chrome
-    window.open(gmailUrl, '_blank');
+    window.open(gmailUrl, "_blank");
   };
-  
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
@@ -262,34 +262,40 @@ const ItineraryDetails = () => {
                 TransitionProps={{ direction: "up" }}
                 sx={{
                   "& .MuiPaper-root": {
-                    borderRadius: "20px 20px 0 0",
-                    minHeight: "250px",
-                    backgroundColor: "#FFF",
+                    borderRadius: "16px", // Rounded corners
+                    padding: 4, // Added padding
+                    backgroundColor: "#F7F9FC", // Light background color
+                    width: "80%", // Larger dialog width
+                    maxWidth: 600, // Maximum width
                   },
                 }}
               >
-                <Box sx={{ p: 3 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6" fontWeight="600">
-                      Share this itinerary
-                    </Typography>
-                    <IconButton onClick={handleShareToggle}>
-                      <CloseIcon />
-                    </IconButton>
-                  </Box>
+                <Box sx={{ position: "relative" }}>
+                  {/* Close Button */}
+                  <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
+                    <CloseIcon />
+                  </IconButton>
 
-                  <Box display="flex" justifyContent="space-around" mt={2}>
-                    <IconButton onClick={handleCopyLink} sx={{ flexDirection: "column" }}>
-                      <LinkIcon fontSize="large" />
-                      <Typography variant="body2">Copy Link</Typography>
+                  {/* Title */}
+                  <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
+                    Share this Itinerary
+                  </Typography>
+
+                  {/* Icon Buttons */}
+                  <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
+                    {/* Copy Link Button */}
+                    <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
+                      <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
                     </IconButton>
-                    <IconButton onClick={handleEmailShare} sx={{ flexDirection: "column" }}>
-                      <EmailIcon fontSize="large" />
-                      <Typography variant="body2">Email</Typography>
+
+                    {/* Email Share Button */}
+                    <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
+                      <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
                     </IconButton>
                   </Box>
                 </Box>
               </Dialog>
+
               <CardActions sx={{ padding: "24px 32px" }}>
                 {/* Book Itinerary Button */}
                 <Grid item>

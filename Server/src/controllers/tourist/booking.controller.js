@@ -75,7 +75,7 @@ export const createBooking = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
   try {
-    const { bookingId } = req.body;
+    const { bookingId } = req.params;
 
     // Find the booking by ID
     const booking = await Booking.findById(bookingId);
@@ -83,36 +83,31 @@ export const cancelBooking = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
+    // Determine the event date based on the booking type
+    let eventDate;
+    if (booking.type === "Itinerary") {
+      const itinerary = await Itinerary.findById(booking.itinerary);
+      if (!itinerary) {
+        return res.status(404).json({ message: "Itinerary not found" });
+      }
+      eventDate = itinerary.timeline.startTime;
+    } else if (booking.type === "Activity") {
+      const activity = await Activity.findById(booking.activity);
+      if (!activity) {
+        return res.status(404).json({ message: "Activity not found" });
+      }
+      eventDate = activity.date;
+    } else {
+      return res.status(400).json({ message: "Unsupported booking type" });
+    }
+
     // Check if the cancellation is at least 48 hours before the event
     const currentTime = new Date();
-    const eventTime = new Date(booking.eventDate); // Assuming booking has an eventDate field
-    const hoursDifference = (eventTime - currentTime) / (1000 * 60 * 60);
-
+    const hoursDifference = (new Date(eventDate) - currentTime) / (1000 * 60 * 60);
     if (hoursDifference < 48) {
       return res.status(400).json({
         message: "Cancellations must be made at least 48 hours before the event",
       });
-    }
-
-    // Remove the booking from the associated itinerary if the type is itinerary
-    if (booking.type === "Itinerary") {
-      const itinerary = await Itinerary.findById(booking.itemId);
-      if (!itinerary) {
-        return res.status(404).json({ message: "Itinerary not found" });
-      }
-
-      // Remove the booking ID from the itinerary's bookings array
-      itinerary.bookings = itinerary.bookings.filter((id) => id.toString() !== bookingId);
-      await itinerary.save();
-    } else if (booking.type === "Activity") {
-      const activity = await Activity.findById(booking.itemId);
-      if (!activity) {
-        return res.status(404).json({ message: "Activity not found" });
-      }
-
-      // Remove the booking ID from the itinerary's bookings array
-      activity.bookings = activity.bookings.filter((id) => id.toString() !== bookingId);
-      await activity.save();
     }
 
     // Delete the booking from the Booking model
@@ -124,6 +119,7 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: "Failed to cancel booking" });
   }
 };
+
 
 export const getAllBookings = async (req, res) => {
   try {

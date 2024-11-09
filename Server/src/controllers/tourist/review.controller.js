@@ -2,11 +2,12 @@ import Tourist from "../../models/tourist.js";
 import TourGuide from "../../models/tourGuide.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
+import Place from "../../models/place.js";
 
 import Review from "../../models/review.js";
 
 export const touristReview = async (req, res) => {
-  const { tourGuide, activity, itinerary, tourist, rating, comment } = req.body;
+  const { tourGuide, activity, itinerary, tourist, rating, comment,place } = req.body;
 
   try {
     // 1. Validate input
@@ -35,6 +36,7 @@ export const touristReview = async (req, res) => {
       tourGuide,
       activity,
       itinerary,
+      place,
       tourist,
       rating,
       comment,
@@ -50,7 +52,11 @@ export const touristReview = async (req, res) => {
        model = await Activity.findById(activity);
      } else if (itinerary) {
        model = await Itinerary.findById(itinerary);
-     }
+     } else if (place) {
+      model = await Place.findById(place);
+    }
+    console.log(place);
+    
  
      if (!model) {
        return res.status(404).json({ message: "Reviewed item not found." });
@@ -62,6 +68,7 @@ export const touristReview = async (req, res) => {
          { tourGuide: tourGuide || null },
          { activity: activity || null },
          { itinerary: itinerary || null },
+         { place: place || null },
        ],
      });
  

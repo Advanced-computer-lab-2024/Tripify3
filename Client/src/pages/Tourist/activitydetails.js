@@ -46,14 +46,11 @@ const ActivityDetails = () => {
     fetchActivity();
   }, [id]);
 
-  const toggleShareDropdown = (activityId) => {
-    setCurrentActivityId(currentActivityId === activityId ? null : activityId);
-  };
 
   const handleShareToggle = () => setShareOpen(!shareOpen);
 
   const handleCopyLink = () => {
-    const link = `http://localhost:3000/tourist/activity/${activity._id}`;
+    const link = `http://localhost:3000/activity/${activity._id}`;
     navigator.clipboard.writeText(link).then(() => {
       alert("Link copied to clipboard!");
       setShareOpen(false);
@@ -74,11 +71,21 @@ const ActivityDetails = () => {
   };
 
   const handleEmailShare = () => {
-    const emailSubject = `Check out this activity: ${activity.name}`;
-    const emailBody = `I thought you might be interested in this activity!\n\n${activity.name}\nLocation: ${activity.location}\nDate: ${new Date(activity.date).toLocaleDateString()} at ${
-      activity.time
-    }\n\nView more details here: http://localhost:3000/tourist/activity/${activity._id}`;
-    window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    const emailSubject = `Check out this itinerary: ${activity.name}`;
+    // Construct email body with additional itinerary details
+    const emailBody =
+      `I thought you might be interested in this activity!\n\n` +
+      `Activity Name: ${activity.name}\n` +
+      `Location: ${activity.location}\n` +
+      `Date:  ${new Date(activity.date).toLocaleDateString()} ` +
+      `Price: ${activity.price} \n` +
+      `View more details here: http://localhost:3000/activity/${activity._id}`;
+
+    // Construct Gmail URL for pre-filled subject and body
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+    // Open Gmail in a new window or tab in Chrome
+    window.open(gmailUrl, "_blank");
   };
 
   if (loading) {
@@ -205,34 +212,38 @@ const ActivityDetails = () => {
             </Button>
           </CardActions>
 
-          <Dialog
-            open={shareOpen}
-            onClose={handleShareToggle}
-            TransitionComponent={Slide}
-            TransitionProps={{ direction: "up" }}
-            sx={{
-              "& .MuiPaper-root": {
-                borderRadius: "20px 20px 0 0",
-                padding: 3,
-                backgroundColor: "#F5F7FA",
-              },
-            }}
-          >
-            <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 8, right: 8 }}>
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" color="#333" textAlign="center" sx={{ mt: 2 }}>
-              Share Activity
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 3 }}>
-              <IconButton onClick={handleEmailShare}>
-                <EmailIcon sx={{ color: "#5A67D8" }} />
+          <CardActions>
+            <Dialog
+              open={shareOpen}
+              onClose={handleShareToggle}
+              TransitionComponent={Slide}
+              TransitionProps={{ direction: "up" }}
+              sx={{
+                "& .MuiPaper-root": {
+                  borderRadius: "16px",
+                  padding: 4,
+                  backgroundColor: "#F7F9FC", // Light background color
+                  width: "80%", // Larger dialog
+                  maxWidth: 600, // Maximum width
+                },
+              }}
+            >
+              <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
+                <CloseIcon />
               </IconButton>
-              <IconButton onClick={handleCopyLink}>
-                <LinkIcon sx={{ color: "#5A67D8" }} />
-              </IconButton>
-            </Box>
-          </Dialog>
+              <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
+                Share Activity
+              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
+                <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
+                  <EmailIcon sx={{ color: "#FFFFFF", fontSize: "3rem" }} /> {/* Increased icon size */}
+                </IconButton>
+                <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
+                  <LinkIcon sx={{ color: "#FFFFFF", fontSize: "3rem" }} /> {/* Increased icon size */}
+                </IconButton>
+              </Box>
+            </Dialog>
+          </CardActions>
         </Card>
       </Box>
     </Box>

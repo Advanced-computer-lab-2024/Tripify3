@@ -31,7 +31,7 @@ export const getAllActivitiesAttended = async (req, res) => {
     }
 
     const bookings = await Booking.find({ tourist: userId, type: "Activity" });
-    console.log(bookings);
+
     if (!bookings || bookings.length === 0) {
       return res.status(404).json({ message: "No bookings found" });
     }
