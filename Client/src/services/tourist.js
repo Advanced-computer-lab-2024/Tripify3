@@ -26,6 +26,10 @@ export const getAllPlaces = async () => {
   return await axios.get(`${API_URL}`);
 };
 
+export const getUserProfile = async(userId) =>{
+  return  await axios.get(`${API_URL}/tourist/profile/${userId}`)
+}
+
 export const getAllActiveAppropriateIteneraries = async (userId) => {
   return await axios.get(`${API_URL}/itineraries/active/appropriate/get`);
 };
