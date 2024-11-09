@@ -81,13 +81,7 @@ const PlaceDetails = () => {
   };
 
   const handleShareToggle = () => setShareOpen(!shareOpen);
-
-  // const handleEmailShare = () => {
-  //   const emailSubject = `Check out this place: ${place.name}`;
-  //   const emailBody = `I thought you might be interested in this place!\n\n${place.name}\nLocation: ${place.location.address}\n\nView more details here: http://localhost:3000/place/${place._id}`;
-  //   window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-  // };
-
+  
   const handleEmailShare = () => {
     const emailSubject = `Check out this place: ${place.name}`;
     // Construct email body with additional itinerary details

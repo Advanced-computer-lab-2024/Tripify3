@@ -340,7 +340,7 @@ const ItineraryDetails = () => {
                   {/* Total Price on the Right */}
                   <Grid item xs={12} sm={6} sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Typography variant="h6" sx={{ fontWeight: 500, whiteSpace: "nowrap" }}>
-                      Total Price: ${ticketCount * itinerary.price}
+                      Total Price: {ticketCount * itinerary.price}
                     </Typography>
                   </Grid>
                 </Grid>

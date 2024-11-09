@@ -28,6 +28,7 @@ const ActivityDetails = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [currentActivityId, setCurrentActivityId] = useState(null);
   const [ticketCount, setTicketCount] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const handleIncrease = () => setTicketCount(ticketCount + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
@@ -37,6 +38,7 @@ const ActivityDetails = () => {
       try {
         const response = await getActivityById(id);
         setActivity(response.data.data.activity);
+        setTotalPrice(response.data.data.activity.price);
         setLoading(false);
       } catch (error) {
         setError("Error fetching activity details");
@@ -46,6 +48,12 @@ const ActivityDetails = () => {
     fetchActivity();
   }, [id]);
 
+  useEffect(() => {
+    // Recalculate total price whenever ticketCount changes
+    if (activity) {
+      setTotalPrice(ticketCount * activity.price);
+    }
+  }, [ticketCount, activity]);
 
   const handleShareToggle = () => setShareOpen(!shareOpen);
 
@@ -114,18 +122,7 @@ const ActivityDetails = () => {
             </Typography>
 
             {activity.specialDiscount > 0 && (
-              <Box
-                sx={{
-                  backgroundColor: "#E2F0E6",
-                  color: "#2C7A7B",
-                  borderRadius: 2,
-                  padding: "12px",
-                  textAlign: "center",
-                  mb: 4,
-                  fontWeight: 600,
-                  fontSize: "1.15rem",
-                }}
-              >
+              <Box sx={{ backgroundColor: "#E2F0E6", color: "#2C7A7B", borderRadius: 2, padding: "12px", textAlign: "center", mb: 4, fontWeight: 600, fontSize: "1.15rem" }}>
                 Special Discount: {activity.specialDiscount}%
               </Box>
             )}
@@ -167,13 +164,7 @@ const ActivityDetails = () => {
               <Grid item xs={12} sm={6}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <StarIcon
-                      key={index}
-                      sx={{
-                        color: index < activity.rating ? "#ECC94B" : "#E2E8F0", // Highlighted stars for rating, gray for others
-                        mr: 0.5,
-                      }}
-                    />
+                    <StarIcon key={index} sx={{ color: index < activity.rating ? "#ECC94B" : "#E2E8F0", mr: 0.5 }} />
                   ))}
                 </Box>
               </Grid>
@@ -201,48 +192,21 @@ const ActivityDetails = () => {
                 <IconButton onClick={handleIncrease}>
                   <AddIcon />
                 </IconButton>
-                <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500, ml: 2 }}>
+
+                {/* Position total price next to ticket count */}
+                <Typography variant="h6" color="#333" sx={{ mx: 2 }}>
+                  Total Price: {totalPrice}
+                </Typography>
+
+                <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500 }}>
                   Book Activity
                 </Button>
               </Box>
             )}
 
-            <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem", fontWeight: 500 }}>
+            <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem" }}>
               Share
             </Button>
-          </CardActions>
-
-          <CardActions>
-            <Dialog
-              open={shareOpen}
-              onClose={handleShareToggle}
-              TransitionComponent={Slide}
-              TransitionProps={{ direction: "up" }}
-              sx={{
-                "& .MuiPaper-root": {
-                  borderRadius: "16px",
-                  padding: 4,
-                  backgroundColor: "#F7F9FC", // Light background color
-                  width: "80%", // Larger dialog
-                  maxWidth: 600, // Maximum width
-                },
-              }}
-            >
-              <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
-                Share Activity
-              </Typography>
-              <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
-                <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
-                  <EmailIcon sx={{ color: "#FFFFFF", fontSize: "3rem" }} /> {/* Increased icon size */}
-                </IconButton>
-                <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
-                  <LinkIcon sx={{ color: "#FFFFFF", fontSize: "3rem" }} /> {/* Increased icon size */}
-                </IconButton>
-              </Box>
-            </Dialog>
           </CardActions>
         </Card>
       </Box>
