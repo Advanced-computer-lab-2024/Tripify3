@@ -28,6 +28,7 @@ const ActivityDetails = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [currentActivityId, setCurrentActivityId] = useState(null);
   const [ticketCount, setTicketCount] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const handleIncrease = () => setTicketCount(ticketCount + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
@@ -37,6 +38,7 @@ const ActivityDetails = () => {
       try {
         const response = await getActivityById(id);
         setActivity(response.data.data.activity);
+        setTotalPrice(response.data.data.activity.price);
         setLoading(false);
       } catch (error) {
         setError("Error fetching activity details");
@@ -46,14 +48,17 @@ const ActivityDetails = () => {
     fetchActivity();
   }, [id]);
 
-  const toggleShareDropdown = (activityId) => {
-    setCurrentActivityId(currentActivityId === activityId ? null : activityId);
-  };
+  useEffect(() => {
+    // Recalculate total price whenever ticketCount changes
+    if (activity) {
+      setTotalPrice(ticketCount * activity.price);
+    }
+  }, [ticketCount, activity]);
 
   const handleShareToggle = () => setShareOpen(!shareOpen);
 
   const handleCopyLink = () => {
-    const link = `http://localhost:3000/tourist/activity/${activity._id}`;
+    const link = `http://localhost:3000/activity/${activity._id}`;
     navigator.clipboard.writeText(link).then(() => {
       alert("Link copied to clipboard!");
       setShareOpen(false);
@@ -74,11 +79,21 @@ const ActivityDetails = () => {
   };
 
   const handleEmailShare = () => {
-    const emailSubject = `Check out this activity: ${activity.name}`;
-    const emailBody = `I thought you might be interested in this activity!\n\n${activity.name}\nLocation: ${activity.location}\nDate: ${new Date(activity.date).toLocaleDateString()} at ${
-      activity.time
-    }\n\nView more details here: http://localhost:3000/tourist/activity/${activity._id}`;
-    window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+    const emailSubject = `Check out this itinerary: ${activity.name}`;
+    // Construct email body with additional itinerary details
+    const emailBody =
+      `I thought you might be interested in this activity!\n\n` +
+      `Activity Name: ${activity.name}\n` +
+      `Location: ${activity.location}\n` +
+      `Date:  ${new Date(activity.date).toLocaleDateString()} ` +
+      `Price: ${activity.price} \n` +
+      `View more details here: http://localhost:3000/activity/${activity._id}`;
+
+    // Construct Gmail URL for pre-filled subject and body
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+    // Open Gmail in a new window or tab in Chrome
+    window.open(gmailUrl, "_blank");
   };
 
   if (loading) {
@@ -107,18 +122,7 @@ const ActivityDetails = () => {
             </Typography>
 
             {activity.specialDiscount > 0 && (
-              <Box
-                sx={{
-                  backgroundColor: "#E2F0E6",
-                  color: "#2C7A7B",
-                  borderRadius: 2,
-                  padding: "12px",
-                  textAlign: "center",
-                  mb: 4,
-                  fontWeight: 600,
-                  fontSize: "1.15rem",
-                }}
-              >
+              <Box sx={{ backgroundColor: "#E2F0E6", color: "#2C7A7B", borderRadius: 2, padding: "12px", textAlign: "center", mb: 4, fontWeight: 600, fontSize: "1.15rem" }}>
                 Special Discount: {activity.specialDiscount}%
               </Box>
             )}
@@ -160,13 +164,7 @@ const ActivityDetails = () => {
               <Grid item xs={12} sm={6}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <StarIcon
-                      key={index}
-                      sx={{
-                        color: index < activity.rating ? "#ECC94B" : "#E2E8F0", // Highlighted stars for rating, gray for others
-                        mr: 0.5,
-                      }}
-                    />
+                    <StarIcon key={index} sx={{ color: index < activity.rating ? "#ECC94B" : "#E2E8F0", mr: 0.5 }} />
                   ))}
                 </Box>
               </Grid>
@@ -194,45 +192,22 @@ const ActivityDetails = () => {
                 <IconButton onClick={handleIncrease}>
                   <AddIcon />
                 </IconButton>
-                <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500, ml: 2 }}>
+
+                {/* Position total price next to ticket count */}
+                <Typography variant="h6" color="#333" sx={{ mx: 2 }}>
+                  Total Price: {totalPrice}
+                </Typography>
+
+                <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500 }}>
                   Book Activity
                 </Button>
               </Box>
             )}
 
-            <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem", fontWeight: 500 }}>
+            <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem" }}>
               Share
             </Button>
           </CardActions>
-
-          <Dialog
-            open={shareOpen}
-            onClose={handleShareToggle}
-            TransitionComponent={Slide}
-            TransitionProps={{ direction: "up" }}
-            sx={{
-              "& .MuiPaper-root": {
-                borderRadius: "20px 20px 0 0",
-                padding: 3,
-                backgroundColor: "#F5F7FA",
-              },
-            }}
-          >
-            <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 8, right: 8 }}>
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h6" color="#333" textAlign="center" sx={{ mt: 2 }}>
-              Share Activity
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 3 }}>
-              <IconButton onClick={handleEmailShare}>
-                <EmailIcon sx={{ color: "#5A67D8" }} />
-              </IconButton>
-              <IconButton onClick={handleCopyLink}>
-                <LinkIcon sx={{ color: "#5A67D8" }} />
-              </IconButton>
-            </Box>
-          </Dialog>
         </Card>
       </Box>
     </Box>

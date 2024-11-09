@@ -141,7 +141,7 @@ const App = () => {
         <Route path={"/tourist/itinerary/:id"} element={getLayoutForRole(userRole, <ItinerariesDetails />)} />
         <Route path={"/tourist/bookings"} element={getLayoutForRole(userRole, <Bookings />)} />
         {/* Add the BookingDetails route with dynamic id and type parameters */}
-        <Route path="/tourist/booking-details/:itemId/:type/:view" element={getLayoutForRole(userRole, <BookingDetails />)} />
+        <Route path="/tourist/booking-details/:itemId/:type/:view/:bookingId" element={getLayoutForRole(userRole, <BookingDetails />)} />
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}

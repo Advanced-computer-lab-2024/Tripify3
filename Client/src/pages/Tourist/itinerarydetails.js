@@ -315,25 +315,37 @@ const ItineraryDetails = () => {
                 onClose={handleShareToggle}
                 TransitionComponent={Slide}
                 TransitionProps={{ direction: "up" }}
+                sx={{
+                  "& .MuiPaper-root": {
+                    borderRadius: "16px", // Rounded corners
+                    padding: 4, // Added padding
+                    backgroundColor: "#F7F9FC", // Light background color
+                    width: "80%", // Larger dialog width
+                    maxWidth: 600, // Maximum width
+                  },
+                }}
               >
-                <Box sx={{ p: 3 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6" fontWeight="600">
-                      Share this itinerary
-                    </Typography>
-                    <IconButton onClick={handleShareToggle}>
-                      <CloseIcon />
-                    </IconButton>
-                  </Box>
+                <Box sx={{ position: "relative" }}>
+                  {/* Close Button */}
+                  <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
+                    <CloseIcon />
+                  </IconButton>
 
-                  <Box display="flex" justifyContent="space-around" mt={2}>
-                    <IconButton onClick={handleCopyLink} sx={{ flexDirection: "column" }}>
-                      <LinkIcon fontSize="large" />
-                      <Typography variant="body2">Copy Link</Typography>
+                  {/* Title */}
+                  <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
+                    Share this Itinerary
+                  </Typography>
+
+                  {/* Icon Buttons */}
+                  <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
+                    {/* Copy Link Button */}
+                    <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
+                      <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
                     </IconButton>
-                    <IconButton onClick={handleEmailShare} sx={{ flexDirection: "column" }}>
-                      <EmailIcon fontSize="large" />
-                      <Typography variant="body2">Email</Typography>
+
+                    {/* Email Share Button */}
+                    <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
+                      <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
                     </IconButton>
                   </Box>
                 </Box>

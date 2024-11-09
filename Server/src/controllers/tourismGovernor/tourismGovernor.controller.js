@@ -58,36 +58,6 @@ export const createTag = async (req, res) => {
   }
 };
 
-export const getPlace = async (req, res) => {
-  try {
-    const { id } = req.params; // Extract ID from request parameters
-    console.log(id);
-
-    const place = await Place.findById(id).populate({
-      path: "tags", // Populate tag details
-      select: "name", // Only fetch the tag name
-    }); // Find place by ID and populate tags
-
-    if (!place) {
-      return res.status(http_code.NOT_FOUND).json({
-        status: response_status.NEGATIVE,
-        message: "Place not found",
-      });
-    }
-
-    res.status(http_code.OK).json({
-      status: response_status.POSITIVE,
-      data: {
-        place, // Return the found place
-      },
-    });
-  } catch (err) {
-    res.status(http_code.BAD_REQUEST).json({
-      status: response_status.NEGATIVE,
-      message: err.message || "An error occurred",
-    });
-  }
-};
 
 export const getPlacesByGovernor = async (req, res) => {
   try {

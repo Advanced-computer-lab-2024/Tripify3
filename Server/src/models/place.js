@@ -7,6 +7,10 @@ const placeSchema = new Schema(
       type: String,
       required: true,
     },
+    rating: {
+      type: Number,
+      default: 5,
+    },
     type: {
       type: String,
       enum: ["Monument", "Religious Site", "Palace", "Historical Place", "Museum"], // Possible user roles

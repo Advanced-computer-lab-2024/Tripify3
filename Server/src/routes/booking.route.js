@@ -11,6 +11,6 @@ router.get("/bookings/get/:touristId", getAllBookings);
 router.get("/booking/get/tour-guide/profile/:tourGuideId/:touristId", getTourGuideProfile);
 
 // Delete a booking by ID
-router.delete("/boooking/delete/:id", cancelBooking);
+router.delete("/boooking/delete/:bookingId", cancelBooking);
 
 export default router;

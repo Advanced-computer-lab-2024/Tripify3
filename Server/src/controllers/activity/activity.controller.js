@@ -17,8 +17,6 @@ export const getActivities = async (req, res) => {
 export const getActivityById = async (req, res) => {
   try {
     // Fetch the activity by ID, with populated fields for tags, category, and location
-    
-    
     const activity = await Activity.findById(req.params.activityId)
       .populate({ path: "tags", select: "name" }) // Populate tags with their names only
       .populate({ path: "category", select: "name" }) // Populate category with its name only
