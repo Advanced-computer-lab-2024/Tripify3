@@ -21,3 +21,14 @@ export const getAllTags = async () => {
 export const markItineraryInappropriate = async (id, data) => {
   return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
 };
+
+export const getAllActivities = async (userId) => {
+  return await axios.get(`${API_URL}/activity/get`);
+};
+
+export const getAllPlaces = async (userId) => {
+  return await axios.get(`${API_URL}/places/get`);
+};
+
+
+getAllActivities
