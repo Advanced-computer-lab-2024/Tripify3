@@ -24,11 +24,11 @@ export const markItineraryInappropriate = async (id, data) => {
 
 export const getAllActivities = async (userId) => {
   return await axios.get(`${API_URL}/activity/get`);
-};
+};  
 
 export const getAllPlaces = async (userId) => {
   return await axios.get(`${API_URL}/places/get`);
 };
 
 
-getAllActivities
+

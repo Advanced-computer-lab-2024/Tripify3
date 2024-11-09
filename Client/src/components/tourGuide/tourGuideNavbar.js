@@ -65,20 +65,38 @@ const TourGuideNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
-      // Proceed with the account deletion if no upcoming itineraries are found
-      const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
-
-      if (response.status === 200) {
+      // Step 1: Check for upcoming itineraries
+      const checkResponse = await axios.get(`http://localhost:8000/itineraries/check-upcoming/${userId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (checkResponse.status === 200 && checkResponse.data.hasUpcoming) {
+        // If upcoming itineraries exist, alert the user and prevent deletion
+        alert('Cannot delete account. You have upcoming itineraries.');
+        return; // Exit the function early
+      }
+  
+      // Step 2: Proceed with account deletion if no upcoming itineraries
+      const deleteResponse = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (deleteResponse.status === 200) {
         setDeleteDialogOpen(false); // Close the delete confirmation dialog
         navigate("/goodbye"); // Redirect after account deletion
       } else {
-        alert(`Failed to delete account: ${response.data.message}`);
+        alert(`Failed to delete account: ${deleteResponse.data.message}`);
       }
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("An unexpected error occurred. Please try again later.");
     }
   };
+  
 
   const confirmLogout = () => {
     // Add logout logic here
