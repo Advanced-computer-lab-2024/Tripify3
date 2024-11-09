@@ -1,6 +1,8 @@
 import seller from "../../models/seller.js"; // Adjust the path as necessary
 import product from "../../models/product.js"; // Adjust the path as necessary
 import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
+import mongoose from 'mongoose';
+
 
 import { fileURLToPath } from "url";
 import path from "path";
@@ -945,5 +947,44 @@ export const SearchProductById = async (req, res) => {
     return res.status(200).json(product2);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const deleteSellerAccount = async (req, res) => {
+  try {
+    const sellerId = req.params.id; // Get the seller ID from request parameters
+
+    // Ensure the seller ID is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+      return res.status(400).json({ success: false, message: 'Invalid seller ID' });
+    }
+
+    // Log the ID and proceed to delete the seller
+    console.log('Attempting to delete seller:', sellerId);
+
+    // Proceed to delete the seller
+    const deletedSeller = await seller.findByIdAndDelete(sellerId);
+
+    // Check if the seller was found and deleted
+    if (deletedSeller) {
+      return res.status(200).json({
+        success: true,
+        message: 'Seller account deleted successfully.'
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'Seller not found.'
+      });
+    }
+  } catch (error) {
+    // Catch any unexpected errors
+    console.error('Error details:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while trying to delete the seller account.',
+      error: error.message // Include the error message for debugging purposes
+    });
   }
 };

@@ -80,15 +80,6 @@ const TourGuideNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
-      // Check for upcoming itineraries for the user (tour guide)
-      const itineraryResponse = await axios.get(`http://localhost:8000/itineraries/check-upcoming/${userId}`);
-      const { hasUpcoming } = itineraryResponse.data;
-  
-      if (hasUpcoming) {
-        alert('You have upcoming itineraries and cannot delete your account.');
-        return;
-      }
-  
       // Proceed with the account deletion if no upcoming itineraries are found
       const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
   

@@ -30,10 +30,13 @@ import {
   getSalesHistory,
   searchaProduct,
   SearchProductById,
+  deleteSellerAccount
 } from "../controllers/seller/seller.controller.js";
 const router = express.Router();
 //search for a seller by username
 router.get("/access/seller/getSellerByUserName", getSellerByUserName);
+
+router.delete("/seller/delete/:id" , deleteSellerAccount);
 
 //search for a seller
 router.get("/access/seller/findSeller", findSeller);

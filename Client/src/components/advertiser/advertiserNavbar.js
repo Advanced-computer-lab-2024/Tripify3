@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
-import { clearUser } from '../../utils/authUtils.js';
+import { clearUser , userId } from '../../utils/authUtils.js';
 import {
   AccountCircle,
   ShoppingCart,
@@ -23,6 +23,8 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem"; // Import the
 import { useNavigate, useLocation } from "react-router-dom";
 
 const AdvertiserNavbar = () => {
+  const userId = getUserId();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -51,26 +53,25 @@ const AdvertiserNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
-      // API call to delete the user account
-      const response = await fetch(`http://localhost:8000/users/delete/${userId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        // Handle successful deletion
-        //alert('Account successfully deleted.');
+      // Proceed with the account deletion
+      const response = await axios.delete(`http://localhost:8000/advertiser/delete/${userId}`);
+  
+      if (response.status === 200) {
+        alert('Your account has been successfully deleted.');
         setDeleteDialogOpen(false); // Close the delete confirmation dialog
-        navigate("/goodbye"); // Redirect after account deletion
+        navigate('/goodbye'); // Redirect after account deletion
       } else {
-        // Handle errors
-        const errorData = await response.json();
-        alert(`Failed to delete account: ${errorData.message}`);
+        alert(`Failed to delete account: ${response.data.message}`);
       }
     } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("An unexpected error occurred. Please try again later.");
+      console.error('Error deleting account:', error);
+  
+      // Display error message based on response or a generic message
+      const errorMessage = error.response?.data?.message || 'An unexpected error occurred. Please try again later.';
+      alert(errorMessage);
     }
   };
+  
 
   const confirmLogout = () => {
     // Add logout logic here

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
-import { clearUser } from '../../utils/authUtils.js';
+import { getUserId, clearUser } from "../../utils/authUtils.js";
+
 import {
   AccountCircle,
   ShoppingCart,
@@ -25,6 +26,8 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem"; // Import the
 import { useNavigate, useLocation } from "react-router-dom";
 
 const SellerNavbar = () => {
+  const userId = getUserId();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -54,19 +57,27 @@ const SellerNavbar = () => {
   const confirmDeleteAccount = async () => {
     try {
       // API call to delete the user account
-      const response = await fetch(`http://localhost:8000/users/delete/${userId}`, {
+      const response = await fetch(`http://localhost:8000/seller/delete/${userId}`, {
         method: "DELETE",
       });
-
+  
       if (response.ok) {
         // Handle successful deletion
-        //alert('Account successfully deleted.');
+        // Optionally show a confirmation alert before redirect
         setDeleteDialogOpen(false); // Close the delete confirmation dialog
         navigate("/goodbye"); // Redirect after account deletion
       } else {
-        // Handle errors
+        // Handle errors (with specific HTTP status codes)
         const errorData = await response.json();
-        alert(`Failed to delete account: ${errorData.message}`);
+        if (response.status === 400) {
+          alert(`Bad Request: ${errorData.message}`);
+        } else if (response.status === 404) {
+          alert(`Not Found: ${errorData.message}`);
+        } else if (response.status === 500) {
+          alert(`Server Error: ${errorData.message}`);
+        } else {
+          alert(`Failed to delete account: ${errorData.message}`);
+        }
       }
     } catch (error) {
       console.error("Error deleting account:", error);

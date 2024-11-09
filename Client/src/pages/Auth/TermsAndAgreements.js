@@ -45,7 +45,7 @@ const TermsAndAgreements = () => {
             navigate("/tourist/homepage");
             break;
           case "Seller":
-            navigate("/seller/seller");
+            navigate("/seller/homepage");
             break;
           case "Admin":
             navigate("/admin/users");
