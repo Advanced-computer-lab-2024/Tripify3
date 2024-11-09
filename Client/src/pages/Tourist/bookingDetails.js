@@ -497,7 +497,7 @@ const BookingDetails = () => {
           </Box>
 
           {/* Right: Comments & Tour Guide */}
-          <Box sx={{ flex: 1, maxWidth: "600px" }}>
+          <Box sx={{ flex: 1, maxWidth: "600px", }}>
             {/* Tour Guide Profile */}
             <Card sx={{ mt: 7, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
               <CardContent>
@@ -507,7 +507,7 @@ const BookingDetails = () => {
                 </Typography>
 
                 {/* Comments Container */}
-                <Box sx={{ maxHeight: 900, overflowY: "auto" }}>
+                <Box sx={{ maxHeight: 400, overflowY: "auto" }}>
                   {review.reviews.map((review) => (
                     <Paper
                       key={review._id}

@@ -8,8 +8,6 @@ const bookingSchema = new mongoose.Schema({
   }, // Reference to the tourist booking the trip
 
   date: { type: Date, default: Date.now },
-  price: { type: Number, required: true }, // Total price for the booking
-
   paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Unpaid" },
   details: {
     type: String,
@@ -23,7 +21,8 @@ const bookingSchema = new mongoose.Schema({
     required: true,
   },
   itinerary: { type: mongoose.Schema.Types.ObjectId, ref: "Itinerary" },
-  type: { type: String, enum: ["Activity", "Itinerary", "Hotel", "Flight"], required: true },
+  place: { type: mongoose.Schema.Types.ObjectId, ref: "Place" },
+  type: { type: String, enum: ["Activity", "Itinerary", "Hotel", "Flight", "Place"], required: true },
   activity: { type: mongoose.Schema.Types.ObjectId, ref: "Activity" },
 });
 

@@ -16,10 +16,11 @@ import {
 } from "@mui/icons-material";
 import { getActivityById } from "../../services/tourist";
 import axios from "axios";
-import { getUserId } from "../../utils/authUtils";
+import { getUserId, getUserType } from "../../utils/authUtils";
 
 const ActivityDetails = () => {
   const { id } = useParams();
+  const userType = getUserType();
   const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -167,7 +168,6 @@ const ActivityDetails = () => {
                       }}
                     />
                   ))}
-                 
                 </Box>
               </Grid>
 
@@ -183,20 +183,23 @@ const ActivityDetails = () => {
           </CardContent>
 
           <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px" }}>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
-                <RemoveIcon />
-              </IconButton>
-              <Typography variant="h6" sx={{ mx: 1 }}>
-                {ticketCount}
-              </Typography>
-              <IconButton onClick={handleIncrease}>
-                <AddIcon />
-              </IconButton>
-              <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500, ml: 2 }}>
-                Book Activity
-              </Button>
-            </Box>
+            {userType === "Tourist" && (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
+                  <RemoveIcon />
+                </IconButton>
+                <Typography variant="h6" sx={{ mx: 1 }}>
+                  {ticketCount}
+                </Typography>
+                <IconButton onClick={handleIncrease}>
+                  <AddIcon />
+                </IconButton>
+                <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500, ml: 2 }}>
+                  Book Activity
+                </Button>
+              </Box>
+            )}
+
             <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem", fontWeight: 500 }}>
               Share
             </Button>

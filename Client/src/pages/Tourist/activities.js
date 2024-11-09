@@ -230,7 +230,7 @@ const Activities = () => {
                
                   <Button
                     component={Link}
-                    to={`/tourist/activity/${activity._id}`}
+                    to={`/activity/${activity._id}`}
                     variant="contained"
                     sx={{ mt: 2 }}
                   >

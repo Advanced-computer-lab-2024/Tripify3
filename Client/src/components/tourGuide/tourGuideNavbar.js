@@ -2,27 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
   Favorite,
   Home,
-    Event,
+  Event,
   DirectionsRun,
   ListAlt,
   RoomService,
@@ -32,7 +18,7 @@ import {
   MonetizationOn, // Added icon for Payments
   CardGiftcard, // Added icon for Gift Cards
 } from "@mui/icons-material";
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import Report from "@mui/icons-material/Report"; // Add this import for the complaint icon
 import Hotel from "@mui/icons-material/Hotel"; // For Hotels
 import Flight from "@mui/icons-material/Flight"; // For Flights
@@ -41,12 +27,11 @@ import LockOpen from "@mui/icons-material/LockOpen"; // For Forget Password
 import Delete from "@mui/icons-material/Delete"; // For Delete Account
 import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
 
-
 import { useNavigate, useLocation } from "react-router-dom";
 
 const TourGuideNavbar = () => {
   const userId = getUserId();
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -82,22 +67,18 @@ const TourGuideNavbar = () => {
     try {
       // Proceed with the account deletion if no upcoming itineraries are found
       const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
-  
+
       if (response.status === 200) {
         setDeleteDialogOpen(false); // Close the delete confirmation dialog
-        navigate('/goodbye'); // Redirect after account deletion
+        navigate("/goodbye"); // Redirect after account deletion
       } else {
         alert(`Failed to delete account: ${response.data.message}`);
       }
     } catch (error) {
-      console.error('Error deleting account:', error);
-      alert('An unexpected error occurred. Please try again later.');
+      console.error("Error deleting account:", error);
+      alert("An unexpected error occurred. Please try again later.");
     }
   };
-  
-
-  
-  
 
   const confirmLogout = () => {
     // Add logout logic here
@@ -106,17 +87,7 @@ const TourGuideNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("tour-guide/profile");
-  const handleHomeClick = () => navigate("/tourist/homepage");
-  const handleCartClick = () => navigate("/tourist/cart");
-  const handleOrdersClick = () => navigate("/tourist/orders");
-  const handlePaymentsClick = () => navigate("/tourist/payments");
-  const handleBookingsClick = () => navigate("/tourist/bookings");
-  const handleWishlistClick = () => navigate("/tourist/wishlist");
-  const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
-
-  const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
-  const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
+  const handleProfileClick = () => navigate("/tour-guide/profile");
 
   return (
     <>
@@ -128,69 +99,41 @@ const TourGuideNavbar = () => {
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            {/* Home Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
-              <Home />
-              <Typography variant="body1" sx={{ ml: 1 }}>Home</Typography>
-            </IconButton>
-
             {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
-              <Typography variant="body1" sx={{ ml: 1 }}>Account</Typography>
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Account
+              </Typography>
             </IconButton>
             <Menu anchorEl={accountAnchorEl} open={Boolean(accountAnchorEl)} onClose={handleAccountClose}>
               <MenuItem onClick={handleProfileClick}>
                 <AccountCircle sx={{ mr: 1 }} /> My Profile
               </MenuItem>
-              <MenuItem onClick={handleOrdersClick}>
-                <Assignment sx={{ mr: 1 }} /> Orders
-              </MenuItem>
-              <MenuItem onClick={handlePaymentsClick}>
-                <MonetizationOn sx={{ mr: 1 }} /> Payments
-              </MenuItem>
-              <MenuItem onClick={handleBookingsClick}>
-                <ListAlt sx={{ mr: 1 }} /> Bookings
-              </MenuItem>
-              <MenuItem onClick={handleWishlistClick}>
-                <Favorite sx={{ mr: 1 }} /> Wishlist
-              </MenuItem>
-              <MenuItem onClick={handleGiftCardsClick}>
-                <CardGiftcard sx={{ mr: 1 }} /> Gift Cards
-              </MenuItem>
             </Menu>
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />
-              <Typography variant="body1" sx={{ ml: 1 }}>Settings</Typography>
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Settings
+              </Typography>
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
-  
-  <MenuItem onClick={() => navigate("/tourist/change-password")}>
-    <LockOpen sx={{ mr: 1 }} />
-    Change Password
-  </MenuItem>
-  <MenuItem onClick={openLogoutDialog}>
-    <ExitToApp sx={{ mr: 1 }} />
-    Logout
-  </MenuItem>
-  <MenuItem onClick={openDeleteDialog} sx={{ color: "red" }}>
-    <Delete sx={{ mr: 1 }} />
-    Delete Account
-  </MenuItem>
-</Menu>
-    {/* Help Icon with Dropdown */}
-    <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
-              <HelpOutline />
-              <Typography variant="body1" sx={{ ml: 1 }}>Help</Typography>
-            </IconButton>
-            <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
-  <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
-    <Report sx={{ mr: 1 }} /> {/* Add this line for the complaint icon */}
-    File a Complaint
-  </MenuItem>
-</Menu>
-
+              <MenuItem onClick={() => navigate("/tour-guide/change-password")}>
+                <LockOpen sx={{ mr: 1 }} />
+                Change Password
+              </MenuItem>
+              <MenuItem onClick={openLogoutDialog}>
+                <ExitToApp sx={{ mr: 1 }} />
+                Logout
+              </MenuItem>
+              <MenuItem onClick={openDeleteDialog} sx={{ color: "red" }}>
+                <Delete sx={{ mr: 1 }} />
+                Delete Account
+              </MenuItem>
+            </Menu>
+            {/* Help Icon with Dropdown */}
+           
           </Box>
         </Toolbar>
       </AppBar>
@@ -199,13 +142,15 @@ const TourGuideNavbar = () => {
       <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
         <DialogTitle>Delete Account</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your account? This action cannot be undone.
-          </DialogContentText>
+          <DialogContentText>Are you sure you want to delete your account? This action cannot be undone.</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeDeleteDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>Cancel</Button>
-          <Button onClick={confirmDeleteAccount} color="error" variant="contained">Delete</Button>
+          <Button onClick={closeDeleteDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>
+            Cancel
+          </Button>
+          <Button onClick={confirmDeleteAccount} color="error" variant="contained">
+            Delete
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -216,11 +161,14 @@ const TourGuideNavbar = () => {
           <DialogContentText>Are you sure you want to logout?</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeLogoutDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>Cancel</Button>
-          <Button onClick={confirmLogout} color="primary" variant="contained">Logout</Button>
+          <Button onClick={closeLogoutDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>
+            Cancel
+          </Button>
+          <Button onClick={confirmLogout} color="primary" variant="contained">
+            Logout
+          </Button>
         </DialogActions>
       </Dialog>
-   
     </>
   );
 };

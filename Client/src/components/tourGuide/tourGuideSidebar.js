@@ -7,13 +7,7 @@ const TourGuideSidebar = () => {
   const [showServices, setShowServices] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
 
-  const toggleServices = () => {
-    setShowServices((prev) => !prev);
-  };
 
-  const toggleAnalytics = () => {
-    setShowAnalytics((prev) => !prev);
-  };
 
   return (
     <Box

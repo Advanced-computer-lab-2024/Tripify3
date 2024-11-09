@@ -226,7 +226,7 @@ const HistoricalPlaces = () => {
                   </Typography>
                     <Button
                         component={Link}
-                        to={`/tourist/placedetails/${place._id}`}
+                        to={`/place/${place._id}`}
                         variant="contained"
                         sx={{ mt: 2 }}
                       >

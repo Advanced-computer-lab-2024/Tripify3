@@ -2,15 +2,15 @@ import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 import Booking from "../../models/booking.js";
 import User from "../../models/user.js";
+import Place from "../../models/place.js";
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
 
   console.log(req.body);
-  
 
   try {
-    let item;    
+    let item;
     // Use a switch statement to find the correct model based on the type
     switch (type) {
       case "Activity":
@@ -18,6 +18,9 @@ export const createBooking = async (req, res) => {
         break;
       case "Itinerary":
         item = await Itinerary.findById(itemId);
+        break;
+      case "Place":
+        item = await Place.findById(itemId);
         break;
       case "Hotel":
         item = null;
@@ -30,8 +33,8 @@ export const createBooking = async (req, res) => {
     }
 
     // Check if the item was found
-    
-    if (!item && item !== 'Hotel' && item !== 'Flight') {
+
+    if (!item && item !== "Hotel" && item !== "Flight") {
       return res.status(404).json({ message: `${type} not found` });
     }
 
@@ -41,21 +44,23 @@ export const createBooking = async (req, res) => {
       price,
       tickets,
       type,
-      details
+      details,
     });
-    if(type === "Itinerary") {
+    if (type === "Itinerary") {
       booking.itinerary = itemId;
     }
-    if(type === "Trip") {
+    if (type === "Trip") {
       booking.trip = itemId;
     }
-    if(type === "Activity") {
+    if (type === "Activity") {
       booking.activity = itemId;
+    }
+    if (type === "Place") {
+      booking.place = itemId;
     }
     await booking.save();
 
     console.log(booking);
-    
 
     // Add the booking ID to the bookings array in the associated model
 
@@ -67,7 +72,6 @@ export const createBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const cancelBooking = async (req, res) => {
   try {
@@ -121,11 +125,7 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-
-
-
 export const getAllBookings = async (req, res) => {
-
   try {
     const { touristId } = req.params;
 
@@ -171,36 +171,34 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-
-
 export const getTourGuideProfile = async (req, res) => {
   const { tourGuideId, touristId } = req.params;
 
   try {
-      // Fetch the tour guide by ID
-      const tourGuide = await User.findById(tourGuideId);
+    // Fetch the tour guide by ID
+    const tourGuide = await User.findById(tourGuideId);
 
-      if (!tourGuide) {
-          return res.status(404).json({ message: "Tour Guide not found" });
-      }
+    if (!tourGuide) {
+      return res.status(404).json({ message: "Tour Guide not found" });
+    }
 
-      // Fetch the tourist by ID to check following status
-      const tourist = await User.findById(touristId);
+    // Fetch the tourist by ID to check following status
+    const tourist = await User.findById(touristId);
 
-      if (!tourist) {
-          return res.status(404).json({ message: "Tourist not found" });
-      }
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
 
-      // Check if the tour guide is in the tourist's following list
-      const isFollowing = tourist.following.includes(tourGuideId);
+    // Check if the tour guide is in the tourist's following list
+    const isFollowing = tourist.following.includes(tourGuideId);
 
-      // Respond with the tour guide's details and following status
-      res.status(200).json({
-          tourGuide,
-          isFollowing
-      });
+    // Respond with the tour guide's details and following status
+    res.status(200).json({
+      tourGuide,
+      isFollowing,
+    });
   } catch (error) {
-      console.error("Error fetching user details:", error);
-      res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

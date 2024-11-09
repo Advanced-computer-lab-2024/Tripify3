@@ -144,9 +144,9 @@ const App = () => {
         <Route path="/tourist/booking-details/:itemId/:type/:view" element={getLayoutForRole(userRole, <BookingDetails />)} />
         {/* Shared Routes */}
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
-        <Route path={`${basePath}/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
+        <Route path={`/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
         <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} />
-        <Route path={`${basePath}/placedetails/:id`} element={getLayoutForRole(userRole, <Placedetails />)} />
+        <Route path={`/place/:id`} element={getLayoutForRole(userRole, <Placedetails />)} />
         <Route path={`${basePath}/pasttourguides/:id`} element={getLayoutForRole(userRole, <FollowedTourGuides />)} />
         <Route path={`${basePath}/file-complaint`} element={getLayoutForRole(userRole, <ComplaintForm />)} />
         <Route path={`${basePath}/change-password`} element={getLayoutForRole(userRole, <ChangePassword />)} />
