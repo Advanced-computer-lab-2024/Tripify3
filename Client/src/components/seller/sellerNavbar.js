@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+import axios from "axios";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 
+import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
@@ -18,10 +19,13 @@ import {
   CardGiftcard, // Added icon for Gift Cards
 } from "@mui/icons-material";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import Report from "@mui/icons-material/Report"; // Add this import for the complaint icon
+import Hotel from "@mui/icons-material/Hotel"; // For Hotels
+import Flight from "@mui/icons-material/Flight"; // For Flights
+import Assignment from "@mui/icons-material/Assignment"; // Add this import for the new icon
 import LockOpen from "@mui/icons-material/LockOpen"; // For Forget Password
 import Delete from "@mui/icons-material/Delete"; // For Delete Account
 import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
-import ReportProblemIcon from "@mui/icons-material/ReportProblem"; // Import the complaint icon
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -31,12 +35,17 @@ const SellerNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null); // New state for Account dropdown
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-
+  const handleServicesClick = (event) => setAnchorEl(event.currentTarget);
+  const handleServicesClose = () => setAnchorEl(null);
+  const handleHelpClick = (event) => setHelpAnchorEl(event.currentTarget);
+  const handleHelpClose = () => setHelpAnchorEl(null);
   const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
   const handleSettingsClose = () => setSettingsAnchorEl(null);
   const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget); // New handler for Account dropdown
@@ -56,28 +65,14 @@ const SellerNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
-      // API call to delete the user account
-      const response = await fetch(`http://localhost:8000/seller/delete/${userId}`, {
-        method: "DELETE",
-      });
-  
-      if (response.ok) {
-        // Handle successful deletion
-        // Optionally show a confirmation alert before redirect
+      // Proceed with the account deletion if no upcoming itineraries are found
+      const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
+
+      if (response.status === 200) {
         setDeleteDialogOpen(false); // Close the delete confirmation dialog
         navigate("/goodbye"); // Redirect after account deletion
       } else {
-        // Handle errors (with specific HTTP status codes)
-        const errorData = await response.json();
-        if (response.status === 400) {
-          alert(`Bad Request: ${errorData.message}`);
-        } else if (response.status === 404) {
-          alert(`Not Found: ${errorData.message}`);
-        } else if (response.status === 500) {
-          alert(`Server Error: ${errorData.message}`);
-        } else {
-          alert(`Failed to delete account: ${errorData.message}`);
-        }
+        alert(`Failed to delete account: ${response.data.message}`);
       }
     } catch (error) {
       console.error("Error deleting account:", error);
@@ -89,11 +84,10 @@ const SellerNavbar = () => {
     // Add logout logic here
     setLogoutDialogOpen(false);
     clearUser();
-    navigate("/login"); // Redirect to login page after logout
+    navigate("/"); // Redirect to login page after logout
   };
 
   const handleProfileClick = () => navigate("/seller/profile");
-  const handleHomeClick = () => navigate("/tourist/homepage");
 
   return (
     <>
@@ -105,14 +99,6 @@ const SellerNavbar = () => {
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            {/* Home Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
-              <Home />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Home
-              </Typography>
-            </IconButton>
-
             {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
@@ -125,7 +111,6 @@ const SellerNavbar = () => {
                 <AccountCircle sx={{ mr: 1 }} /> My Profile
               </MenuItem>
             </Menu>
-
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />
@@ -134,7 +119,7 @@ const SellerNavbar = () => {
               </Typography>
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
-              <MenuItem onClick={() => navigate("/tourist/change-password")}>
+              <MenuItem onClick={() => navigate("/seller/change-password")}>
                 <LockOpen sx={{ mr: 1 }} />
                 Change Password
               </MenuItem>
@@ -147,7 +132,7 @@ const SellerNavbar = () => {
                 Delete Account
               </MenuItem>
             </Menu>
-       
+            {/* Help Icon with Dropdown */}
           </Box>
         </Toolbar>
       </AppBar>

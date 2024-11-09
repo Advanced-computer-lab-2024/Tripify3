@@ -19,11 +19,10 @@ import TouristProfile from "./pages/tourist/profile.js";
 import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
 import SearchHotels from "./pages/tourist/searchHotels.js";
-import LoadHotels from "./pages/tourist/loadHotels.js";
-import ViewSellerprofile from "./pages/seller/viewSellerProfile.js";
 import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import PaymentWrapper from "./pages/tourist/payment.js";
+import GovernorHistoricalPlaceDetails from "./pages/tourismGovernor/placeDetails.js";
 
 import ActiveItineraries from "./pages/tourist/itineraries.js";
 import Itineraries from "./pages/admin/itineraries.js";
@@ -64,6 +63,7 @@ import Tags from "./pages/admin/tags.js";
 import loadHotels from "./pages/tourist/loadHotels.js";
 import ProductPage from "./pages/seller/new/productPage.js";
 import Bookings from "./pages/tourist/bookings.js";
+import SellerProfile from "./pages/seller/profile.js";
 // Mock function to get the current user role
 const getUserRole = () => {
   return getUserType(); // can be "admin", "seller", etc.
@@ -125,6 +125,7 @@ const App = () => {
         {/* Tourism Governor Routes */}
         <Route path={`/tourism-governor`} element={getLayoutForRole(userRole, <PlacesList />)} />
         <Route path={`/tourism-governor/historical-places`} element={getLayoutForRole(userRole, <GovernorHistoricalPlaces />)} />
+        <Route path={`/tourism-governor/historical-places/details/:id`} element={getLayoutForRole(userRole, <GovernorHistoricalPlaceDetails />)} />
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
         <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
         <Route path={`/tourism-governor/tags`} element={getLayoutForRole(userRole, <GovernorTags />)} />
@@ -162,7 +163,7 @@ const App = () => {
         <Route path={`${basePath}/activities`} element={<AdvertiserActivities />} />
         {/* Seller Routes */}
         <Route path={`${basePath}/homepage`} element={getLayoutForRole(userRole, <ProductsLists />)} />
-        <Route path={`${basePath}/:id`} element={<ViewSellerprofile />} />
+        <Route path={`${basePath}/profile`}  element={getLayoutForRole(userRole, <SellerProfile />)} />
         <Route path={"product/:productId"} element={<ProductPage />} />
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={getLayoutForRole(userRole, <Chatbot />)} />

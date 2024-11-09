@@ -92,6 +92,68 @@ const deleteFile = (filePath) => {
   });
 };
 
+
+export const deleteProfilePicture = async (req, res) => {
+  try {
+    // Get the userId from the request
+    const userId = req.body.userId ;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    // Find the user and determine the user type
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const userType = user.type; // Assuming 'type' field exists in User model
+    let userModel;
+
+    // Set the user model based on type
+    switch (userType) {
+      case "Seller":
+        userModel = Seller;
+        break;
+      case "Advertiser":
+        userModel = Advertiser;
+        break;
+      case "Tour Guide":
+        userModel = TourGuide;
+        break;
+      case "Tourist":
+        userModel = Tourist;
+        break;
+      default:
+        return res.status(400).json({ message: "Unsupported user type." });
+    }
+
+    // Find the user's profile picture data
+    const existingUser = await userModel.findById(userId).select("profilePicture").exec();
+    const existingProfilePicture = existingUser?.profilePicture;
+
+    // If a profile picture exists, delete the file and remove the database record
+    if (existingProfilePicture && existingProfilePicture.filepath) {
+
+      console.log(existingProfilePicture.filepath);
+      
+  
+        await deleteFile(existingProfilePicture.filepath);
+      
+
+      // Remove profile picture data from the database
+      await userModel.findByIdAndUpdate(userId, { profilePicture: null }, { new: true, useFindAndModify: false });
+
+      return res.status(200).json({ message: "Profile picture deleted successfully." });
+    } else {
+      return res.status(404).json({ message: "No profile picture found to delete." });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting profile picture", error: err.message });
+  }
+};
+
 export const uploadProfilePicture = async (req, res) => {
   try {
     // Ensure userId is present

@@ -1,7 +1,7 @@
 import express from "express";
 import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,userAcceptTerms, userDeleteAccount, getProfile} from "../controllers/user/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
-import { uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture ,getUserDetails } from "../controllers/user/file.controller.js";
+import { deleteProfilePicture, uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture ,getUserDetails } from "../controllers/user/file.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -20,6 +20,7 @@ router.get('/user/files/:userId', getUploadedFiles);
 router.get('/user/profile/picture/:userId', getProfilePicture);
 
 router.put('/user/accept-terms/:id', userAcceptTerms);
+router.delete("/user/remove/picture", deleteProfilePicture);
 
 
 router.post("/user/resetPassword", resetPassword); // Reset password after verification

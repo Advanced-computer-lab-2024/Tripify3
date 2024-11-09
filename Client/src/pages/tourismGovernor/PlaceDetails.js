@@ -1,122 +1,251 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, Typography, Button, CircularProgress, Grid, Card, CardContent, CardActions, IconButton, TextField, Select, MenuItem, FormControl, InputLabel, InputAdornment, Divider } from "@mui/material";
+import { LocationOn as LocationOnIcon, Edit as EditIcon } from "@mui/icons-material";
 import axios from "axios";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { getUserId, getUserType } from "../../utils/authUtils";
 
-function PlaceDetails() {
+const GovernorHistoricalPlaceDetails = () => {
   const { id } = useParams();
+  const userType = getUserType();
   const navigate = useNavigate();
   const [place, setPlace] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedPlace, setEditedPlace] = useState({
+    name: "",
+    description: "",
+    location: { address: "", city: "", country: "" },
+    openingHours: [],
+    tags: [],
+    ticketPrices: { foreigner: 0, native: 0, student: 0 }
+  });
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_API_BASE_URL}/governor/place/get/${id}`)
-      .then((response) => {
-        // Adjust to access the right place from the response structure
-        const places = response.data.data.place;
-        // const placeDetails = places.find(place => place._id === id); // find the specific place by id
-        setPlace(places);
-        console.log(places);
-      })
-      .catch((error) => {
-        console.error("Error fetching place details:", error);
-      });
+    const fetchPlace = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/governor/get/places/${id}`);
+        setPlace(response.data.place[0]);
+        setEditedPlace(response.data.place[0]);
+        setTags(await fetchTags());
+        setLoading(false);
+      } catch (error) {
+        setError("Error fetching place details");
+        setLoading(false);
+      }
+    };
+    fetchPlace();
   }, [id]);
 
-  const deletefun = (id) => {
-    axios
-      .delete(`${process.env.REACT_APP_API_BASE_URL}/governor/${id}`)
-      .then((response) => {
-        console.log(response.data);
-        navigate("/governor/placeslist");
-      })
-      .catch((e) => {
-        console.error("Error deleting place:", e);
-      });
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/tag/get");
+      return response.data.tags;
+    } catch (error) {
+      console.error("Error fetching tags", error);
+      return [];
+    }
   };
 
-  if (!place) return <div>Loading...</div>;
+  const handleTagSelect = (tagId) => {
+    setSelectedTags(prevSelectedTags =>
+      prevSelectedTags.includes(tagId)
+        ? prevSelectedTags.filter(tag => tag !== tagId)
+        : [...prevSelectedTags, tagId]
+    );
+  };
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
+  const handleFieldChange = (e, field) => {
+    const { name, value } = e.target;
+    setEditedPlace(prevPlace => ({
+      ...prevPlace,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmitEdit = async () => {
+    const updatedPlace = { ...editedPlace, tags: selectedTags };
+    try {
+      const response = await axios.put(`http://localhost:8000/governor/get/places/${id}`, updatedPlace);
+      alert(response.data.message);
+      setPlace(updatedPlace);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating place details", error);
+    }
+  };
+
+  const BookPlace = async () => {
+    const tourist = getUserId();
+    const booking = { tourist, price: totalPrice, type: "Place", itemId: place._id, tickets: ticketCount };
+
+    try {
+      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
+      alert(response.data.message);
+    } catch (error) {
+      console.error("Error sending booking:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      {/* Place Name */}
-      <h2>{place.name}</h2>
-      <p><strong>Type:</strong> {place.type}</p>
+    <Box sx={{ p: 3, backgroundColor: "#F5F7FA", minHeight: "100vh" }}>
+      <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
+        Go Back
+      </Button>
 
-      {/* Images */}
-      <div>
-        {place.pictures.map((picture, index) => (
-          <img
-            key={index}
-            src={picture}
-            alt={place.name}
-            style={{
-              width: "100%",
-              height: "300px",
-              objectFit: "cover",
-              marginBottom: "20px",
-            }}
-          />
-        ))}
-      </div>
+      <Grid container justifyContent="center" sx={{ mt: 5 }}>
+        <Grid item xs={12} md={8}>
+          <Card sx={{ width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <CardContent>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+                <IconButton onClick={handleEditToggle} sx={{ color: "#5A67D8" }}>
+                  <EditIcon />
+                </IconButton>
+              </Box>
 
-      {/* Description */}
-      <p>{place.description}</p>
+              <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
+                {isEditing ? (
+                  <TextField value={editedPlace.name} name="name" onChange={(e) => handleFieldChange(e, "name")} variant="outlined" fullWidth sx={{ mb: 2 }} />
+                ) : (
+                  place.name
+                )}
+              </Typography>
 
-      {/* Ticket Prices */}
-      <h3>Ticket Prices:</h3>
-      <ul>
-        <li>Foreigner: ${place.ticketPrices.foreigner}</li>
-        <li>Native: ${place.ticketPrices.native}</li>
-        <li>Student: ${place.ticketPrices.student}</li>
-      </ul>
+              {isEditing ? (
+                <TextField
+                  value={editedPlace.description}
+                  name="description"
+                  onChange={(e) => handleFieldChange(e, "description")}
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  sx={{ mb: 2 }}
+                />
+              ) : (
+                <Typography variant="body1" color="#4A5568" sx={{ mb: 2 }}>
+                  {place.description}
+                </Typography>
+              )}
 
-      {/* Location */}
-      <h3>Location:</h3>
-      <p>
-        <strong>Address:</strong> {place.location.address}
-        <br />
-        <strong>City:</strong> {place.location.city}
-        <br />
-        <strong>Country:</strong> {place.location.country}
-      </p>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <LocationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                    {isEditing ? (
+                      <>
+                        <TextField
+                          value={editedPlace.location.address}
+                          name="address"
+                          onChange={(e) => handleFieldChange(e, "address")}
+                          variant="outlined"
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                        <TextField
+                          value={editedPlace.location.city}
+                          name="city"
+                          onChange={(e) => handleFieldChange(e, "city")}
+                          variant="outlined"
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                        <TextField
+                          value={editedPlace.location.country}
+                          name="country"
+                          onChange={(e) => handleFieldChange(e, "country")}
+                          variant="outlined"
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                      </>
+                    ) : (
+                      <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
+                        {place.location.address}, {place.location.city}, {place.location.country}
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
 
-      {/* Opening Hours */}
-      <h3>Opening Hours:</h3>
-      <ul>
-        {place.openingHours.length > 0 ? (
-          place.openingHours.map((hour) => (
-            <li key={hour._id}>
-              {hour.day}: {hour.from} - {hour.to}
-            </li>
-          ))
-        ) : (
-          <li>Closed</li>
-        )}
-      </ul>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
+                    Ticket Prices:
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {["foreigner", "native", "student"].map((type) => (
+                      <Grid item xs={4} key={type}>
+                        <TextField
+                          label={`${type.charAt(0).toUpperCase() + type.slice(1)} Price`}
+                          value={editedPlace.ticketPrices[type]}
+                          onChange={(e) => handleFieldChange(e, "ticketPrices")}
+                          name={`ticketPrices[${type}]`}
+                          type="number"
+                          fullWidth
+                          sx={{ mb: 2 }}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Grid>
 
-      {/* Tags */}
-      <h3>Tags:</h3>
-      <p>
-        {place.tags.length > 0 ? (
-          place.tags.map((tags) => (
-            <span key={tags._id} style={{ marginRight: "10px", fontWeight: "bold" }}>
-              {tags.name}
-            </span>
-          ))
-        ) : (
-          <span>No tags available</span>
-        )}
-      </p>
+                <Grid item xs={12}>
+                  <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
+                    Tags:
+                  </Typography>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                    {tags.map((tag) => (
+                      <Button
+                        key={tag._id}
+                        variant={selectedTags.includes(tag._id) ? "contained" : "outlined"}
+                        onClick={() => handleTagSelect(tag._id)}
+                        sx={{
+                          color: selectedTags.includes(tag._id) ? "#fff" : "#5A67D8",
+                          backgroundColor: selectedTags.includes(tag._id) ? "#5A67D8" : "transparent",
+                        }}
+                      >
+                        {tag.name}
+                      </Button>
+                    ))}
+                  </Box>
+                </Grid>
+              </Grid>
+            </CardContent>
 
-      <Link to={`/governor/edit/${place._id}`}>
-        <button style={{ marginTop: "20px" }}>Edit Place</button>
-      </Link>
-      <Link to={`/governor`}>
-        <button style={{ marginTop: "20px" }}>All Places</button>
-      </Link>
-
-    </div>
+            <CardActions sx={{ width: "100%", justifyContent: "space-between", pt: 2 }}>
+              {isEditing ? (
+                <Button variant="contained" color="primary" onClick={handleSubmitEdit}>
+                  Save Changes
+                </Button>
+              ) : (
+                <Button variant="outlined" onClick={BookPlace}>
+                  Book This Place
+                </Button>
+              )}
+            </CardActions>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
   );
-}
+};
 
-export default PlaceDetails;
+export default GovernorHistoricalPlaceDetails;
