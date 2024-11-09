@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { clearUser } from '../../utils/authUtils.js';
 import {
   AppBar,
   Toolbar,
@@ -82,6 +83,7 @@ const TourismGovernorNavbar = () => {
   const confirmLogout = () => {
     // Add logout logic here
     setLogoutDialogOpen(false);
+    clearUser();
     navigate("/login"); // Redirect to login page after logout
   };
 

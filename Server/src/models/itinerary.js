@@ -20,6 +20,10 @@ const itinerarySchema = new mongoose.Schema({
     type: Number,
     required: true, // Ensure this is required
   },
+  rating: {
+    type: Number,
+    default: 5 // Ensure this is required
+  },
   language: {
     type: String,
     enum: ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"], // Expanded list of popular languages

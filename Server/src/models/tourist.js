@@ -61,9 +61,10 @@ const touristSchema = new mongoose.Schema({
      required: false },
 
 //added by basil 
-  currencyPreference: {
+  currency: {
     type: String,
-    enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP", "BRL", "ARS"], // Modify as needed
+    enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP",], // Modify as needed
+    default: "EGP"
   },
 
   following: [{

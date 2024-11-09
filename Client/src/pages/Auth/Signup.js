@@ -23,30 +23,20 @@ const nationalities = [
   "China",
   "Japan",
   "South Korea",
-  "Russia",
-  "South Africa",
-  "Nigeria",
-  "Kenya",
-  "Turkey",
   "Saudi Arabia",
   "United Arab Emirates",
-
-
  
   // Add more nationalities as needed
 ];
 
 const currencies = [
-  { name: "US Dollar", symbol: "$" },
-  { name: "Euro", symbol: "€" },
-  { name: "British Pound", symbol: "£" },
-  { name: "Japanese Yen", symbol: "¥" },
-  { name: "Chinese Yuan", symbol: "¥" },
-  { name: "Swiss Franc", symbol: "CHF" },
-  { name: "Canadian Dollar", symbol: "C$" },
-
+  { name: "US Dollar", symbol: "USD" },
+  { name: "Canadian Dollar", symbol: "CAD" },
+  { name: "British Pound", symbol: "GBP" },
+  { name: "Euro", symbol: "EUR" },
+  { name: "Australian Dollar", symbol: "AUD" },
+  { name: "Egyptian Pound", symbol: "EGP" },
 ];
-
 
 
 
@@ -271,8 +261,6 @@ const Signup = () => {
 
       // Step 2: After signup, call the file upload API if user is 'Tour Guide', 'Seller', or 'Advertiser'
       if (userType === "Tour Guide" || userType === "Seller" || userType === "Advertiser") {
-        console.log(selectedFiles);
-        console.log("=========================");
 
         const formData = new FormData();
         formData.append("userId", userId); // Use the userId from the signup response
@@ -400,7 +388,7 @@ const renderConditionalFields = () => {
           <InputLabel>Currency</InputLabel>
           <Select name="currency" value={formData.currency} onChange={handleInputChange}>
             {currencies.map((currency) => (
-              <MenuItem key={currency.name} value={currency.name}>
+              <MenuItem key={currency.name} value={currency.symbol}>
                 {currency.name} ({currency.symbol})
               </MenuItem>
             ))}

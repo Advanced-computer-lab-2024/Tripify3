@@ -36,7 +36,7 @@ const activitySchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    default: 0,
+    default: 5,
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,

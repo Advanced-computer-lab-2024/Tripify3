@@ -1,12 +1,12 @@
-import Activity from '../../models/activity.js';
-import Itinerary  from "../../models/itinerary.js"; // Assuming you have an Itinerary model
+import Activity from "../../models/activity.js";
+import Itinerary from "../../models/itinerary.js"; // Assuming you have an Itinerary model
 import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js";
 
 // Get all activities
 export const getActivities = async (req, res) => {
   try {
-    const activities = await Activity.find().populate('location');
+    const activities = await Activity.find().populate("location");
     res.status(200).json(activities);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -17,27 +17,25 @@ export const getActivities = async (req, res) => {
 export const getActivityById = async (req, res) => {
   try {
     // Fetch the activity by ID, with populated fields for tags, category, and location
-    const activity = await Activity.findById(req.params.id)
-      .populate({ path: 'tags', select: 'name' }) // Populate tags with their names only
-      .populate({ path: 'category', select: 'name' }) // Populate category with its name only
-      .populate('location'); // Assuming location might also be populated if needed
+    
+    
+    const activity = await Activity.findById(req.params.activityId)
+      .populate({ path: "tags", select: "name" }) // Populate tags with their names only
+      .populate({ path: "category", select: "name" }) // Populate category with its name only
+      .populate("location"); // Assuming location might also be populated if needed
 
     if (!activity) {
-      return res.status(404).json({ error: 'Activity not found' });
+      return res.status(404).json({ error: "Activity not found" });
     }
 
-    // Fetch reviews for the activity by its ID
-    const reviews = await Review.find({ activity: req.params.id })
-      .populate('tourist', 'name') // Populate tourist name (or any other fields)
-      .populate('tourGuide', 'name') // Populate tour guide name (or any other fields)
-      .select('rating comment reviewDate'); // Select only the relevant review fields
+    const reviews = await Review.find({ activity: req.params.activityId })
+    .populate("tourist", "username")
+    .select("rating comment tourist");  // Select only the fields we need
 
+  
     return res.status(200).json({
       message: "Activity found successfully",
-      data: {
-        activity,
-        reviews, // Add the reviews array to the response
-      },
+      data: {activity,reviews }// Now the reviews are nested inside the activity object
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -52,7 +50,7 @@ export const updateActivity = async (req, res) => {
       runValidators: true,
     });
     if (!activity) {
-      return res.status(404).json({ error: 'Activity not found' });
+      return res.status(404).json({ error: "Activity not found" });
     }
     res.status(200).json(activity);
   } catch (error) {
@@ -65,7 +63,7 @@ export const deleteActivity = async (req, res) => {
   try {
     const activity = await Activity.findByIdAndDelete(req.params.id);
     if (!activity) {
-      return res.status(404).json({ error: 'Activity not found' });
+      return res.status(404).json({ error: "Activity not found" });
     }
     res.status(204).send();
   } catch (error) {
@@ -78,34 +76,33 @@ export const addActivityToItinerary = async (req, res) => {
   const { name, description, category, price, rating } = req.body; // Get activity details from request body
 
   try {
-      // Find the itinerary by ID
-      const itinerary = await Itinerary.findById(id);
-      if (!itinerary) {
-          return res.status(404).json({ message: 'Itinerary not found' });
-      }
+    // Find the itinerary by ID
+    const itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
 
-      // Create a new activity object
-      const newActivity = {
-          name,
-          description,
-          category,
-          price,
-          rating,
-      };
+    // Create a new activity object
+    const newActivity = {
+      name,
+      description,
+      category,
+      price,
+      rating,
+    };
 
-      // Add the new activity to the itinerary's activities array
-      itinerary.activities.push(newActivity);
-      
-      // Save the updated itinerary
-      await itinerary.save();
+    // Add the new activity to the itinerary's activities array
+    itinerary.activities.push(newActivity);
 
-      return res.status(201).json({ message: 'Activity added successfully', activity: newActivity });
+    // Save the updated itinerary
+    await itinerary.save();
+
+    return res.status(201).json({ message: "Activity added successfully", activity: newActivity });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Server error' });
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // export const rateActivity = async (req, res) => {
 //   try {
@@ -121,7 +118,7 @@ export const addActivityToItinerary = async (req, res) => {
 //     if (!user) {
 //       return res.status(404).json({ message: "User not found" });
 //     }
-  
+
 //     const hasAttended = user.activitiesAttended.some(attendedActivity => attendedActivity.equals(id));
 //     if (!hasAttended) {
 //       return res.status(403).json({ message: "You must attend the activity to rate it" });

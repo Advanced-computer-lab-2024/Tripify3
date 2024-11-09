@@ -26,22 +26,17 @@ import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
 import ReportProblemIcon from "@mui/icons-material/ReportProblem"; // Import the complaint icon
 
 import { useNavigate, useLocation } from "react-router-dom";
+import { clearUser } from "../../utils/authUtils";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null); // New state for Account dropdown
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleServicesClick = (event) => setAnchorEl(event.currentTarget);
-  const handleServicesClose = () => setAnchorEl(null);
-  const handleHelpClick = (event) => setHelpAnchorEl(event.currentTarget);
-  const handleHelpClose = () => setHelpAnchorEl(null);
   const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
   const handleSettingsClose = () => setSettingsAnchorEl(null);
   const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget); // New handler for Account dropdown
@@ -85,6 +80,7 @@ const AdminNavbar = () => {
   const confirmLogout = () => {
     // Add logout logic here
     setLogoutDialogOpen(false);
+    clearUser();
     navigate("/login"); // Redirect to login page after logout
   };
 

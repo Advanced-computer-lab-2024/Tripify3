@@ -67,12 +67,6 @@ const tourGuideSchema = new mongoose.Schema({
     default: 5,
   },
   files: [fileSchema],
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "comment", // Reference to Rating model
-    },
-  ],
   licenseNumber: {
     type: String,
   },

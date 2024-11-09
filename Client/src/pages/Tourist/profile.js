@@ -1,30 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Card,
-  CardContent,
-  CardHeader,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Avatar,
-} from "@mui/material";
-import {
-  FaTrophy,
-  FaShieldAlt,
-  FaStarHalfAlt,
-  FaCoins,
-  FaCamera,
-} from "react-icons/fa";
+import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardHeader, Dialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
+import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera } from "react-icons/fa";
 import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
 import { getUserId } from "../../utils/authUtils.js";
 import Wallet from "./wallet.js";
@@ -45,7 +22,7 @@ const TouristProfile = () => {
     birthDate: "",
     occupation: "",
     gender: "",
-    currencyPreference: "", // Ensure this matches your profile field
+    currency: "", // Ensure this matches your profile field
   });
 
   const countries = [
@@ -65,22 +42,8 @@ const TouristProfile = () => {
     "China",
     "Japan",
     "South Korea",
-    "Russia",
-    "South Africa",
-    "Nigeria",
-    "Kenya",
-    "Turkey",
     "Saudi Arabia",
     "United Arab Emirates",
-    "Sweden",
-    "Norway",
-    "Finland",
-    "Denmark",
-    "Netherlands",
-    "Belgium",
-    "Switzerland",
-    "Austria",
-    "Greece",
   ];
 
   useEffect(() => {
@@ -99,7 +62,7 @@ const TouristProfile = () => {
           nationality: response.data.userProfile.nationality,
           birthDate: response.data.userProfile.birthDate,
           occupation: response.data.userProfile.occupation,
-          currencyPreference: response.data.userProfile.currencyPreference || '', // Ensure this matches the expected API field
+          currency: response.data.userProfile.currency || "", // Ensure this matches the expected API field
           gender: response.data.userProfile.gender || "",
           filepath: response.data.userProfile.profilePicture ? `http://localhost:8000/uploads/${userId}/${response.data.userProfile.profilePicture.filename}` : "",
         });
@@ -260,7 +223,9 @@ const TouristProfile = () => {
                 <Avatar
                   alt="Profile Picture"
                   src={
-                    profilePicUrl || formData.filepath || "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
+                    profilePicUrl ||
+                    formData.filepath ||
+                    "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
                   } // Use default image if no profile picture
                   sx={{ width: 90, height: 90 }}
                 />
@@ -306,8 +271,9 @@ const TouristProfile = () => {
 
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
               <FormControl fullWidth sx={{ mx: 2 }}>
-                <InputLabel>Currency Preference</InputLabel>
-                <Select name="currencyPreference" value={formData.currencyPreference} disabled={!isEditing} onChange={handleChange}>
+                <InputLabel>Currency</InputLabel>
+                <Select name="currencyPreference" value={formData.currency} disabled={!isEditing} onChange={handleChange}>
+                  <MenuItem value="EGP">EGP</MenuItem>
                   <MenuItem value="USD">USD</MenuItem>
                   <MenuItem value="EUR">EUR</MenuItem>
                   <MenuItem value="GBP">GBP</MenuItem>
@@ -315,7 +281,7 @@ const TouristProfile = () => {
                   <MenuItem value="CAD">CAD</MenuItem>
                 </Select>
               </FormControl>
-           
+
               <TextField label="Occupation" name="occupation" value={formData.occupation} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ mr: 2 }} />
               <FormControl fullWidth sx={{ mx: 2 }}>
                 <InputLabel>Gender</InputLabel>
@@ -326,8 +292,15 @@ const TouristProfile = () => {
                 </Select>
               </FormControl>
             </Box>
-            
-            <Button variant="contained" onClick={() => { if (isEditing) handleSubmit(); setIsEditing(!isEditing); }} sx={{ marginBottom: 2 }}>
+
+            <Button
+              variant="contained"
+              onClick={() => {
+                if (isEditing) handleSubmit();
+                setIsEditing(!isEditing);
+              }}
+              sx={{ marginBottom: 2 }}
+            >
               {isEditing ? "Save" : "Edit"}
             </Button>
           </Card>

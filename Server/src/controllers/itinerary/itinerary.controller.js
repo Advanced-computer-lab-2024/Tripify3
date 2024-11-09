@@ -1,6 +1,6 @@
 import Itinerary from "../../models/itinerary.js";
 import User from "../../models/user.js";
-import Tourist from "../../models/tourist.js";
+import Review from "../../models/review.js";
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
@@ -190,19 +190,25 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
 // Get an itinerary by ID
 export const getItineraryById = async (req, res) => {
   try {
-    const itinerary = await Itinerary.findById(req.params.id).populate("activities")
-    .populate({ path: 'tags', select: 'name' }) // Populate tags with their names only
-    // .populate({ path: 'category', select: 'name' }) // Populate category with its name only
-
-
-    if (!itinerary) {
+    const id = req.params.id;
+    const itinerary = await Itinerary.findById(id)
+    .populate('activities')
+    .populate('places')
+    .populate('tags')
+    .populate('tourGuide');
+  if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
+    const reviews = await Review.find({ itinerary: id })
+    .populate("tourist", "username")
+    .select("rating comment tourist");  // Select only the fields we need
+
 
     return res.status(200).json({
       message: "Itenerary found successfully",
-      data: itinerary,
+      data:{ itinerary, reviews}
     });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -35,7 +35,7 @@ const ActivityDetails = () => {
     const fetchActivity = async () => {
       try {
         const response = await getActivityById(id);
-        setActivity(response.data.data);
+        setActivity(response.data.data.activity);
         setLoading(false);
       } catch (error) {
         setError("Error fetching activity details");
@@ -62,7 +62,7 @@ const ActivityDetails = () => {
   const BookActivity = async () => {
     const tourist = getUserId();
     const price = ticketCount * activity.price;
-    const booking = { tourist, price, type: "Activity", itemId: activity._id };
+    const booking = { tourist, price, type: "Activity", itemId: activity._id, tickets: ticketCount };
 
     try {
       const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
@@ -94,8 +94,8 @@ const ActivityDetails = () => {
 
   return (
     <Box sx={{ p: 3, backgroundColor: "#F5F7FA", minHeight: "100vh", position: "relative" }}>
-      <Button variant="contained" color="primary" onClick={() => navigate("/tourist/activities")} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
-        Back to Activities
+      <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
+        Go Back
       </Button>
 
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start", mt: 5 }}>

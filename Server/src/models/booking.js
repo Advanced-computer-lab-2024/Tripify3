@@ -14,7 +14,7 @@ const bookingSchema = new mongoose.Schema({
   details: {
     type: String,
   },
-  ticket: {
+  tickets: {
     type: Number,
     default: 1,
   },

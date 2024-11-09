@@ -44,7 +44,8 @@ const Bookings = () => {
   const handleViewDetails = (booking) => {
     const itemId = booking.itinerary ? booking.itinerary._id : booking.activity._id;
     const type = booking.type;
-    navigate(`/tourist/booking-details/${itemId}/${type}`);
+    const comingview = view;
+    navigate(`/tourist/booking-details/${itemId}/${type}/${view}`);
   };
 
   return (

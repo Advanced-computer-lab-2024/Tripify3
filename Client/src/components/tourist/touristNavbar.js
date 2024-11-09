@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { clearUser } from '../../utils/authUtils.js';
+
 import {
   AppBar,
   Toolbar,
@@ -54,8 +56,6 @@ const TouristNavbar = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleServicesClick = (event) => setAnchorEl(event.currentTarget);
-  const handleServicesClose = () => setAnchorEl(null);
   const handleHelpClick = (event) => setHelpAnchorEl(event.currentTarget);
   const handleHelpClose = () => setHelpAnchorEl(null);
   const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
@@ -100,6 +100,7 @@ const TouristNavbar = () => {
   const confirmLogout = () => {
     // Add logout logic here
     setLogoutDialogOpen(false);
+    clearUser();
     navigate("/login"); // Redirect to login page after logout
   };
 

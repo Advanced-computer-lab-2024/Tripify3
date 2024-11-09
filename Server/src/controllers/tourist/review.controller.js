@@ -1,28 +1,29 @@
-import User from "../../models/user.js";
 import Tourist from "../../models/tourist.js";
+import TourGuide from "../../models/tourGuide.js";
+import Activity from "../../models/activity.js";
+import Itinerary from "../../models/itinerary.js";
 
 import Review from "../../models/review.js";
 
 export const touristReview = async (req, res) => {
-  const {tourGuideId, activity, itinerary, touristId, rating, comment } = req.body;
+  const { tourGuide, activity, itinerary, tourist, rating, comment } = req.body;
 
   try {
     // 1. Validate input
-    if (!touristId || !rating || !comment) {
-      return res.status(400).json({ message: 'Tourist ID, Rating, and Comment are required.' });
+    if (!tourist || !rating || !comment) {
+      return res.status(400).json({ message: "Tourist ID, Rating, and Comment are required." });
     }
 
     // 2. Find the tourist to check if they follow the tourist being reviewed
-    const tourist = await Tourist.findById(touristId)
+    const user = await Tourist.findById(tourist);
 
-
-    if (!tourist) {
-      return res.status(404).json({ message: 'Tourist not found.' });
+    if (!user) {
+      return res.status(404).json({ message: "Tourist not found." });
     }
-  
+
     // 3. Check if the reviewed tourist is followed
-   // This should be passed in the request body
-    
+    // This should be passed in the request body
+
     // const isFollowing = tourist.following.some(followedTourist => followedTourist.equals(tourGuideId));
 
     // if (!isFollowing) {
@@ -31,27 +32,53 @@ export const touristReview = async (req, res) => {
 
     // 4. Create a new review
     const newReview = new Review({
-      tourGuide: tourGuideId,
+      tourGuide,
       activity,
       itinerary,
-      tourist: touristId,
+      tourist,
       rating,
       comment,
     });
 
     await newReview.save();
 
-    // 5. Respond with the created review
-    return res.status(201).json({ message: 'Review created successfully!', review: newReview });
+     // 4. Calculate the new average rating for the reviewed item
+     let model;
+     if (tourGuide) {
+       model = await TourGuide.findById(tourGuide);
+     } else if (activity) {
+       model = await Activity.findById(activity);
+     } else if (itinerary) {
+       model = await Itinerary.findById(itinerary);
+     }
+ 
+     if (!model) {
+       return res.status(404).json({ message: "Reviewed item not found." });
+     }
+ 
+     // Fetch all reviews related to the item and calculate the new average rating
+     const allReviews = await Review.find({
+       $or: [
+         { tourGuide: tourGuide || null },
+         { activity: activity || null },
+         { itinerary: itinerary || null },
+       ],
+     });
+ 
+     const totalRatings = allReviews.reduce((sum, review) => sum + review.rating, 0);
+     const avgRating = Math.min(5, Math.round(totalRatings / allReviews.length)); // Cap at 5
+ 
+     // Update the model's rating attribute
+     model.rating = avgRating;
+     await model.save();
 
+    // 5. Respond with the created review
+    return res.status(201).json({ message: "Review created successfully!", review: newReview });
   } catch (error) {
-    console.error('Error creating review:', error);
-    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    console.error("Error creating review:", error);
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
-
-
-
 
 export const touristEditReview = async (req, res) => {
   const { touristId, rating, comment, type, itemId } = req.body;
@@ -71,16 +98,16 @@ export const touristEditReview = async (req, res) => {
     const reviewQuery = { tourist: touristId };
 
     switch (type) {
-      case 'Itinerary':
+      case "Itinerary":
         reviewQuery.itinerary = itemId;
         break;
-      case 'Activity':
+      case "Activity":
         reviewQuery.activity = itemId;
         break;
-      case 'Product':
+      case "Product":
         reviewQuery.product = itemId;
         break;
-      case 'TourGuide':
+      case "TourGuide":
         reviewQuery.tourGuide = itemId;
         break;
       default:

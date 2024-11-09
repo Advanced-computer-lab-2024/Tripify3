@@ -4,18 +4,17 @@ import Booking from "../../models/booking.js";
 import User from "../../models/user.js";
 
 export const createBooking = async (req, res) => {
-  const { tourist, price, type, itemId, details } = req.body;
+  const { tourist, price, type, itemId, details, tickets } = req.body;
 
   console.log(req.body);
+  
 
   try {
-    let item;
-    
+    let item;    
     // Use a switch statement to find the correct model based on the type
     switch (type) {
       case "Activity":
         item = await Activity.findById(itemId);
-        
         break;
       case "Itinerary":
         item = await Itinerary.findById(itemId);
@@ -40,6 +39,7 @@ export const createBooking = async (req, res) => {
     let booking = new Booking({
       tourist,
       price,
+      tickets,
       type,
       details
     });
@@ -53,6 +53,9 @@ export const createBooking = async (req, res) => {
       booking.activity = itemId;
     }
     await booking.save();
+
+    console.log(booking);
+    
 
     // Add the booking ID to the bookings array in the associated model
 

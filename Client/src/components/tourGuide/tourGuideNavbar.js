@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { getUserId } from "../../utils/authUtils.js";
+import { getUserId, clearUser } from "../../utils/authUtils.js";
 
 import {
   AppBar,
@@ -111,6 +111,7 @@ const TourGuideNavbar = () => {
   const confirmLogout = () => {
     // Add logout logic here
     setLogoutDialogOpen(false);
+    clearUser();
     navigate("/login"); // Redirect to login page after logout
   };
 
