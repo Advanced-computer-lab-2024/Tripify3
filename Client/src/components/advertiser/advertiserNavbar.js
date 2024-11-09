@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import axios from 'axios';
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
-import { clearUser , userId } from '../../utils/authUtils.js';
+import { clearUser , getUserId } from '../../utils/authUtils.js';
 import {
   AccountCircle,
   ShoppingCart,
@@ -53,6 +54,19 @@ const AdvertiserNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
+      console.log(userId);
+      const checkUpcoming = await axios.get(`http://localhost:8000/checkUpcoming/activities/${userId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (checkUpcoming.status === 200 && !checkUpcoming.data.success) {
+        // If upcoming itineraries exist, alert the user and prevent deletion
+        alert('Cannot delete account. You have upcoming Activities.');
+        return; // Exit the function early
+      }
+  
       // Proceed with the account deletion
       const response = await axios.delete(`http://localhost:8000/advertiser/delete/${userId}`);
   
@@ -71,6 +85,7 @@ const AdvertiserNavbar = () => {
       alert(errorMessage);
     }
   };
+  
   
 
   const confirmLogout = () => {
