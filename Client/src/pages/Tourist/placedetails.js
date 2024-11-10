@@ -281,7 +281,7 @@ const PlaceDetails = () => {
         </Grid>
 
         {/* Reviews Card */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <Card sx={{ width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
             <CardContent>
               <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
@@ -317,7 +317,7 @@ const PlaceDetails = () => {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Box>
   );

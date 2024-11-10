@@ -44,7 +44,7 @@ import { getUserType } from "../../utils/authUtils";
 
 const Activities = () => {
   const userType = getUserType();
-  const { id } = useParams();/////////
+  const { id } = useParams();
   const userId = getUserId();
   const [activities, setActivities] = useState([]);
   const [originalActivities, setOriginalActivities] = useState([]);
