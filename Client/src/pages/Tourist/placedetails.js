@@ -15,6 +15,7 @@ import {
   Remove as RemoveIcon,
 } from "@mui/icons-material";
 import axios from "axios";
+import { getUserProfile } from "../../services/tourist";
 import { getUserId, getUserType } from "../../utils/authUtils";
 
 const PlaceDetails = () => {
@@ -22,6 +23,7 @@ const PlaceDetails = () => {
   const userType = getUserType();
   const navigate = useNavigate();
   const [place, setPlace] = useState(null);
+  const userId = getUserId();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,11 +31,21 @@ const PlaceDetails = () => {
   const [ticketCount, setTicketCount] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [userCategory, setUserCategory] = useState("foreigner");
-
+  const [currency, setCurrency] = useState("USD");
   const handleIncrease = () => setTicketCount(ticketCount + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
 
-  useEffect(() => {
+  useEffect( () => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
     const fetchPlace = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/place/get/${id}`);
@@ -47,7 +59,7 @@ const PlaceDetails = () => {
       }
     };
     fetchPlace();
-  }, [id]);
+  }, [id, userId]);
 
   useEffect(() => {
     if (place) {
@@ -78,6 +90,29 @@ const PlaceDetails = () => {
       alert("Link copied to clipboard!");
       setShareOpen(false);
     });
+  };
+  const exchangeRates = {
+    USD: 0.02, // 1 EGP = 0.05 USD
+    EUR: 0.07, // 1 EGP = 0.045 EUR
+    GBP: 0.038, // 1 EGP = 0.038 GBP
+    AUD: 0.07, // 1 EGP = 0.07 AUD
+    CAD: 0.065, // 1 EGP = 0.065 CAD
+    // Add other currencies as needed
+  };
+  
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
   };
 
   const handleShareToggle = () => setShareOpen(!shareOpen);
@@ -143,7 +178,7 @@ const PlaceDetails = () => {
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <MonetizationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
                     <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
-                      Ticket Price: ${place.ticketPrices[userCategory]}
+                      Ticket Price: {formatCurrency(place.ticketPrices[userCategory])}
                     </Typography>
                   </Box>
                 </Grid>
@@ -165,7 +200,7 @@ const PlaceDetails = () => {
               </Grid>
 
               <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
-                Total Price: ${totalPrice}
+                Total Price:{formatCurrency(totalPrice)}
               </Typography>
 
               <Box sx={{ mt: 3 }}>

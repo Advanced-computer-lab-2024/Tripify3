@@ -19,6 +19,18 @@ import {
   Grid,
   CircularProgress,
 } from "@mui/material";
+
+
+import {  getUserProfile } from "../../services/tourist";
+import { getUserId } from "../../utils/authUtils";
+import { useParams, useNavigate } from "react-router-dom";////////////////////////
+
+
+
+
+
+
+
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllActivities, getAllCategories } from "../../services/tourist.js";
 import { Link } from 'react-router-dom';
@@ -34,6 +46,8 @@ const theme = createTheme({
 });
 
 const Activities = () => {
+  const { id } = useParams();/////////
+  const userId = getUserId();
   const [activities, setActivities] = useState([]);
   const [originalActivities, setOriginalActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,10 +57,21 @@ const Activities = () => {
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currency, setCurrency] = useState("USD");
   
 
   // Fetch activities and categories when the component mounts
-  useEffect(() => {
+  useEffect( () => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
     const fetchData = async () => {
       try {
         const [activitiesResponse, categoriesResponse] = await Promise.all([
@@ -63,7 +88,7 @@ const Activities = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [id, userId]);
 
   const handleCategoryChange = (event) => {
     setSelectedCategories(event.target.value);
@@ -76,6 +101,29 @@ const Activities = () => {
       return 0;
     });
     setActivities(sortedActivities);
+  };
+  const exchangeRates = {
+    USD: 0.02, // 1 EGP = 0.05 USD
+    EUR: 0.07, // 1 EGP = 0.045 EUR
+    GBP: 0.038, // 1 EGP = 0.038 GBP
+    AUD: 0.07, // 1 EGP = 0.07 AUD
+    CAD: 0.065, // 1 EGP = 0.065 CAD
+    // Add other currencies as needed
+  };
+  
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
   };
 
   // Filter activities based on selected categories, budget, and search term
@@ -222,7 +270,7 @@ const Activities = () => {
                     {activity.name}
                   </Typography>
                   <Typography>
-                    <strong>Price:</strong> ${activity.price}
+                    <strong>Price:</strong> {formatCurrency(activity.price)}
                   </Typography>
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}

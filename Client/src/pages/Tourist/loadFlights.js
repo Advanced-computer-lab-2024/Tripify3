@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {  getUserProfile } from "../../services/tourist";
+import { getUserId } from "../../utils/authUtils";
+import { useParams } from "react-router-dom";///////
 import { Card, Typography, CardMedia, Grid, Box, CircularProgress, Divider, Button, Modal, IconButton, Dialog, DialogContent, DialogActions } from "@mui/material";
 import { AccessTime, Luggage, Star, Close, CheckCircleOutline } from "@mui/icons-material";
 
 const LoadFlights = () => {
   const location = useLocation();
+  const { id } = useParams();/////////
+  const userId1 = getUserId();
+  const [currency, setCurrency] = useState("USD"); // Default currency///////////////
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
 
@@ -35,13 +41,23 @@ const LoadFlights = () => {
 
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString("en-CA");
   const formatDuration = (minutes) => `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
-  const formatPrice = (price) => price.toLocaleString("en-US", { style: "currency", currency: "USD" });
+  const formatPrice = (price) => price.toLocaleString('en-US', { style: 'currency', currency: currency });
 
-  useEffect(() => {
+  useEffect( () => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile(); 
     const fetchFlights = async () => {
       setLoading(true);
       try {
-        const apiUrl = `http://localhost:8000/flights/?departure_id=${departure}&arrival_id=${arrival}&outbound_date=${travelDate}&currency=USD&adults=${adults}&children=${kids}&travel_class=${travelClass}`;
+        const apiUrl = `http://localhost:8000/flights/?departure_id=${departure}&arrival_id=${arrival}&outbound_date=${travelDate}&currency=EGP&adults=${adults}&children=${kids}&travel_class=${travelClass}`;
         const response = await axios.get(apiUrl);
         setFlights(response.data);
       } catch (error) {
@@ -52,7 +68,7 @@ const LoadFlights = () => {
     };
 
     fetchFlights();
-  }, [departure, arrival, travelDate, adults, kids, travelClass]);
+  }, [departure, arrival, travelDate, adults, kids, travelClass,id, userId1]);
 
   const handleOpen = (flight) => {
     setSelectedFlight(flight);
@@ -63,7 +79,29 @@ const LoadFlights = () => {
     setOpen(false);
     setSelectedFlight(null);
   };
-
+  const exchangeRates = {
+    USD: 0.02, // 1 EGP = 0.05 USD
+    EUR: 0.07, // 1 EGP = 0.045 EUR
+    GBP: 0.038, // 1 EGP = 0.038 GBP
+    AUD: 0.07, // 1 EGP = 0.07 AUD
+    CAD: 0.065, // 1 EGP = 0.065 CAD
+    // Add other currencies as needed
+  };
+  
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
+  };
   // Book flight function
   const handleBookFlight = async () => {
     const flightDetails = `
@@ -207,7 +245,7 @@ const LoadFlights = () => {
                 <Divider />
                 <Box sx={{ mt: 2, textAlign: "center" }}>
                   <Typography variant="h6" color="primary">
-                    Price: {formatPrice(flight.price)}
+                    Price: {formatCurrency(flight.price)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     This price is for {totalTickets} ticket(s) ({adults} adults, {kids} children)
@@ -284,7 +322,7 @@ const LoadFlights = () => {
               <Divider sx={{ mb: 2 }} />
               <Box textAlign="center" sx={{ mt: 3 }}>
                 <Typography variant="h6" color="primary" fontWeight="bold" gutterBottom>
-                  Price: {formatPrice(selectedFlight.price)}
+                  Price: {formatCurrency(selectedFlight.price)}
                 </Typography>
                 <Button variant="contained" color="secondary" sx={{ mt: 1 }} onClick={handleBookFlight}>
                   Book

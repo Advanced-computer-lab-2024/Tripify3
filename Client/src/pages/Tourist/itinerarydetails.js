@@ -16,7 +16,7 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { getItineraryById, getUserProfile } from "../../services/tourist";
+import { getItineraryById, getUserProfile } from "../../services/tourist";//////////////////////////////////
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Favorite } from "@mui/icons-material";
 import { Close as CloseIcon, Link as LinkIcon, Email as EmailIcon } from "@mui/icons-material";
@@ -25,15 +25,15 @@ import IconButton from "@mui/material/IconButton";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
-import { getUserId } from "../../utils/authUtils";
+import { getUserId } from "../../utils/authUtils";///////////////////////
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";////////////////////////
 
 const ItineraryDetails = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const userId = getUserId();
+  const { id } = useParams();/////////
+  const userId = getUserId();////////////
   const [itinerary, setItinerary] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [review, setReview] = useState(null);
@@ -41,14 +41,14 @@ const ItineraryDetails = () => {
   const [error, setError] = useState(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [ticketCount, setTicketCount] = useState(1);
-  const [currency, setCurrency] = useState("USD"); // Default currency
+  const [currency, setCurrency] = useState("USD"); // Default currency///////////////
 
   // Function to handle ticket count increase
   const handleIncrease = () => setTicketCount((prev) => prev + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount((prev) => prev - 1);
 
   // Fetch itinerary and user profile data
-  useEffect(() => {
+  useEffect(   () => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
