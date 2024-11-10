@@ -26,9 +26,7 @@ import {
   RoomService,
   HelpOutline,
   Settings,
-  LocalDining, // Added icon for Orders
-  MonetizationOn, // Added icon for Payments
-  CardGiftcard, // Added icon for Gift Cards
+
 } from "@mui/icons-material";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Report from "@mui/icons-material/Report"; // Add this import for the complaint icon
@@ -111,9 +109,6 @@ const TourismGovernorNavbar = () => {
                 <AccountCircle sx={{ mr: 1 }} /> My Profile
               </MenuItem>
             </Menu>
-
-        
-
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />

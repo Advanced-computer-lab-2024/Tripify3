@@ -5,7 +5,8 @@ import Advertiser from "../../models/advertiser.js";
 import TourGuide from "../../models/tourGuide.js";
 import mongoose from "mongoose";
 import Booking from '../../models/booking.js';
-import itinerary from '../../models/itinerary.js';
+import Itinerary from '../../models/itinerary.js';
+import Activity from '../../models/activity.js';
 
 
 export const redeemPoints = async (req, res) => {
@@ -148,29 +149,71 @@ export const editProfile = async (req, res) => {
 };
 
 
-
-
 export const deleteTouristAccount = async (req, res) => {
   const { id } = req.params; // Extract the tourist ID from the request params
 
   try {
-    // Check for bookings linked to the tourist
-    const bookings = await Booking.find({ tourist: id }).populate('itinerary');
-
-    // Filter bookings for itineraries that have an endTime greater than the current date
-    const currentDate = new Date();
-    const activeBookings = bookings.filter(
-      (booking) => booking.itinerary && new Date(booking.itinerary.timeline.endTime) > currentDate
-    );
-
-    // If there are active bookings, prevent account deletion
-    if (activeBookings.length > 0) {
-      return res.status(403).json({
-        message: 'Account deletion is not allowed. You have active bookings with future end dates.',
+    // Check if the tourist exists
+    const tourist = await Tourist.findById(id);
+    if (!tourist) {
+      return res.status(404).json({
+        message: 'Tourist not found.',
       });
     }
+    // Fetch bookings for the tourist
+    const bookings = await Booking.find({ tourist: id }).populate('itinerary');
 
-    // Delete the tourist account if there are no active bookings
+    // Get the current date
+    const currentDate = new Date();
+
+    // Check each booking type for active bookings
+    for (const booking of bookings) {
+      if (booking.type === 'Itinerary' && booking.itinerary) {
+        // Check if itinerary end time has passed
+        const itinerary = await Itinerary.findById(booking.itinerary);
+        if (itinerary && new Date(itinerary.timeline.endTime) > currentDate) {
+          return res.status(403).json({
+            message: 'Account deletion is not allowed. You have an active itinerary with a future end date.',
+          });
+        }
+      } else if (booking.type === 'Activity' && booking.activity) {
+        // Check if activity date has passed
+        const activity = await Activity.findById(booking.activity);
+        if (activity && new Date(activity.date) > currentDate) {
+          return res.status(403).json({
+            message: 'Account deletion is not allowed. You have an active activity with a future date.',
+          });
+        }
+      } else if (booking.type === 'Flight') {
+        // Parse flight details to extract travel date and check if it is in the future
+        const flightDetails = parseFlightDetails(booking.details);
+        if (flightDetails.travelDate && new Date(flightDetails.travelDate) > currentDate) {
+          return res.status(403).json({
+            message: 'Account deletion is not allowed. You have an upcoming flight.',
+          });
+        }
+      } else if (booking.type === 'Hotel') {
+        // Assuming hotel has check-out date in booking details, check if it is in the future
+        const hotelDetails = parseHotelDetails(booking.details);
+        console.log(hotelDetails);
+        
+        if (hotelDetails.checkOut && hotelDetails.checkOut > currentDate) {
+          return res.status(403).json({
+            message: 'Account deletion is not allowed. You have an upcoming hotel stay.',
+          });
+        }
+      } else if (booking.type === 'Transportation') {
+        // Assuming transportation details contain pickup time, check if it is in the future
+        const transportDetails = parseTransportDetails(booking.details);
+        if (transportDetails.pickupTime && transportDetails.pickupTime > currentDate) {
+          return res.status(403).json({
+            message: 'Account deletion is not allowed. You have upcoming transportation.',
+          });
+        }
+      }
+    }
+
+    // If no active bookings are found, proceed with deletion
     await Tourist.findByIdAndDelete(id);
     return res.status(200).json({
       message: 'Tourist account deleted successfully.',
@@ -181,3 +224,35 @@ export const deleteTouristAccount = async (req, res) => {
     return res.status(500).json({ message: 'Error processing the request.' });
   }
 };
+
+// Helper function to parse flight details and extract travel date
+function parseFlightDetails(details) {
+  const travelDateMatch = details.match(/Travel Date:\s*(\d{4}-\d{2}-\d{2})/);
+  return { travelDate: travelDateMatch ? new Date(travelDateMatch[1]) : null };
+}
+
+// Helper function to parse hotel details and extract check-out date
+function parseHotelDetails(details) {
+  const checkOutMatch = details.match(/Check-out Date:\s*(\d{4}-\d{2}-\d{2})/);
+  return { checkOut: checkOutMatch ? new Date(checkOutMatch[1]) : null };
+}
+
+// Helper function to parse transportation details and extract pickup time
+function parseTransportDetails(details) {
+  // Match the Pickup Time in the format: "Pickup Time: 21/11/2024, 04:52:00"
+  const pickupTimeMatch = details.match(/Pickup Time:\s*(\d{2}\/\d{2}\/\d{4}),\s*(\d{2}:\d{2}:\d{2})/);
+
+  if (pickupTimeMatch) {
+    // Extract the date and time
+    const datePart = pickupTimeMatch[1]; // "21/11/2024"
+    const timePart = pickupTimeMatch[2]; // "04:52:00"
+
+    // Convert the date format from "DD/MM/YYYY" to "YYYY-MM-DD" and append the time
+    const formattedDate = datePart.split('/').reverse().join('-') + 'T' + timePart;
+
+    // Return the pickupTime as a Date object
+    return { pickupTime: new Date(formattedDate) };
+  }
+
+  return { pickupTime: null }; // Return null if pickup time not found
+}

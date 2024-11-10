@@ -34,7 +34,7 @@ const Goodbye = () => {
         onClick={handleHomeRedirect}
         sx={{ mt: 2 }}
       >
-        Return to Homepage
+        Return to Signup Page
       </Button>
       <Typography variant="body2" sx={{ mt: 4, color: "#999" }}>
         If you have any feedback or would like to share your experience, feel free to reach out.

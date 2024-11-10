@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {getUserId, clearUser } from '../../utils/authUtils.js';
+import { getUserId, clearUser } from '../../utils/authUtils.js';
 
 import {
   AppBar,
@@ -15,34 +15,33 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  Alert,
 } from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
   Favorite,
   Home,
-    Event,
+  Event,
   DirectionsRun,
   ListAlt,
   RoomService,
   HelpOutline,
   Settings,
-  LocalDining, // Added icon for Orders
-  MonetizationOn, // Added icon for Payments
-  CardGiftcard, // Added icon for Gift Cards
+  LocalDining,
+  MonetizationOn,
+  CardGiftcard,
   DirectionsCar,
 } from "@mui/icons-material";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import Report from "@mui/icons-material/Report"; // Add this import for the complaint icon
-import Hotel from "@mui/icons-material/Hotel"; // For Hotels
-import Flight from "@mui/icons-material/Flight"; // For Flights
-import Assignment from "@mui/icons-material/Assignment"; // Add this import for the new icon
-import LockOpen from "@mui/icons-material/LockOpen"; // For Forget Password
-import Delete from "@mui/icons-material/Delete"; // For Delete Account
-import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
-import ReportProblemIcon from '@mui/icons-material/ReportProblem'; // Import the complaint icon
-
-
+import Report from "@mui/icons-material/Report";
+import Hotel from "@mui/icons-material/Hotel";
+import Flight from "@mui/icons-material/Flight";
+import Assignment from "@mui/icons-material/Assignment";
+import LockOpen from "@mui/icons-material/LockOpen";
+import Delete from "@mui/icons-material/Delete";
+import ExitToApp from "@mui/icons-material/ExitToApp";
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -55,16 +54,17 @@ const TouristNavbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
-  const [accountAnchorEl, setAccountAnchorEl] = useState(null); // New state for Account dropdown
+  const [accountAnchorEl, setAccountAnchorEl] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [bookingErrorDialogOpen, setBookingErrorDialogOpen] = useState(false);
 
   const handleHelpClick = (event) => setHelpAnchorEl(event.currentTarget);
   const handleHelpClose = () => setHelpAnchorEl(null);
   const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
   const handleSettingsClose = () => setSettingsAnchorEl(null);
-  const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget); // New handler for Account dropdown
-  const handleAccountClose = () => setAccountAnchorEl(null); // Close Account dropdown
+  const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget);
+  const handleAccountClose = () => setAccountAnchorEl(null);
 
   const openDeleteDialog = () => {
     setDeleteDialogOpen(true);
@@ -85,11 +85,12 @@ const TouristNavbar = () => {
       });
 
       if (response.ok) {
-        // Handle successful deletion
-        setDeleteDialogOpen(false); // Close the delete confirmation dialog
-        navigate('/goodbye'); // Redirect after account deletion
+        setDeleteDialogOpen(false);
+        navigate('/goodbye');
+      } else if (response.status === 403) {
+        setDeleteDialogOpen(false);
+        setBookingErrorDialogOpen(true);
       } else {
-        // Handle errors
         const errorData = await response.json();
         alert(`Failed to delete account: ${errorData.message}`);
       }
@@ -98,13 +99,11 @@ const TouristNavbar = () => {
       alert('An unexpected error occurred. Please try again later.');
     }
   };
-  
 
   const confirmLogout = () => {
-    // Add logout logic here
     setLogoutDialogOpen(false);
     clearUser();
-    navigate("/login"); // Redirect to login page after logout
+    navigate("/login");
   };
 
   const handleProfileClick = () => navigate("/tourist/profile");
@@ -115,7 +114,7 @@ const TouristNavbar = () => {
   const handleBookingsClick = () => navigate("/tourist/bookings");
   const handleWishlistClick = () => navigate("/tourist/wishlist");
   const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
-  const handleComplaintsClick = () => navigate("/tourist/view/complaints/")
+  const handleComplaintsClick = () => navigate("/tourist/view/complaints/");
 
   const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
   const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
@@ -130,13 +129,11 @@ const TouristNavbar = () => {
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            {/* Home Icon */}
             <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
               <Home />
               <Typography variant="body1" sx={{ ml: 1 }}>Home</Typography>
             </IconButton>
 
-            {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
               <Typography variant="body1" sx={{ ml: 1 }}>Account</Typography>
@@ -165,48 +162,40 @@ const TouristNavbar = () => {
               </MenuItem>
             </Menu>
 
-           
-
-        
-
-
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
               <ShoppingCart />
               <Typography variant="body1" sx={{ ml: 1 }}>Cart</Typography>
             </IconButton>
 
-            {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />
               <Typography variant="body1" sx={{ ml: 1 }}>Settings</Typography>
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
-  
-  <MenuItem onClick={() => navigate("/tourist/change-password")}>
-    <LockOpen sx={{ mr: 1 }} />
-    Change Password
-  </MenuItem>
-  <MenuItem onClick={openLogoutDialog}>
-    <ExitToApp sx={{ mr: 1 }} />
-    Logout
-  </MenuItem>
-  <MenuItem onClick={openDeleteDialog} sx={{ color: "red" }}>
-    <Delete sx={{ mr: 1 }} />
-    Delete Account
-  </MenuItem>
-</Menu>
-    {/* Help Icon with Dropdown */}
-    <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
+              <MenuItem onClick={() => navigate("/tourist/change-password")}>
+                <LockOpen sx={{ mr: 1 }} />
+                Change Password
+              </MenuItem>
+              <MenuItem onClick={openLogoutDialog}>
+                <ExitToApp sx={{ mr: 1 }} />
+                Logout
+              </MenuItem>
+              <MenuItem onClick={openDeleteDialog} sx={{ color: "red" }}>
+                <Delete sx={{ mr: 1 }} />
+                Delete Account
+              </MenuItem>
+            </Menu>
+
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
               <HelpOutline />
               <Typography variant="body1" sx={{ ml: 1 }}>Help</Typography>
             </IconButton>
             <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
-  <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
-    <Report sx={{ mr: 1 }} /> {/* Add this line for the complaint icon */}
-    File a Complaint
-  </MenuItem>
-</Menu>
-
+              <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
+                <Report sx={{ mr: 1 }} />
+                File a Complaint
+              </MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </AppBar>
@@ -225,15 +214,33 @@ const TouristNavbar = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Logout Confirmation Dialog */}
+      {/* Booking Error Dialog */}
+      <Dialog open={bookingErrorDialogOpen} onClose={() => setBookingErrorDialogOpen(false)}>
+        <DialogTitle sx={{ color: "#f44336" }}>Unable to Delete Account</DialogTitle>
+        <DialogContent>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            You have upcoming bookings. Please cancel them before deleting your account.
+          </Alert>
+          <DialogContentText>
+            If you need further assistance, please contact our support team.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBookingErrorDialogOpen(false)} variant="outlined" sx={{ color: "#f44336", borderColor: "#f44336", ":hover": { backgroundColor: "#fdecea", borderColor: "#f44336" } }}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Logout Dialog */}
       <Dialog open={logoutDialogOpen} onClose={closeLogoutDialog}>
         <DialogTitle>Logout</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to logout?</DialogContentText>
+          <DialogContentText>
+            Are you sure you want to log out?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={closeLogoutDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>Cancel</Button>
-          <Button onClick={confirmLogout} color="primary" variant="contained">Logout</Button>
+          <Button onClick={confirmLogout} color="error" variant="contained">Logout</Button>
         </DialogActions>
       </Dialog>
       <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>

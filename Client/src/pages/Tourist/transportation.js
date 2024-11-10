@@ -123,13 +123,11 @@ const Transportation = () => {
     if (e.target.value.length >= 3) {
       fetchSuggestionsFunc(value, setSuggestions);
     }
-    console.log("src suggestions", sourceSuggestions);
-    console.log("dest suggestions", destination);
   };
 
   // Handle suggestion selection
   const handleSelectSuggestion = (suggestion, setSourceOrDestination) => {
-    setSourceOrDestination(suggestion.value); // Set selected suggestion value
+    setSourceOrDestination(suggestion.value + "," + suggestion.subtext); // Set selected suggestion value
     setSourceSuggestions([]);
     setDestinationSuggestions([]);
   };
@@ -269,11 +267,23 @@ const Transportation = () => {
               showTimeSelect
               dateFormat="Pp"
               placeholderText="Select Pickup Time"
-              minDate={new Date()} // Allow the date to be today or in the future
-              minTime={new Date().setSeconds(0, 0)} // Optional: allow time selection from the current time
-              maxTime={new Date().setHours(23, 59, 59, 999)} // Optional: set max time to the end of the day
+              minDate={new Date()} // Prevent selecting past dates
+              minTime={
+                // If the selected day is today, set minTime to the current time
+                pickupTime instanceof Date && pickupTime.toDateString() === new Date().toDateString()
+                  ? new Date(new Date().setSeconds(0, 0)) // Current time today
+                  : new Date(new Date().setHours(0, 0, 0, 0)) // For future days, set minTime to 12:00 AM
+              }
+              maxTime={new Date(new Date().setHours(23, 59, 59))} // Set max time to the end of the day
               style={styles.datePicker}
-              timeIntervals={1}
+              timeIntervals={1} // 1-minute intervals
+              filterTime={(time) => {
+                // Disallow past times, considering both date and time
+                const now = new Date();
+                const currentTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
+                const selectedTime = new Date(time);
+                return selectedTime >= currentTime; // Only allow times in the future
+              }}
             />
           </div>
         </div>
@@ -313,8 +323,8 @@ const Transportation = () => {
               <div style={styles.tripDetail}>
                 <div style={styles.tripDetailTitle}>Price</div>
                 <div style={styles.infoBox}>
-                  {price}
-                  EGP
+                  <span>{price}</span>
+                  <span style={{ marginLeft: "5px" }}>EGP</span> {/* Adds space between the price and EGP */}
                 </div>
               </div>
 
