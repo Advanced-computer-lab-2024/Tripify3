@@ -6,7 +6,11 @@ import {
   Typography,
   TextField,
   IconButton,
+  Select,
+  MenuItem,
   Button,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -34,6 +38,7 @@ const ProductEditModal = ({
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [filenames, setFilenames] = useState([]);
   const [indicesToRemove, setIndicesToRemove] = useState([]);
+  const categories = ["Electronics", "Clothing", "Books", "Beauty", "Sports"]; // Example categories
 
   // Center the modal when it opens
   useEffect(() => {
@@ -175,7 +180,7 @@ const ProductEditModal = ({
             label="Name"
             fullWidth
             margin="normal"
-            value={editProduct[0].name}
+            value={product.name}
             onChange={(e) => handleChange("name", e.target.value)}
           />
           <TextField
@@ -183,14 +188,14 @@ const ProductEditModal = ({
             type="number"
             fullWidth
             margin="normal"
-            value={product.price}
+            value={editProduct[0].price}
             onChange={(e) => handleChange("price", e.target.value)}
           />
           <TextField
             label="Details"
             fullWidth
             margin="normal"
-            value={product.details}
+            value={editProduct[0].details}
             onChange={(e) => handleChange("details", e.target.value)}
           />
           <TextField
@@ -198,16 +203,29 @@ const ProductEditModal = ({
             type="number"
             fullWidth
             margin="normal"
-            value={product.quantity}
+            value={editProduct[0].quantity}
             onChange={(e) => handleChange("quantity", e.target.value)}
           />
-          <TextField
-            label="Category"
-            fullWidth
-            margin="normal"
-            value={product.category}
-            onChange={(e) => handleChange("category", e.target.value)}
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select
+              label="Category"
+              fullWidth
+              margin="normal"
+              value={editProduct[0].category}
+              onChange={(e) => handleChange("category", e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value={categories[0]}>
+                <em>Select a Category</em>
+              </MenuItem>
+              {categories.map((category, index) => (
+                <MenuItem key={index} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {/* Images section */}
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             Images

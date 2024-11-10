@@ -9,6 +9,8 @@ import {
   Select,
   MenuItem,
   Button,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -52,6 +54,17 @@ const ProductCreateModal = ({ open, handleClose }) => {
   const handleSave = async (e) => {
     e.preventDefault();
 
+    if (
+      !newProduct.name ||
+      !newProduct.price ||
+      !newProduct.details ||
+      !newProduct.quantity ||
+      !newProduct.category ||
+      newProduct.category == "_"
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
     const newFormData = new FormData();
     newFormData.append("name", newProduct.name);
     newFormData.append("price", newProduct.price);
@@ -154,23 +167,25 @@ const ProductCreateModal = ({ open, handleClose }) => {
             value={newProduct.quantity}
             onChange={(e) => handleChange("quantity", e.target.value)}
           />
-             <Select
-            label="Category"
-            fullWidth
-            margin="normal"
-            value={newProduct.category}
-            onChange={(e) => handleChange("category", e.target.value)}
-            displayEmpty
-          >
-            <MenuItem value="">
-              <em>Select a Category</em>
-            </MenuItem>
-            {categories.map((category, index) => (
-              <MenuItem key={index} value={category}>
-                {category}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Category</InputLabel>
+            <Select
+              label="Category"
+              value={newProduct.category || "_"}
+              onChange={(e) => handleChange("category", e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="_">
+                <em>Select category</em>
               </MenuItem>
-            ))}
-          </Select>
+              {categories.map((category, index) => (
+                <MenuItem key={index} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           {getUserType() == "Admin" ? (
             <TextField
               label="sellerId"
