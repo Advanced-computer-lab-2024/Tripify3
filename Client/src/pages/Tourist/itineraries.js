@@ -20,13 +20,14 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
+import { markItineraryInappropriate } from "../../services/admin.js";
 
 const theme = createTheme({
   palette: {
@@ -50,12 +51,13 @@ const Itineraries = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [userType, setUserType] = useState("");
 
-
+  const navigate = useNavigate();
   const languageOptions = ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"];
 
-  // Fetch itineraries and tags on mount
   useEffect(() => {
+    setUserType(getUserType()); // Fetch the user type when component mounts
     const fetchData = async () => {
       try {
         const [itinerariesResponse, tagsResponse] = await Promise.all([getAllActiveAppropriateIteneraries(), getAllTags()]);
@@ -72,24 +74,16 @@ const Itineraries = () => {
     fetchData();
   }, []);
 
-  // Filter itineraries based on selected criteria
   useEffect(() => {
     const filtered = itineraries
-      .filter((itinerary) =>
-        searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
-      )
-      .filter((itinerary) =>
-        selectedTags.length ? selectedTags.every((tag) => itinerary.tags.includes(tag)) : true
-      )
-      .filter((itinerary) =>
-        selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true
-      )
+      .filter((itinerary) => (searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true))
+      .filter((itinerary) => (selectedTags.length ? selectedTags.every((tag) => itinerary.tags.includes(tag)) : true))
+      .filter((itinerary) => (selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true))
       .filter((itinerary) => (budget ? itinerary.price <= budget : true));
 
     setFilteredItineraries(filtered);
   }, [searchQuery, selectedTags, selectedLanguages, budget, itineraries]);
 
-  // Sort itineraries based on price
   const handleSortByPrice = () => {
     const sorted = [...filteredItineraries].sort((a, b) => {
       if (sortOrder === "asc") return a.price - b.price;
@@ -99,7 +93,6 @@ const Itineraries = () => {
     setFilteredItineraries(sorted);
   };
 
-  // Reset filters and refetch itineraries
   const handleResetFilters = () => {
     setSelectedTags([]);
     setSelectedLanguages([]);
@@ -115,9 +108,7 @@ const Itineraries = () => {
 
       setFilteredItineraries((prevItineraries) =>
         prevItineraries.map((itinerary) =>
-          itinerary._id === itineraryId
-            ? { ...itinerary, inappropriate: newStatus }
-            : itinerary
+          itinerary._id === itineraryId ? { ...itinerary, inappropriate: newStatus } : itinerary
         )
       );
 
@@ -140,7 +131,7 @@ const Itineraries = () => {
   }
 
   return (
-    <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme}>
       <AppBar position="static" color="primary" sx={{ mb: 4 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
@@ -151,13 +142,12 @@ const Itineraries = () => {
 
       <Box sx={{ p: 4 }}>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-          <TextField
-            label="Search by name"
-            variant="outlined"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ mr: 2, width: "300px" }}
-          />
+        {userType === "Tour Guide" && (
+            <Button color="secondary" variant="contained" onClick={() => navigate("/add-itinerary")}>
+              Add +
+            </Button>
+          )}
+          <TextField label="Search by name" variant="outlined" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} sx={{ mr: 2, width: "300px" }} />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
             <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
@@ -235,19 +225,21 @@ const Itineraries = () => {
                     {itinerary.name}
                   </Typography>
                   <Typography>Price: ${itinerary.price}</Typography>
-                  <Typography><strong>Language:</strong> {itinerary.language}</Typography>
-                  <Typography><strong>Tags:</strong> {itinerary.tags.join(", ")}</Typography>
-                  <Button
-                    component={Link}
-                    to={`/tourist/itinerary/${itinerary._id}`}
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                  >
-  View Details
-</Button>
-               </CardContent>
-
-            
+                  <Typography>
+                    <strong>Language:</strong> {itinerary.language}
+                  </Typography>
+                  <Typography>
+                    <strong>Tags:</strong> {itinerary.tags.join(", ")}
+                  </Typography>
+                  <Button component={Link} to={`/tourist/itinerary/${itinerary._id}`} variant="contained" sx={{ mt: 2 }}>
+                    View Details
+                  </Button>
+                </CardContent>
+                {userType === "Admin" && (
+                  <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
+                    <FlagIcon />
+                  </IconButton>
+                )}
               </Card>
             </Grid>
           ))}

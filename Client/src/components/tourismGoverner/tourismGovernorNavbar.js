@@ -32,8 +32,7 @@ import {
 } from "@mui/icons-material";
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import Report from "@mui/icons-material/Report"; // Add this import for the complaint icon
-import Hotel from "@mui/icons-material/Hotel"; // For Hotels
-import Flight from "@mui/icons-material/Flight"; // For Flights
+
 import Assignment from "@mui/icons-material/Assignment"; // Add this import for the new icon
 import LockOpen from "@mui/icons-material/LockOpen"; // For Forget Password
 import Delete from "@mui/icons-material/Delete"; // For Delete Account
@@ -53,8 +52,7 @@ const TourismGovernorNavbar = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleServicesClick = (event) => setAnchorEl(event.currentTarget);
-  const handleServicesClose = () => setAnchorEl(null);
+  
   const handleHelpClick = (event) => setHelpAnchorEl(event.currentTarget);
   const handleHelpClose = () => setHelpAnchorEl(null);
   const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
@@ -88,16 +86,8 @@ const TourismGovernorNavbar = () => {
   };
 
   const handleProfileClick = () => navigate("/tourism-governor/profile");
-  const handleHomeClick = () => navigate("/tourist/homepage");
-  const handleCartClick = () => navigate("/tourist/cart");
-  const handleOrdersClick = () => navigate("/tourist/orders");
-  const handlePaymentsClick = () => navigate("/tourist/payments");
-  const handleBookingsClick = () => navigate("/tourist/bookings");
-  const handleWishlistClick = () => navigate("/tourist/wishlist");
-  const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
 
-  const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
-  const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
+
 
   return (
     <>
@@ -110,11 +100,7 @@ const TourismGovernorNavbar = () => {
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* Home Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
-              <Home />
-              <Typography variant="body1" sx={{ ml: 1 }}>Home</Typography>
-            </IconButton>
-
+           
             {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
@@ -123,21 +109,6 @@ const TourismGovernorNavbar = () => {
             <Menu anchorEl={accountAnchorEl} open={Boolean(accountAnchorEl)} onClose={handleAccountClose}>
               <MenuItem onClick={handleProfileClick}>
                 <AccountCircle sx={{ mr: 1 }} /> My Profile
-              </MenuItem>
-              <MenuItem onClick={handleOrdersClick}>
-                <Assignment sx={{ mr: 1 }} /> Orders
-              </MenuItem>
-              <MenuItem onClick={handlePaymentsClick}>
-                <MonetizationOn sx={{ mr: 1 }} /> Payments
-              </MenuItem>
-              <MenuItem onClick={handleBookingsClick}>
-                <ListAlt sx={{ mr: 1 }} /> Bookings
-              </MenuItem>
-              <MenuItem onClick={handleWishlistClick}>
-                <Favorite sx={{ mr: 1 }} /> Wishlist
-              </MenuItem>
-              <MenuItem onClick={handleGiftCardsClick}>
-                <CardGiftcard sx={{ mr: 1 }} /> Gift Cards
               </MenuItem>
             </Menu>
 
@@ -150,7 +121,7 @@ const TourismGovernorNavbar = () => {
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
   
-  <MenuItem onClick={() => navigate("/tourist/changePassword")}>
+  <MenuItem onClick={() => navigate("/tourism-governor/change-password")}>
     <LockOpen sx={{ mr: 1 }} />
     Change Password
   </MenuItem>
@@ -204,16 +175,7 @@ const TourismGovernorNavbar = () => {
           <Button onClick={confirmLogout} color="primary" variant="contained">Logout</Button>
         </DialogActions>
       </Dialog>
-      <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
-        <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
-          <IconButton color="inherit" sx={{ color: "#fff" }}><Hotel /><Typography variant="body1" sx={{ ml: 1 }}>Hotels</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}><ListAlt /><Typography variant="body1" sx={{ ml: 1 }}>Itineraries</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/events")}><Event /><Typography variant="body1" sx={{ ml: 1 }}>Events</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/historical-places")}><AccountBalanceIcon /><Typography variant="body1" sx={{ ml: 1 }}>Historical Places</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}><DirectionsRun /><Typography variant="body1" sx={{ ml: 1 }}>Activities</Typography></IconButton>
-          <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}><Flight /><Typography variant="body1" sx={{ ml: 1 }}>Flights</Typography></IconButton>
-        </Toolbar>
-      </AppBar>
+    
     </>
   );
 };

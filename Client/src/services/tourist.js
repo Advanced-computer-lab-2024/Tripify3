@@ -26,12 +26,19 @@ export const getAllPlaces = async () => {
   return await axios.get(`${API_URL}`);
 };
 
+export const getUserProfile = async(userId) =>{
+  return  await axios.get(`${API_URL}/tourist/profile/${userId}`)
+}
+
 export const getAllActiveAppropriateIteneraries = async (userId) => {
   return await axios.get(`${API_URL}/itineraries/active/appropriate/get`);
 };
 
 export const getAllActivities = async () => {
   return await axios.get(`${API_URL}/activity/get`);
+};
+export const getAllActivitiesForAdvertiser = async (userId) => {
+  return await axios.get(`${API_URL}/advertiser/activity/${userId}`);
 };
 export const getAllActivitiesAttended = async (userId) => {
   console.log("hrns:"+ userId)

@@ -153,18 +153,19 @@ export const viewSeller = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 export const updateSeller = async (req, res) => {
-  const { username, name, description } = req.body; // Expecting the us in the request body
+  const { id } = req.params; // Expecting seller id in the route parameters
+  const { name, description } = req.body; // Expecting name and description in the request body
 
   try {
     const user = await seller
-      .findOneAndUpdate(
-        { username: username }, // Search by username
+      .findByIdAndUpdate(
+        id, // Search by id
         { name: name, description: description }, // Fields to update
         { new: true } // Return the updated document
       )
       .select("-__t -__v");
+    
     if (!user) {
       return res.status(404).json({ message: "Seller not found." });
     }
@@ -176,6 +177,7 @@ export const updateSeller = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const createProduct = async (req, res) => {
   try {

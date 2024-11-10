@@ -38,63 +38,12 @@ const TourismGovernorProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleProfilePicChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("userId", userId);
-      formData.append("file", file);
-
-      try {
-        const response = await axios.put("http://localhost:8000/user/upload/picture", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        const uploadedImageUrl = `http://localhost:8000/uploads/${userId}/${response.data.profilePicture.filename}`;
-        setProfilePicUrl(uploadedImageUrl);
-      } catch (error) {
-        console.error("Error uploading the image:", error);
-      }
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      await changePassword({
-        username: formData.username,
-        oldPassword: userProfile.password, // Assuming the existing password is used as oldPassword
-        newPassword: formData.password,
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating password:", error);
-    }
-  };
-
   return (
     <Box sx={{ padding: 7 }}>
       {userProfile && (
         <Box sx={{ maxWidth: "600px", margin: "auto" }}>
           <Card sx={{ borderRadius: "10px", padding: 3 }}>
             <CardHeader title="Profile Information" titleTypographyProps={{ variant: "h6", sx: { marginLeft: -2 } }} />
-            <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
-              <Box sx={{ position: "relative", marginRight: 2 }}>
-                <Avatar
-                  alt="Profile Picture"
-                  src={
-                    profilePicUrl ||
-                    "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
-                  }
-                  sx={{ width: 90, height: 90 }}
-                />
-                <label htmlFor="profile-pic-upload" style={{ position: "absolute", bottom: 5, right: -3, cursor: "pointer" }}>
-                  <FaCamera size={18} color="gray" />
-                </label>
-                <input id="profile-pic-upload" type="file" accept="image/*" onChange={handleProfilePicChange} style={{ display: "none" }} />
-              </Box>
-              <Typography variant="h5" marginLeft={-1}>
-                @{formData.username}
-              </Typography>
-            </Box>
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <TextField label="Username" name="username" value={formData.username} disabled fullWidth />
@@ -109,22 +58,12 @@ const TourismGovernorProfile = () => {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <FaEyeSlash /> : <FaEye />}</IconButton>
+                      <IconButton onClick={() => setShowPassword((prev) => !prev)}>{showPassword ? <FaEye /> : <FaEyeSlash />}</IconButton>
                     </InputAdornment>
                   ),
                 }}
               />
             </Box>
-            <Button
-              variant="contained"
-              onClick={() => {
-                if (isEditing) handleSubmit();
-                setIsEditing(!isEditing);
-              }}
-              sx={{ marginTop: 2 }}
-            >
-              {isEditing ? "Save" : "Edit"}
-            </Button>
           </Card>
         </Box>
       )}

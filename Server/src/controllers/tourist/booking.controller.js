@@ -2,15 +2,15 @@ import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 import Booking from "../../models/booking.js";
 import User from "../../models/user.js";
+import Place from "../../models/place.js";
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
 
   console.log(req.body);
-  
 
   try {
-    let item;    
+    let item;
     // Use a switch statement to find the correct model based on the type
     switch (type) {
       case "Activity":
@@ -18,6 +18,9 @@ export const createBooking = async (req, res) => {
         break;
       case "Itinerary":
         item = await Itinerary.findById(itemId);
+        break;
+      case "Place":
+        item = await Place.findById(itemId);
         break;
       case "Hotel":
         item = null;
@@ -44,21 +47,23 @@ export const createBooking = async (req, res) => {
       price,
       tickets,
       type,
-      details
+      details,
     });
-    if(type === "Itinerary") {
+    if (type === "Itinerary") {
       booking.itinerary = itemId;
     }
-    if(type === "Trip") {
+    if (type === "Trip") {
       booking.trip = itemId;
     }
-    if(type === "Activity") {
+    if (type === "Activity") {
       booking.activity = itemId;
+    }
+    if (type === "Place") {
+      booking.place = itemId;
     }
     await booking.save();
 
     console.log(booking);
-    
 
     // Add the booking ID to the bookings array in the associated model
 
@@ -71,10 +76,9 @@ export const createBooking = async (req, res) => {
   }
 };
 
-
 export const cancelBooking = async (req, res) => {
   try {
-    const { bookingId } = req.body;
+    const { bookingId } = req.params;
 
     // Find the booking by ID
     const booking = await Booking.findById(bookingId);
@@ -82,36 +86,31 @@ export const cancelBooking = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
+    // Determine the event date based on the booking type
+    let eventDate;
+    if (booking.type === "Itinerary") {
+      const itinerary = await Itinerary.findById(booking.itinerary);
+      if (!itinerary) {
+        return res.status(404).json({ message: "Itinerary not found" });
+      }
+      eventDate = itinerary.timeline.startTime;
+    } else if (booking.type === "Activity") {
+      const activity = await Activity.findById(booking.activity);
+      if (!activity) {
+        return res.status(404).json({ message: "Activity not found" });
+      }
+      eventDate = activity.date;
+    } else {
+      return res.status(400).json({ message: "Unsupported booking type" });
+    }
+
     // Check if the cancellation is at least 48 hours before the event
     const currentTime = new Date();
-    const eventTime = new Date(booking.eventDate); // Assuming booking has an eventDate field
-    const hoursDifference = (eventTime - currentTime) / (1000 * 60 * 60);
-
+    const hoursDifference = (new Date(eventDate) - currentTime) / (1000 * 60 * 60);
     if (hoursDifference < 48) {
       return res.status(400).json({
         message: "Cancellations must be made at least 48 hours before the event",
       });
-    }
-
-    // Remove the booking from the associated itinerary if the type is itinerary
-    if (booking.type === "Itinerary") {
-      const itinerary = await Itinerary.findById(booking.itemId);
-      if (!itinerary) {
-        return res.status(404).json({ message: "Itinerary not found" });
-      }
-
-      // Remove the booking ID from the itinerary's bookings array
-      itinerary.bookings = itinerary.bookings.filter((id) => id.toString() !== bookingId);
-      await itinerary.save();
-    } else if (booking.type === "Activity") {
-      const activity = await Activity.findById(booking.itemId);
-      if (!activity) {
-        return res.status(404).json({ message: "Activity not found" });
-      }
-
-      // Remove the booking ID from the itinerary's bookings array
-      activity.bookings = activity.bookings.filter((id) => id.toString() !== bookingId);
-      await activity.save();
     }
 
     // Delete the booking from the Booking model
@@ -125,10 +124,7 @@ export const cancelBooking = async (req, res) => {
 };
 
 
-
-
 export const getAllBookings = async (req, res) => {
-
   try {
     const { touristId } = req.params;
 
@@ -174,36 +170,34 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-
-
 export const getTourGuideProfile = async (req, res) => {
   const { tourGuideId, touristId } = req.params;
 
   try {
-      // Fetch the tour guide by ID
-      const tourGuide = await User.findById(tourGuideId);
+    // Fetch the tour guide by ID
+    const tourGuide = await User.findById(tourGuideId);
 
-      if (!tourGuide) {
-          return res.status(404).json({ message: "Tour Guide not found" });
-      }
+    if (!tourGuide) {
+      return res.status(404).json({ message: "Tour Guide not found" });
+    }
 
-      // Fetch the tourist by ID to check following status
-      const tourist = await User.findById(touristId);
+    // Fetch the tourist by ID to check following status
+    const tourist = await User.findById(touristId);
 
-      if (!tourist) {
-          return res.status(404).json({ message: "Tourist not found" });
-      }
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
 
-      // Check if the tour guide is in the tourist's following list
-      const isFollowing = tourist.following.includes(tourGuideId);
+    // Check if the tour guide is in the tourist's following list
+    const isFollowing = tourist.following.includes(tourGuideId);
 
-      // Respond with the tour guide's details and following status
-      res.status(200).json({
-          tourGuide,
-          isFollowing
-      });
+    // Respond with the tour guide's details and following status
+    res.status(200).json({
+      tourGuide,
+      isFollowing,
+    });
   } catch (error) {
-      console.error("Error fetching user details:", error);
-      res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error fetching user details:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

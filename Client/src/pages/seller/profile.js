@@ -3,10 +3,10 @@ import axios from "axios";
 import { Box, Typography, TextField, Button, Avatar, Card, IconButton } from "@mui/material";
 import { FaCamera } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { getProfile, updateProfile } from "../../services/tourGuide.js";
+import { getProfile, updateProfile } from "../../services/seller.js";
 import { getUserId } from "../../utils/authUtils.js";
 
-const TouristProfile = () => {
+const SellerProfile = () => {
   const userId = getUserId();
   const [user, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -16,9 +16,7 @@ const TouristProfile = () => {
     username: "",
     email: "",
     fullName: "",
-    phoneNumber: "",
-    yearsOfExperience: "",
-    previousWork: [],
+    description: "",
   });
 
   useEffect(() => {
@@ -27,18 +25,16 @@ const TouristProfile = () => {
         const response = await getProfile(userId);
         setUserProfile(response.data.user);
         const userData = response.data.user;
-        const previousWork = response.data.user.previousWork || [];
 
         setFormData({
-          username: response.data.user.username,
-          email: response.data.user.email,
-          fullName: response.data.user.name,
-          phoneNumber: response.data.user.phoneNumber,
-          yearsOfExperience: response.data.user.yearsOfExperience,
-          previousWork: previousWork,
+          username: userData.username,
+          email: userData.email,
+          fullName: userData.name,
+          description: userData.description || "",
         });
+
         // Check if profilePicture exists before setting the profilePicUrl
-        if (userData.profilePicture && userData.profilePicture.filename) {
+        if (userData.files && userData.profilePicture.filename) {
           setProfilePicUrl(`http://localhost:8000/uploads/${userId}/${userData.profilePicture.filename}`);
         } else {
           setProfilePicUrl(""); // Set to an empty string if there's no profile picture
@@ -53,14 +49,7 @@ const TouristProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("previousWork-")) {
-      const index = parseInt(name.split("-")[1]);
-      const newPreviousWork = [...formData.previousWork];
-      newPreviousWork[index] = value;
-      setFormData((prev) => ({ ...prev, previousWork: newPreviousWork }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleProfilePicChange = (e) => {
@@ -78,16 +67,13 @@ const TouristProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const filteredPreviousWork = formData.previousWork.filter((work) => work.trim() !== "");
 
     try {
       // 1. Update profile info
       const response = await updateProfile(userId, {
-        ...formData,
-        previousWork: filteredPreviousWork,
+        name: formData.fullName,
+        description: formData.description,
       });
-
-      const userProfile = await getProfile(userId);
 
       // 2. Handle profile picture upload or deletion
       if (newProfilePic) {
@@ -107,7 +93,8 @@ const TouristProfile = () => {
       }
 
       // 3. Update the user state with the new data
-      setUserProfile(userProfile.data.user); // Set the updated profile data
+      const updatedProfile = await getProfile(userId);
+      setUserProfile(updatedProfile.data.user);
 
       // 4. Update local state instead of reloading the page
       setProfilePicUrl(newProfilePic ? URL.createObjectURL(newProfilePic) : ""); // Show updated profile picture
@@ -116,20 +103,6 @@ const TouristProfile = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
     }
-  };
-
-  const handleRemovePreviousWork = (index) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      previousWork: prevData.previousWork.filter((_, i) => i !== index), // Filter out the work at the given index
-    }));
-  };
-
-  const handleAddPreviousWork = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      previousWork: [...prevData.previousWork, ""],
-    }));
   };
 
   return (
@@ -162,32 +135,20 @@ const TouristProfile = () => {
             </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-              <TextField label="Full Name" value={formData.fullName} onChange={handleChange} disabled={!isEditing} fullWidth />
+              <TextField label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} disabled={!isEditing} fullWidth />
 
               <TextField label="Email" name="email" value={formData.email} disabled fullWidth sx={{ ml: 2 }} />
             </Box>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-              <TextField label="Years of Experience" name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleChange} disabled={!isEditing} fullWidth />
-              <TextField label="Phone Number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
-            </Box>
-
             <Box sx={{ mb: 2 }}>
-              {formData.previousWork.map((work, index) => (
-                <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <TextField label={`Previous Work ${index + 1}`} name={`previousWork-${index}`} value={work} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ mr: 1 }} />
-                  {isEditing && (
-                    <Button variant="outlined" color="error" onClick={() => handleRemovePreviousWork(index)}>
-                      Remove
-                    </Button>
-                  )}
-                </Box>
-              ))}
-              {isEditing && (
-                <Button variant="contained" onClick={handleAddPreviousWork} sx={{ mt: 1 }}>
-                  Add Previous Work
-                </Button>
-              )}
+              <TextField
+                label="Description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                disabled={!isEditing}
+                fullWidth
+              />
             </Box>
 
             <Button variant="contained" onClick={isEditing ? handleSubmit : () => setIsEditing(true)}>
@@ -202,4 +163,4 @@ const TouristProfile = () => {
   );
 };
 
-export default TouristProfile;
+export default SellerProfile;

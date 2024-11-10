@@ -155,65 +155,57 @@ export const getAdvertisers = async (req, res) => {
 
 
 
-export const deleteAdvertiser = async (req, res) => {
+export const checkUpcomingActivities = async (req, res) => {
+  const advertiserId = req.params.advertiserId;  // Use the correct parameter name
+
   try {
-    const advertiserId = req.params.id; // Get the advertiser ID from request parameters
-
-    // Ensure the advertiser ID is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(advertiserId)) {
-      return res.status(400).json({ success: false, message: 'Invalid advertiser ID' });
-    }
-
-    const currentDate = new Date();
-
-    // Check for conflicting activities with current or future dates
-    const conflictingActivities = await Activity.find({
+    const upcomingActivities = await Activity.find({
       advertiser: advertiserId,
-      date: { $gte: currentDate } // Activities with current or future dates
+      date: { $gte: new Date() },
     });
 
-    if (conflictingActivities.length > 0) {
+    if (upcomingActivities.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Advertiser cannot be deleted as they have activities with current or future dates.'
+        message: 'Advertiser cannot be deleted as they have activities with current or future dates.',
       });
     }
 
-    // Log the advertiser ID and check if activities exist before deletion
-    console.log('Attempting to delete activities for advertiser ID:', advertiserId);
-
-    // Delete all activities related to the advertiser
-    const deletedActivities = await Activity.deleteMany({ advertiser: advertiserId });
-
-    // Log the result of activity deletion
-    if (deletedActivities.deletedCount === 0) {
-      console.log('No activities found to delete for advertiser ID:', advertiserId);
-    } else {
-      console.log(`Deleted ${deletedActivities.deletedCount} activities for advertiser ID:`, advertiserId);
-    }
-
-    // Delete the advertiser from the database
-    console.log('Attempting to delete advertiser ID:', advertiserId);
-    const deletedAdvertiser = await Advertiser.findByIdAndDelete(advertiserId);
-
-    if (!deletedAdvertiser) {
-      return res.status(404).json({
-        success: false,
-        message: 'Advertiser not found.'
-      });
-    }
-
-    // Successful deletion
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: 'Advertiser and their corresponding activities deleted successfully.'
+      message: 'No upcoming activities found.',
     });
   } catch (error) {
-    console.error('Error details:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'An error occurred while trying to delete the advertiser and their activities.',
-      error: error.message // Provide error message in response for better debugging
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred while checking for upcoming activities.' });
+  }
+};
+
+// Controller to delete advertiser account
+export const deleteAdvertiserAccount = async (req, res) => {
+  const { advertiserId } = req.params;
+  const currentDate = new Date();
+
+  try {
+    // Check if the advertiser has any upcoming activities
+    const hasUpcomingActivities = await Activity.exists({
+      advertiser: advertiserId,
+      date: { $gt: currentDate },
     });
+
+    if (hasUpcomingActivities) {
+      return res.status(400).json({ message: 'Cannot delete account. You have upcoming activities.' });
+    }
+
+    // Delete all activities associated with the advertiser
+    await Activity.deleteMany({ advertiser: advertiserId });
+
+    // Delete the advertiser's account
+    await Advertiser.findByIdAndDelete(advertiserId);
+
+    res.status(200).json({ message: 'Account and associated activities successfully deleted.' });
+  } catch (error) {
+    console.error('Error deleting account:', error);
+    res.status(500).json({ message: 'Error deleting the account and activities' });
   }
 };

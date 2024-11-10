@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Button, CircularProgress, Card, Divider, CardContent, Paper, CardActions, IconButton, Avatar, TextField, Dialog, Slide, Rating, Grid, List, ListItem } from "@mui/material";
+import { DialogActions, DialogContent, DialogContentText, DialogTitle, Box, Typography, Button, CircularProgress, Card, Divider, CardContent, Paper, CardActions, IconButton, Avatar, TextField, Dialog, Slide, Rating, Grid, List, ListItem } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Favorite, Star } from "@mui/icons-material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import StarIcon from "@mui/icons-material/Star";
-
 import axios from "axios";
 import { getUserId } from "../../utils/authUtils";
 import EventNoteIcon from "@mui/icons-material/EventNote";
@@ -23,7 +22,7 @@ export const getItineraryById = async (id) => {
 };
 
 const BookingDetails = () => {
-  const { itemId, type, view } = useParams();
+  const { itemId, type, view, bookingId } = useParams();
   const userId = getUserId();
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
@@ -37,6 +36,35 @@ const BookingDetails = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [dialogMessage, setDialogMessage] = React.useState("");
+
+  const handleCancelBooking = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/boooking/delete/${bookingId}`);
+      console.log(response.data);
+      
+      if (response.status === 200) {
+        setDialogMessage("Booking has been cancelled. Your payment will be refunded.");
+      } else {
+        setDialogMessage("Cannot cancel booking within 48 hours of the start date.");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        setDialogMessage("Cannot cancel booking within 48 hours of the start date.");
+      } else {
+        setDialogMessage("An error occurred while trying to cancel the booking.");
+      }
+    }
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    if (dialogMessage.includes("cancelled")) {
+      navigate(-1); // Go back to the previous page
+    }
+  };
 
   useEffect(() => {
     const fetchBooking = async () => {
@@ -50,11 +78,9 @@ const BookingDetails = () => {
         } else if (type === "Itinerary") {
           const itineraryResponse = await getItineraryById(itemId);
           bookingData = itineraryResponse.data.data.itinerary;
-          console.log(bookingData);
           setReview(itineraryResponse.data.data);
           await fetchTourGuideProfile(bookingData.tourGuide._id, userId);
         }
-
         setBooking(bookingData);
         setLoading(false);
       } catch (error) {
@@ -88,7 +114,7 @@ const BookingDetails = () => {
 
   const handleItemFeedback = async () => {
     const feedbackData = {
-      tourist: userId, // Replace with actual tourist ID
+      tourist: userId, 
       rating,
       comment,
     };
@@ -113,7 +139,7 @@ const BookingDetails = () => {
   const handleTourGuideFeedback = async () => {
     const feedbackData = {
       tourist: userId,
-      tourGuideRatingating,
+      tourGuideRating,
       tourGuideComment,
       tourGuide: booking.tourGuide._id,
     };
@@ -179,6 +205,13 @@ const BookingDetails = () => {
                 <Typography variant="h4" textAlign="center">
                   {booking.name}
                 </Typography>
+                {/* Cancel Booking Button */}
+                {view === "upcoming" && (
+                  <Button variant="contained" color="error" sx={{ mt: 2 }} onClick={handleCancelBooking}>
+                    Cancel Booking
+                  </Button>
+                )}
+
                 <Typography variant="body2" color="textSecondary" textAlign="center">
                   Language: {booking.language}
                 </Typography>
@@ -284,6 +317,17 @@ const BookingDetails = () => {
                 )}
               </CardContent>
             </Card>
+            <Dialog open={openDialog} onClose={handleDialogClose}>
+              <DialogTitle>Booking Status</DialogTitle>
+              <DialogContent>
+                <DialogContentText>{dialogMessage}</DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleDialogClose} color="primary">
+                  OK
+                </Button>
+              </DialogActions>
+            </Dialog>
 
             <Card sx={{ mt: 9, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
               <CardContent>
@@ -447,6 +491,7 @@ const BookingDetails = () => {
                       </Typography>
                     </Box>
                   </Grid>
+
                   <Grid item xs={12} sm={6}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       {Array.from({ length: 5 }).map((_, index) => (
@@ -461,6 +506,7 @@ const BookingDetails = () => {
                     </Box>
                   </Grid>
 
+
                   <Grid item xs={12}>
                     <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
                       Category: {booking.category.name}
@@ -470,6 +516,14 @@ const BookingDetails = () => {
                     </Typography>
                   </Grid>
                 </Grid>
+
+                {view === "upcoming" && (
+                  <Button variant="contained" color="error" sx={{ mt: 2 }} onClick={handleCancelBooking}>
+                    Cancel Booking
+                  </Button>
+                )}
+                
+              
 
                 {view === "past" && (
                   <>
@@ -494,6 +548,17 @@ const BookingDetails = () => {
                 )}
               </CardContent>
             </Card>
+            <Dialog open={openDialog} onClose={handleDialogClose}>
+              <DialogTitle>Booking Status</DialogTitle>
+              <DialogContent>
+                <DialogContentText>{dialogMessage}</DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleDialogClose} color="primary">
+                  OK
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
 
           {/* Right: Comments & Tour Guide */}
@@ -507,7 +572,7 @@ const BookingDetails = () => {
                 </Typography>
 
                 {/* Comments Container */}
-                <Box sx={{ maxHeight: 900, overflowY: "auto" }}>
+                <Box sx={{ maxHeight: 400, overflowY: "auto" }}>
                   {review.reviews.map((review) => (
                     <Paper
                       key={review._id}

@@ -10,7 +10,7 @@ const AdvertiserLayout = ({ children }) => (
     <AdvertiserNavbar />
 
     {/* Layout with Sidebar and Main Content */}
-    <div style={{ display: "flex", flexGrow: 1, marginTop: "120px" }}>
+    <div style={{ display: "flex", flexGrow: 1, marginTop: "60px" }}>
       {" "}
       {/* Adjust for Navbar height */}
       {/* Conditionally Render Sidebar */}

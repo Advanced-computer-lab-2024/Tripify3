@@ -20,9 +20,7 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
-import { getUserId } from "../../utils/authUtils.js";
-
-
+import { Link } from 'react-router-dom';
 const theme = createTheme({
   palette: {
     primary: {
@@ -34,8 +32,9 @@ const theme = createTheme({
   },
 });
 
+import { getUserId, getUserType } from "../../utils/authUtils";
+
 const GovernorHistoricalPlaces = () => {
-  
   const userId = getUserId();
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -138,7 +137,7 @@ const GovernorHistoricalPlaces = () => {
           variant="h2"
           align="center"
           gutterBottom
-          sx={{ color: theme.palette.primary.main }}
+          sx={{ color: theme.palette.primary.main , marginTop: 8 }}
         >
           Historical Places
         </Typography>
@@ -228,12 +227,13 @@ const GovernorHistoricalPlaces = () => {
                   <Typography>
                     <strong>Description:</strong> {place.description}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => console.log(`Navigate to place ${place._id}`)}
-                  >
-                    View Details
+                    <Button
+                        component={Link}
+                        to={`/tourism-governor/historical-places/details/${place.tourismGovernor}`}
+                        variant="contained"
+                        sx={{ mt: 2 }}
+                      >
+                        View Details
                   </Button>
                 </CardContent>
               </Card>

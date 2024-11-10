@@ -1,21 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Paper,
-  Dialog,
-  Slide,
-  Rating,
-  CardActions,
-  Typography,
-  Button,
-  CircularProgress,
-  Grid,
-  Card,
-  CardContent,
-  Avatar,
-  List,
-  ListItem,
-} from "@mui/material";
+import { Box, Paper, Dialog, Slide, Rating, CardActions, Typography, Button, CircularProgress, Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Favorite } from "@mui/icons-material";
@@ -30,7 +14,7 @@ import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useParams, useNavigate } from "react-router-dom";
 
-const ItineraryDetails = () => {
+const TourGuideItineraryDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const userId = getUserId();
@@ -42,10 +26,6 @@ const ItineraryDetails = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [ticketCount, setTicketCount] = useState(1);
   const [currency, setCurrency] = useState("USD"); // Default currency
-
-  // Function to handle ticket count increase
-  const handleIncrease = () => setTicketCount((prev) => prev + 1);
-  const handleDecrease = () => ticketCount > 1 && setTicketCount((prev) => prev - 1);
 
   // Fetch itinerary and user profile data
   useEffect(() => {
@@ -85,30 +65,6 @@ const ItineraryDetails = () => {
     }
   };
 
-  const handleFollowToggle = async () => {
-    try {
-      const followData = { follow: !isFollowing };
-      await axios.post(`http://localhost:8000/tourist/follow/${userId}/${itinerary.tourGuide._id}`, followData);
-      setIsFollowing(!isFollowing);
-    } catch (error) {
-      console.error("Error toggling follow status:", error);
-    }
-  };
-
-  const BookItinerary = async () => {
-    const tourist = getUserId();
-    const price = ticketCount * itinerary.price; // Calculate total price
-    const type = "Itinerary";
-    const itemId = itinerary._id;
-    const booking = { tourist, price, type, itemId, tickets: ticketCount };
-    try {
-      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
-      alert(response.data.message);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
   const handleShareToggle = () => {
     setShareOpen((prev) => !prev);
   };
@@ -123,7 +79,8 @@ const ItineraryDetails = () => {
 
   const handleEmailShare = () => {
     const emailSubject = `Check out this itinerary: ${itinerary.name}`;
-    const emailBody = `I thought you might be interested in this itinerary!\n\n` +
+    const emailBody =
+      `I thought you might be interested in this itinerary!\n\n` +
       `Itinerary Name: ${itinerary.name}\n` +
       `Location: ${itinerary.location}\n` +
       `Date: From ${new Date(itinerary.timeline.startTime).toLocaleDateString()} to ${new Date(itinerary.timeline.endTime).toLocaleDateString()} ` +
@@ -138,7 +95,7 @@ const ItineraryDetails = () => {
       `View more details here: http://localhost:3000/tourist/itinerary/${itinerary._id}`;
 
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-    window.open(gmailUrl, '_blank');
+    window.open(gmailUrl, "_blank");
   };
 
   // Loading and Error Handling States
@@ -163,24 +120,33 @@ const ItineraryDetails = () => {
     CAD: 0.065, // 1 EGP = 0.065 CAD
     // Add other currencies as needed
   };
-  
+
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
-  
+
     // Ensure amount is a number
     const value = Number(amount);
-  
+
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
-  
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
-      .format(convertedAmount);
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: currency }).format(convertedAmount);
   };
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#F5F7FA", minHeight: "100vh", position: "relative" }}>
+    <Box
+      sx={{
+        p: 3,
+        backgroundColor: "#F5F7FA",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+      }}
+    >
       <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
         Go Back
       </Button>
@@ -272,12 +238,8 @@ const ItineraryDetails = () => {
                         <Typography variant="body2" color="textSecondary">
                           Location: {activity.location}
                         </Typography>
-                        <Typography variant="body2">
-                          Date: {new Date(activity.date).toLocaleDateString()}
-                        </Typography>
-                        <Typography variant="body2">
-                          Duration: {activity.duration} minutes
-                        </Typography>
+                        <Typography variant="body2">Date: {new Date(activity.date).toLocaleDateString()}</Typography>
+                        <Typography variant="body2">Duration: {activity.duration} minutes</Typography>
                         <Typography variant="body2">
                           Price: {formatCurrency(activity.price)} (Discount: {activity.specialDiscount}%)
                         </Typography>
@@ -352,121 +314,6 @@ const ItineraryDetails = () => {
               </Dialog>
 
               {/* Booking Actions */}
-              <CardActions sx={{ padding: "24px 32px" }}>
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={BookItinerary}
-                    sx={{
-                      fontSize: "1rem",
-                      fontWeight: 500,
-                      textTransform: "none",
-                      whiteSpace: "nowrap", // Prevents text from wrapping
-                      width: "100%", // Ensures the button stretches across the full container width
-                      "&:hover": {
-                        backgroundColor: "#4c73d1",
-                      },
-                    }}
-                  >
-                    Book Itinerary
-                  </Button>
-                </Grid>
-
-                <Grid container spacing={20} alignItems="center">
-                  <Grid item>
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
-                      <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
-                        <RemoveIcon />
-                      </IconButton>
-                      <Typography variant="h6" sx={{ mx: 1 }}>
-                        {ticketCount}
-                      </Typography>
-                      <IconButton onClick={handleIncrease}>
-                        <AddIcon />
-                      </IconButton>
-                    </Box>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Typography variant="h6" sx={{ fontWeight: 500 }}>
-                      Total Price: {formatCurrency(ticketCount * itinerary.price)}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </CardActions>
-            </CardContent>
-          </Card>
-
-          {/* Reviews Section */}
-          <Card sx={{ mt: 9, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
-            <CardContent>
-              <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-                Reviews
-              </Typography>
-
-              <Box sx={{ maxHeight: 400, overflowY: "auto" }}>
-                {review.reviews.map((review) => (
-                  <Paper
-                    key={review._id}
-                    sx={{
-                      mb: 2,
-                      padding: 2,
-                      backgroundColor: "#f9f9f9",
-                      borderRadius: 2,
-                      boxShadow: 1,
-                      position: "relative",
-                      "&:hover": {
-                        boxShadow: 3,
-                      },
-                    }}
-                  >
-                    <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-                      <Rating value={review.rating} readOnly precision={0.5} size="small" />
-                    </Box>
-
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      @{review.tourist.username}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      {review.comment}
-                    </Typography>
-                  </Paper>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-
-        {/* Right: Comments & Tour Guide */}
-        <Box sx={{ flex: 1, maxWidth: "600px" }}>
-          <Card sx={{ mt: 6, borderRadius: 3, boxShadow: 5, padding: 4 }}>
-            <CardContent>
-              <Box sx={{ textAlign: "center" }}>
-                <Typography variant="h5" sx={{ mb: 1 }}>
-                  {itinerary.tourGuide.name}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {itinerary.tourGuide.yearsOfExperience} years of experience
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>
-                  ✨ {itinerary.tourGuide.previousWork.join(", ")}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color={isFollowing ? "secondary" : "primary"}
-                  sx={{ mb: 2 }}
-                  onClick={handleFollowToggle}
-                  startIcon={<Favorite />}
-                >
-                  {isFollowing ? "Following" : "Follow"} {isFollowing ? "💖" : "💬"}
-                </Button>
-              </Box>
-
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="body2">📞 {itinerary.tourGuide.phoneNumber}</Typography>
-                <Typography variant="body2">📧 {itinerary.tourGuide.email}</Typography>
-              </Box>
             </CardContent>
           </Card>
         </Box>
@@ -475,4 +322,4 @@ const ItineraryDetails = () => {
   );
 };
 
-export default ItineraryDetails;
+export default TourGuideItineraryDetails;

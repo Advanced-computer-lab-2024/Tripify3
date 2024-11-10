@@ -3,7 +3,7 @@ import axios from "axios";
 const API_URL = "http://localhost:8000"; // Replace with your API URL
 
 export const getProfile = async (userId) => {
-  return await axios.get(`${API_URL}/tourGuide/profile/${userId}`);
+  return await axios.get(`${API_URL}/user/get/profile/${userId}`);
 };
 
 export const updateProfile = async (userId, formData) => {
@@ -21,3 +21,14 @@ export const getAllTags = async () => {
 export const markItineraryInappropriate = async (id, data) => {
   return await axios.put(`${API_URL}/itineraries/${id}/edit`, data);
 };
+
+export const getAllActivities = async (userId) => {
+  return await axios.get(`${API_URL}/activity/get`);
+};  
+
+export const getAllPlaces = async (userId) => {
+  return await axios.get(`${API_URL}/places/get`);
+};
+
+
+

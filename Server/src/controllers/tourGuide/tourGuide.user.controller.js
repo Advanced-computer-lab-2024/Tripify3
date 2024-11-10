@@ -72,63 +72,34 @@ export const getAllTourGuides = async (req, res) => {
   }
 };
 
-// export const checkUpcomingItineraries = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     const currentDate = new Date();
+export const checkUpcomingItineraries = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentDate = new Date();
 
-//     console.log('Current Date:', currentDate); // Log current date for debugging
+    console.log('Current Date:', currentDate); // Log current date for debugging
 
-//     // Find itineraries with an end time in the future associated with the given tour guide
-//     const itineraries = await Itinerary.find({
-//       tourGuide: userId, // Filter itineraries by tourGuide ID
-//       'timeline.endTime': { $gt: currentDate }, // Check if the endTime is greater than currentDate
-//       status: 'Active', // Ensure the itinerary is active
-//     });
+    // Find itineraries with an end time in the future associated with the given tour guide
+    const itineraries = await Itinerary.find({
+      tourGuide: userId, // Filter itineraries by tourGuide ID
+      'timeline.endTime': { $gt: currentDate }, // Check if the endTime is greater than currentDate
+      status: 'Active', // Ensure the itinerary is active
+    });
 
-//     console.log('Upcoming Itineraries:', itineraries); // Log found itineraries
+    console.log('Upcoming Itineraries:', itineraries); // Log found itineraries
 
-//     // If there are any itineraries, return true; else, return false
-//     const hasUpcomingItineraries = itineraries.length > 0;
+    // If there are any itineraries, return true; else, return false
+    const hasUpcomingItineraries = itineraries.length > 0;
 
-//     res.status(200).json({ hasUpcoming: hasUpcomingItineraries });
-//   } catch (error) {
-//     console.error('Error checking itineraries:', error);
-//     res.status(500).json({ message: 'An error occurred while checking for upcoming itineraries' });
-//   }
-// };
-
-
+    res.status(200).json({ hasUpcoming: hasUpcomingItineraries });
+  } catch (error) {
+    console.error('Error checking itineraries:', error);
+    res.status(500).json({ message: 'An error occurred while checking for upcoming itineraries' });
+  }
+};
 
 
 
-// export const deleteTourGuideAccount = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     const currentDate = new Date();
-
-//     // Check for upcoming itineraries before deletion
-//     const hasUpcomingItineraries = await Itinerary.exists({
-//       tourGuide: userId,
-//       'timeline.endTime': { $gt: currentDate },
-//     });
-
-//     if (hasUpcomingItineraries) {
-//       return res.status(400).json({ message: 'Cannot delete account. You have upcoming itineraries.' });
-//     }
-
-//     // Delete all itineraries associated with the tour guide
-//     await Itinerary.deleteMany({ tourGuide: userId });
-
-//     // Proceed to delete the tour guide's account
-//     await TourGuide.findByIdAndDelete(userId);
-
-//     res.status(200).json({ message: 'Account and associated itineraries successfully deleted.' });
-//   } catch (error) {
-//     console.error('Error deleting account:', error);
-//     res.status(500).json({ message: 'Error deleting the account and itineraries' });
-//   }
-// };
 
 
 export const deleteTourGuideAccount = async (req, res) => {
@@ -136,39 +107,75 @@ export const deleteTourGuideAccount = async (req, res) => {
     const { userId } = req.params;
     const currentDate = new Date();
 
-    // Check if the tour guide has any upcoming itineraries
+    // Check for upcoming itineraries before deletion
     const hasUpcomingItineraries = await Itinerary.exists({
       tourGuide: userId,
-      'timeline.endTime': { $gt: currentDate }, // Find itineraries where endTime is in the future
+      'timeline.endTime': { $gt: currentDate },
     });
 
-    // Prevent deletion if there are upcoming itineraries
     if (hasUpcomingItineraries) {
-      return res.status(400).json({
-        message: 'Cannot delete account. You have upcoming itineraries.',
-      });
+      return res.status(400).json({ message: 'Cannot delete account. You have upcoming itineraries.' });
     }
 
     // Delete all itineraries associated with the tour guide
-    const deletedItineraries = await Itinerary.deleteMany({ tourGuide: userId });
-    console.log('Deleted itineraries count:', deletedItineraries.deletedCount);
+    await Itinerary.deleteMany({ tourGuide: userId });
 
     // Proceed to delete the tour guide's account
-    const deletedTourGuide = await TourGuide.findByIdAndDelete(userId);
-    if (!deletedTourGuide) {
-      return res.status(404).json({ message: 'Tour guide not found.' });
-    }
+    await TourGuide.findByIdAndDelete(userId);
 
-    res.status(200).json({
-      message: 'Account and associated itineraries successfully deleted.',
-    });
+    res.status(200).json({ message: 'Account and associated itineraries successfully deleted.' });
   } catch (error) {
     console.error('Error deleting account:', error);
-    res.status(500).json({
-      message: 'Error deleting the account and itineraries',
-      error: error.message, // Include the error message for better debugging
-    });
+    res.status(500).json({ message: 'Error deleting the account and itineraries' });
   }
 };
+
+
+// export const deleteTourGuideAccount = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
+//     const currentDate = new Date();
+
+//     // Check if the tour guide has any upcoming itineraries
+//     const hasUpcomingItineraries = await Itinerary.exists({
+//       tourGuide: userId,
+//       'timeline.endTime': { $gt: currentDate }, // Find itineraries where endTime is in the future
+//     });
+
+//     // Prevent deletion if there are upcoming itineraries
+//     if (hasUpcomingItineraries) {
+//       return res.status(400).json({
+//         message: 'Cannot delete account. You have upcoming itineraries.',
+//       });
+//     }
+
+//     // Delete all itineraries associated with the tour guide
+//     const deletedItineraries = await Itinerary.deleteMany({ tourGuide: userId });
+//     if (!deletedItineraries) {
+//       throw new Error('Failed to delete itineraries');
+//     }
+//     console.log('Deleted itineraries count:', deletedItineraries.deletedCount);
+
+//     // Proceed to delete the tour guide's account
+//     const deletedTourGuide = await TourGuide.findByIdAndDelete(userId);
+//     if (!deletedTourGuide) {
+//       throw new Error('Tour guide not found');
+//     }
+
+//     res.status(200).json({
+//       message: 'Account and associated itineraries successfully deleted.',
+//     });
+//   } catch (error) {
+//     console.error('Error deleting account:', error);
+//     if (error.name === 'Error') {
+//       res.status(400).json({ message: error.message });
+//     } else {
+//       res.status(500).json({
+//         message: 'Error deleting the account and itineraries',
+//         error: error.message, // Include the error message for better debugging
+//       });
+//     }
+//   }
+// };
 
 

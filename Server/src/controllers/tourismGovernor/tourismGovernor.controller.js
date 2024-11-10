@@ -58,36 +58,6 @@ export const createTag = async (req, res) => {
   }
 };
 
-export const getPlace = async (req, res) => {
-  try {
-    const { id } = req.params; // Extract ID from request parameters
-    console.log(id);
-
-    const place = await Place.findById(id).populate({
-      path: "tags", // Populate tag details
-      select: "name", // Only fetch the tag name
-    }); // Find place by ID and populate tags
-
-    if (!place) {
-      return res.status(http_code.NOT_FOUND).json({
-        status: response_status.NEGATIVE,
-        message: "Place not found",
-      });
-    }
-
-    res.status(http_code.OK).json({
-      status: response_status.POSITIVE,
-      data: {
-        place, // Return the found place
-      },
-    });
-  } catch (err) {
-    res.status(http_code.BAD_REQUEST).json({
-      status: response_status.NEGATIVE,
-      message: err.message || "An error occurred",
-    });
-  }
-};
 
 export const getPlacesByGovernor = async (req, res) => {
   try {
@@ -97,6 +67,7 @@ export const getPlacesByGovernor = async (req, res) => {
       select: "name", // Specify that you only want the name field from tags
     });
 
+  
     // Check if any places were found
     if (!places.length) {
       return res.status(http_code.NOT_FOUND).json({
@@ -107,7 +78,7 @@ export const getPlacesByGovernor = async (req, res) => {
 
     res.status(http_code.OK).json({
       status: response_status.POSITIVE,
-      places: places,
+      place: places,
     });
   } catch (err) {
     res.status(http_code.BAD_REQUEST).json({
@@ -120,23 +91,34 @@ export const getPlacesByGovernor = async (req, res) => {
 export const updatePlace = async (req, res) => {
   try {
     const data = req.body;
+    console.log("Updating with data:", data);
 
     const updatedPlace = await Place.findByIdAndUpdate(req.params.id, data, {
       new: true,
+      runValidators: true, // Ensure schema validation on update
     });
+
+    if (!updatedPlace) {
+      return res.status(http_code.NOT_FOUND).json({
+        status: response_status.NEGATIVE,
+        message: "Place not found",
+      });
+    }
+
     res.status(http_code.OK).json({
       status: response_status.POSITIVE,
-      data: {
-        place: updatedPlace,
-      },
+      data: { place: updatedPlace },
     });
   } catch (err) {
+    console.error("Update error:", err.message);
     res.status(http_code.BAD_REQUEST).json({
       status: response_status.NEGATIVE,
-      message: err,
+      message: err.message,
     });
   }
 };
+
+
 export const deletePlace = async (req, res) => {
   try {
     const place = await Place.findById(req.params.id);

@@ -3,10 +3,10 @@ import axios from "axios";
 import { Box, Typography, TextField, Button, Avatar, Card, IconButton } from "@mui/material";
 import { FaCamera } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { getProfile, updateProfile } from "../../services/tourGuide.js";
+import { getProfile, updateProfile } from "../../services/advertiser.js"; // Make sure to update the API service file
 import { getUserId } from "../../utils/authUtils.js";
 
-const TouristProfile = () => {
+const AdvertiserProfile = () => {
   const userId = getUserId();
   const [user, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -15,10 +15,10 @@ const TouristProfile = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    fullName: "",
-    phoneNumber: "",
-    yearsOfExperience: "",
-    previousWork: [],
+    companyName: "",
+    websiteLink: "",
+    hotline: "",
+    files: [],
   });
 
   useEffect(() => {
@@ -27,15 +27,15 @@ const TouristProfile = () => {
         const response = await getProfile(userId);
         setUserProfile(response.data.user);
         const userData = response.data.user;
-        const previousWork = response.data.user.previousWork || [];
+        const files = response.data.user.files || [];
 
         setFormData({
           username: response.data.user.username,
           email: response.data.user.email,
-          fullName: response.data.user.name,
-          phoneNumber: response.data.user.phoneNumber,
-          yearsOfExperience: response.data.user.yearsOfExperience,
-          previousWork: previousWork,
+          companyName: response.data.user.companyName,
+          websiteLink: response.data.user.websiteLink,
+          hotline: response.data.user.hotline,
+          files: files,
         });
         // Check if profilePicture exists before setting the profilePicUrl
         if (userData.profilePicture && userData.profilePicture.filename) {
@@ -53,14 +53,7 @@ const TouristProfile = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("previousWork-")) {
-      const index = parseInt(name.split("-")[1]);
-      const newPreviousWork = [...formData.previousWork];
-      newPreviousWork[index] = value;
-      setFormData((prev) => ({ ...prev, previousWork: newPreviousWork }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleProfilePicChange = (e) => {
@@ -78,18 +71,23 @@ const TouristProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const filteredPreviousWork = formData.previousWork.filter((work) => work.trim() !== "");
+
+    // Check if any form data has changed
+    const hasProfileChanges =
+      formData.username !== user.username ||
+      formData.email !== user.email ||
+      formData.companyName !== user.companyName ||
+      formData.websiteLink !== user.websiteLink ||
+      formData.hotline !== user.hotline ||
+      formData.files.length !== user.files.length; // Add more checks if needed
 
     try {
-      // 1. Update profile info
-      const response = await updateProfile(userId, {
-        ...formData,
-        previousWork: filteredPreviousWork,
-      });
+      // Update profile info if any profile data has changed
+      if (hasProfileChanges) {
+        await updateProfile(userId, formData);
+      }
 
-      const userProfile = await getProfile(userId);
-
-      // 2. Handle profile picture upload or deletion
+      // Handle profile picture update or deletion
       if (newProfilePic) {
         const pictureFormData = new FormData();
         pictureFormData.append("userId", userId);
@@ -100,17 +98,19 @@ const TouristProfile = () => {
             "Content-Type": "multipart/form-data",
           },
         });
-      } else if (newProfilePic === null && profilePicUrl === "") {
+      } else if (newProfilePic === null && profilePicUrl === "" && user.profilePicture) {
+        // Only delete if the picture was specifically marked for deletion
         await axios.delete("http://localhost:8000/user/remove/picture", {
           data: { userId: userId },
         });
       }
 
-      // 3. Update the user state with the new data
+      // Update the user state with the new data
+      const userProfile = await getProfile(userId);
       setUserProfile(userProfile.data.user); // Set the updated profile data
 
-      // 4. Update local state instead of reloading the page
-      setProfilePicUrl(newProfilePic ? URL.createObjectURL(newProfilePic) : ""); // Show updated profile picture
+      // Update local state instead of reloading the page
+      setProfilePicUrl(newProfilePic ? URL.createObjectURL(newProfilePic) : profilePicUrl); // Keep existing profile picture if unchanged
       setIsEditing(false); // Exit edit mode
       setNewProfilePic(null); // Clear temporary file state
     } catch (error) {
@@ -118,19 +118,6 @@ const TouristProfile = () => {
     }
   };
 
-  const handleRemovePreviousWork = (index) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      previousWork: prevData.previousWork.filter((_, i) => i !== index), // Filter out the work at the given index
-    }));
-  };
-
-  const handleAddPreviousWork = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      previousWork: [...prevData.previousWork, ""],
-    }));
-  };
 
   return (
     <Box sx={{ padding: 7 }}>
@@ -140,7 +127,7 @@ const TouristProfile = () => {
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 2 }}>
               <Box sx={{ position: "relative" }}>
                 <Avatar alt="Profile Picture" src={profilePicUrl || ""} sx={{ width: 90, height: 90 }}>
-                  {formData.fullName.charAt(0)}
+                  {formData.companyName.charAt(0)}
                 </Avatar>
                 {isEditing && (
                   <>
@@ -149,11 +136,9 @@ const TouristProfile = () => {
                       <input type="file" accept="image/*" onChange={handleProfilePicChange} hidden />
                     </IconButton>
                     {profilePicUrl && (
-                      <>
-                        <IconButton onClick={handleDeleteProfilePic} style={{ position: "absolute", bottom: -10, left: -10 }}>
-                          <MdDelete color="red" />
-                        </IconButton>
-                      </>
+                      <IconButton onClick={handleDeleteProfilePic} style={{ position: "absolute", bottom: -10, left: -10 }}>
+                        <MdDelete color="red" />
+                      </IconButton>
                     )}
                   </>
                 )}
@@ -162,32 +147,13 @@ const TouristProfile = () => {
             </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-              <TextField label="Full Name" value={formData.fullName} onChange={handleChange} disabled={!isEditing} fullWidth />
-
+              <TextField label="Company Name" name="companyName" value={formData.companyName} onChange={handleChange} disabled={!isEditing} fullWidth />
               <TextField label="Email" name="email" value={formData.email} disabled fullWidth sx={{ ml: 2 }} />
             </Box>
 
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-              <TextField label="Years of Experience" name="yearsOfExperience" value={formData.yearsOfExperience} onChange={handleChange} disabled={!isEditing} fullWidth />
-              <TextField label="Phone Number" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
-            </Box>
-
-            <Box sx={{ mb: 2 }}>
-              {formData.previousWork.map((work, index) => (
-                <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                  <TextField label={`Previous Work ${index + 1}`} name={`previousWork-${index}`} value={work} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ mr: 1 }} />
-                  {isEditing && (
-                    <Button variant="outlined" color="error" onClick={() => handleRemovePreviousWork(index)}>
-                      Remove
-                    </Button>
-                  )}
-                </Box>
-              ))}
-              {isEditing && (
-                <Button variant="contained" onClick={handleAddPreviousWork} sx={{ mt: 1 }}>
-                  Add Previous Work
-                </Button>
-              )}
+              <TextField label="Website Link" name="websiteLink" value={formData.websiteLink} onChange={handleChange} disabled={!isEditing} fullWidth />
+              <TextField label="Hotline" name="hotline" value={formData.hotline} onChange={handleChange} disabled={!isEditing} fullWidth sx={{ ml: 2 }} />
             </Box>
 
             <Button variant="contained" onClick={isEditing ? handleSubmit : () => setIsEditing(true)}>
@@ -202,4 +168,4 @@ const TouristProfile = () => {
   );
 };
 
-export default TouristProfile;
+export default AdvertiserProfile;

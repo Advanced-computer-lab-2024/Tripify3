@@ -28,8 +28,8 @@ const AdvertiserSidebar = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/advertiser/activities" sx={linkStyle}>
-            Activities
+          <ListItemButton component={Link} to="/advertiser/my-activities" sx={linkStyle}>
+            My Activities
           </ListItemButton>
         </ListItem>
 

@@ -20,7 +20,8 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { getUserId, getUserType } from "../../utils/authUtils";
 const theme = createTheme({
   palette: {
     primary: {
@@ -33,6 +34,8 @@ const theme = createTheme({
 });
 
 const HistoricalPlaces = () => {
+  const userType = getUserType();
+  const userId = getUserId();
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,21 +45,25 @@ const HistoricalPlaces = () => {
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const placeTypes = [
-    "Monument",
-    "Religious Site",
-    "Palace",
-    "Castle",
-    "Historical Place",
-    "Museum",
-  ];
+  const placeTypes = ["Monument", "Religious Site", "Palace", "Castle", "Historical Place", "Museum"];
 
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/places/get");
-        setPlaces(response.data.places);
-        setFilteredPlaces(response.data.places); // Initialize with all places
+        let response;
+
+        if (userType === "Tourism Governor") {
+          response = await axios.get(`http://localhost:8000/governor/get/places/${userId}`);
+          setPlaces(response.data.place);
+          setFilteredPlaces(response.data.place); // Initialize with all places
+        } else {
+          response = await axios.get("http://localhost:8000/places/get");
+          setPlaces(response.data.places);
+          setFilteredPlaces(response.data.places); // Initialize with all places
+        }
+
+        console.log(response.data);
+
         setLoading(false);
       } catch (err) {
         setError("Error fetching places data");
@@ -79,9 +86,7 @@ const HistoricalPlaces = () => {
 
   // Filter places based on search term
   useEffect(() => {
-    const filtered = places.filter((place) =>
-      place.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = places.filter((place) => place.name.toLowerCase().includes(searchTerm.toLowerCase()));
     setFilteredPlaces(filtered);
   }, [searchTerm, places]);
 
@@ -95,9 +100,7 @@ const HistoricalPlaces = () => {
 
     // Filter by tags if any tag is selected
     if (selectedTags.length > 0) {
-      filtered = filtered.filter((place) =>
-        selectedTags.every((tag) => place.tags.includes(tag))
-      );
+      filtered = filtered.filter((place) => selectedTags.every((tag) => place.tags.includes(tag)));
     }
 
     // Filter by type if selected
@@ -124,38 +127,27 @@ const HistoricalPlaces = () => {
   }
 
   if (error) {
-    return <Typography variant="h6" color="error">{error}</Typography>;
+    return (
+      <Typography variant="h6" color="error">
+        {error}
+      </Typography>
+    );
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Container>
-        <Typography
-          variant="h2"
-          align="center"
-          gutterBottom
-          sx={{ color: theme.palette.primary.main , marginTop: 8 }}
-        >
+        <Typography variant="h2" align="center" gutterBottom sx={{ color: theme.palette.primary.main, marginTop: 8 }}>
           Historical Places
         </Typography>
 
         {/* Search and Filter Section */}
         <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <TextField
-            label="Search by Name"
-            variant="outlined"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{ mr: 2, width: "300px" }}
-          />
+          <TextField label="Search by Name" variant="outlined" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ mr: 2, width: "300px" }} />
 
           <FormControl variant="outlined" sx={{ mr: 2, width: "200px" }}>
             <InputLabel>Type of Place</InputLabel>
-            <Select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              label="Type of Place"
-            >
+            <Select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} label="Type of Place">
               <MenuItem value="">
                 <em>Select Type</em>
               </MenuItem>
@@ -177,10 +169,7 @@ const HistoricalPlaces = () => {
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={tags.find((tag) => tag._id === value)?.name || value}
-                    />
+                    <Chip key={value} label={tags.find((tag) => tag._id === value)?.name || value} />
                   ))}
                 </Box>
               )}
@@ -196,12 +185,7 @@ const HistoricalPlaces = () => {
         </Box>
 
         <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleFilter}
-            sx={{ mr: 2 }}
-          >
+          <Button variant="contained" color="primary" onClick={handleFilter} sx={{ mr: 2 }}>
             Apply Filter
           </Button>
           <Button variant="contained" color="secondary" onClick={handleReset}>
@@ -224,13 +208,8 @@ const HistoricalPlaces = () => {
                   <Typography>
                     <strong>Description:</strong> {place.description}
                   </Typography>
-                    <Button
-                        component={Link}
-                        to={`/tourist/placedetails/${place._id}`}
-                        variant="contained"
-                        sx={{ mt: 2 }}
-                      >
-                        View Details
+                  <Button component={Link} to={userType === "Tourism Governor" ? `/tourism-governor/historical-places/details/${place._id}` : `/place/${place._id}`} variant="contained" sx={{ mt: 2 }}>
+                    View Details
                   </Button>
                 </CardContent>
               </Card>

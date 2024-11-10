@@ -54,7 +54,7 @@ const TermsAndAgreements = () => {
             navigate("/tour-guide/profile");
             break;
           case "Advertiser":
-            navigate("/advertiser/advertiser");
+            navigate("/advertiser/homepage");
             break;
           default:
             console.error("Unknown user type:", userDetails.type);

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import axios from 'axios';
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
-import { clearUser , userId } from '../../utils/authUtils.js';
+import { clearUser , getUserId } from '../../utils/authUtils.js';
 import {
   AccountCircle,
   ShoppingCart,
@@ -53,6 +54,19 @@ const AdvertiserNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
+      console.log(userId);
+      const checkUpcoming = await axios.get(`http://localhost:8000/checkUpcoming/activities/${userId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (checkUpcoming.status === 200 && !checkUpcoming.data.success) {
+        // If upcoming itineraries exist, alert the user and prevent deletion
+        alert('Cannot delete account. You have upcoming Activities.');
+        return; // Exit the function early
+      }
+  
       // Proceed with the account deletion
       const response = await axios.delete(`http://localhost:8000/advertiser/delete/${userId}`);
   
@@ -72,6 +86,7 @@ const AdvertiserNavbar = () => {
     }
   };
   
+  
 
   const confirmLogout = () => {
     // Add logout logic here
@@ -80,19 +95,8 @@ const AdvertiserNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourist/profile");
-  const handleHomeClick = () => navigate("/tourist/homepage");
-  const handleCartClick = () => navigate("/tourist/cart");
-  const handleOrdersClick = () => navigate("/tourist/orders");
-  const handlePaymentsClick = () => navigate("/tourist/payments");
-  const handleBookingsClick = () => navigate("/tourist/bookings");
-  const handleWishlistClick = () => navigate("/tourist/wishlist");
-  const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
-  const handleComplaintsClick = () => navigate("/tourist/view/complaints/");
-
-  const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
-  const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
-
+  const handleProfileClick = () => navigate("/advertiser/profile");
+  
   return (
     <>
       {/* Top Navbar */}
@@ -104,13 +108,7 @@ const AdvertiserNavbar = () => {
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* Home Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
-              <Home />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Home
-              </Typography>
-            </IconButton>
-
+          
             {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
@@ -124,12 +122,6 @@ const AdvertiserNavbar = () => {
               </MenuItem>
             </Menu>
 
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
-              <ShoppingCart />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Cart
-              </Typography>
-            </IconButton>
 
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
@@ -139,7 +131,7 @@ const AdvertiserNavbar = () => {
               </Typography>
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
-              <MenuItem onClick={() => navigate("/tourist/change-password")}>
+              <MenuItem onClick={() => navigate("/advertiser/change-password")}>
                 <LockOpen sx={{ mr: 1 }} />
                 Change Password
               </MenuItem>

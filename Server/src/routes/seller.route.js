@@ -44,7 +44,8 @@ router.get("/access/seller/findSeller", findSeller);
 router.get("/access/seller/viewSeller", viewSeller);
 //signUp as a seller
 //update seller
-router.put("/access/seller/updateSeller", updateSeller);
+router.put("/seller/profile/:id", updateSeller); // Define the route with :id parameter
+
 //create product
 router.post("/access/seller/createProduct", createProduct);
 //search all products

@@ -20,8 +20,10 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllActivities, getAllCategories } from "../../services/tourist.js";
-import { Link } from 'react-router-dom';
+import { getAllActivitiesForAdvertiser, getAllCategories } from "../../services/tourist.js";
+import { Link } from "react-router-dom";
+import { getUserId, getUserType } from "../../utils/authUtils";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -33,7 +35,8 @@ const theme = createTheme({
   },
 });
 
-const Activities = () => {
+const AdvertiserActivities = () => {
+  const userId = getUserId();
   const [activities, setActivities] = useState([]);
   const [originalActivities, setOriginalActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,16 +46,12 @@ const Activities = () => {
   const [budget, setBudget] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [activitiesResponse, categoriesResponse] = await Promise.all([
-          getAllActivities(),
-          getAllCategories(),
-        ]);
+        const [activitiesResponse, categoriesResponse] = await Promise.all([getAllActivitiesForAdvertiser(userId), getAllCategories()]);
         setActivities(activitiesResponse.data);
         setOriginalActivities(activitiesResponse.data);
         setCategories(categoriesResponse.data);
@@ -83,21 +82,15 @@ const Activities = () => {
     let filteredActivities = [...originalActivities];
 
     if (selectedCategories.length > 0) {
-      filteredActivities = filteredActivities.filter((activity) =>
-        selectedCategories.includes(activity.category)
-      );
+      filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category));
     }
 
     if (budget) {
-      filteredActivities = filteredActivities.filter(
-        (activity) => activity.price <= parseFloat(budget)
-      );
+      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
     }
 
     if (searchTerm) {
-      filteredActivities = filteredActivities.filter((activity) =>
-        activity.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filteredActivities = filteredActivities.filter((activity) => activity.name.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
     setActivities(filteredActivities);
@@ -114,8 +107,6 @@ const Activities = () => {
     setSearchTerm(""); // Reset search term
     setActivities(originalActivities);
   };
-
-
 
   if (loading) {
     return (
@@ -151,11 +142,7 @@ const Activities = () => {
           />
           <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
             <InputLabel>Sort by Price</InputLabel>
-            <Select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              label="Sort by Price"
-            >
+            <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
               <MenuItem value="asc">Low to High</MenuItem>
               <MenuItem value="desc">High to Low</MenuItem>
             </Select>
@@ -177,10 +164,7 @@ const Activities = () => {
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={categories.find((cat) => cat._id === value)?.name || value}
-                    />
+                    <Chip key={value} label={categories.find((cat) => cat._id === value)?.name || value} />
                   ))}
                 </Box>
               )}
@@ -194,14 +178,7 @@ const Activities = () => {
             </Select>
           </FormControl>
 
-          <TextField
-            label="Budget"
-            type="number"
-            value={budget}
-            onChange={(e) => setBudget(e.target.value)}
-            variant="outlined"
-            sx={{ width: "150px", mr: 2 }}
-          />
+          <TextField label="Budget" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} variant="outlined" sx={{ width: "150px", mr: 2 }} />
 
           <Button variant="contained" onClick={handleFilter} sx={{ mr: 2 }}>
             Filter
@@ -227,15 +204,10 @@ const Activities = () => {
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
-               
-                  <Button
-                    component={Link}
-                    to={`/activity/${activity._id}`}
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                  >
-  View Details
-</Button>
+
+                  <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                    View Details
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -246,4 +218,4 @@ const Activities = () => {
   );
 };
 
-export default Activities;
+export default AdvertiserActivities;

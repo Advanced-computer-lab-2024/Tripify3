@@ -12,6 +12,7 @@ const TouristProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [redeemSuccess, setRedeemSuccess] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState("");
+  
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -26,24 +27,9 @@ const TouristProfile = () => {
   });
 
   const countries = [
-    "USA",
-    "Canada",
-    "UK",
-    "Germany",
-    "France",
-    "Australia",
-    "Egypt",
-    "Italy",
-    "Spain",
-    "Brazil",
-    "Argentina",
-    "Mexico",
-    "India",
-    "China",
-    "Japan",
-    "South Korea",
-    "Saudi Arabia",
-    "United Arab Emirates",
+    "USA", "Canada", "UK", "Germany", "France", "Australia", 
+    "Egypt", "Italy", "Spain", "Brazil", "Argentina", "Mexico", 
+    "India", "China", "Japan", "South Korea", "Saudi Arabia", "United Arab Emirates",
   ];
 
   useEffect(() => {
@@ -51,8 +37,8 @@ const TouristProfile = () => {
       try {
         const response = await getProfile(userId);
         const fullName = response.data.userProfile.name.split(" ");
+        
         setUserProfile(response.data.userProfile);
-
         setFormData({
           username: response.data.userProfile.username,
           email: response.data.userProfile.email,
@@ -82,24 +68,17 @@ const TouristProfile = () => {
   const handleProfilePicChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Create a FileReader to preview the image
       const reader = new FileReader();
       reader.onloadend = () => {};
       reader.readAsDataURL(file);
 
-      // Upload the image to the server using axios
-      const formData = new FormData();
-      formData.append("userId", userId);
-      formData.append("file", file);
+      const uploadData = new FormData();
+      uploadData.append("userId", userId);
+      uploadData.append("file", file);
 
       try {
-        const response = await axios({
-          method: "put",
-          url: "http://localhost:8000/user/upload/picture",
-          data: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+        const response = await axios.put("http://localhost:8000/user/upload/picture", uploadData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
         const uploadedImageUrl = `http://localhost:8000/uploads/${userId}/${response.data.profilePicture.filename}`;
         setProfilePicUrl(uploadedImageUrl);
@@ -149,12 +128,7 @@ const TouristProfile = () => {
   return (
     <Box sx={{ padding: 7 }}>
       {userProfile && (
-        <Box
-          sx={{
-            maxWidth: "900px",
-            margin: "auto",
-          }}
-        >
+        <Box sx={{ maxWidth: "900px", margin: "auto" }}>
           <Card sx={{ marginBottom: 4, borderRadius: "10px", padding: 3 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               {badgeInfo.icon}
@@ -178,15 +152,7 @@ const TouristProfile = () => {
               }}
             />
             <CardContent sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  backgroundColor: "#E3F2FD",
-                  borderRadius: "20px",
-                  padding: "10px 20px",
-                }}
-              >
+              <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#E3F2FD", borderRadius: "20px", padding: "10px 20px" }}>
                 <FaCoins size={24} color="#1976d2" style={{ marginRight: "10px" }} />
                 <Typography variant="body1" sx={{ color: "#1976d2", fontWeight: "bold" }}>
                   {userProfile.loyaltyPoints} Points
@@ -226,7 +192,7 @@ const TouristProfile = () => {
                     profilePicUrl ||
                     formData.filepath ||
                     "https://media.istockphoto.com/id/2151669184/vector/vector-flat-illustration-in-grayscale-avatar-user-profile-person-icon-gender-neutral.jpg?s=612x612&w=0&k=20&c=UEa7oHoOL30ynvmJzSCIPrwwopJdfqzBs0q69ezQoM8="
-                  } // Use default image if no profile picture
+                  }
                   sx={{ width: 90, height: 90 }}
                 />
                 <label htmlFor="profile-pic-upload" style={{ position: "absolute", bottom: 5, right: -3, cursor: "pointer" }}>
@@ -272,7 +238,7 @@ const TouristProfile = () => {
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 5 }}>
               <FormControl fullWidth sx={{ mx: 2 }}>
                 <InputLabel>Currency</InputLabel>
-                <Select name="currencyPreference" value={formData.currency} disabled={!isEditing} onChange={handleChange}>
+                <Select name="currency" value={formData.currency} disabled={!isEditing} onChange={handleChange}>
                   <MenuItem value="EGP">EGP</MenuItem>
                   <MenuItem value="USD">USD</MenuItem>
                   <MenuItem value="EUR">EUR</MenuItem>
