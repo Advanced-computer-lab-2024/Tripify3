@@ -2,6 +2,8 @@ import User from "../../models/user.js";
 import Advertiser from "../../models/advertiser.js";
 import Activity from "../../models/activity.js";
 import Category from "../../models/category.js";
+import Booking from "../../models/booking.js";
+// import Category from "../../models/category.js";
 import mongoose from 'mongoose';
 
 
@@ -181,31 +183,47 @@ export const checkUpcomingActivities = async (req, res) => {
   }
 };
 
-// Controller to delete advertiser account
+
 export const deleteAdvertiserAccount = async (req, res) => {
-  const { advertiserId } = req.params;
-  const currentDate = new Date();
-
   try {
-    // Check if the advertiser has any upcoming activities
-    const hasUpcomingActivities = await Activity.exists({
-      advertiser: advertiserId,
-      date: { $gt: currentDate },
-    });
+    const { advertiserId } = req.params;
+    const currentDate = new Date();
 
-    if (hasUpcomingActivities) {
-      return res.status(400).json({ message: 'Cannot delete account. You have upcoming activities.' });
+    // Check if the user exists in the TourGuide model
+    const advertiser = await Advertiser.findById(advertiserId);
+    if (!advertiser) {
+      return res.status(404).json({ message: 'Advertiser not found.' });
     }
 
-    // Delete all activities associated with the advertiser
+    // Retrieve all itineraries with endTime > currentDate for this tour guide
+    const activities = await Activity.find({
+      advertiser: advertiserId,
+      'date': { $gt: currentDate },
+    });
+
+    // Extract itinerary IDs
+    const activityIds = activities.map(activity => activity._id);
+
+    // Check for any bookings with these itinerary IDs
+    const hasUpcomingBookings = await Booking.exists({
+      activity: { $in: activityIds }
+    });
+
+    if (hasUpcomingBookings) {
+      return res.status(403).json({
+        message: 'Cannot delete account. You have upcoming bookings for your activities.',
+      });
+    }
+
+    // Delete all itineraries associated with the tour guide
     await Activity.deleteMany({ advertiser: advertiserId });
 
-    // Delete the advertiser's account
+    // Proceed to delete the tour guide's account
     await Advertiser.findByIdAndDelete(advertiserId);
 
     res.status(200).json({ message: 'Account and associated activities successfully deleted.' });
   } catch (error) {
     console.error('Error deleting account:', error);
-    res.status(500).json({ message: 'Error deleting the account and activities' });
+    res.status(500).json({ message: 'Error deleting the account and itineraries' });
   }
 };

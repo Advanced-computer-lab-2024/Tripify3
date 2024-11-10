@@ -42,40 +42,12 @@ const AdminNavbar = () => {
   const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget); // New handler for Account dropdown
   const handleAccountClose = () => setAccountAnchorEl(null); // Close Account dropdown
 
-  const openDeleteDialog = () => {
-    setDeleteDialogOpen(true);
-    setSettingsAnchorEl(null);
-  };
-  const closeDeleteDialog = () => setDeleteDialogOpen(false);
-
+  
   const openLogoutDialog = () => {
     setLogoutDialogOpen(true);
     setSettingsAnchorEl(null);
   };
   const closeLogoutDialog = () => setLogoutDialogOpen(false);
-
-  const confirmDeleteAccount = async () => {
-    try {
-      // API call to delete the user account
-      const response = await fetch(`http://localhost:8000/users/delete/${userId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        // Handle successful deletion
-        //alert('Account successfully deleted.');
-        setDeleteDialogOpen(false); // Close the delete confirmation dialog
-        navigate("/goodbye"); // Redirect after account deletion
-      } else {
-        // Handle errors
-        const errorData = await response.json();
-        alert(`Failed to delete account: ${errorData.message}`);
-      }
-    } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("An unexpected error occurred. Please try again later.");
-    }
-  };
 
   const confirmLogout = () => {
     // Add logout logic here
@@ -141,31 +113,14 @@ const AdminNavbar = () => {
                 <ExitToApp sx={{ mr: 1 }} />
                 Logout
               </MenuItem>
-              <MenuItem onClick={openDeleteDialog} sx={{ color: "red" }}>
-                <Delete sx={{ mr: 1 }} />
-                Delete Account
-              </MenuItem>
+           
             </Menu>
             {/* Help Icon with Dropdown */}
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Delete Account Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
-        <DialogTitle>Delete Account</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Are you sure you want to delete your account? This action cannot be undone.</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDeleteDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>
-            Cancel
-          </Button>
-          <Button onClick={confirmDeleteAccount} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+
 
       {/* Logout Confirmation Dialog */}
       <Dialog open={logoutDialogOpen} onClose={closeLogoutDialog}>

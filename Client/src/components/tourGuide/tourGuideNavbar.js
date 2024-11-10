@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 
-import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+import { AppBar, Toolbar,Alert, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
@@ -35,12 +35,12 @@ const TourGuideNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null); // New state for Account dropdown
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  
+  const [bookingErrorDialogOpen, setBookingErrorDialogOpen] = useState(false);
 
   const handleServicesClick = (event) => setAnchorEl(event.currentTarget);
   const handleServicesClose = () => setAnchorEl(null);
@@ -65,38 +65,25 @@ const TourGuideNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
-      // Step 1: Check for upcoming itineraries
-      const checkResponse = await axios.get(`http://localhost:8000/itineraries/check-upcoming/${userId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`http://localhost:8000/tourGuide/delete/${userId}`, {
+        method: "DELETE",
       });
-  
-      if (checkResponse.status === 200 && checkResponse.data.hasUpcoming) {
-        // If upcoming itineraries exist, alert the user and prevent deletion
-        alert('Cannot delete account. You have upcoming itineraries.');
-        return; // Exit the function early
-      }
-  
-      // Step 2: Proceed with account deletion if no upcoming itineraries
-      const deleteResponse = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (deleteResponse.status === 200) {
-        setDeleteDialogOpen(false); // Close the delete confirmation dialog
-        navigate("/goodbye"); // Redirect after account deletion
+
+      if (response.ok) {
+        setDeleteDialogOpen(false);
+        navigate("/goodbye");
+      } else if (response.status === 403) {
+        setDeleteDialogOpen(false);
+        setBookingErrorDialogOpen(true);
       } else {
-        alert(`Failed to delete account: ${deleteResponse.data.message}`);
+        const errorData = await response.json();
+        alert(`Failed to delete account: ${errorData.message}`);
       }
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("An unexpected error occurred. Please try again later.");
     }
   };
-  
 
   const confirmLogout = () => {
     // Add logout logic here
@@ -151,7 +138,6 @@ const TourGuideNavbar = () => {
               </MenuItem>
             </Menu>
             {/* Help Icon with Dropdown */}
-           
           </Box>
         </Toolbar>
       </AppBar>
@@ -168,6 +154,26 @@ const TourGuideNavbar = () => {
           </Button>
           <Button onClick={confirmDeleteAccount} color="error" variant="contained">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Booking Error Dialog */}
+      <Dialog open={bookingErrorDialogOpen} onClose={() => setBookingErrorDialogOpen(false)}>
+        <DialogTitle sx={{ color: "#f44336" }}>Unable to Delete Account</DialogTitle>
+        <DialogContent>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            You have upcoming bookings. Please cancel them before deleting your account.
+          </Alert>
+          <DialogContentText>If you need further assistance, please contact our support team.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setBookingErrorDialogOpen(false)}
+            variant="outlined"
+            sx={{ color: "#f44336", borderColor: "#f44336", ":hover": { backgroundColor: "#fdecea", borderColor: "#f44336" } }}
+          >
+            Close
           </Button>
         </DialogActions>
       </Dialog>

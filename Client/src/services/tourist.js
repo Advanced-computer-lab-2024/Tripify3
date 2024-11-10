@@ -5,7 +5,9 @@ const API_URL = "http://localhost:8000"; // Replace with your API URL
 export const redeemPoints = async (userId, pointsToRedeem) => {
   return await axios.post(`${API_URL}/tourist/profile/${userId}/redeem`, pointsToRedeem);
 };
-
+export const getAllItineraries = async (userId) => {
+  return await axios.get(`${API_URL}/itineraries/get`);
+};
 export const getActivityById = async (activityId) => {
   const response = await axios.get(`${API_URL}/activity/get/${activityId}`); // Adjust the endpoint as necessary
   return response;

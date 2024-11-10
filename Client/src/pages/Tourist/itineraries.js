@@ -23,7 +23,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
+import { getAllItineraries,getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
 import { getUserId, getUserType } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
@@ -60,11 +60,20 @@ const Itineraries = () => {
     setUserType(getUserType()); // Fetch the user type when component mounts
     const fetchData = async () => {
       try {
-        const [itinerariesResponse, tagsResponse] = await Promise.all([getAllActiveAppropriateIteneraries(), getAllTags()]);
-        setItineraries(itinerariesResponse.data.data);
-        setFilteredItineraries(itinerariesResponse.data.data);
-        setTags(tagsResponse.data.tags);
-        setLoading(false);
+        const userType = getUserType();
+        let itinerariesResponse;
+    if (userType === 'tourist') {
+      itinerariesResponse = await getAllActiveAppropriateIteneraries();
+    } else {
+      itinerariesResponse = await getAllItineraries();
+    }
+
+    const tagsResponse = await getAllTags();
+
+    setItineraries(itinerariesResponse.data.data);
+    setFilteredItineraries(itinerariesResponse.data.data);
+    setTags(tagsResponse.data.tags);
+    setLoading(false);
       } catch (error) {
         setError("Error fetching itineraries or tags");
         setLoading(false);
