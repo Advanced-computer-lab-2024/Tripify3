@@ -1,9 +1,8 @@
 import seller from "../../models/seller.js"; // Adjust the path as necessary
 import product from "../../models/product.js"; // Adjust the path as necessary
+import Order from "../../models/order.js"; // Adjust the path as necessary
 import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
 import mongoose from 'mongoose';
-
-
 import { fileURLToPath } from "url";
 import path from "path";
 
@@ -957,35 +956,51 @@ export const deleteSellerAccount = async (req, res) => {
   try {
     const sellerId = req.params.id; // Get the seller ID from request parameters
 
-    // Ensure the seller ID is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(sellerId)) {
-      return res.status(400).json({ success: false, message: 'Invalid seller ID' });
+  
+    // Check if the seller exists
+    const sellerExists = await seller.findById(sellerId);
+    if (!sellerExists) {
+      return res.status(404).json({ success: false, message: "Seller not found" });
     }
 
-    // Log the ID and proceed to delete the seller
-    console.log('Attempting to delete seller:', sellerId);
+    // Check for any upcoming orders with a future drop-off date
+    const hasUpcomingOrders = await Order.exists({
+      seller: sellerId,
+      dropOffDate: { $gt: new Date() } // Check if dropOffDate is in the future
+    });
 
-    // Proceed to delete the seller
+    if (hasUpcomingOrders) {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot delete account. You have upcoming orders with future drop-off dates."
+      });
+    }
+
+      // Mark all products associated with the seller as deleted
+      await product.updateMany(
+        { sellerId: sellerId },
+        { $set: { isDeleted: true } }
+      );
+  
+    // Proceed to delete the seller's account
     const deletedSeller = await seller.findByIdAndDelete(sellerId);
-
-    // Check if the seller was found and deleted
     if (deletedSeller) {
       return res.status(200).json({
         success: true,
-        message: 'Seller account deleted successfully.'
+        message: "Seller account and all associated products deleted successfully."
       });
     } else {
       return res.status(404).json({
         success: false,
-        message: 'Seller not found.'
+        message: "Seller not found."
       });
     }
   } catch (error) {
     // Catch any unexpected errors
-    console.error('Error details:', error);
+    console.error("Error details:", error);
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while trying to delete the seller account.',
+      message: "An error occurred while trying to delete the seller account.",
       error: error.message // Include the error message for debugging purposes
     });
   }

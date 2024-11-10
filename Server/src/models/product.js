@@ -46,6 +46,10 @@ const productSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     salesHistory: [
       {
         quantity: Number,

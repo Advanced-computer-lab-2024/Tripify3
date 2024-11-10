@@ -29,7 +29,7 @@ const SellerSidebar = () => {
 
      
         <ListItem disablePadding>
-        <ListItemButton component={Link} to="/seller/homepage" sx={linkStyle}>
+        <ListItemButton component={Link} to="/seller/my-products" sx={linkStyle}>
            My Products
           </ListItemButton>
         </ListItem>

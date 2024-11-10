@@ -312,11 +312,22 @@ const Signup = () => {
   );
 
   const renderFileUploadSection = () => {
-    if (["Advertiser", "Seller", "Tour Guide"].includes(formData.type)) {
+    let uploadLabel = "";
+    
+    // Determine the upload label based on formData.type
+    if (formData.type === "Tour Guide") {
+      uploadLabel = "Upload ID and Certificates";
+    }  if (formData.type === "Advertiser") {
+      uploadLabel = "Upload Taxation Registry Card";
+    } else if (formData.type === "Seller") {
+      uploadLabel = "Upload ID and Taxation Registry Card";
+    }
+  
+    if (uploadLabel) {
       return (
         <>
           <Button variant="outlined" component="label" fullWidth margin="normal">
-            Upload Documents
+            {uploadLabel}
             <input type="file" multiple hidden onChange={handleFileChange} />
           </Button>
           {errors.files && <Typography color="error">{errors.files}</Typography>}
@@ -324,8 +335,10 @@ const Signup = () => {
         </>
       );
     }
+    
     return null;
   };
+  
 
   // Conditionally render the name field for specific user types
   const renderNameField = () => {

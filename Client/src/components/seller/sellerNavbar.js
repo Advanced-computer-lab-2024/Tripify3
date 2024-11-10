@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 
-import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+import { AppBar,Alert, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
@@ -18,10 +18,7 @@ import {
   MonetizationOn, // Added icon for Payments
   CardGiftcard, // Added icon for Gift Cards
 } from "@mui/icons-material";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import Report from "@mui/icons-material/Report"; // Add this import for the complaint icon
-import Hotel from "@mui/icons-material/Hotel"; // For Hotels
-import Flight from "@mui/icons-material/Flight"; // For Flights
+
 import Assignment from "@mui/icons-material/Assignment"; // Add this import for the new icon
 import LockOpen from "@mui/icons-material/LockOpen"; // For Forget Password
 import Delete from "@mui/icons-material/Delete"; // For Delete Account
@@ -41,6 +38,7 @@ const SellerNavbar = () => {
   const [accountAnchorEl, setAccountAnchorEl] = useState(null); // New state for Account dropdown
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [bookingErrorDialogOpen, setBookingErrorDialogOpen] = useState(false);
 
   const handleServicesClick = (event) => setAnchorEl(event.currentTarget);
   const handleServicesClose = () => setAnchorEl(null);
@@ -63,20 +61,26 @@ const SellerNavbar = () => {
   };
   const closeLogoutDialog = () => setLogoutDialogOpen(false);
 
+  
   const confirmDeleteAccount = async () => {
     try {
-      // Proceed with the account deletion if no upcoming itineraries are found
-      const response = await axios.delete(`http://localhost:8000/tourGuide/delete/${userId}`);
+      const response = await fetch(`http://localhost:8000/seller/delete/${userId}`, {
+        method: 'DELETE',
+      });
 
-      if (response.status === 200) {
-        setDeleteDialogOpen(false); // Close the delete confirmation dialog
-        navigate("/goodbye"); // Redirect after account deletion
+      if (response.ok) {
+        setDeleteDialogOpen(false);
+        navigate('/goodbye');
+      } else if (response.status === 403) {
+        setDeleteDialogOpen(false);
+        setBookingErrorDialogOpen(true);
       } else {
-        alert(`Failed to delete account: ${response.data.message}`);
+        const errorData = await response.json();
+        alert(`Failed to delete account: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("An unexpected error occurred. Please try again later.");
+      console.error('Error deleting account:', error);
+      alert('An unexpected error occurred. Please try again later.');
     }
   };
 
@@ -137,21 +141,37 @@ const SellerNavbar = () => {
         </Toolbar>
       </AppBar>
 
+      
       {/* Delete Account Dialog */}
       <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
         <DialogTitle>Delete Account</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to delete your account? This action cannot be undone.</DialogContentText>
+          <DialogContentText>
+            Are you sure you want to delete your account? This action cannot be undone.
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeDeleteDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>
-            Cancel
-          </Button>
-          <Button onClick={confirmDeleteAccount} color="error" variant="contained">
-            Delete
-          </Button>
+          <Button onClick={closeDeleteDialog} variant="outlined" sx={{ color: "gray", borderColor: "gray", ":hover": { backgroundColor: "#f5f5f5", borderColor: "gray" } }}>Cancel</Button>
+          <Button onClick={confirmDeleteAccount} color="error" variant="contained">Delete</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Booking Error Dialog */}
+      <Dialog open={bookingErrorDialogOpen} onClose={() => setBookingErrorDialogOpen(false)}>
+        <DialogTitle sx={{ color: "#f44336" }}>Unable to Delete Account</DialogTitle>
+        <DialogContent>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            You have upcoming bookings. Please cancel them before deleting your account.
+          </Alert>
+          <DialogContentText>
+            If you need further assistance, please contact our support team.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBookingErrorDialogOpen(false)} variant="outlined" sx={{ color: "#f44336", borderColor: "#f44336", ":hover": { backgroundColor: "#fdecea", borderColor: "#f44336" } }}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
 
       {/* Logout Confirmation Dialog */}
       <Dialog open={logoutDialogOpen} onClose={closeLogoutDialog}>

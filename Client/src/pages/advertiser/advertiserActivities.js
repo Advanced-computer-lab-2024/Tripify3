@@ -22,7 +22,7 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllActivitiesForAdvertiser, getAllCategories } from "../../services/tourist.js";
 import { Link } from "react-router-dom";
-import { getUserId, getUserType } from "../../utils/authUtils";
+import { getUserId, getUserType } from "../../utils/authUtils.js";
 
 const theme = createTheme({
   palette: {

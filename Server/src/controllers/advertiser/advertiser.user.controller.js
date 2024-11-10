@@ -215,9 +215,11 @@ export const deleteAdvertiserAccount = async (req, res) => {
       });
     }
 
-    // Delete all itineraries associated with the tour guide
-    await Activity.deleteMany({ advertiser: advertiserId });
-
+      // Mark all products associated with the seller as deleted
+      await Activity.updateMany(
+        { advertiser: advertiserId },
+        { $set: { isDeleted: true } }
+      );
     // Proceed to delete the tour guide's account
     await Advertiser.findByIdAndDelete(advertiserId);
 
