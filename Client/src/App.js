@@ -12,9 +12,9 @@ import VerificationCode from "./pages/Auth/ResetPassword/VerificationCodePage.js
 import NewPassword from "./pages/Auth/ResetPassword/NewPasswordPage.js";
 import ProductsLists from "./pages/seller/productsList.js";
 import AdvertiserProfile from "./pages/advertiser/profile.js";
-import AdvertiserActivities from "./pages/advertiser/activities.js";
+import AdvertiserActivities from "./pages/advertiser/advertiserActivities.js";
 import TouristHomePage from "./pages/tourist/homepage.js";
-import TouristProfile from "./pages/tourist/profile.js"
+import TouristProfile from "./pages/tourist/profile.js";
 import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
 import SearchHotels from "./pages/tourist/searchHotels.js";
@@ -30,9 +30,8 @@ import Activities from "./pages/tourist/activities.js";
 
 import Categories from "./pages/admin/categories.js";
 import ItinerariesDetails from "./pages/tourist/itinerarydetails.js";
-import TourGuideActivities from "./pages/advertiser/activities.js";
+import TourGuideActivities from "./pages/advertiser/advertiserActivities.js";
 import TourGuideItineraryDetails from "./pages/tourGuide/tourGuideItineraryDetails.js";
-
 
 import GovernorHistoricalPlaces from "./pages/tourismGovernor/historicalPlaces.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
@@ -123,15 +122,11 @@ const App = () => {
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/termsAndAgreements" element={<TermsAndAgreements />} />
         <Route path="/goodbye" element={<Goodbye />} />
-
-        
         {/* Tourism Governor Routes */}
-         <Route path={`/tourism-governor/historical-places/details/:id`} element={getLayoutForRole(userRole, <GovernorHistoricalPlaceDetails />)} />
+        <Route path={`/tourism-governor/historical-places/details/:id`} element={getLayoutForRole(userRole, <GovernorHistoricalPlaceDetails />)} />
         <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
         <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
         <Route path={`/tourism-governor/tags`} element={getLayoutForRole(userRole, <GovernorTags />)} />
-
-
         {/* Tourist Routes */}
         <Route path={`/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
@@ -140,20 +135,16 @@ const App = () => {
         <Route path={"/load_flights"} element={getLayoutForRole(userRole, <LoadFlights />)} />
         <Route path={"/search_hotels"} element={getLayoutForRole(userRole, <SearchHotels />)} />
         <Route path={"/load_hotels"} element={getLayoutForRole(userRole, <LoadHotels />)} />
-        <Route path={"/transportation"} element={getLayoutForRole(userRole, < Transportation/>)} />
-
+        <Route path={"/transportation"} element={getLayoutForRole(userRole, <Transportation />)} />
         <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
         <Route path={"/tourist/view/complaints"} element={getLayoutForRole(userRole, <ViewComplaints />)} />
         <Route path={"/tourist/itinerary/:id"} element={getLayoutForRole(userRole, <ItinerariesDetails />)} />
         <Route path={"/tourist/bookings"} element={getLayoutForRole(userRole, <Bookings />)} />
         {/* Add the BookingDetails route with dynamic id and type parameters */}
         <Route path="/tourist/booking-details/:itemId/:type/:view/:bookingId" element={getLayoutForRole(userRole, <BookingDetails />)} />
-
-
         {/* Shared Routes */}
         <Route path={`/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
         {/* <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} /> */}
-
         <Route path={`/place/:id`} element={getLayoutForRole(userRole, <Placedetails />)} />
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} />
@@ -162,27 +153,19 @@ const App = () => {
         <Route path={`${basePath}/change-password`} element={getLayoutForRole(userRole, <ChangePassword />)} />
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
         <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
-
-
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
         <Route path={`/tour-guide/itinerary/details/:id`} element={getLayoutForRole(userRole, <TourGuideItineraryDetails />)} />
         <Route path={`/tour-guide/profile`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />
         <Route path={`/tour-guide/activities`} element={getLayoutForRole(userRole, <TourGuideActivities />)} />
-
-
         {/* Advertiser Routes */}
         <Route path={`/advertiser/profile`} element={getLayoutForRole(userRole, <AdvertiserProfile />)} />
-        <Route path={`/advertiser/my-activities`} element={getLayoutForRole(userRole, <AdvertiserActivities />)}  />
-
-
+        <Route path={`/advertiser/my-activities`} element={getLayoutForRole(userRole, <AdvertiserActivities />)} />
         {/* Seller Routes */}
-        <Route path={`${basePath}/homepage`} element={getLayoutForRole(userRole, <ProductsLists />)} />
-        <Route path={`${basePath}/profile`}  element={getLayoutForRole(userRole, <SellerProfile />)} />
+        <Route path={`/seller/my-products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
+        <Route path={`/seller/profile`} element={getLayoutForRole(userRole, <SellerProfile />)} />
         <Route path={"product/:productId"} element={<ProductPage />} />
-
-
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={getLayoutForRole(userRole, <Chatbot />)} />
         <Route path={`/admin/users`} element={getLayoutForRole(userRole, <Users />)} />
@@ -190,7 +173,6 @@ const App = () => {
         <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />
         <Route path={`${basePath}/complaints`} element={getLayoutForRole(userRole, <Complaints />)} />
-
       </Routes>
     </Router>
   );

@@ -8,6 +8,10 @@ const activitySchema = new mongoose.Schema({
   isBooking: {
     type: Boolean,
     required: true,
+    default: true,
+  },
+  isDeleted: {
+    type: Boolean,
     default: false,
   },
   inappropriate:{

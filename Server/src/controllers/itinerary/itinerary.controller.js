@@ -44,7 +44,7 @@ export const createItinerary = async (req, res) => {
 
 export const getAllItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find()
+    const itineraries = await Itinerary.find({ isDeleted: false })
       .populate({
         path: "activities",
         populate: {

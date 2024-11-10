@@ -16,6 +16,10 @@ const itinerarySchema = new mongoose.Schema({
   name: {
     type: String,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
   price: {
     type: Number,
     required: true, // Ensure this is required

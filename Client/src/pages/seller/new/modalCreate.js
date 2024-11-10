@@ -6,6 +6,8 @@ import {
   Typography,
   TextField,
   IconButton,
+  Select,
+  MenuItem,
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -16,6 +18,8 @@ import { getUserType, getUserId } from "../../../utils/authUtils";
 import { Alert } from "@mui/material";
 
 const ProductCreateModal = ({ open, handleClose }) => {
+  const categories = ["Electronics", "Clothing", "Books", "Beauty", "Sports"]; // Example categories
+
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -150,13 +154,23 @@ const ProductCreateModal = ({ open, handleClose }) => {
             value={newProduct.quantity}
             onChange={(e) => handleChange("quantity", e.target.value)}
           />
-          <TextField
+             <Select
             label="Category"
             fullWidth
             margin="normal"
             value={newProduct.category}
             onChange={(e) => handleChange("category", e.target.value)}
-          />
+            displayEmpty
+          >
+            <MenuItem value="">
+              <em>Select a Category</em>
+            </MenuItem>
+            {categories.map((category, index) => (
+              <MenuItem key={index} value={category}>
+                {category}
+              </MenuItem>
+            ))}
+          </Select>
           {getUserType() == "Admin" ? (
             <TextField
               label="sellerId"
