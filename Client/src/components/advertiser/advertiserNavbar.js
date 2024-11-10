@@ -95,19 +95,8 @@ const AdvertiserNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourist/profile");
-  const handleHomeClick = () => navigate("/tourist/homepage");
-  const handleCartClick = () => navigate("/tourist/cart");
-  const handleOrdersClick = () => navigate("/tourist/orders");
-  const handlePaymentsClick = () => navigate("/tourist/payments");
-  const handleBookingsClick = () => navigate("/tourist/bookings");
-  const handleWishlistClick = () => navigate("/tourist/wishlist");
-  const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
-  const handleComplaintsClick = () => navigate("/tourist/view/complaints/");
-
-  const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
-  const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
-
+  const handleProfileClick = () => navigate("/advertiser/profile");
+  
   return (
     <>
       {/* Top Navbar */}
@@ -119,13 +108,7 @@ const AdvertiserNavbar = () => {
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* Home Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
-              <Home />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Home
-              </Typography>
-            </IconButton>
-
+          
             {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
@@ -139,12 +122,6 @@ const AdvertiserNavbar = () => {
               </MenuItem>
             </Menu>
 
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
-              <ShoppingCart />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Cart
-              </Typography>
-            </IconButton>
 
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
@@ -154,7 +131,7 @@ const AdvertiserNavbar = () => {
               </Typography>
             </IconButton>
             <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
-              <MenuItem onClick={() => navigate("/tourist/change-password")}>
+              <MenuItem onClick={() => navigate("/advertiser/change-password")}>
                 <LockOpen sx={{ mr: 1 }} />
                 Change Password
               </MenuItem>

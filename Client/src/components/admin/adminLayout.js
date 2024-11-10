@@ -10,10 +10,7 @@ const AdminLayout = ({ children }) => (
     <AdminNavbar />
 
     {/* Layout with Sidebar and Main Content */}
-    <div style={{ display: "flex", flexGrow: 1, marginTop: "120px" }}>
-      {" "}
-      {/* Adjust for Navbar height */}
-      {/* Conditionally Render Sidebar */}
+    <div style={{ display: "flex", flexGrow: 1, marginTop: "50px" }}>
       <AdminSidebar />
       {/* Scrollable Content Area */}
       <div

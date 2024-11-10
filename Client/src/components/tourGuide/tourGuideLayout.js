@@ -8,7 +8,7 @@ const TourGuideLayout = ({ children }) => (
       {/* Fixed sidebar */}
       <TourGuideSidebar />
       {/* Scrollable content area */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "20px", backgroundColor: "#f5f5f5" }}>{children}</div>
+      <div style={{ flex: 1, overflowY: "auto", paddingTop: "70px", backgroundColor: "#f5f5f5" }}>{children}</div>
     </div>
   );
 
