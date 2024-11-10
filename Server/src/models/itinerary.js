@@ -87,6 +87,7 @@ const itinerarySchema = new mongoose.Schema({
   tourGuide: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tour Guide",
+    required: true,
   }
 });
 

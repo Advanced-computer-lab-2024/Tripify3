@@ -4,7 +4,6 @@ import Booking from "../../models/booking.js";
 import Category from "../../models/category.js";
 import Tag from "../../models/tag.js";
 // import Category from "../../models/category.js";
-import mongoose from 'mongoose';
 
 
 // Update an existing user profile
@@ -115,6 +114,8 @@ export const updateActivity = async (req, res) => {
 export const getAllActivitiesByAdvertiser = async (req, res) => {
   const { advertiserId } = req.params;
   try {
+    const currentDate = new Date(); // Define currentDate as the current date and time
+
     // Find activities and populate category and tag details
     const activities = await Activity.find({ advertiser: advertiserId, date: { $gt: currentDate },  })
       .populate({ path: "category", select: "name" })

@@ -65,10 +65,14 @@ const ItineraryDetails = () => {
         const response = await getItineraryById(id);
         setItinerary(response.data.data.itinerary);
         setReview(response.data.data);
+        console.log(response.data);
+        
         setLoading(false);
         await fetchTourGuideProfile(response.data.data.itinerary.tourGuide._id, userId);
       } catch (error) {
         setError("Error fetching Itinerary details");
+        console.log(error);
+        
         setLoading(false);
       }
     };
@@ -154,16 +158,15 @@ const ItineraryDetails = () => {
     return <Typography color="error">{error}</Typography>;
   }
 
-  // Function to format currency
   const exchangeRates = {
-    USD: 0.02, // 1 EGP = 0.05 USD
-    EUR: 0.07, // 1 EGP = 0.045 EUR
-    GBP: 0.038, // 1 EGP = 0.038 GBP
-    AUD: 0.07, // 1 EGP = 0.07 AUD
-    CAD: 0.065, // 1 EGP = 0.065 CAD
+    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     // Add other currencies as needed
-  };
-  
+};
+
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
