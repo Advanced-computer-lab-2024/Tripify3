@@ -57,23 +57,38 @@ export const updateActivity = async (req, res) => {
   }
 };
 
-// Mark an activity as deleted
+// Mark an activity as deleted after checking if its date is in the future and it has no future bookings
 export const deleteActivity = async (req, res) => {
   try {
-    const activity = await Activity.findByIdAndUpdate(
-      req.params.id,
-      { isDeleted: true }, // Mark the activity as deleted
-      { new: true } // Return the updated document
-    );
+    // Find the activity by its ID
+    const activity = await Activity.findById(req.params.id);
+
     if (!activity) {
       return res.status(404).json({ error: "Activity not found" });
     }
+
+    // Check if the activity date is in the future
+    if (activity.date > new Date()) {
+      // Check if there are any future bookings for this activity
+      const futureBookings = await Booking.find({
+        activity: req.params.id,
+        date: { $gt: new Date() } // Only look for bookings with dates greater than now
+      });
+
+      if (futureBookings.length > 0) {
+        return res.status(403).json({ error: "Cannot delete activity with future bookings." });
+      }
+    }
+
+    // Mark the activity as deleted
+    activity.isDeleted = true;
+    await activity.save();
+
     res.status(200).json({ message: "Activity marked as deleted", activity });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 export const addActivityToItinerary = async (req, res) => {
   const { id } = req.params; // Get the itinerary ID from the URL

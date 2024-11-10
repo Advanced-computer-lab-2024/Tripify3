@@ -46,6 +46,8 @@ import TourGuideProfile from "./pages/tourGuide/profile.js";
 import BookingDetails from "./pages/tourist/bookingDetails.js";
 
 import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
+import AdvertiserActivityDetails from "./pages/advertiser/AdvertiserActivityDetails.js";
+
 
 // Layouts Import
 import TouristLayout from "./components/tourist/touristLayout.js";
@@ -161,7 +163,8 @@ const App = () => {
         <Route path={`/tour-guide/activities`} element={getLayoutForRole(userRole, <TourGuideActivities />)} />
         {/* Advertiser Routes */}
         <Route path={`/advertiser/profile`} element={getLayoutForRole(userRole, <AdvertiserProfile />)} />
-        <Route path={`/advertiser/my-activities`} element={getLayoutForRole(userRole, <AdvertiserActivities />)} />
+        <Route path={`/advertiser/my-activities`} element={getLayoutForRole(userRole, <AdvertiserActivities />)} /> 
+        <Route path={`/advertiser/my-activities/details/:id`} element={getLayoutForRole(userRole, <AdvertiserActivityDetails />)} /> 
         {/* Seller Routes */}
         <Route path={`/seller/my-products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
         <Route path={`/seller/profile`} element={getLayoutForRole(userRole, <SellerProfile />)} />

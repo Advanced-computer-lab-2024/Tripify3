@@ -1,7 +1,5 @@
-import User from "../../models/user.js";
 import Advertiser from "../../models/advertiser.js";
 import Activity from "../../models/activity.js";
-import Category from "../../models/category.js";
 import Booking from "../../models/booking.js";
 // import Category from "../../models/category.js";
 import mongoose from 'mongoose';
@@ -46,23 +44,7 @@ export const getProfile = async (req, res) => {
   }
 };
 
-// Delete the user profile
-export const deleteProfile = async (req, res) => {
-  const { id } = req.params;
 
-  try {
-    const deletedProfile = await Advertiser.findByIdAndDelete(id);
-
-    if (!deletedProfile) {
-      return res.status(404).json({ message: "Profile not found." });
-    }
-
-    res.status(200).json({ message: "Profile deleted successfully." });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error deleting profile", error: error.message });
-  }
-};
 
 // Create a new activity for the advertiser
 export const createActivity = async (req, res) => {
@@ -86,9 +68,6 @@ export const createActivity = async (req, res) => {
 // Update an activity
 export const updateActivity = async (req, res) => {
   const { advertiserId, activityId } = req.params;
-  console.log(req.body);
-  console.log(advertiserId);
-  console.log(activityId);
 
   try {
     const updatedActivity = await Activity.findOneAndUpdate(
@@ -112,14 +91,11 @@ export const updateActivity = async (req, res) => {
 
 export const getAllActivitiesByAdvertiser = async (req, res) => {
   const { advertiserId } = req.params;
-  console.log(advertiserId);
-
   try {
     // Find activities and populate category and tag details
-    const activities = await Activity.find({ advertiser: advertiserId })
-      .populate({ path: "category", select: "name" }) // Populate category name
-      .populate({ path: "tags", select: "name" }); // Populate tag names
-
+    const activities = await Activity.find({ advertiser: advertiserId, isDeleted: false })
+      .populate({ path: "category", select: "name" })
+      .populate({ path: "tags", select: "name" }); 
     res.status(200).json(activities);
   } catch (error) {
     console.error("Error retrieving activities:", error.message); // Log the error for debugging
@@ -127,24 +103,6 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
   }
 };
 
-// Delete an activity
-export const deleteActivity = async (req, res) => {
-  const { advertiserId, activityId } = req.query;
-  console.log(advertiserId);
-  console.log(activityId);
-
-  try {
-    const deletedActivity = await Activity.findOneAndDelete({ _id: activityId, advertiser: advertiserId });
-
-    if (!deletedActivity) {
-      return res.status(404).json({ message: "Activity not found." });
-    }
-
-    res.status(200).json({ message: "Activity deleted successfully." });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting activity", error: error.message });
-  }
-};
 
 export const getAdvertisers = async (req, res) => {
   try {
@@ -154,35 +112,6 @@ export const getAdvertisers = async (req, res) => {
     res.status(500).json({ message: "Error fetching advertisers", error });
   }
 };
-
-
-
-export const checkUpcomingActivities = async (req, res) => {
-  const advertiserId = req.params.advertiserId;  // Use the correct parameter name
-
-  try {
-    const upcomingActivities = await Activity.find({
-      advertiser: advertiserId,
-      date: { $gte: new Date() },
-    });
-
-    if (upcomingActivities.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Advertiser cannot be deleted as they have activities with current or future dates.',
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'No upcoming activities found.',
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'An error occurred while checking for upcoming activities.' });
-  }
-};
-
 
 export const deleteAdvertiserAccount = async (req, res) => {
   try {

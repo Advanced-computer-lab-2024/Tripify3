@@ -205,7 +205,7 @@ const AdvertiserActivities = () => {
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
                   </Typography>
 
-                  <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                  <Button component={Link} to={`/advertiser/my-activities/details/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
                     View Details
                   </Button>
                 </CardContent>
