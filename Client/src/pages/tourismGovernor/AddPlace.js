@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { getUserId } from "../../utils/authUtils.js";
+import {
+  Grid,
+  Typography,
+  TextField,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Box
+} from "@mui/material";
+import { clearUser, getUserId } from '../../utils/authUtils.js';
 
-function AddPlace() {
+const CreatePlaceForm = () => {
   const navigate = useNavigate();
-  const userId = getUserId();
+  const userId = getUserId(); // Replace with actual user ID function
   const [place, setPlace] = useState({
     name: "",
     description: "",
@@ -30,18 +44,13 @@ function AddPlace() {
   const [newTagIds, setNewTagIds] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
   const [placeTypes, setPlaceTypes] = useState([]);
-
+  const [countries, setCountries] = useState([]);
+  const [cities, setCities] = useState([]);
   const [showAddOpeningHour, setShowAddOpeningHour] = useState(false);
   const [showAddPicture, setShowAddPicture] = useState(false);
 
   const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
   ];
 
   // Fetch available tags
@@ -63,11 +72,62 @@ function AddPlace() {
     setPlaceTypes(["Monument", "Religious Site", "Palace", "Historical Place", "Museum"]);
   }, []);
 
+  // Fetch countries and cities
+  useEffect(() => {
+    axios
+      .get("https://countriesnow.space/api/v0.1/countries")
+      .then((response) => {
+        if (response.data.error === false) {
+          setCountries(response.data.data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching countries:", err);
+      });
+  }, []);
+
+  // Handle country selection
+  const handleCountryChange = (e) => {
+    const selectedCountry = e.target.value;
+    const country = countries.find((c) => c.country === selectedCountry);
+    setCities(country?.cities || []);
+    setPlace((prevPlace) => ({
+      ...prevPlace,
+      location: {
+        ...prevPlace.location,
+        country: selectedCountry,
+        city: "", // Reset city when country changes
+      },
+    }));
+  };
+
+  // Handle city selection
+  const handleCityChange = (e) => {
+    setPlace((prevPlace) => ({
+      ...prevPlace,
+      location: {
+        ...prevPlace.location,
+        city: e.target.value,
+      },
+    }));
+  };
+
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith("ticketPrices.")) {
-      const ticketType = name.split(".")[1]; // Extract the type (foreigner, native, student)
+    
+    // Check if it's a nested field like 'location.address'
+    if (name.startsWith("location.")) {
+      const fieldName = name.split('.')[1]; // Get the key like 'address'
+      setPlace((prevPlace) => ({
+        ...prevPlace,
+        location: {
+          ...prevPlace.location,
+          [fieldName]: value,  // Dynamically update the field
+        },
+      }));
+    } else if (name.startsWith("ticketPrices.")) {
+      const ticketType = name.split(".")[1];
       setPlace((prevPlace) => ({
         ...prevPlace,
         ticketPrices: {
@@ -83,6 +143,7 @@ function AddPlace() {
     }
   };
 
+
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -90,7 +151,7 @@ function AddPlace() {
       .post(`${process.env.REACT_APP_API_BASE_URL}/place/create`, {
         ...place,
         tags: newTagIds,
-        tourismGovernor: userId
+        tourismGovernor: userId,
       })
       .then((response) => {
         console.log("Place added:", response.data);
@@ -164,233 +225,237 @@ function AddPlace() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Add Place</h2>
-      <form onSubmit={handleSubmit}>
-        {/* Name */}
-        <div>
-          <label>Name</label>
-          <input
-            type="text"
+    <form onSubmit={handleSubmit}>
+      <Grid container spacing={3} sx={{ padding: '20px', maxWidth: '900px', margin: '0 auto' }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
+            Create New Place
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Place Name"
             name="name"
             value={place.name}
             onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
+            fullWidth
+            sx={{ marginBottom: '16px' }}
           />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label>Description</label>
-          <input
-            type="text"
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Description"
             name="description"
             value={place.description}
             onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
+            fullWidth
+            multiline
+            rows={4}
+            sx={{ marginBottom: '16px' }}
           />
-        </div>
-
-        {/* Place Type Dropdown */}
-        <div>
-          <label>Place Type</label>
-          <select
-            name="type"
-            value={place.type}
-            onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
-          >
-            <option value="" disabled>Select Place Type</option>
-            {placeTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Location */}
-        <div>
-          <label>Address</label>
-          <input
-            type="text"
-            name="location.address"
-            value={place.location.address}
-            onChange={(e) =>
-              setPlace({
-                ...place,
-                location: { ...place.location, address: e.target.value },
-              })
-            }
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
-          />
-          <label>City</label>
-          <input
-            type="text"
-            name="location.city"
-            value={place.location.city}
-            onChange={(e) =>
-              setPlace({
-                ...place,
-                location: { ...place.location, city: e.target.value },
-              })
-            }
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
-          />
-          <label>Country</label>
-          <input
-            type="text"
-            name="location.country"
-            value={place.location.country}
-            onChange={(e) =>
-              setPlace({
-                ...place,
-                location: { ...place.location, country: e.target.value },
-              })
-            }
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
-          />
-        </div>
-
-        {/* Opening Hours */}
-        <div>
-          <h3>Opening Hours</h3>
-          {place.openingHours.length > 0 ? (
-            <ul>
-              {place.openingHours.map((hour, index) => (
-                <li key={index}>
-                  <span>{hour.day}:</span>
-                  <span>{hour.from} - {hour.to}</span>
-                  <button type="button" onClick={() => handleRemoveOpeningHour(index)}>Remove</button>
-                </li>
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth sx={{ marginBottom: '16px' }}>
+            <InputLabel>Country</InputLabel>
+            <Select value={place.location.country} onChange={handleCountryChange}>
+              {countries.map((country) => (
+                <MenuItem key={country.country} value={country.country}>
+                  {country.country}
+                </MenuItem>
               ))}
-            </ul>
-          ) : (
-            <p>No opening hours added.</p>
-          )}
-          {showAddOpeningHour ? (
-            <div>
-              <select
-                name="day"
-                value={newOpeningHour.day}
-                onChange={handleOpeningHourChange}
-              >
-                <option value="" disabled>Select Day</option>
-                {getAvailableDays().map((day) => (
-                  <option key={day} value={day}>{day}</option>
-                ))}
-              </select>
-              <input
-                type="time"
-                name="from"
-                value={newOpeningHour.from}
-                onChange={handleOpeningHourChange}
-                required
-              />
-              <input
-                type="time"
-                name="to"
-                value={newOpeningHour.to}
-                onChange={handleOpeningHourChange}
-                required
-              />
-              <button type="button" onClick={handleAddOpeningHour}>Add Opening Hour</button>
-              <button type="button" onClick={() => setShowAddOpeningHour(false)}>Cancel</button>
-            </div>
-          ) : (
-            <button type="button" onClick={() => setShowAddOpeningHour(true)}>Add Opening Hour</button>
-          )}
-        </div>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth sx={{ marginBottom: '16px' }}>
+            <InputLabel>City</InputLabel>
+            <Select
+              value={place.location.city}
+              onChange={handleCityChange}
+              disabled={!place.location.country}
+            >
+              {cities.map((city) => (
+                <MenuItem key={city} value={city}>
+                  {city}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+        <TextField
+  label="Address"
+  name="location.address"
+  value={place.location.address}  // Make sure this is linked to state
+  onChange={handleChange}
+  fullWidth
+  sx={{ marginBottom: '16px' }}
+/>
 
+
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth sx={{ marginBottom: '16px' }}>
+            <InputLabel>Place Type</InputLabel>
+            <Select
+              value={place.type}
+              name="type"
+              onChange={handleChange}
+              fullWidth
+            >
+              {placeTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
         {/* Ticket Prices */}
-        <div>
-          <h3>Ticket Prices</h3>
-          <label>Foreigner</label>
-          <input
-            type="text"
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Foreigner Price"
             name="ticketPrices.foreigner"
             value={place.ticketPrices.foreigner}
             onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
+            fullWidth
+            type="number"
+            sx={{ marginBottom: '16px' }}
           />
-          <label>Native</label>
-          <input
-            type="text"
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Native Price"
             name="ticketPrices.native"
             value={place.ticketPrices.native}
             onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
+            fullWidth
+            type="number"
+            sx={{ marginBottom: '16px' }}
           />
-          <label>Student</label>
-          <input
-            type="text"
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            label="Student Price"
             name="ticketPrices.student"
             value={place.ticketPrices.student}
             onChange={handleChange}
-            required
-            style={{ width: "100%", padding: "10px", marginBottom: "10px", borderRadius: "5px" }}
+            fullWidth
+            type="number"
+            sx={{ marginBottom: '16px' }}
           />
-        </div>
-
-        {/* Pictures */}
-        <div>
-          <h3>Pictures</h3>
-          {place.pictures.length > 0 ? (
-            <ul>
-              {place.pictures.map((picture, index) => (
-                <li key={index}>
-                  <span>{picture}</span>
-                  <button type="button" onClick={() => handleRemovePicture(index)}>Remove</button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No pictures added.</p>
-          )}
-          {showAddPicture ? (
-            <div>
-              <input
-                type="text"
-                value={newPicture}
-                onChange={(e) => setNewPicture(e.target.value)}
-                placeholder="Picture URL"
-                required
-              />
-              <button type="button" onClick={handleAddPicture}>Add Picture</button>
-              <button type="button" onClick={() => setShowAddPicture(false)}>Cancel</button>
-            </div>
-          ) : (
-            <button type="button" onClick={() => setShowAddPicture(true)}>Add Picture</button>
-          )}
-        </div>
+        </Grid>
 
         {/* Tags */}
-        <div>
-          <h3>Tags</h3>
-          {availableTags.map((tag) => (
-            <div key={tag._id}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={newTagIds.includes(tag._id)}
-                  onChange={() => handleTagChange(tag._id)}
-                />
-                {tag.name}
-              </label>
-            </div>
+        <Grid item xs={12}>
+          <Typography variant="h6" sx={{ marginBottom: '8px' }}>
+            Tags
+          </Typography>
+          <FormGroup row>
+            {availableTags.map((tag) => (
+              <FormControlLabel
+                key={tag._id}
+                control={
+                  <Checkbox
+                    checked={newTagIds.includes(tag._id)}
+                    onChange={() => handleTagChange(tag._id)}
+                  />
+                }
+                label={tag.name}
+              />
+            ))}
+          </FormGroup>
+        </Grid>
+
+        {/* Opening Hours */}
+        <Grid item xs={12}>
+          <Typography variant="h6" sx={{ marginBottom: '8px' }}>
+            Opening Hours
+          </Typography>
+          {place.openingHours.map((hour, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+              <Typography variant="body1" sx={{ marginRight: '8px' }}>
+                {hour.day}: {hour.from} - {hour.to}
+              </Typography>
+              <Button onClick={() => handleRemoveOpeningHour(index)}>Remove</Button>
+            </Box>
           ))}
-        </div>
+          {showAddOpeningHour && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <Select
+                name="day"
+                value={newOpeningHour.day}
+                onChange={handleOpeningHourChange}
+                fullWidth
+              >
+                <MenuItem value="">Select Day</MenuItem>
+                {getAvailableDays().map((day) => (
+                  <MenuItem key={day} value={day}>
+                    {day}
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                name="from"
+                label="From"
+                type="time"
+                value={newOpeningHour.from}
+                onChange={handleOpeningHourChange}
+                fullWidth
+              />
+              <TextField
+                name="to"
+                label="To"
+                type="time"
+                value={newOpeningHour.to}
+                onChange={handleOpeningHourChange}
+                fullWidth
+              />
+              <Button onClick={handleAddOpeningHour}>Add Opening Hour</Button>
+            </Box>
+          )}
+          <Button onClick={() => setShowAddOpeningHour(!showAddOpeningHour)}>
+            {showAddOpeningHour ? "Cancel" : "Add Opening Hour"}
+          </Button>
+        </Grid>
 
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+        {/* Pictures */}
+        <Grid item xs={12}>
+          <Typography variant="h6" sx={{ marginBottom: '8px' }}>
+            Pictures
+          </Typography>
+          {place.pictures.map((picture, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+              <Typography variant="body1" sx={{ marginRight: '8px' }}>
+                {picture}
+              </Typography>
+              <Button onClick={() => handleRemovePicture(index)}>Remove</Button>
+            </Box>
+          ))}
+          {showAddPicture && (
+            <Box sx={{ display: 'flex', gap: '8px' }}>
+              <TextField
+                label="Add Picture URL"
+                value={newPicture}
+                onChange={(e) => setNewPicture(e.target.value)}
+                fullWidth
+              />
+              <Button onClick={handleAddPicture}>Add Picture</Button>
+            </Box>
+          )}
+          <Button onClick={() => setShowAddPicture(!showAddPicture)}>
+            {showAddPicture ? "Cancel" : "Add Picture"}
+          </Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Button type="submit" variant="contained" color="primary" sx={{ marginTop: '16px' }}>
+            Submit
+          </Button>
+        </Grid>
+      </Grid>
+    </form>
   );
-}
+};
 
-export default AddPlace;
+export default CreatePlaceForm;
