@@ -6,23 +6,9 @@ const orderSchema = new mongoose.Schema({
     ref: "Tourist",
     required: true,
   }, // Reference to the tourist making the order
-  seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Seller",
-    required: true,
-  }, // Reference to the tourist making the order
-
   orderDate: { type: Date, default: Date.now },
   paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Unpaid" },
-  details: { type: String },
-  quantity: {
-    type: Number,
-    default: 1,
-  },
-  price: {
-    type: Number,
-  },
-  product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart", required: true },
   dropOffLocation: { type: String, required: true },
   dropOffDate: { type: Date, required: true },
 });
