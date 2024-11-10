@@ -100,6 +100,10 @@ const SellerProfile = () => {
       setProfilePicUrl(newProfilePic ? URL.createObjectURL(newProfilePic) : ""); // Show updated profile picture
       setIsEditing(false); // Exit edit mode
       setNewProfilePic(null); // Clear temporary file state
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 1000);
+
     } catch (error) {
       console.error("Error updating profile:", error);
     }
