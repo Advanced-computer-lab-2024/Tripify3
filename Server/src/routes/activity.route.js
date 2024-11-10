@@ -1,10 +1,10 @@
 import express from "express";
-import { getActivities, getActivityById, updateActivity, deleteActivity } from "../controllers/activity/activity.controller.js";
+import { getAllActivities, getActivityById, updateActivity, deleteActivity } from "../controllers/activity/activity.controller.js";
 
 const router = express.Router();
 
 // Define routes for the activity
-router.get("/activity/get", getActivities); // Get all activities
+router.get("/activity/get", getAllActivities); // Get all activities
 router.get("/activity/get/:activityId", getActivityById); // Get an activity by ID
 router.put("/activity/get/:id", updateActivity); // Update an activity by ID
 router.delete("/activity/delete/:id", deleteActivity); // Delete an activity by ID

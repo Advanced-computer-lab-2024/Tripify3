@@ -60,7 +60,7 @@ export const editTag = async (tagData) => {
 };
 
 export const getAllCategories = async () => {
-  return await axios.get(`${API_URL}/category/get`);
+  return await axios.get(`${API_URL}/categories/get`);
 };
 
 export const createCategory = async (categoryData) => {

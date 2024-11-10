@@ -10,7 +10,6 @@ import { touristReview } from "../controllers/tourist/review.controller.js";
 import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js";
 import { getConfig, createPayment, createPaymentIntent, confirmOTP } from "../controllers/tourist/payment.controller.js";
 import { cancelBooking, createBooking } from "../controllers/tourist/booking.controller.js";
-import { getAllCategories } from "../controllers/tourist/category.controller.js";
 import { updateItinerariesAttended } from "../controllers/tourist/itineraries.controller.js";
 import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
 const router = express.Router();
@@ -28,9 +27,6 @@ router.delete('/tourist/delete/:id', deleteTouristAccount);
 //Complaints
 router.get("/tourist/complaints/:id", getComplaintsForTourist);
 router.post("/tourist/profile/:id/redeem", redeemPoints);
-
-//category
-router.get("/category/get", getAllCategories);
 
 //rate and comment on t
 router.post("/tourist/review", touristReview);

@@ -1,6 +1,8 @@
 import Advertiser from "../../models/advertiser.js";
 import Activity from "../../models/activity.js";
 import Booking from "../../models/booking.js";
+import Category from "../../models/category.js";
+import Tag from "../../models/tag.js";
 // import Category from "../../models/category.js";
 import mongoose from 'mongoose';
 
@@ -46,12 +48,34 @@ export const getProfile = async (req, res) => {
 
 
 
-// Create a new activity for the advertiser
 export const createActivity = async (req, res) => {
   console.log(req.body);
+  
   try {
-    const newActivity = new Activity(req.body);
+    const { advertiser, category, tags } = req.body;
 
+    // Check if the advertiser exists
+    const advertiserExists = await Advertiser.exists({ _id: advertiser });
+    if (!advertiserExists) {
+      return res.status(404).json({ message: "Advertiser not found" });
+    }
+
+    // Check if the category exists
+    const categoryExists = await Category.exists({ _id: category });
+    if (!categoryExists) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // Check if all tags exist
+    const tagChecks = await Promise.all(tags.map(tagId => Tag.exists({ _id: tagId })));
+    const invalidTags = tagChecks.some(tag => !tag);
+
+    if (invalidTags) {
+      return res.status(404).json({ message: "One or more tags not found" });
+    }
+
+    // If all checks pass, create the new activity
+    const newActivity = new Activity(req.body);
     await newActivity.save();
 
     res.status(201).json({
@@ -60,7 +84,6 @@ export const createActivity = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-
     res.status(500).json({ message: "Error creating activity", error: error.message });
   }
 };

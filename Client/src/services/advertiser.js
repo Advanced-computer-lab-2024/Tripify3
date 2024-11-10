@@ -24,7 +24,7 @@ export const getAllTags = async () => {
 };
 
 export const getAllCategories = async () => {
-  return await axios.get(`${API_URL}/category/get`);
+  return await axios.get(`${API_URL}/categories/get`);
 };
 
 export const getAllActivitiesByAdvertiser = async (advertiserId) => {
