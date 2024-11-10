@@ -12,7 +12,7 @@ export const updateProfile = async (userId, formData) => {
 
 
 export const createActivity = async (activity) => {
-  return await axios.post(`${API_URL}/activity/create`, activity);
+  return await axios.post(`${API_URL}/advertiser/activity/create`, activity);
 };
 
 export const updateActivity = async (advertiserId, activityId, activity) => {

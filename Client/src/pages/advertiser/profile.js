@@ -109,6 +109,9 @@ const AdvertiserProfile = () => {
       const userProfile = await getProfile(userId);
       setUserProfile(userProfile.data.user); // Set the updated profile data
 
+      console.log(userProfile.data.user);
+      
+
       // Update local state instead of reloading the page
       setProfilePicUrl(newProfilePic ? URL.createObjectURL(newProfilePic) : profilePicUrl); // Keep existing profile picture if unchanged
       setIsEditing(false); // Exit edit mode

@@ -38,7 +38,7 @@ const ComplaintForm = () => {
   const closePopup = () => {
     setShowPopup(false);
     if (isSuccess) {      
-      navigate("/tourist/tourist/homepage");
+      navigate("/tourist/homepage");
     }
   };
 

@@ -23,6 +23,7 @@ import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import PaymentWrapper from "./pages/tourist/payment.js";
 import Transportation from "./pages/tourist/transportation.js";
 import GovernorHistoricalPlaceDetails from "./pages/tourismGovernor/placeDetails.js";
+import AdvertiserAddActivity from "./pages/advertiser/advertiserAddActivity.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -165,6 +166,7 @@ const App = () => {
         <Route path={`/advertiser/profile`} element={getLayoutForRole(userRole, <AdvertiserProfile />)} />
         <Route path={`/advertiser/my-activities`} element={getLayoutForRole(userRole, <AdvertiserActivities />)} /> 
         <Route path={`/advertiser/my-activities/details/:id`} element={getLayoutForRole(userRole, <AdvertiserActivityDetails />)} /> 
+        <Route path={`/advertiser/my-activities/add`} element={getLayoutForRole(userRole, <AdvertiserAddActivity />)} /> 
         {/* Seller Routes */}
         <Route path={`/seller/my-products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
         <Route path={`/seller/profile`} element={getLayoutForRole(userRole, <SellerProfile />)} />

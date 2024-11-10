@@ -2,8 +2,10 @@ import Itinerary from "../../models/itinerary.js";
 import User from "../../models/user.js";
 import Tag from "../../models/user.js";
 import TourGuide from "../../models/tourGuide.js";
+import Activity from "../../models/activity.js";
 import Place from "../../models/place.js";
-import Review from "../../models/review.js";
+import Review from "../../models/review.js"; 
+import mongoose from "mongoose"; 
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
@@ -35,13 +37,13 @@ export const editItineraryAttribute = async (req, res) => {
 
 export const createItinerary = async (req, res) => {
   try {
-    const { tourGuideId, activities, places } = req.body;
+    const { tourGuide, activities, places } = req.body;
 
     // Validate and check if tour guide exists
-    if (!mongoose.Types.ObjectId.isValid(tourGuideId)) {
+    if (!mongoose.Types.ObjectId.isValid(tourGuide)) {
       return res.status(400).json({ message: "Invalid tour guide ID format" });
     }
-    const tourGuideExists = await TourGuide.exists({ _id: tourGuideId });
+    const tourGuideExists = await TourGuide.exists({ _id: tourGuide });
     if (!tourGuideExists) {
       return res.status(404).json({ message: "Tour guide not found" });
     }
@@ -81,6 +83,8 @@ export const createItinerary = async (req, res) => {
 
 export const getAllItineraries = async (req, res) => {
   try {
+    const currentDate = new Date(); // Define currentDate as the current date and time
+
     const itineraries = await Itinerary.find({
       isDeleted: false,
       "timeline.startTime": { $gt: currentDate },
@@ -127,6 +131,8 @@ export const getAllItineraries = async (req, res) => {
 
 export const getAllActiveAppropriateItineraries = async (req, res) => {
   try {
+    const currentDate = new Date(); // Define currentDate as the current date and time
+
     const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false,
       "timeline.startTime": { $gt: currentDate } })
       .populate({
@@ -168,6 +174,8 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
 export const getAllItinerariesForTourGuide = async (req, res) => {
   const { id } = req.params;
   try {
+    const currentDate = new Date(); // Define currentDate as the current date and time
+
     // Find the tour guide's itineraries directly from the Itinerary model
     const itineraries = await Itinerary.find({ tourGuide: id ,isDeleted: false,
       "timeline.endTime": { $gt: currentDate } })
