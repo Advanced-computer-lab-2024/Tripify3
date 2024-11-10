@@ -11,32 +11,24 @@ import {
 } from "../controllers/seller/seller.controller.js";
 import {
   createProduct,
-  createProductM,
   searchAllProducts,
-  searchMyProducts,
-  searchMyProductsArchived,
   searchAllArchivedProducts,
   editProduct,
-  searchProduct,
   deleteProduct,
-  filterProductCondition,
-  sortByRating,
   deleteAllProducts,
   addProdImage,
   viewProductStockAndSales,
   archiveProduct,
   unarchiveProduct,
-  decrementProductQuantity,
   getSalesHistory,
-  searchaProduct,
   SearchProductById,
-  deleteSellerAccount
+  deleteSellerAccount,
 } from "../controllers/seller/seller.controller.js";
 const router = express.Router();
 //search for a seller by username
 router.get("/access/seller/getSellerByUserName", getSellerByUserName);
 
-router.delete("/seller/delete/:id" , deleteSellerAccount);
+router.delete("/seller/delete/:id", deleteSellerAccount);
 
 //search for a seller
 router.get("/access/seller/findSeller", findSeller);
@@ -46,29 +38,17 @@ router.get("/access/seller/viewSeller", viewSeller);
 //update seller
 router.put("/seller/profile/:id", updateSeller); // Define the route with :id parameter
 
-//create product
-router.post("/access/seller/createProduct", createProduct);
 //search all products
 router.get("/access/seller/searchAllProducts", searchAllProducts);
-//search all products
-router.get("/access/seller/searchMyProductsArchived", searchMyProductsArchived);
-//search all my products
-router.get("/access/seller/searchMyProducts", searchMyProducts);
+
 //search all archived products
 router.get(
   "/access/seller/searchAllArchivedProducts",
   searchAllArchivedProducts
 );
-//edit product
-// router.put("/access/seller/editProduct", editProduct);
-// search a product
-router.get("/access/seller/searchProduct", searchProduct);
+
 //delete a product
 router.delete("/access/seller/deleteProduct", deleteProduct);
-//filter product by condition
-router.get("/access/seller/filterProductCondition", filterProductCondition);
-//sort product by rating
-router.get("/access/seller/sortByRating", sortByRating);
 //delete all products
 router.delete("/access/seller/deleteAllProducts", deleteAllProducts);
 //add product image
@@ -79,17 +59,13 @@ router.get("/access/seller/viewProductStockAndSales", viewProductStockAndSales);
 router.put("/access/seller/archiveProduct", archiveProduct);
 //unarchiveProduct product
 router.put("/access/seller/unarchiveProduct", unarchiveProduct);
-//update product quantity
-router.put("/access/seller/decrementProductQuantity", decrementProductQuantity);
 //get sales history
 router.get("/access/seller/getSalesHistory", getSalesHistory);
-//search for a product
-router.get("/access/seller/searchaProduct", searchaProduct);
 
 router.post(
   "/access/seller/createProductM",
   upload.array("images", 5),
-  createProductM
+  createProduct
 );
 router.put(
   "/access/seller/editProduct",
