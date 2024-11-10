@@ -116,7 +116,7 @@ export const getAllActivitiesByAdvertiser = async (req, res) => {
   const { advertiserId } = req.params;
   try {
     // Find activities and populate category and tag details
-    const activities = await Activity.find({ advertiser: advertiserId, isDeleted: false })
+    const activities = await Activity.find({ advertiser: advertiserId, date: { $gt: currentDate },  })
       .populate({ path: "category", select: "name" })
       .populate({ path: "tags", select: "name" }); 
     res.status(200).json(activities);
@@ -148,24 +148,24 @@ export const deleteAdvertiserAccount = async (req, res) => {
     }
 
     // Retrieve all itineraries with endTime > currentDate for this tour guide
-    const activities = await Activity.find({
-      advertiser: advertiserId,
-      'date': { $gt: currentDate },
-    });
+    // const activities = await Activity.find({
+    //   advertiser: advertiserId,
+    //   'date': { $gt: currentDate },
+    // });
 
-    // Extract itinerary IDs
-    const activityIds = activities.map(activity => activity._id);
+    // // Extract itinerary IDs
+    // const activityIds = activities.map(activity => activity._id);
 
-    // Check for any bookings with these itinerary IDs
-    const hasUpcomingBookings = await Booking.exists({
-      activity: { $in: activityIds }
-    });
+    // // Check for any bookings with these itinerary IDs
+    // const hasUpcomingBookings = await Booking.exists({
+    //   activity: { $in: activityIds }
+    // });
 
-    if (hasUpcomingBookings) {
-      return res.status(403).json({
-        message: 'Cannot delete account. You have upcoming bookings for your activities.',
-      });
-    }
+    // if (hasUpcomingBookings) {
+    //   return res.status(403).json({
+    //     message: 'Cannot delete account. You have upcoming bookings for your activities.',
+    //   });
+    // }
 
       // Mark all products associated with the seller as deleted
       await Activity.updateMany(

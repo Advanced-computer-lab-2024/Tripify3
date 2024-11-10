@@ -126,7 +126,7 @@ const App = () => {
         <Route path="/goodbye" element={<Goodbye />} />
         {/* Tourism Governor Routes */}
         <Route path={`/tourism-governor/historical-places/details/:id`} element={getLayoutForRole(userRole, <GovernorHistoricalPlaceDetails />)} />
-        <Route path={`${basePath}/addPlace`} element={<AddPlace />} />
+        <Route path={`${basePath}/addPlace`} element={getLayoutForRole(userRole, <AddPlace />)}  />
         <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
         <Route path={`/tourism-governor/tags`} element={getLayoutForRole(userRole, <GovernorTags />)} />
         {/* Tourist Routes */}

@@ -491,20 +491,20 @@ export const deleteSellerAccount = async (req, res) => {
     }
 
     // Check for any upcoming orders with a future drop-off date
-    const hasUpcomingOrders = await Order.exists({
-      "cart.products.product": {
-        $in: await product.find({ sellerId }).select("_id"),
-      },
-      dropOffDate: { $gt: new Date() }, // Check if dropOffDate is in the future
-    });
+    // const hasUpcomingOrders = await Order.exists({
+    //   "cart.products.product": {
+    //     $in: await product.find({ sellerId }).select("_id"),
+    //   },
+    //   dropOffDate: { $gt: new Date() }, // Check if dropOffDate is in the future
+    // });
 
-    if (hasUpcomingOrders) {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Cannot delete account. You have upcoming orders with future drop-off dates.",
-      });
-    }
+    // if (hasUpcomingOrders) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message:
+    //       "Cannot delete account. You have upcoming orders with future drop-off dates.",
+    //   });
+    // }
 
     // Mark all products associated with the seller as deleted
     await product.updateMany(

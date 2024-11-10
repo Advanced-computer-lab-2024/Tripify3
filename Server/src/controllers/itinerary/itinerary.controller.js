@@ -1,5 +1,8 @@
 import Itinerary from "../../models/itinerary.js";
 import User from "../../models/user.js";
+import Tag from "../../models/user.js";
+import TourGuide from "../../models/tourGuide.js";
+import Place from "../../models/place.js";
 import Review from "../../models/review.js";
 // Edit itinerary inappropriate attribute
 export const editItineraryAttribute = async (req, res) => {
@@ -30,9 +33,42 @@ export const editItineraryAttribute = async (req, res) => {
   }
 };
 
-// Create a new itinerary
 export const createItinerary = async (req, res) => {
   try {
+    const { tourGuideId, activities, places } = req.body;
+
+    // Validate and check if tour guide exists
+    if (!mongoose.Types.ObjectId.isValid(tourGuideId)) {
+      return res.status(400).json({ message: "Invalid tour guide ID format" });
+    }
+    const tourGuideExists = await TourGuide.exists({ _id: tourGuideId });
+    if (!tourGuideExists) {
+      return res.status(404).json({ message: "Tour guide not found" });
+    }
+
+    // Validate and check if all activities exist
+    const invalidActivities = activities.some(id => !mongoose.Types.ObjectId.isValid(id));
+    if (invalidActivities) {
+      return res.status(400).json({ message: "One or more activity IDs have an invalid format" });
+    }
+    const activityChecks = await Promise.all(activities.map(id => Activity.exists({ _id: id })));
+    const missingActivity = activityChecks.some(exists => !exists);
+    if (missingActivity) {
+      return res.status(404).json({ message: "One or more activities not found" });
+    }
+
+    // Validate and check if all places exist
+    const invalidPlaces = places.some(id => !mongoose.Types.ObjectId.isValid(id));
+    if (invalidPlaces) {
+      return res.status(400).json({ message: "One or more place IDs have an invalid format" });
+    }
+    const placeChecks = await Promise.all(places.map(id => Place.exists({ _id: id })));
+    const missingPlace = placeChecks.some(exists => !exists);
+    if (missingPlace) {
+      return res.status(404).json({ message: "One or more places not found" });
+    }
+
+    // If all checks pass, create the itinerary
     const itinerary = new Itinerary(req.body);
     await itinerary.save();
     res.status(201).json(itinerary);
@@ -42,9 +78,13 @@ export const createItinerary = async (req, res) => {
   }
 };
 
+
 export const getAllItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find({ isDeleted: false })
+    const itineraries = await Itinerary.find({
+      isDeleted: false,
+      "timeline.startTime": { $gt: currentDate },
+    })
       .populate({
         path: "activities",
         populate: {
@@ -87,7 +127,8 @@ export const getAllItineraries = async (req, res) => {
 
 export const getAllActiveAppropriateItineraries = async (req, res) => {
   try {
-    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false })
+    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false,
+      "timeline.startTime": { $gt: currentDate } })
       .populate({
         path: "activities",
         populate: {
@@ -124,12 +165,12 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
   }
 };
 
-
 export const getAllItinerariesForTourGuide = async (req, res) => {
   const { id } = req.params;
   try {
     // Find the tour guide's itineraries directly from the Itinerary model
-    const itineraries = await Itinerary.find({ tourGuide: id })
+    const itineraries = await Itinerary.find({ tourGuide: id ,isDeleted: false,
+      "timeline.endTime": { $gt: currentDate } })
       .populate({
         path: "activities",
         populate: {
@@ -181,34 +222,25 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
       data: response, // Return the itineraries data
     });
   } catch (error) {
-    console.error('Error fetching itineraries:', error);
+    console.error("Error fetching itineraries:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Get an itinerary by ID
 export const getItineraryById = async (req, res) => {
   try {
     const id = req.params.id;
-    const itinerary = await Itinerary.findById(id)
-    .populate('activities')
-    .populate('places')
-    .populate('tags')
-    .populate('tourGuide');
-  if (!itinerary) {
+    const itinerary = await Itinerary.findById(id).populate("activities").populate("places").populate("tags").populate("tourGuide");
+    if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-    const reviews = await Review.find({ itinerary: id })
-    .populate("tourist", "username")
-    .select("rating comment tourist");  // Select only the fields we need
-
+    const reviews = await Review.find({ itinerary: id }).populate("tourist", "username").select("rating comment tourist"); // Select only the fields we need
 
     return res.status(200).json({
       message: "Itenerary found successfully",
-      data:{ itinerary, reviews}
+      data: { itinerary, reviews },
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

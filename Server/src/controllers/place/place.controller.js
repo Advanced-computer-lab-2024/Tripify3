@@ -1,9 +1,9 @@
-import Place from '../../models/place.js'; // Import the Location model
-import Review from '../../models/review.js'; // Import the Location model
+import Place from "../../models/place.js"; // Import the Location model
+import Review from "../../models/review.js"; // Import the Location model
 import mongoose from "mongoose";
 
 export const getAllPlaces = async (req, res) => {
-  try{
+  try {
     // Fetch all places from the location collection
     const places = await Place.find().populate({ path: "tags", select: "name" }); // Populate tag names
     // Send response with the fetched places
@@ -23,23 +23,29 @@ export const getAllPlaces = async (req, res) => {
 export const getPlaceById = async (req, res) => {
   try {
     const { id } = req.params; // Extract ID from URL parameters
-    const place = await Place.findById(id); // Find place by ID
+
+    // Find place by ID and populate tags with only the 'name' field
+    const place = await Place.findById(id)
+      .populate({
+        path: "tags",
+        select: "name", // Populate 'tags' field to include only the 'name' field
+      });
 
     if (!place) {
-      return res.status(404).json({ message: 'Place not found' });
-    } 
+      return res.status(404).json({ message: "Place not found" });
+    }
 
+    // Retrieve reviews and populate the 'tourist' field with the 'username' field
     const reviews = await Review.find({ place: req.params.id })
-    .populate("tourist", "username")
-    .select("rating comment tourist");  // Select only the fields we need
+      .populate("tourist", "username") // Populate tourist with 'username' field only
+      .select("rating comment tourist"); // Select only the fields needed for reviews
 
     return res.status(200).json({
       message: "Place found successfully",
-      data: {place, reviews }// Now the reviews are nested inside the activity object
+      data: { place, reviews },
     });
-  
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

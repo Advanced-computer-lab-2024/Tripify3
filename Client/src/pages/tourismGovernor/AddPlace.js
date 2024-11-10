@@ -87,7 +87,7 @@ function AddPlace() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post(`${process.env.REACT_APP_API_BASE_URL}/governor/place/create`, {
+      .post(`${process.env.REACT_APP_API_BASE_URL}/place/create`, {
         ...place,
         tags: newTagIds,
         tourismGovernor: userId

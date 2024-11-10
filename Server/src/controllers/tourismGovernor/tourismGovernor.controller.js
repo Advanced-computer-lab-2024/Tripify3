@@ -14,32 +14,38 @@ export const addPlace = async (req, res) => {
     } = req.body;
 
     // Check if the tourismGovernor ID exists
-    const governorExists = await User.findById(tourismGovernor); // Ensure this model is defined
+    const governorExists = await User.findById(tourismGovernor);
 
     if (!governorExists) {
-      return res.status(http_code.BAD_REQUEST).json({
-        status: response_status.NEGATIVE,
+      return res.status(400).json({
         message: "Tourism Governor ID does not exist.",
       });
     }
 
-    // Create the place with the provided data
+    // Check if all tag IDs are valid and exist in the Tag model
+    const existingTags = await Tag.find({ _id: { $in: tags } });
+    if (existingTags.length !== tags.length) {
+      return res.status(400).json({
+        message: "One or more tag IDs are invalid.",
+      });
+    }
+
+    // Create the place with the validated data
     const place = await Place.create({ ...placeData, tourismGovernor, tags });
 
     res.status(201).json({
-      status: response_status.POSITIVE,
-      data: {
-        place,
-      },
+      message: "Place created successfully",
+      place,
     });
   } catch (err) {
     console.error(err.message); // Log the error for debugging
-    res.status(http_code.BAD_REQUEST).json({
-      status: response_status.NEGATIVE,
-      message: err.message, // Send a more descriptive error message
+    res.status(400).json({
+      message: "Error creating place",
+      error: err.message,
     });
   }
 };
+
 
 export const createTag = async (req, res) => {
   const { name } = req.body;
