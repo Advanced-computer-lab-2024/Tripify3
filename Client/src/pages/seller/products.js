@@ -58,6 +58,21 @@ const ImageFlipper = ({ images }) => {
 
   if (!images || images.length === 0) return null;
 
+  const imagePath = images[currentImageIndex];  // Get the full file path
+  console.log("Original Image Path:", imagePath); // Log the original path for debugging
+
+  // Normalize the path to use forward slashes
+  const normalizedPath = imagePath.replace(/\\/g, '/');
+  console.log("Normalized Image Path:", normalizedPath);  // Log the normalized path
+
+  // Extract the part after "uploads/" to create a relative path
+  const relativeImagePath = normalizedPath.substring(normalizedPath.indexOf("uploads/"));
+  console.log("Relative Image Path:", relativeImagePath);  // Log the extracted relative path
+  
+  // Construct the correct URL
+  const imageUrl = `http://localhost:8000/${relativeImagePath}`;
+  console.log("Generated Image URL:", imageUrl); // Log the final URL
+
   return (
     <div
       style={{
@@ -83,7 +98,7 @@ const ImageFlipper = ({ images }) => {
       {/* Display Current Image */}
       <CardMedia
         component="img"
-        image={`http://localhost:8000/${images[currentImageIndex]?.substring(images[currentImageIndex].indexOf("uploads/"))}`}
+        image={imageUrl}
         alt="Product image"
         style={{
           objectFit: "cover",

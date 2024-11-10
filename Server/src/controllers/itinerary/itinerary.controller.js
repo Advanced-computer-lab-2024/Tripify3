@@ -242,8 +242,6 @@ export const deleteItinerary = async (req, res) => {
 
     // Use deleteOne or findByIdAndDelete instead of remove
     await Itinerary.deleteOne({ _id: req.params.id });
-    // Or you could also use:
-    // await itinerary.deleteOne();
 
     res.status(204).send(); // No Content
   } catch (error) {
