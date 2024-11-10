@@ -1,6 +1,9 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {getUserProfile } from "../../services/tourist";//////////////////////////////////
+import { getUserId } from "../../utils/authUtils";
+import { useParams } from "react-router-dom";////////////////////////
 import { Box, Card, CardMedia, CardContent, Typography, Button, Grid, Rating, Divider, CircularProgress, Dialog, DialogTitle, DialogContent, IconButton, Chip } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -14,6 +17,9 @@ import PeopleIcon from "@mui/icons-material/People";
 
 const LoadHotels = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const userId1 = getUserId();
+  const [currency, setCurrency] = useState("USD");
   const LazyCardMedia = lazy(() => import("@mui/material/CardMedia"));
   const location = useLocation();
   const [hotels, setHotels] = useState([]);
@@ -35,7 +41,18 @@ const LoadHotels = () => {
 
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString("en-CA");
 
-  useEffect(() => {
+  useEffect( () => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile(); 
+    
     const fetchHotels = async () => {
       setLoading(true);
       setError(null);
@@ -58,7 +75,7 @@ const LoadHotels = () => {
     };
 
     fetchHotels();
-  }, [checkInDate, checkOutDate, adults, children]);
+  }, [checkInDate, checkOutDate, adults, children,id, userId1]);
 
   const handleViewDetails = (hotel) => {
     setSelectedHotel(hotel);
@@ -88,7 +105,29 @@ const LoadHotels = () => {
     // Return a placeholder URL if no valid image is found
     return null; // Fallback placeholder image
   };
-
+  const exchangeRates = {
+    USD: 0.02, // 1 EGP = 0.05 USD
+    EUR: 0.07, // 1 EGP = 0.045 EUR
+    GBP: 0.038, // 1 EGP = 0.038 GBP
+    AUD: 0.07, // 1 EGP = 0.07 AUD
+    CAD: 0.065, // 1 EGP = 0.065 CAD
+    // Add other currencies as needed
+  };
+  
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
+  };
   const handleBookHotel = async () => {
     const currentDate = new Date().toISOString();
     const hotelDetails = `
@@ -231,13 +270,13 @@ const LoadHotels = () => {
                 <Divider sx={{ my: 2 }} />
                 <Box textAlign="center">
                   <Typography variant="h6" fontWeight="bold">
-                    ${hotel.rate_per_night?.extracted_lowest || "N/A"}
+                  {formatCurrency(hotel.rate_per_night?.extracted_lowest || "N/A")} 
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Per Night
                   </Typography>
                   <Typography variant="h6" fontWeight="bold">
-                    ${hotel.total_rate?.extracted_lowest || "N/A"}
+                  {formatCurrency(hotel.total_rate?.extracted_lowest || "N/A")} 
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Total Rate
@@ -474,7 +513,7 @@ const LoadHotels = () => {
                   Total Price of Visit
                 </Typography>
                 <Typography variant="h4" fontWeight="bold" color="secondary">
-                  ${selectedHotel.total_rate?.extracted_lowest || "N/A"}
+                  {formatCurrency(selectedHotel.total_rate?.extracted_lowest || "N/A")} 
                 </Typography>
               </Box>
 

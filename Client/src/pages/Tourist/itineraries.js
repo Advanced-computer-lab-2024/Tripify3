@@ -21,13 +21,16 @@ import {
   IconButton,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import { getUserId } from "../../utils/authUtils";
+import { getItineraryById, getUserProfile } from "../../services/tourist";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllItineraries,getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
-import { getUserId, getUserType } from "../../utils/authUtils.js";
+import {  getUserType } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
 import { markItineraryInappropriate } from "../../services/admin.js";
+import { useParams } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -41,6 +44,8 @@ const theme = createTheme({
 });
 
 const Itineraries = () => {
+  const { id } = useParams();
+  const userId = getUserId();
   const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,11 +57,32 @@ const Itineraries = () => {
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [userType, setUserType] = useState("");
+  const [currency, setCurrency] = useState("USD"); // Default currency
 
   const navigate = useNavigate();
   const languageOptions = ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"];
 
-  useEffect(() => {
+
+
+
+
+
+
+
+
+
+
+  useEffect( () => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+
     setUserType(getUserType()); // Fetch the user type when component mounts
     const fetchData = async () => {
       try {
@@ -81,7 +107,8 @@ const Itineraries = () => {
       }
     };
     fetchData();
-  }, []);
+    fetchUserProfile();
+  }, [id, userId]);
 
   useEffect(() => {
     const filtered = itineraries
@@ -126,6 +153,37 @@ const Itineraries = () => {
       toast.error("Error updating itinerary status!");
     }
   };
+
+
+  const exchangeRates = {
+    USD: 0.02, // 1 EGP = 0.05 USD
+    EUR: 0.07, // 1 EGP = 0.045 EUR
+    GBP: 0.038, // 1 EGP = 0.038 GBP
+    AUD: 0.07, // 1 EGP = 0.07 AUD
+    CAD: 0.065, // 1 EGP = 0.065 CAD
+    // Add other currencies as needed
+  };
+  
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
+  };
+
+
+
+
+
+
 
   if (loading) {
     return (
@@ -233,7 +291,7 @@ const Itineraries = () => {
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     {itinerary.name}
                   </Typography>
-                  <Typography>Price: ${itinerary.price}</Typography>
+                  <Typography>Price: {formatCurrency(itinerary.price)}</Typography>
                   <Typography>
                     <strong>Language:</strong> {itinerary.language}
                   </Typography>

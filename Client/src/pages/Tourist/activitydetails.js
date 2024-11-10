@@ -14,12 +14,16 @@ import {
   Add as AddIcon,
   Remove as RemoveIcon,
 } from "@mui/icons-material";
+import { getItineraryById, getUserProfile } from "../../services/tourist"
 import { getActivityById } from "../../services/tourist";
 import axios from "axios";
 import { getUserId, getUserType } from "../../utils/authUtils";
 
+
 const ActivityDetails = () => {
   const { id } = useParams();
+  const [currency, setCurrency] = useState("USD");
+  const userId = getUserId();
   const userType = getUserType();
   const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
@@ -33,7 +37,17 @@ const ActivityDetails = () => {
   const handleIncrease = () => setTicketCount(ticketCount + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
 
-  useEffect(() => {
+  useEffect( () => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
     const fetchActivity = async () => {
       try {
         const response = await getActivityById(id);
@@ -46,7 +60,7 @@ const ActivityDetails = () => {
       }
     };
     fetchActivity();
-  }, [id]);
+  }, [id, userId]);
 
   useEffect(() => {
     // Recalculate total price whenever ticketCount changes
@@ -77,7 +91,29 @@ const ActivityDetails = () => {
       console.error("Error sending message:", error);
     }
   };
-
+  const exchangeRates = {
+    USD: 0.02, // 1 EGP = 0.05 USD
+    EUR: 0.07, // 1 EGP = 0.045 EUR
+    GBP: 0.038, // 1 EGP = 0.038 GBP
+    AUD: 0.07, // 1 EGP = 0.07 AUD
+    CAD: 0.065, // 1 EGP = 0.065 CAD
+    // Add other currencies as needed
+  };
+  
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
+  };
   const handleEmailShare = () => {
     const emailSubject = `Check out this itinerary: ${activity.name}`;
     // Construct email body with additional itinerary details
@@ -157,7 +193,7 @@ const ActivityDetails = () => {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <MonetizationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
                   <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
-                    {activity.price}
+                    {formatCurrency(activity.price)}
                   </Typography>
                 </Box>
               </Grid>
@@ -195,7 +231,7 @@ const ActivityDetails = () => {
 
                 {/* Position total price next to ticket count */}
                 <Typography variant="h6" color="#333" sx={{ mx: 2 }}>
-                  Total Price: {totalPrice}
+                  Total Price: {formatCurrency(totalPrice)}
                 </Typography>
 
                 <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500 }}>
