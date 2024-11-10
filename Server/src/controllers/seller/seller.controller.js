@@ -416,8 +416,6 @@ export const unarchiveProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-//sprint 3
 export const addProdImage = async (req, res) => {
   try {
     const { id, imageUrl } = req.body;
@@ -480,7 +478,6 @@ export const SearchProductById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 export const deleteSellerAccount = async (req, res) => {
   try {
     const sellerId = req.params.id; // Get the seller ID from request parameters
