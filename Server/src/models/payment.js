@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import Tourist from "./tourist.js"; 
+import Tourist from "./tourist.js";
+import User from "./user.js";
 
 const paymentSchema = new mongoose.Schema({
-  tourist:   {
+  tourist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tourist",
     required: true
@@ -10,31 +11,40 @@ const paymentSchema = new mongoose.Schema({
   paymentDate: { type: Date, default: Date.now },
   amount: { type: Number, required: true },
   paymentMethod: { type: String, enum: ["Credit Card", "PayPal", "Bank Transfer"], required: true },
-  paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: "pending" },
+  paymentStatus: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
   items: [{
-    type: { type: String, enum: ['Product', 'Activity', 'Itinerary', 'Place', 'Event'] },
-    itemId: { type: mongoose.Schema.Types.ObjectId, },
-    price: Number,
-  }],
+    type: { type: String, enum: ["Product", "Activity", "Itinerary", "Place", "Event"] },
+    itemId: { type: mongoose.Schema.Types.ObjectId },
+    price: Number
+  }]
 });
 
-const Payment = mongoose.model("Payment", paymentSchema);
 
-paymentSchema.post("save", async function (payment) {
-  if (payment.paymentStatus === "Success") {
+paymentSchema.post("save", async function(payment) {
+  console.log("Payment saved:", payment);  
+  if (payment.paymentStatus === "completed") {
     try {
-      const booking = await mongoose.model("Booking").findById(payment.booking).populate("tourist");
-      if (booking && booking.tourist) {
-        const tourist = booking.tourist;
-        
-        let pointsMultiplier = 0.5;
-        if (tourist.level === 2) pointsMultiplier = 1;
-        if (tourist.level === 3) pointsMultiplier = 1.5;
-        
-        const pointsToAdd = payment.amount * pointsMultiplier;
+      const user = await User.findById(payment.tourist);
+      console.log("User found:", user);  
 
-        tourist.loyaltyPoints += pointsToAdd;
-        await tourist.save();
+      if (user && user.type === "Tourist") {  
+        if (user.loyaltyPoints > 500000) {
+          pointsMultiplier = 1.5;
+        } else if (user.loyaltyPoints > 100000) {
+          pointsMultiplier = 1;
+        } else {
+          pointsMultiplier = 0.5;
+        }
+
+        const pointsToAdd = payment.amount * pointsMultiplier;
+        console.log(`Points to add: ${pointsToAdd}`);  
+        user.loyaltyPoints += pointsToAdd;
+
+        await user.save().catch(error => {
+          console.error("Error saving user:", error);
+        });
+
+        console.log("User loyalty points updated:", user.loyaltyPoints);  // Verify points update
       }
     } catch (error) {
       console.error("Error updating loyalty points:", error);
@@ -42,4 +52,6 @@ paymentSchema.post("save", async function (payment) {
   }
 });
 
+
+const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;
