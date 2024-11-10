@@ -2,7 +2,7 @@ import express from "express";
 
 import { getAllActivitiesAttended } from "../controllers/tourist/activities.controller.js";
 import { getProfile, editProfile } from "../controllers/tourist/profile.controller.js";
-import { getFlightsData, getHotels } from "../controllers/tourist/search.controller.js";
+import { getFlightsData, getHotels, getDirections, getSuggestions } from "../controllers/tourist/search.controller.js";
 import { initializeWishList, AddProductToWishlist, getWishlist, removeProductFromWishlist } from "../controllers/tourist/wishList.contoller.js";
 import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor, updateCart } from "../controllers/tourist/cart.controller.js";
 import { redeemPoints,deleteTouristAccount } from "../controllers/tourist/profile.controller.js";
@@ -19,6 +19,9 @@ router.get("/tourist/profile/:id", getProfile); // Get filtered activities
 router.put("/tourist/profile/:id", editProfile); // Get filtered activities
 router.get("/flights", getFlightsData); // Get Flights
 router.get("/hotels", getHotels); //Get Hotels
+router.get("/directions", getDirections); //Get Hotels
+router.get("/suggestions", getSuggestions); //Get Hotels
+
 router.get("/activitiesAttended/get/:userId", getAllActivitiesAttended); // Get all activities attended by a tourist
 
 router.delete('/tourist/delete/:id', deleteTouristAccount);

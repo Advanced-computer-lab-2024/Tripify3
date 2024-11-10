@@ -66,15 +66,23 @@ const LoadFlights = () => {
 
   // Book flight function
   const handleBookFlight = async () => {
-    const currentDate = new Date().toISOString();
-    const flightDetails = `${selectedFlight.airline} - ${selectedFlight.flightNumber}`;
+    const flightDetails = `
+     Flight: ${selectedFlight.airline} - ${selectedFlight.flightNumber}, 
+    Departure: ${departure}, 
+    Arrival: ${arrival}, 
+    Seat Class: ${seatClass}, 
+    Travel Date: ${formatDate(travelDate)}, 
+    Departure Time: ${selectedFlight.departure.time}, 
+    Arrival Time: ${selectedFlight.arrival.time}, 
+    Duration: ${formatDuration(selectedFlight.duration)}, 
+    Total Price: ${formatPrice(selectedFlight.price)}
+  `;
 
     try {
-      await axios.post("http://localhost:8000/booking/create", {
+      await axios.post("http://localhost:8000/tourist/booking/create", {
         tourist: userId,
         price: selectedFlight.price,
         type: "Flight",
-        date: currentDate,
         details: flightDetails,
       });
       setBookingDialog(true); // Show booking confirmation dialog

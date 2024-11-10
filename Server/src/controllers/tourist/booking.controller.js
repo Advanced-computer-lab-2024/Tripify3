@@ -25,13 +25,16 @@ export const createBooking = async (req, res) => {
       case "Flight":
         item = null;
         break;
+      case "Transportation":
+        item = null;
+        break;
       default:
         return res.status(400).json({ message: "Invalid booking type" });
     }
 
     // Check if the item was found
     
-    if (!item && item !== 'Hotel' && item !== 'Flight') {
+    if (!item && type != 'Hotel' && type != 'Flight' &&  type != 'Transportation') {
       return res.status(404).json({ message: `${type} not found` });
     }
 

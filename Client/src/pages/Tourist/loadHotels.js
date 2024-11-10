@@ -33,6 +33,8 @@ const LoadHotels = () => {
   const childrenAges = queryParams.get("children_ages");
   const userId = localStorage.getItem("userId");
 
+  const formatDate = (dateString) => new Date(dateString).toLocaleDateString("en-CA");
+
   useEffect(() => {
     const fetchHotels = async () => {
       setLoading(true);
@@ -89,22 +91,26 @@ const LoadHotels = () => {
 
   const handleBookHotel = async () => {
     const currentDate = new Date().toISOString();
-    const hotelDetails = `${selectedHotel.name}, ${selectedHotel.city}`;
+    const hotelDetails = `
+    Hotel: ${selectedHotel.name}, 
+    City: ${selectedHotel.city}, 
+    Check-in Date: ${formatDate(checkInDate)}, 
+    Check-out Date: ${formatDate(checkOutDate)}, 
+    Adults: ${adults}, 
+    Children: ${children}, 
+  `;
     setBookingDialog(true);
-    setBookingLoading(true); // Start loading immediately
 
     try {
-      await axios.post("http://localhost:8000/booking/create", {
+      setBookingLoading(true); // Start loading immediately
+      await axios.post("http://localhost:8000/tourist/booking/create", {
         tourist: userId,
         price: selectedHotel.total_rate?.extracted_lowest,
         type: "Hotel",
-        date: currentDate,
         details: hotelDetails,
       });
-      
-      setBookingLoading(false);
       setOpenModal(false);
-
+      setBookingLoading(false);
     } catch (error) {
       console.error("Error creating booking:", error);
       setError("Failed to create booking. Please try again.");
