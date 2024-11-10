@@ -276,12 +276,12 @@ export const deleteItinerary = async (req, res) => {
     }
 
     // Check if there are bookings associated with this itinerary
-    if (itinerary.bookings.length > 0) {
-      return res.status(400).json({ message: "Cannot delete an itinerary with existing bookings" });
-    }
+    // if (itinerary.bookings.length > 0) {
+    //   return res.status(400).json({ message: "Cannot delete an itinerary with existing bookings" });
+    // }
 
-    // Use deleteOne or findByIdAndDelete instead of remove
-    await Itinerary.deleteOne({ _id: req.params.id });
+    // Mark the activity as deleted
+    itinerary.isDeleted = true;
 
     res.status(204).send(); // No Content
   } catch (error) {

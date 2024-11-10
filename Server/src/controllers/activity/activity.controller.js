@@ -79,17 +79,17 @@ export const deleteActivity = async (req, res) => {
     }
 
     // Check if the activity date is in the future
-    if (activity.date > new Date()) {
-      // Check if there are any future bookings for this activity
-      const futureBookings = await Booking.find({
-        activity: req.params.id,
-        date: { $gt: new Date() } // Only look for bookings with dates greater than now
-      });
+    // if (activity.date > new Date()) {
+    //   // Check if there are any future bookings for this activity
+    //   const futureBookings = await Booking.find({
+    //     activity: req.params.id,
+    //     date: { $gt: new Date() } // Only look for bookings with dates greater than now
+    //   });
 
-      if (futureBookings.length > 0) {
-        return res.status(403).json({ error: "Cannot delete activity with future bookings." });
-      }
-    }
+    //   if (futureBookings.length > 0) {
+    //     return res.status(403).json({ error: "Cannot delete activity with future bookings." });
+    //   }
+    // }
 
     // Mark the activity as deleted
     activity.isDeleted = true;

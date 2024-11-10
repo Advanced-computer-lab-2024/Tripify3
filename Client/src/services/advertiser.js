@@ -32,8 +32,6 @@ export const getAllActivitiesByAdvertiser = async (advertiserId) => {
 };
 
 export const deleteActivity = async (advertiserId, activityId) => {
-    return await axios.delete(`${API_URL}/activity/delete`, {
-      params: { advertiserId, activityId },
-    });
+    return await axios.delete(`${API_URL}/activity/delete/${activityId}`,);
   };
   
