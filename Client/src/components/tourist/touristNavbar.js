@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { clearUser } from '../../utils/authUtils.js';
+import {getUserId, clearUser } from '../../utils/authUtils.js';
 
 import {
   AppBar,
@@ -49,6 +49,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 const TouristNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const userId = getUserId();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [helpAnchorEl, setHelpAnchorEl] = useState(null);

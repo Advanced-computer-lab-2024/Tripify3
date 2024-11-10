@@ -61,7 +61,7 @@ import { getUserType } from "./utils/authUtils.js";
 import Chatbot from "./pages/AI/chatbot.js";
 import Users from "./pages/admin/users.js";
 import Tags from "./pages/admin/tags.js";
-import loadHotels from "./pages/tourist/loadHotels.js";
+import LoadHotels from "./pages/tourist/loadHotels.js";
 import ProductPage from "./pages/seller/new/productPage.js";
 import Bookings from "./pages/tourist/bookings.js";
 import SellerProfile from "./pages/seller/profile.js";
