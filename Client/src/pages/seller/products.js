@@ -10,6 +10,7 @@ import AddIcon from "@mui/icons-material/Add";
 import AddFile from "./new/addFile";
 import ProductEditModal from "./new/modal";
 import ProductCreateModal from "./new/modalCreate";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import {
   AppBar,
@@ -49,26 +50,32 @@ const ImageFlipper = ({ images }) => {
   }, [images, currentImageIndex]);
 
   const handleNextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
   const handlePrevImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
   };
 
   if (!images || images.length === 0) return null;
 
-  const imagePath = images[currentImageIndex];  // Get the full file path
+  const imagePath = images[currentImageIndex]; // Get the full file path
   console.log("Original Image Path:", imagePath); // Log the original path for debugging
 
   // Normalize the path to use forward slashes
-  const normalizedPath = imagePath.replace(/\\/g, '/');
-  console.log("Normalized Image Path:", normalizedPath);  // Log the normalized path
+  const normalizedPath = imagePath.replace(/\\/g, "/");
+  console.log("Normalized Image Path:", normalizedPath); // Log the normalized path
 
   // Extract the part after "uploads/" to create a relative path
-  const relativeImagePath = normalizedPath.substring(normalizedPath.indexOf("uploads/"));
-  console.log("Relative Image Path:", relativeImagePath);  // Log the extracted relative path
-  
+  const relativeImagePath = normalizedPath.substring(
+    normalizedPath.indexOf("uploads/")
+  );
+  console.log("Relative Image Path:", relativeImagePath); // Log the extracted relative path
+
   // Construct the correct URL
   const imageUrl = `http://localhost:8000/${relativeImagePath}`;
   console.log("Generated Image URL:", imageUrl); // Log the final URL
@@ -261,11 +268,29 @@ const Products = () => {
   const [newImage, setNewImage] = useState([]);
   const [openCreate, setOpenCreate] = useState(false);
 
+  const handleAddToCart = async (productId) => {
+    try {
+      // API call with `productId` in the request body
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/add",
+        { productId: productId, touristId: getUserId() } // Use `productId`
+      );
+      console.log("Product added to cart successfully");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+      console.log("Failed to add the product to cart.");
+    }
+  };
+
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/access/seller/searchAllProducts");
+      const response = await axios.get(
+        "http://localhost:8000/access/seller/searchAllProducts"
+      );
       if (getUserType() === "Seller") {
-        setProducts(response.data.filter((product) => product.sellerId === getUserId()));
+        setProducts(
+          response.data.filter((product) => product.sellerId === getUserId())
+        );
       } else {
         setProducts(response.data);
       }
@@ -277,8 +302,14 @@ const Products = () => {
 
   const fetchSellerNames = async (products) => {
     try {
-      const sellerIds = [...new Set(products.map((product) => product.sellerId))];
-      const sellerPromises = sellerIds.map((sellerId) => axios.get(`http://localhost:8000/access/seller/findSeller?id=${sellerId}`));
+      const sellerIds = [
+        ...new Set(products.map((product) => product.sellerId)),
+      ];
+      const sellerPromises = sellerIds.map((sellerId) =>
+        axios.get(
+          `http://localhost:8000/access/seller/findSeller?id=${sellerId}`
+        )
+      );
       const sellerResponses = await Promise.all(sellerPromises);
       const sellerData = sellerResponses.reduce((acc, response) => {
         const { _id, name } = response.data;
@@ -292,7 +323,9 @@ const Products = () => {
   };
   const fetchWishList = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/tourist/wishlist/get?touristId=${getUserId()}`);
+      const response = await axios.get(
+        `http://localhost:8000/tourist/wishlist/get?touristId=${getUserId()}`
+      );
       setWishArray(response.data.items);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -309,7 +342,10 @@ const Products = () => {
 
   const filteredProducts = products
     .filter(
-      (product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()) && product.rating >= filterOption.rating && product.price <= (budget || Infinity) // Filter by budget
+      (product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        product.rating >= filterOption.rating &&
+        product.price <= (budget || Infinity) // Filter by budget
     )
     .sort((a, b) => {
       if (sortOrder === "asc") return a.price - b.price;
@@ -351,7 +387,9 @@ const Products = () => {
           "http://localhost:8000/tourist/wishlist/remove",
           { id: productId, touristId: getUserId() } // Sending the product id in the request body
         );
-        setWishArray((prevWishArray) => prevWishArray.filter((id) => id !== productId));
+        setWishArray((prevWishArray) =>
+          prevWishArray.filter((id) => id !== productId)
+        );
       }
     } catch (error) {
       console.error("Error archiving product:", error);
@@ -375,60 +413,11 @@ const Products = () => {
       fetchProducts();
       console.log("Product updated successfully", response.data);
     } catch (error) {
-      console.error("Error updating product", error.response?.data || error.message);
-    }
-  };
-
-  const handleAdd2 = async (product) => {
-    // Prepare the form data
-    const newFormData = new FormData();
-    newFormData.append("productId", product._id); // Include productId in the request body
-    newFormData.append("name", product.name);
-    newFormData.append("price", product.price);
-    newFormData.append("details", product.details);
-    newFormData.append("quantity", product.quantity);
-    newFormData.append("category", product.category);
-    newFormData.append("sellerId", product.sellerId);
-
-    // Append existing images as URLs
-    product.imageUrl.forEach((url) => {
-      newFormData.append("existingImages", url); // Assuming your backend handles "existingImages" for URLs
-    });
-
-    // Append new images (files uploaded by the user)
-    // Append new images (files uploaded by the user)
-    newImage.forEach((image, index) => {
-      newFormData.append(
-        "images", // Ensure this field name matches with multer's expected field
-        image,
-        `${product.name}-${index + product.imageUrl.length + 1}.${image.name.split(".").pop()}`
+      console.error(
+        "Error updating product",
+        error.response?.data || error.message
       );
-    });
-
-    // Debug: Log the FormData content to verify its structure
-
-    try {
-      // Send the PUT request with the form data to update the product
-      const response = await axios.put(
-        `http://localhost:8000/access/seller/editProduct`, // Don't pass the productId in the URL
-        newFormData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            "user-id": getUserId(), // Pass userId in the headers
-          },
-        }
-      );
-
-      console.log("Product updated successfully", response.data);
-
-      // Optionally, update the UI or reset states here if needed
-      // Example: refresh product data or clear form states
-      setNewImage([]);
-    } catch (error) {
-      console.error("Error updating product", error.response?.data || error.message);
     }
-    fetchProducts();
   };
 
   const handleAdd = async (product) => {
@@ -468,22 +457,34 @@ const Products = () => {
     // Append new images using missing indices first, then increment
     newImage.forEach((image, idx) => {
       console.log("this is image", image);
-      const useIndex = missingIndices.length > 0 ? missingIndices.shift() : nextIndex++;
-      newFormData.append("images", image, `${product.name}-${useIndex}.${image.name.split(".").pop()}`);
+      const useIndex =
+        missingIndices.length > 0 ? missingIndices.shift() : nextIndex++;
+      newFormData.append(
+        "images",
+        image,
+        `${product.name}-${useIndex}.${image.name.split(".").pop()}`
+      );
     });
 
     try {
-      const response = await axios.put(`http://localhost:8000/access/seller/editProduct`, newFormData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          "user-id": getUserId(),
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:8000/access/seller/editProduct`,
+        newFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "user-id": getUserId(),
+          },
+        }
+      );
 
       console.log("Product updated successfully", response.data);
       setNewImage([]);
     } catch (error) {
-      console.error("Error updating product", error.response?.data || error.message);
+      console.error(
+        "Error updating product",
+        error.response?.data || error.message
+      );
       fetchProducts();
     }
   };
@@ -524,7 +525,10 @@ const Products = () => {
       <div>
         <AppBar position="static" sx={{ mb: 4 }}>
           <Toolbar sx={{ justifyContent: "center" }}>
-            <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center", color: "white" }}>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", textAlign: "center", color: "white" }}
+            >
               Product List
             </Typography>
           </Toolbar>
@@ -537,19 +541,40 @@ const Products = () => {
 
           {/* Search Section */}
           <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-            <TextField label="Search Products" variant="outlined" onChange={(e) => setSearchTerm(e.target.value)} sx={{ mr: 2, width: "300px" }} />
+            <TextField
+              label="Search Products"
+              variant="outlined"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{ mr: 2, width: "300px" }}
+            />
             <FormControl variant="outlined" sx={{ mr: 2, width: "150px" }}>
               <InputLabel>Sort by Price</InputLabel>
-              <Select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} label="Sort by Price">
+              <Select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                label="Sort by Price"
+              >
                 <MenuItem value="asc">Low to High</MenuItem>
                 <MenuItem value="desc">High to Low</MenuItem>
               </Select>
             </FormControl>
-            <TextField label="Budget" variant="outlined" type="number" value={budget} onChange={(e) => setBudget(e.target.value)} sx={{ mr: 2, width: "150px" }} />
+            <TextField
+              label="Budget"
+              variant="outlined"
+              type="number"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              sx={{ mr: 2, width: "150px" }}
+            />
             <Button variant="contained" onClick={() => setSortOrder(sortOrder)}>
               Sort
             </Button>
-            <Button variant="contained" color="secondary" onClick={resetFilters} sx={{ ml: 2 }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={resetFilters}
+              sx={{ ml: 2 }}
+            >
               Reset Filters
             </Button>
           </Box>
@@ -558,7 +583,10 @@ const Products = () => {
           <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
             <FormControl variant="outlined" sx={{ mr: 2, width: "200px" }}>
               <InputLabel>Filter by Rating</InputLabel>
-              <Select value={filterOption.rating} onChange={(e) => setFilterOption({ rating: e.target.value })}>
+              <Select
+                value={filterOption.rating}
+                onChange={(e) => setFilterOption({ rating: e.target.value })}
+              >
                 <MenuItem value={0}>All Ratings</MenuItem>
                 <MenuItem value={1}>1 Star</MenuItem>
                 <MenuItem value={2}>2 Stars</MenuItem>
@@ -630,11 +658,16 @@ const Products = () => {
                           }}
                           onClick={() => handleWishlist(product._id)}
                         >
-                          {wishArray.includes(product._id) ? <FavoriteIcon style={{ color: "red" }} /> : <FavoriteBorderIcon />}
+                          {wishArray.includes(product._id) ? (
+                            <FavoriteIcon style={{ color: "red" }} />
+                          ) : (
+                            <FavoriteBorderIcon />
+                          )}
                         </IconButton>
                       )}
 
-                      {Array.isArray(product.imageUrl) && product.imageUrl.length > 0 ? (
+                      {Array.isArray(product.imageUrl) &&
+                      product.imageUrl.length > 0 ? (
                         <ImageFlipper images={product.imageUrl} />
                       ) : (
                         <CircularProgress
@@ -653,31 +686,80 @@ const Products = () => {
                           <Typography variant="h5">{product.name}</Typography>
                           <Typography>Price: ${product.price}</Typography>
                           <Typography>Details: {product.details}</Typography>
-                          <Rating name="read-only" value={product.rating} readOnly />
+                          <Rating
+                            name="read-only"
+                            value={product.rating}
+                            readOnly
+                          />
 
-                          {getUserType() !== "Tourist" ? <Typography>Quantity: {product.quantity}</Typography> : null}
+                          {getUserType() !== "Tourist" ? (
+                            <Typography>
+                              Quantity: {product.quantity}
+                            </Typography>
+                          ) : null}
 
                           <Typography>Category: {product.category}</Typography>
-                          {getUserType() !== "Tourist" ? <Typography>Sales: {product.sales}</Typography> : null}
+                          {getUserType() !== "Tourist" ? (
+                            <Typography>Sales: {product.sales}</Typography>
+                          ) : null}
 
                           {product.reviews && product.reviews.length > 0 ? (
                             <div>
-                              <Typography variant="h6">Sales History</Typography>
+                              <Typography variant="h6">
+                                Sales History
+                              </Typography>
                               <ul>
                                 {product.reviews.map((review, index) => (
                                   <li key={index}>
-                                    Review ID: {review._id}, Rating: {review.rating}, {review.comment}
+                                    Review ID: {review._id}, Rating:{" "}
+                                    {review.rating}, {review.comment}
                                   </li>
                                 ))}
                               </ul>
                             </div>
                           ) : (
-                            <Typography>No reviews, be the first one to give feedback.</Typography>
+                            <Typography>
+                              No reviews, be the first one to give feedback.
+                            </Typography>
                           )}
 
-                          <Typography>Seller: {sellerNames[product.sellerId] ? <Link to={`/seller/${product.sellerId}`}>{sellerNames[product.sellerId]}</Link> : "Loading seller name..."}</Typography>
+                          <Typography>
+                            Seller:{" "}
+                            {sellerNames[product.sellerId] ? (
+                              <Link to={`/seller/${product.sellerId}`}>
+                                {sellerNames[product.sellerId]}
+                              </Link>
+                            ) : (
+                              "Loading seller name..."
+                            )}
+                          </Typography>
                         </CardContent>
                       </Link>
+                      {getUserType() == "Tourist" ? (
+                        <Button
+                          variant="contained"
+                          startIcon={<ShoppingCartIcon />}
+                          onClick={() => handleAddToCart(product._id)} // Assuming you have an add-to-cart function
+                          sx={{
+                            width: "80%",
+                            margin: "16px auto", // Center the button with margin on top and bottom
+                            display: "block", // Center align in the card
+                            background:
+                              "linear-gradient(45deg, #FF6B6B, #FFD93D)",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            textTransform: "none",
+                            borderRadius: "8px",
+                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                            "&:hover": {
+                              background:
+                                "linear-gradient(45deg, #FF5A5A, #FFC837)",
+                            },
+                          }}
+                        >
+                          Add to Cart
+                        </Button>
+                      ) : null}
                     </Card>
                   </Grid>
                 ))}
@@ -693,12 +775,17 @@ const Products = () => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      if (getUserType() === "Seller" || getUserType() === "Admin") {
+                      if (
+                        getUserType() === "Seller" ||
+                        getUserType() === "Admin"
+                      ) {
                         setOpenCreate(true);
                       }
                     }}
                   >
-                    {getUserType() === "Seller" || getUserType() === "Admin" ? <AddIcon /> : null}
+                    {getUserType() === "Seller" || getUserType() === "Admin" ? (
+                      <AddIcon />
+                    ) : null}
                   </Card>
                 </Grid>
               </Grid>
@@ -744,7 +831,9 @@ const Products = () => {
         handleUpdate={handleAdd}
         setNewImage={setNewImage}
       />
-      {openCreate && <ProductCreateModal open={openCreate} handleClose={handleCloseModal2} />}
+      {openCreate && (
+        <ProductCreateModal open={openCreate} handleClose={handleCloseModal2} />
+      )}
     </ThemeProvider>
   );
 };

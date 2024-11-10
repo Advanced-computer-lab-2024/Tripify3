@@ -7,6 +7,7 @@ import React, { useEffect } from "react";
 import { Backdrop } from "@mui/material";
 import { useParams } from "react-router-dom"; // Import useParams for URL params
 import { getUserType, getUserId } from "../../../utils/authUtils";
+import { Link } from "react-router-dom";
 
 const CartIcon = () => {
   return (
@@ -253,15 +254,19 @@ const Cart = ({
           )}
         </div>
 
-        <button
-          className="checkout"
-          onClick={() => {
-            onReset();
-            onShow(false);
-          }}
+        <Link
+          to="/tourist/mycart"
+          style={{ textDecoration: "none", width: "100%" }}
         >
-          checkout
-        </button>
+          <button
+            className="checkout"
+            onClick={() => {
+              onShow(false);
+            }}
+          >
+            View cart
+          </button>
+        </Link>
       </div>
     </section>
   );
@@ -404,7 +409,6 @@ const Gallery = ({ products }) => {
                   style={{
                     maxHeight: "70px",
                     maxWidth: "70px",
-                    borderRadius: "50%",
                   }}
                 />
               </div>
@@ -765,16 +769,12 @@ function App() {
     fetchProducts(setProducts, setErrorMessage, productId); // Pass state setters to fetchProducts
     getTouristCart(setProductList, setItemCount, setTotal);
   }, []);
-  useEffect(() => {
-    console.log(products);
-  }, [products]);
+
   useEffect(() => {
     console.log("this is the product list", productList);
     fetchProductDetails(productList, setProductDetails, setQuantArray);
   }, [productList]);
-  useEffect(() => {
-    console.log("this is the product details", productDetails);
-  });
+
   const addQuant = () => {
     setQuant(quant + 1);
   };
