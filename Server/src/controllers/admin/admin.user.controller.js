@@ -4,6 +4,11 @@ import Advertiser from "../../models/advertiser.js";
 import Seller from "../../models/seller.js";
 import TourGuide from "../../models/tourGuide.js";
 import Tourist from "../../models/tourist.js";
+import Activity from "../../models/activity.js";
+import Itinerary from "../../models/itinerary.js";
+import Product from "../../models/product.js";
+import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
+// Edit itinerary inappropriate attribute
 
 export const getAllAcceptedUsers = async (req, res) => {
   try {
@@ -151,12 +156,17 @@ export const deleteUser = async (req, res) => {
     switch (user.type) {
       case "Advertiser":
         deletedUser = await Advertiser.findByIdAndDelete(id);
+
+        await Activity.updateMany({ advertiser: id }, { $set: { isDeleted: true } });
         break;
       case "Seller":
         deletedUser = await Seller.findByIdAndDelete(id);
+        // Mark all products associated with this seller as deleted
+        await Product.updateMany({ sellerId: id }, { $set: { isDeleted: true } });
         break;
       case "Tour Guide":
         deletedUser = await TourGuide.findByIdAndDelete(id);
+        await Itinerary.updateMany({ tourGuide: id }, { $set: { isDeleted: true } });
         break;
       case "Tourist":
         deletedUser = await Tourist.findByIdAndDelete(id);
@@ -191,8 +201,6 @@ export const deleteUser = async (req, res) => {
 export const updateUserStatus = async (req, res) => {
   const { id } = req.params; // Get user ID from request parameters
   const { status } = req.body; // Get the new status from the request body
-
-  console.log(req.body);
 
   try {
     // Fetch the user to determine their type
@@ -240,5 +248,42 @@ export const updateUserStatus = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const markActivityInappropriate = async (req, res) => {
+  const { id } = req.params; // Get activity ID from request parameters
+  const { inappropriate } = req.body; // Get new value for inappropriate from request body
+
+  // Validate the inappropriate value
+  if (typeof inappropriate !== "boolean") {
+    return res.status(400).json({ message: "Inappropriate field must be a boolean value" });
+  }
+
+  try {
+    // Find the activity and populate the advertiser field
+    const updatedActivity = await Activity.findByIdAndUpdate(
+      id,
+      { inappropriate }, // Set the new value for inappropriate
+      { new: true, runValidators: true } // Return the updated document and run validation
+    ).populate("advertiser"); // Populate the advertiser field
+
+    // Check if the activity was found
+    if (!updatedActivity) {
+      return res.status(404).json({ message: "Activity not found" });
+    }
+
+    // Send notification email to the advertiser
+    const advertiser = updatedActivity.advertiser;
+    if (updatedActivity.inappropriate) {
+      await sendFlagNotificationEmail(advertiser, updatedActivity.name, "Activity");
+    } else {
+      await sendContentRestoredNotificationEmail(advertiser, updatedActivity.name, "Activity");
+    }
+
+    res.status(200).json(updatedActivity); // Return the updated activity
+  } catch (error) {
+    console.error("Error updating activity:", error);
+    res.status(500).json({ message: error.message }); // Handle errors
   }
 };

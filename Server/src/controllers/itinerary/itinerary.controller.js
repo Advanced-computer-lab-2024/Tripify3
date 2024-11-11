@@ -6,7 +6,10 @@ import Activity from "../../models/activity.js";
 import Place from "../../models/place.js";
 import Review from "../../models/review.js"; 
 import mongoose from "mongoose"; 
+import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
 // Edit itinerary inappropriate attribute
+
+
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
   const { inappropriate } = req.body; // Get new value for inappropriate from request body
@@ -17,20 +20,30 @@ export const editItineraryAttribute = async (req, res) => {
   }
 
   try {
-    // Find and update the itinerary
+    // Find the itinerary and populate the tourGuide field
     const updatedItinerary = await Itinerary.findByIdAndUpdate(
       id,
       { inappropriate }, // Set the new value for inappropriate
       { new: true, runValidators: true } // Return the updated document and run validation
-    );
+    ).populate("tourGuide"); // Populate the tourGuide field
 
     // Check if the itinerary was found
     if (!updatedItinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
 
+    // Send notification email to the tour guide
+    if (updatedItinerary.inappropriate) {
+      const tourGuide = updatedItinerary.tourGuide;
+      await sendFlagNotificationEmail(tourGuide, updatedItinerary.name, "Itinerary");
+    } else{
+      const tourGuide = updatedItinerary.tourGuide;
+      await sendContentRestoredNotificationEmail(tourGuide, updatedItinerary.name, "Itinerary");
+    }
+
     res.status(200).json(updatedItinerary); // Return the updated itinerary
   } catch (error) {
+    console.error("Error updating itinerary:", error);
     res.status(500).json({ message: error.message }); // Handle errors
   }
 };

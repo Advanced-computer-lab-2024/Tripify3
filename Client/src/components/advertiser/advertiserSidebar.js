@@ -33,12 +33,6 @@ const AdvertiserSidebar = () => {
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/advertiser/my-activities/add" sx={linkStyle}>
-            Add Activity
-          </ListItemButton>
-        </ListItem>
-
 
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/advertiser/products" sx={linkStyle}>

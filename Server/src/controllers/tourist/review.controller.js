@@ -3,11 +3,11 @@ import TourGuide from "../../models/tourGuide.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 import Place from "../../models/place.js";
-
+import Product from "../../models/product.js";
 import Review from "../../models/review.js";
 
 export const touristReview = async (req, res) => {
-  const { tourGuide, activity, itinerary, tourist, rating, comment,place } = req.body;
+  const { tourGuide, activity,product, itinerary, tourist, rating, comment,place } = req.body;
 
   try {
     // 1. Validate input
@@ -54,6 +54,8 @@ export const touristReview = async (req, res) => {
        model = await Itinerary.findById(itinerary);
      } else if (place) {
       model = await Place.findById(place);
+    } else if (product) {
+      model = await Product.findById(place);
     }
     console.log(place);
     
@@ -69,6 +71,7 @@ export const touristReview = async (req, res) => {
          { activity: activity || null },
          { itinerary: itinerary || null },
          { place: place || null },
+         { product: product || null },
        ],
      });
  

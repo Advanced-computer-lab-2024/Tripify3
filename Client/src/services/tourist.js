@@ -39,6 +39,11 @@ export const getAllActiveAppropriateIteneraries = async (userId) => {
 export const getAllActivities = async () => {
   return await axios.get(`${API_URL}/activity/get`);
 };
+
+export const getAllActivitiesForTourist = async () => {
+  return await axios.get(`${API_URL}/tourist/activity/get`);
+};
+
 export const getAllActivitiesForAdvertiser = async (userId) => {
   return await axios.get(`${API_URL}/advertiser/activity/${userId}`);
 };

@@ -134,14 +134,15 @@ const Itineraries = () => {
   const handleFlagClick = async (itineraryId, currentInappropriateStatus) => {
     try {
       const newStatus = !currentInappropriateStatus;
-      await markItineraryInappropriate(itineraryId, { inappropriate: newStatus });
-
       setFilteredItineraries((prevItineraries) =>
         prevItineraries.map((itinerary) =>
           itinerary._id === itineraryId ? { ...itinerary, inappropriate: newStatus } : itinerary
         )
       );
 
+      await markItineraryInappropriate(itineraryId, { inappropriate: newStatus });
+
+    
       toast.success(newStatus ? "Itinerary marked as inappropriate!" : "Itinerary unmarked as inappropriate!");
     } catch (error) {
       toast.error("Error updating itinerary status!");

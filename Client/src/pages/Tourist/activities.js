@@ -18,17 +18,20 @@ import {
   ListItemText,
   Grid,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
-
-
-import {  getUserProfile } from "../../services/tourist";
-import { getUserId } from "../../utils/authUtils";
-import { useParams, useNavigate } from "react-router-dom";////////////////////////
-
+import FlagIcon from "@mui/icons-material/Flag";
+import { toast } from "react-toastify";
+import { getUserProfile } from "../../services/tourist";
+import { getUserId, getUserType } from "../../utils/authUtils";
+import { useParams, useNavigate } from "react-router-dom"; ////////////////////////
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllActivities, getAllCategories } from "../../services/tourist.js";
+import { getAllActivities, getAllCategories, getAllActivitiesForTourist } from "../../services/tourist.js";
 import { Link } from "react-router-dom";
+
+import { markActivityInappropriate } from "../../services/admin.js";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -39,8 +42,6 @@ const theme = createTheme({
     },
   },
 });
-
-import { getUserType } from "../../utils/authUtils";
 
 const Activities = () => {
   const userType = getUserType();
@@ -56,10 +57,9 @@ const Activities = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currency, setCurrency] = useState("USD");
-  
 
   // Fetch activities and categories when the component mounts
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
@@ -72,7 +72,8 @@ const Activities = () => {
     fetchUserProfile();
     const fetchData = async () => {
       try {
-        const [activitiesResponse, categoriesResponse] = await Promise.all([getAllActivities(), getAllCategories()]);
+        const fetchActivities = userType === 'Tourist' ? getAllActivitiesForTourist : getAllActivities;
+        const [activitiesResponse, categoriesResponse] = await Promise.all([fetchActivities(), getAllCategories()]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
         setCategories(categoriesResponse.data);
@@ -82,6 +83,7 @@ const Activities = () => {
         setLoading(false);
       }
     };
+    
     fetchData();
   }, [id, userId]);
 
@@ -98,28 +100,40 @@ const Activities = () => {
     setActivities(sortedActivities);
   };
   const exchangeRates = {
-    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     // Add other currencies as needed
-};
+  };
 
-  
+  const handleFlagClick = async (activityId, currentInappropriateStatus) => {
+    try {
+      const newStatus = !currentInappropriateStatus;
+      // Update the specific activity's inappropriate status in the activities list
+      setActivities((prevActivities) => prevActivities.map((activity) => (activity._id === activityId ? { ...activity, inappropriate: newStatus } : activity)));
+
+      await markActivityInappropriate(activityId, { inappropriate: newStatus });
+
+      toast.success(newStatus ? "Activity marked as inappropriate!" : "Activity unmarked as inappropriate!");
+    } catch (error) {
+      toast.error("Error updating itinerary status!");
+    }
+  };
+
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
-  
+
     // Ensure amount is a number
     const value = Number(amount);
-  
+
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
-  
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
-      .format(convertedAmount);
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: currency }).format(convertedAmount);
   };
 
   // Filter activities based on selected categories, budget, and search term
@@ -254,6 +268,11 @@ const Activities = () => {
                     View Details
                   </Button>
                 </CardContent>
+                {userType === "Admin" && (
+                  <IconButton color={activity.inappropriate ? "error" : "default"} onClick={() => handleFlagClick(activity._id, activity.inappropriate)}>
+                    <FlagIcon />
+                  </IconButton>
+                )}
               </Card>
             </Grid>
           ))}

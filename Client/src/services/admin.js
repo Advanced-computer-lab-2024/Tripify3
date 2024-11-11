@@ -6,8 +6,13 @@ export const getAllItineraries = async (userId) => {
   return await axios.get(`${API_URL}/itineraries/get`);
 };
 export const markItineraryInappropriate = async (id, data) => {
-  return await axios.put(`${API_URL}/itineraries/edit/${id}`, data);
+  return await axios.put(`${API_URL}/itinerary/inappropriate/${id}`, data);
 };
+
+export const markActivityInappropriate = async (id, data) => {
+  return await axios.put(`${API_URL}/activity/inappropriate/${id}`, data);
+};
+
 
 export const createActivity = async (activity) => {
   return await axios.post(`${API_URL}/activity/create`, activity);

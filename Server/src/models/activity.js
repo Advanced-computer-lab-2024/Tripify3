@@ -5,11 +5,6 @@ const activitySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  isBooking: {
-    type: Boolean,
-    required: true,
-    default: true,
-  },
   isDeleted: {
     type: Boolean,
     default: false,
@@ -59,6 +54,11 @@ const activitySchema = new mongoose.Schema({
   advertiser: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Advertiser",
+  },
+  status:{
+    type:String,
+    enum: ["Active", "Inactive"],
+    default: "Active"
   },
   images: {  // New field for images
     type: [String], // Array of strings to hold URLs of the images
