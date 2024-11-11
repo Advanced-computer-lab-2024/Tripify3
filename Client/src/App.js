@@ -4,7 +4,7 @@ import FollowedTourGuides from "./pages/tourist/followedtourguides.js";
 import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
 import AddPlace from "./pages/tourismGovernor/AddPlace.js";
-import Placedetails from "./pages/tourist/placedetails.js";
+import Placedetails from "./pages/tourist/placeDetails.js";
 import ChangePassword from "./pages/tourist/change-password.js";
 import ActivityDetails from "./pages/tourist/activitydetails.js"; // Create this Component
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
