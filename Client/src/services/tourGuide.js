@@ -30,5 +30,10 @@ export const getAllPlaces = async (userId) => {
   return await axios.get(`${API_URL}/places/get`);
 };
 
+export const createItinerary = async (itinerary) => {
+  return await axios.post(`${API_URL}/itinerary/create`, itinerary);
+
+}
+
 
 

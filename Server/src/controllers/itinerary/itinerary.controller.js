@@ -49,48 +49,77 @@ export const editItineraryAttribute = async (req, res) => {
   }
 };
 
+// export const createItinerary = async (req, res) => {
+//   try {
+//     const { tourGuide, activities, places } = req.body;
+
+//     // Validate and check if tour guide exists
+//     if (!mongoose.Types.ObjectId.isValid(tourGuide)) {
+//       return res.status(400).json({ message: "Invalid tour guide ID format" });
+//     }
+//     const tourGuideExists = await TourGuide.exists({ _id: tourGuide });
+//     if (!tourGuideExists) {
+//       return res.status(404).json({ message: "Tour guide not found" });
+//     }
+
+//     // Validate and check if all activities exist
+//     const invalidActivities = activities.some(id => !mongoose.Types.ObjectId.isValid(id));
+//     if (invalidActivities) {
+//       return res.status(400).json({ message: "One or more activity IDs have an invalid format" });
+//     }
+//     const activityChecks = await Promise.all(activities.map(id => Activity.exists({ _id: id })));
+//     const missingActivity = activityChecks.some(exists => !exists);
+//     if (missingActivity) {
+//       return res.status(404).json({ message: "One or more activities not found" });
+//     }
+
+//     // Validate and check if all places exist
+//     const invalidPlaces = places.some(id => !mongoose.Types.ObjectId.isValid(id));
+//     if (invalidPlaces) {
+//       return res.status(400).json({ message: "One or more place IDs have an invalid format" });
+//     }
+//     const placeChecks = await Promise.all(places.map(id => Place.exists({ _id: id })));
+//     const missingPlace = placeChecks.some(exists => !exists);
+//     if (missingPlace) {
+//       return res.status(404).json({ message: "One or more places not found" });
+//     }
+
+//     // If all checks pass, create the itinerary
+//     const itinerary = new Itinerary(req.body);
+//     await itinerary.save();
+//     res.status(201).json(itinerary);
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
+
 export const createItinerary = async (req, res) => {
   try {
-    const { tourGuide, activities, places } = req.body;
+    const { name, language, pickupLocation, dropoffLocation, startTime, endTime, price, accessibility, timeline, tags, activities, places, tourGuide } = req.body;
 
-    // Validate and check if tour guide exists
-    if (!mongoose.Types.ObjectId.isValid(tourGuide)) {
-      return res.status(400).json({ message: "Invalid tour guide ID format" });
-    }
-    const tourGuideExists = await TourGuide.exists({ _id: tourGuide });
-    if (!tourGuideExists) {
-      return res.status(404).json({ message: "Tour guide not found" });
-    }
+    const newItinerary = new Itinerary({
+      name,
+      language,
+      pickupLocation,
+      dropoffLocation,
+      startTime,
+      endTime,
+      price,
+      accessibility,
+      timeline,
+      tags,
+      activities,
+      places,
+      tourGuide
+    });
 
-    // Validate and check if all activities exist
-    const invalidActivities = activities.some(id => !mongoose.Types.ObjectId.isValid(id));
-    if (invalidActivities) {
-      return res.status(400).json({ message: "One or more activity IDs have an invalid format" });
-    }
-    const activityChecks = await Promise.all(activities.map(id => Activity.exists({ _id: id })));
-    const missingActivity = activityChecks.some(exists => !exists);
-    if (missingActivity) {
-      return res.status(404).json({ message: "One or more activities not found" });
-    }
-
-    // Validate and check if all places exist
-    const invalidPlaces = places.some(id => !mongoose.Types.ObjectId.isValid(id));
-    if (invalidPlaces) {
-      return res.status(400).json({ message: "One or more place IDs have an invalid format" });
-    }
-    const placeChecks = await Promise.all(places.map(id => Place.exists({ _id: id })));
-    const missingPlace = placeChecks.some(exists => !exists);
-    if (missingPlace) {
-      return res.status(404).json({ message: "One or more places not found" });
-    }
-
-    // If all checks pass, create the itinerary
-    const itinerary = new Itinerary(req.body);
-    await itinerary.save();
-    res.status(201).json(itinerary);
+    await newItinerary.save();
+    res.status(201).json({ message: 'Itinerary created successfully', itinerary: newItinerary });
   } catch (error) {
-    console.log(error.message);
-    res.status(400).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
 

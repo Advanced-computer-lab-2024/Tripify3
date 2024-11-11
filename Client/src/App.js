@@ -34,6 +34,7 @@ import Categories from "./pages/admin/categories.js";
 import ItinerariesDetails from "./pages/tourist/itinerarydetails.js";
 import TourGuideActivities from "./pages/advertiser/advertiserActivities.js";
 import TourGuideItineraryDetails from "./pages/tourGuide/tourGuideItineraryDetails.js";
+import TourGuideCreateItinerary from "./pages/tourGuide/createItinerary.js";
 
 import GovernorHistoricalPlaces from "./pages/tourismGovernor/historicalPlaces.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
@@ -259,6 +260,12 @@ const App = () => {
           path={`/tour-guide/itinerary/details/:id`}
           element={getLayoutForRole(userRole, <TourGuideItineraryDetails />)}
         />
+          <Route
+          path={`/tour-guide/create-itinerary`}
+          element={getLayoutForRole(userRole, <TourGuideCreateItinerary />)}
+        />
+
+
         <Route
           path={`/tour-guide/profile`}
           element={getLayoutForRole(userRole, <TourGuideProfile />)}

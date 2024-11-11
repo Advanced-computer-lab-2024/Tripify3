@@ -173,7 +173,7 @@ const TourGuideItineraries = () => {
       <Box sx={{ p: 4 }}>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
         {userType === "Tour Guide" && (
-            <Button color="secondary" variant="contained" onClick={() => navigate("/add-itinerary")}>
+            <Button color="secondary" variant="contained" onClick={() => navigate("/tour-guide/create-itinerary")}>
               Add +
             </Button>
           )}
