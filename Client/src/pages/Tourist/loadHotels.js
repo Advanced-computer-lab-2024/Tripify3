@@ -14,6 +14,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
 import PeopleIcon from "@mui/icons-material/People";
+import { getUserType } from "../../utils/authUtils";
+
 
 const LoadHotels = () => {
   const navigate = useNavigate();
@@ -127,8 +129,15 @@ const LoadHotels = () => {
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = (currency === "USD") ? value : value * ( exchangeRates[currency]);
   
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
-      .format(convertedAmount);
+    // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+    //   .format(convertedAmount);
+      
+      const formattedAmount = new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: currency 
+      }).format(convertedAmount);
+      
+      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
   };
   const handleBookHotel = async () => {
     const currentDate = new Date().toISOString();

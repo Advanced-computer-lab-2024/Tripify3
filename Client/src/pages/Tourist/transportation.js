@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {  getUserProfile } from "../../services/tourist";
-import { getUserId } from "../../utils/authUtils";///////////////////////
+import { getUserId, getUserType } from "../../utils/authUtils";///////////////////////
 import { useParams, useNavigate } from "react-router-dom";////////////////////////
 
 
@@ -68,7 +68,7 @@ const Transportation = () => {
     }
 
     // Prepare booking details as a string (formatted)
-    const details = `Source: ${source}, Destination: ${destination}, Pickup Time: ${pickupTime.toLocaleString()}, Transport Type: ${transportType}`;
+    const details = `Source: ${source}, Destination: ${destination},Price: ${price}, Pickup Time: ${pickupTime.toLocaleString()}, Transport Type: ${transportType}`;
 
     // Set the price (this should already be calculated from your previous logic)
     const calculatedPrice = price; // Make sure price state is set correctly earlier
@@ -117,8 +117,16 @@ const Transportation = () => {
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
   
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
-      .format(convertedAmount);
+    // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+    //   .format(convertedAmount);
+
+    
+      const formattedAmount = new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: currency 
+      }).format(convertedAmount);
+      
+      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
   };
 
   const fetchSuggestions = async (place, setSuggestions) => {
@@ -129,16 +137,7 @@ const Transportation = () => {
     try {
       const response = await axios.get(`http://localhost:8000/suggestions?city=Cairo&place=${place}`);
       setSuggestions(response.data);
-      // console.log("in fetch suggestion");
-
-      // setSuggestions([
-      //   { value: "Example Location 1", subtext: "Address 1" },
-      //   { value: "Example Location 2", subtext: "Address 2" },
-      //   { value: "Example Location 1", subtext: "Address 1" },
-      //   { value: "Example Location 2", subtext: "Address 2" },
-      //   { value: "Example Location 1", subtext: "Address 1" },
-      //   { value: "Example Location 2", subtext: "Address 2" },
-      // ]);
+    
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
@@ -368,7 +367,6 @@ const Transportation = () => {
                 <div style={styles.tripDetailTitle}>Price</div>
                 <div style={styles.infoBox}>
                   <span>{formatCurrency(price)}</span>
-                  <span style={{ marginLeft: "5px" }}>EGP</span> {/* Adds space between the price and EGP */}
                 </div>
               </div>
 

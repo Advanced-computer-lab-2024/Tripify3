@@ -29,11 +29,12 @@ import { getUserId } from "../../utils/authUtils";///////////////////////
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useParams, useNavigate } from "react-router-dom";////////////////////////
+import { getUserType } from "../../utils/authUtils";
 
 const ItineraryDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();/////////
-  const userId = getUserId();////////////
+  const userId = getUserId();
   const [itinerary, setItinerary] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [review, setReview] = useState(null);
@@ -171,6 +172,15 @@ const ItineraryDetails = () => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
+
+      // Check user type and apply currency logic
+  if (getUserType() !== "Tourist") {
+    // If user is not Tourist, format amount in EGP
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'EGP' 
+    }).format(value);
+  }
   
     // Ensure amount is a number
     const value = Number(amount);
@@ -178,8 +188,15 @@ const ItineraryDetails = () => {
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
   
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
-      .format(convertedAmount);
+    // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+    //   .format(convertedAmount);
+    
+      const formattedAmount = new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: currency 
+      }).format(convertedAmount);
+      
+      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
   };
 
   return (
