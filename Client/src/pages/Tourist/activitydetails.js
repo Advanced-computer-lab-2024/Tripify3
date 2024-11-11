@@ -17,11 +17,11 @@ import {
 import { getItineraryById, getUserProfile } from "../../services/tourist"
 import { getActivityById } from "../../services/tourist";
 import axios from "axios";
-import { getUserId, getUserType, getUserCuurency } from "../../utils/authUtils";
+import { getUserId, getUserType, getUserCurrency } from "../../utils/authUtils";
 
 
 const ActivityDetails = () => {
-  const userCurrency = getUserCuurency();
+  const userCurrency = getUserCurrency();
   const { id } = useParams();
   const [currency, setCurrency] = useState("USD");
   const userId = getUserId();

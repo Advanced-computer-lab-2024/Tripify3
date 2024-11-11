@@ -16,7 +16,7 @@ export const getUsername = () => localStorage.getItem("username");
 
 // Get the userType from localStorage
 export const getUserType = () => localStorage.getItem("userType");
-export const getUserCuurency = () => localStorage.getItem("userCurrency");
+export const getUserCurrency = () => localStorage.getItem("userCurrency");
 
 // Clear the user data from localStorage
 export const clearUser = () => {

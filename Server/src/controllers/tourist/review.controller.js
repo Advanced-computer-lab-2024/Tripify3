@@ -11,12 +11,15 @@ export const touristReview = async (req, res) => {
 
   try {
     // 1. Validate input
-    if (!tourist || !rating || !comment) {
+    if (!tourist || ( !rating && !comment)) {
       return res.status(400).json({ message: "Tourist ID, Rating, and Comment are required." });
     }
 
     // 2. Find the tourist to check if they follow the tourist being reviewed
     const user = await Tourist.findById(tourist);
+
+    console.log(req.body);
+    
 
     if (!user) {
       return res.status(404).json({ message: "Tourist not found." });
@@ -55,7 +58,7 @@ export const touristReview = async (req, res) => {
      } else if (place) {
       model = await Place.findById(place);
     } else if (product) {
-      model = await Product.findById(place);
+      model = await Product.findById(product);
     }
     console.log(place);
     

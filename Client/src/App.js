@@ -24,6 +24,7 @@ import PaymentWrapper from "./pages/tourist/payment.js";
 import Transportation from "./pages/tourist/transportation.js";
 import GovernorHistoricalPlaceDetails from "./pages/tourismGovernor/placeDetails.js";
 import AdvertiserAddActivity from "./pages/advertiser/advertiserAddActivity.js";
+import OrdersPage from "./pages/tourist/orders.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -178,6 +179,10 @@ const App = () => {
         <Route
           path={"/transportation"}
           element={getLayoutForRole(userRole, <Transportation />)}
+        />
+         <Route
+          path={"/tourist/my-orders"}
+          element={getLayoutForRole(userRole, <OrdersPage />)}
         />
         <Route path={"/tourist/payment"} element={<PaymentWrapper />} />
         <Route

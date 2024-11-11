@@ -15,9 +15,7 @@ export const initializeCart = async (req, res) => {
     // Check if the tourist already has a cart (if necessary)
     const existingCart = await Cart.findOne({ user: id });
     if (existingCart) {
-      return res
-        .status(400)
-        .json({ message: "Cart already exists for this tourist" });
+      return res.status(400).json({ message: "Cart already exists for this tourist" });
     }
 
     // Create a new cart for the tourist
@@ -77,10 +75,15 @@ export const addToCart = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    // Check if the requested quantity is available
+    if (product.quantity < quantity) {
+      return res.status(400).json({
+        message: `Requested quantity is not available. Only ${product.quantity} item(s) left in stock.`,
+      });
+    }
+
     // Check if the product already exists in the cart
-    const existingProductIndex = cart.products.findIndex(
-      (item) => item.product.toString() === productId
-    );
+    const existingProductIndex = cart.products.findIndex((item) => item.product.toString() === productId);
 
     if (existingProductIndex > -1) {
       // If the product already exists in the cart, increase the quantity
@@ -147,17 +150,13 @@ export const removeFromCart = async (req, res) => {
     const cart = await Cart.findById(touristData.cart._id);
 
     // Find the product you are going to remove in the cart
-    const productToRemove = cart.products.find(
-      (product) => product.product.toString() === productId
-    );
+    const productToRemove = cart.products.find((product) => product.product.toString() === productId);
 
     if (productToRemove) {
       // Fetch the product details (assuming you have a Product model)
       const productDetails = await Product.findById(productId);
       if (!productDetails) {
-        return res
-          .status(404)
-          .json({ message: "Product not found in the database" });
+        return res.status(404).json({ message: "Product not found in the database" });
       }
 
       // Subtract the quantity of the product being removed from itemCount
@@ -165,9 +164,7 @@ export const removeFromCart = async (req, res) => {
       cart.totalPrice -= productToRemove.quantity * productDetails.price; // Use productDetails.price
 
       // Filter out the product from the cart
-      cart.products = cart.products.filter(
-        (product) => product.product.toString() !== productId
-      );
+      cart.products = cart.products.filter((product) => product.product.toString() !== productId);
     } else {
       return res.status(404).json({ message: "Product not found in cart" });
     }
@@ -197,9 +194,7 @@ export const Decrementor = async (req, res) => {
     const cart = await Cart.findById(touristData.cart._id);
 
     // Find the product in the cart
-    const productIndex = cart.products.findIndex(
-      (item) => item.product.toString() === productId
-    );
+    const productIndex = cart.products.findIndex((item) => item.product.toString() === productId);
 
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in cart" });
@@ -208,9 +203,7 @@ export const Decrementor = async (req, res) => {
     // Fetch the product details (assuming you have a Product model)
     const productDetails = await Product.findById(productId);
     if (!productDetails) {
-      return res
-        .status(404)
-        .json({ message: "Product not found in the database" });
+      return res.status(404).json({ message: "Product not found in the database" });
     }
 
     // Decrement the quantity of the product in the cart
@@ -265,9 +258,7 @@ export const updateCart2 = async (req, res) => {
     }
 
     // Find the product in the cart
-    const productIndex = cart.products.findIndex(
-      (item) => item.product.toString() === productId
-    );
+    const productIndex = cart.products.findIndex((item) => item.product.toString() === productId);
 
     // If product is found in the cart
     if (productIndex > -1) {
@@ -287,9 +278,7 @@ export const updateCart2 = async (req, res) => {
         cart.products.push({ product: productId, quantity: number });
       } else {
         // If 'number' is negative and product doesn't exist, nothing to decrement
-        return res
-          .status(400)
-          .json({ message: "Cannot decrement a non-existent product" });
+        return res.status(400).json({ message: "Cannot decrement a non-existent product" });
       }
     }
 
@@ -338,14 +327,19 @@ export const updateCart = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+     // Check if the requested quantity is available
+     if (product.quantity < number) {
+      return res.status(400).json({
+        message: `Requested quantity is not available. Only ${product.quantity} item(s) left in stock.`,
+      });
+    }
+
+
     // Find the product in the cart
-    const productIndex = cart.products.findIndex(
-      (item) => item.product.toString() === productId
-    );
+    const productIndex = cart.products.findIndex((item) => item.product.toString() === productId);
 
     // Calculate the old quantity
-    const oldQuantity =
-      productIndex > -1 ? cart.products[productIndex].quantity : 0;
+    const oldQuantity = productIndex > -1 ? cart.products[productIndex].quantity : 0;
 
     // Calculate the price difference
     const priceDifference = product.price * (number - oldQuantity);
@@ -366,9 +360,7 @@ export const updateCart = async (req, res) => {
         cart.products.push({ product: productId, quantity: number });
       } else {
         // If 'number' is negative or zero and product doesn't exist, return an error
-        return res
-          .status(400)
-          .json({ message: "Cannot decrement a non-existent product" });
+        return res.status(400).json({ message: "Cannot decrement a non-existent product" });
       }
     }
 

@@ -4,60 +4,9 @@ import Booking from "../../models/booking.js";
 import User from "../../models/user.js";
 import Place from "../../models/place.js";
 import Tourist from "../../models/tourist.js";
-import Seller from "../../models/seller.js";
-import Product from "../../models/product.js";
-import Order from "../../models/order.js";
-
-export const createOrder = async (req, res) => {
-  const { tourist, seller, product, quantity, details, dropOffLocation, dropOffDate } = req.body;
-
-  try {
-    // Verify tourist, seller, and product existence
-    const touristExists = await Tourist.findById(tourist);
-    const sellerExists = await Seller.findById(seller);
-    const productExists = await Product.findById(product);
-
-    if (!touristExists) {
-      return res.status(404).json({ message: "Tourist not found" });
-    }
-    if (!sellerExists) {
-      return res.status(404).json({ message: "Seller not found" });
-    }
-    if (!productExists) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    // Create the new order
-    const newOrder = new Order({
-      tourist,
-      seller,
-      product,
-      quantity,
-      details,
-      dropOffLocation,
-      dropOffDate,
-    });
-
-    // Save the order to the database
-    await newOrder.save();
-
-    res.status(201).json({
-      message: "Order created successfully",
-      order: newOrder,
-    });
-  } catch (error) {
-    console.error("Error creating order:", error);
-    res.status(500).json({
-      message: "An error occurred while creating the order",
-      error: error.message,
-    });
-  }
-};
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
-
-  console.log(req.body);
 
   try {
     let item;

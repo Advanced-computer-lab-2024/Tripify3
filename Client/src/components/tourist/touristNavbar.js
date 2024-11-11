@@ -114,7 +114,7 @@ const TouristNavbar = () => {
   const handleProfileClick = () => navigate("/tourist/profile");
   const handleHomeClick = () => navigate("/tourist/homepage");
   const handleCartClick = () => navigate("/tourist/cart");
-  const handleOrdersClick = () => navigate("/tourist/orders");
+  const handleOrdersClick = () => navigate("/tourist/my-orders");
   const handlePaymentsClick = () => navigate("/tourist/payments");
   const handleBookingsClick = () => navigate("/tourist/bookings");
   const handleWishlistClick = () => navigate("/tourist/wishlist");

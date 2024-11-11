@@ -1,11 +1,62 @@
 import Tourist from "../../models/tourist.js";
-
 import Order from "../../models/order.js";
+import Product from "../../models/product.js";
+import Cart from "../../models/cart.js";
+import { sendOutOfStockNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
+
+
+// Controller to get past and upcoming orders based on dropOffDate
+export const getOrders = async (req, res) => {
+  const  userId = req.params.userId; // tourist ID
+
+  try {
+    // Validate if the tourist exists
+    const tourist = await Tourist.findById(userId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Get past orders (where dropOffDate is in the past)
+    const pastOrders = await Order.find({
+      tourist: userId,
+      dropOffDate: { $lt: new Date() },
+    })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "products.product",
+          model: "Product",
+        },
+      })
+      .sort({ dropOffDate: -1 });
+
+    // Get upcoming orders (where dropOffDate is in the future)
+    const upcomingOrders = await Order.find({
+      tourist: userId,
+      dropOffDate: { $gte: new Date() },
+    })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "products.product",
+          model: "Product",
+        },
+      })
+      .sort({ dropOffDate: 1 });
+
+    return res.status(200).json({
+      pastOrders,
+      upcomingOrders,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error fetching orders", error: error.message });
+  }
+};
+
 
 export const checkoutTouristCart = async (req, res) => {
   const { userId } = req.query;
-  console.log("this is the user id", userId);
-  console.log("this is the req body", req.body);
   try {
     // Find the tourist by ID and check if they exist
     const tourist = await Tourist.findById(userId).populate("cart");
@@ -15,9 +66,7 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Check if the user has a cart
     if (!tourist.cart) {
-      return res
-        .status(400)
-        .json({ message: "No cart associated with this tourist" });
+      return res.status(400).json({ message: "No cart associated with this tourist" });
     }
 
     // Get cart details and delete the cart from the tourist's document
@@ -34,14 +83,51 @@ export const checkoutTouristCart = async (req, res) => {
     await order.save(); // Save the order
     tourist.cart = null; // Remove cart reference
     await tourist.save(); // Save the updated tourist document
+
+    // Prepare a map to hold products grouped by seller whose stock becomes 0
+    const outOfStockProductsBySeller = {};
+
+    // Loop through each product in the cart and update product quantities and sales
+    for (const item of cartDetails.products) {
+      const product = await Product.findById(item.product).populate("sellerId");
+
+      if (!product) continue; // Skip if product not found
+
+      // Update the product quantity and sales fields
+      const quantityPurchased = item.quantity;
+      product.quantity -= quantityPurchased;
+      product.sales += product.price * quantityPurchased;
+
+      // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
+      if (product.quantity <= 0) {
+        const sellerId = product.sellerId._id;
+        if (!outOfStockProductsBySeller[sellerId]) {
+          outOfStockProductsBySeller[sellerId] = {
+            seller: product.sellerId,
+            products: [],
+          };
+        }
+        outOfStockProductsBySeller[sellerId].products.push(product.name);
+      }
+
+      await product.save(); // Save the updated product document
+    }
+
+    // Send out-of-stock notifications to each seller with relevant products
+    for (const sellerId in outOfStockProductsBySeller) {
+      const { seller, products } = outOfStockProductsBySeller[sellerId];
+      const productNames = products.join(", ");
+      await sendOutOfStockNotificationEmail(seller, productNames);
+    }
+
     // Respond with the new order details
     res.status(201).json({
-      message: "Order created successfully",
+      message: "Order created successfully, inventory updated, and notifications sent",
       order,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred", error: error.message });
+    console.error(error);
+    res.status(500).json({ message: "An error occurred", error: error.message });
   }
 };
+

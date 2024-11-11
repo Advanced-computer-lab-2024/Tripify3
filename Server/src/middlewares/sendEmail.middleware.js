@@ -104,6 +104,35 @@ export const sendPaymentOTPEmail = async (user, OTP) => {
   }
 };
 
+// Function to send email notification for out-of-stock products
+export const sendOutOfStockNotificationEmail = async (user, productName) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "Alert: Product Out of Stock",
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #d9534f;">Product Out of Stock Notification</h2>
+        <p>Dear ${user.name || 'Seller'},</p>
+        <p>We wanted to inform you that your product titled "${productName}" is currently out of stock. This may impact sales and visibility for customers interested in this item.</p>
+        <p>We recommend updating your stock as soon as possible to ensure continued availability for your customers.</p>
+        <p>Best regards,<br>Your Tripify Support Team</p>
+        <hr style="border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Out of stock notification email sent successfully');
+  } catch (error) {
+    console.error('Error sending out of stock notification email:', error);
+    throw new Error('Error sending out of stock notification email');
+  }
+};
+
+
 
 // Function to send email notification for flagged content
 export const sendFlagNotificationEmail = async (user, contentName, contentType) => {

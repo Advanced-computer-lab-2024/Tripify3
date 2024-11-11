@@ -46,7 +46,7 @@ import {
 } from "../controllers/tourist/booking.controller.js";
 import { updateItinerariesAttended } from "../controllers/tourist/itineraries.controller.js";
 import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
-import { checkoutTouristCart } from "../controllers/tourist/order.controller.js";
+import { checkoutTouristCart, getOrders } from "../controllers/tourist/order.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -95,5 +95,7 @@ router.get("/tourist/payment/config", getConfig); // Cancel booking
 
 //checkout to order
 router.post("/tourist/checkout", checkoutTouristCart);
+// Route to get orders for a tourist (past and upcoming)
+router.get("/tourist/get/orders/:userId", getOrders);
 
 export default router;
