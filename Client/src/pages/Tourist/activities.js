@@ -72,7 +72,7 @@ const Activities = () => {
     fetchUserProfile();
     const fetchData = async () => {
       try {
-        const fetchActivities = userType === 'Tourist' ? getAllActivitiesForTourist : getAllActivities;
+        const fetchActivities = userType === "Tourist" ? getAllActivitiesForTourist : getAllActivities;
         const [activitiesResponse, categoriesResponse] = await Promise.all([fetchActivities(), getAllCategories()]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
@@ -83,7 +83,7 @@ const Activities = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, [id, userId]);
 
@@ -126,47 +126,49 @@ const Activities = () => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
+     // Ensure amount is a number
+     const value = Number(amount);
 
-      // Check user type and apply currency logic
-  if (getUserType() !== "Tourist") {
-    // If user is not Tourist, format amount in EGP
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'EGP' 
-    }).format(value);
-  }
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
 
-    // Ensure amount is a number
-    const value = Number(amount);
-
+   
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
 
     // return new Intl.NumberFormat("en-US", { style: "currency", currency: currency }).format(convertedAmount);
- 
-    const formattedAmount = new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: currency 
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
     }).format(convertedAmount);
-    
-    return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
- 
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
 
   // Filter activities based on selected categories, budget, and search term
   const handleFilter = () => {
     let filteredActivities = [...originalActivities];
-      console.log("filtered activities",filteredActivities);
+    console.log("filtered activities", filteredActivities);
 
-    console.log("selected categories",selectedCategories);
-    
+    console.log("selected categories", selectedCategories);
+
     if (selectedCategories.length > 0) {
-      
       filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category._id));
     }
 
     if (budget) {
-      filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
+      if (userType === "Tourist") {
+        filteredActivities = filteredActivities.filter((activity) => (currency === "EGP" ? activity.price : activity.price * exchangeRates[currency]) <= parseFloat(budget));
+      } else {
+        filteredActivities = filteredActivities.filter((activity) => activity.price <= parseFloat(budget));
+      }
     }
 
     if (searchTerm) {
@@ -174,8 +176,7 @@ const Activities = () => {
     }
 
     setActivities(filteredActivities);
-    console.log("after setting",activities);
-    
+    console.log("after setting", activities);
   };
 
   // Automatically filter when search term, selected categories, or budget changes

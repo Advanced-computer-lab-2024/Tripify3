@@ -51,7 +51,7 @@ export const createActivity = async (req, res) => {
   console.log(req.body);
   
   try {
-    const { advertiser, category, tags } = req.body;
+    const { advertiser, category, tags, status } = req.body;
 
     // Check if the advertiser exists
     const advertiserExists = await Advertiser.exists({ _id: advertiser });
@@ -73,14 +73,19 @@ export const createActivity = async (req, res) => {
       return res.status(404).json({ message: "One or more tags not found" });
     }
 
-    // If all checks pass, create the new activity
-    const newActivity = new Activity(req.body);
-    await newActivity.save();
+      // Set status to "Active" if true, else "Inactive"
+      const activityStatus = status ? "Active" : "Inactive";
 
-    res.status(201).json({
-      message: "Activity created successfully",
-      activity: newActivity,
-    });
+      // If all checks pass, create the new activity with adjusted status
+      const newActivity = new Activity({ ...req.body, status: activityStatus });
+      await newActivity.save();
+  
+     return res.status(201).json({
+        message: "Activity created successfully",
+        activity: newActivity,
+      });
+
+   
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ message: "Error creating activity", error: error.message });
@@ -149,24 +154,24 @@ export const deleteAdvertiserAccount = async (req, res) => {
     }
 
     // Retrieve all itineraries with endTime > currentDate for this tour guide
-    // const activities = await Activity.find({
-    //   advertiser: advertiserId,
-    //   'date': { $gt: currentDate },
-    // });
+    const activities = await Activity.find({
+      advertiser: advertiserId,
+      'date': { $gt: currentDate },
+    });
 
-    // // Extract itinerary IDs
-    // const activityIds = activities.map(activity => activity._id);
+    // Extract itinerary IDs
+    const activityIds = activities.map(activity => activity._id);
 
-    // // Check for any bookings with these itinerary IDs
-    // const hasUpcomingBookings = await Booking.exists({
-    //   activity: { $in: activityIds }
-    // });
+    // Check for any bookings with these itinerary IDs
+    const hasUpcomingBookings = await Booking.exists({
+      activity: { $in: activityIds }
+    });
 
-    // if (hasUpcomingBookings) {
-    //   return res.status(403).json({
-    //     message: 'Cannot delete account. You have upcoming bookings for your activities.',
-    //   });
-    // }
+    if (hasUpcomingBookings) {
+      return res.status(403).json({
+        message: 'Cannot delete account. You have upcoming bookings for your activities.',
+      });
+    }
 
       // Mark all products associated with the seller as deleted
       await Activity.updateMany(

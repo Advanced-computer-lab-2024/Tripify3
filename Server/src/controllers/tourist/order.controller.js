@@ -87,7 +87,6 @@ export const getOrders = async (req, res) => {
   }
 };
 
-
 export const checkoutTouristCart = async (req, res) => {
   const { userId } = req.query;
   try {
@@ -102,8 +101,32 @@ export const checkoutTouristCart = async (req, res) => {
       return res.status(400).json({ message: "No cart associated with this tourist" });
     }
 
-    // Get cart details and delete the cart from the tourist's document
+    // Get cart details and check if wallet balance is sufficient
     const cartDetails = tourist.cart;
+    const totalPrice = cartDetails.totalPrice;
+
+    if (tourist.walletAmount < totalPrice) {
+      return res.status(400).json({ message: "Insufficient wallet balance" });
+    }
+    // Calculate loyalty points based on total amount paid
+    let loyaltyPoints = 0;
+    if (tourist.loyaltyPoints  <= 100000) {
+      // Level 1
+      loyaltyPoints = totalPrice * 0.5;
+    } else if (tourist.loyaltyPoints <= 500000) {
+      // Level 2
+      loyaltyPoints = totalPrice * 1;
+    } else {
+      // Level 3
+      loyaltyPoints = totalPrice * 1.5;
+    }
+
+    // Add loyalty points to tourist's account
+    tourist.loyaltyPoints = (tourist.loyaltyPoints || 0) + loyaltyPoints;
+
+    // Deduct total price from tourist's wallet
+    tourist.walletAmount -= totalPrice;
+    await tourist.save(); // Save the updated tourist document
 
     // Create a new order with the cart details and tourist ID
     const order = new Order({
@@ -129,7 +152,8 @@ export const checkoutTouristCart = async (req, res) => {
       // Update the product quantity and sales fields
       const quantityPurchased = item.quantity;
       product.quantity -= quantityPurchased;
-      product.sales += product.price * quantityPurchased;
+      // product.sales += product.price * quantityPurchased;
+      product.sales += quantityPurchased;
 
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {

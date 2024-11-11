@@ -16,6 +16,10 @@ const bookingSchema = new mongoose.Schema({
     type: Number,
     default: 1,
   },
+  price: {
+    type: Number,
+    required: true,
+  },
   itinerary: { type: mongoose.Schema.Types.ObjectId, ref: "Itinerary" },
   place: { type: mongoose.Schema.Types.ObjectId, ref: "Place" },
   type: { type: String, enum: ["Activity", "Itinerary", "Hotel", "Flight", "Transportation", "Place"], required: true },

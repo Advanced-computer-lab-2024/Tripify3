@@ -10,10 +10,16 @@ import {
   Typography,
   TextField,
   Select,
+  DialogTitle,
+  DialogContent,
+  Alert,
+  DialogContentText,
+  DialogActions,
   MenuItem,
   InputLabel,
   FormControl,
   Chip,
+  Dialog,
   Checkbox,
   OutlinedInput,
   ListItemText,
@@ -21,7 +27,7 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import { Link, useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -54,6 +60,7 @@ const TourGuideItineraries = () => {
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [userType, setUserType] = useState("");
+  const [bookingErrorDialogOpen, setBookingErrorDialogOpen] = useState(false);
 
   const userId = getUserId();
 
@@ -109,38 +116,30 @@ const TourGuideItineraries = () => {
     try {
       // Send PATCH request to mark itinerary as deleted
       await axios.put(`http://localhost:8000/itinerary/delete/${itineraryId}`);
-  
+
       // Update local state
-      setItineraries((prevItineraries) =>
-        prevItineraries.map((itinerary) =>
-          itinerary._id === itineraryId ? { ...itinerary, isDeleted: true } : itinerary
-        )
-      );
-      setFilteredItineraries((prevItineraries) =>
-        prevItineraries.map((itinerary) =>
-          itinerary._id === itineraryId ? { ...itinerary, isDeleted: true } : itinerary
-        )
-      );
+      setItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === itineraryId ? { ...itinerary, isDeleted: true } : itinerary)));
+      setFilteredItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === itineraryId ? { ...itinerary, isDeleted: true } : itinerary)));
 
       window.location.reload();
-  
+
       toast.success("Itinerary marked as deleted!");
     } catch (error) {
-      toast.error("Error marking itinerary as deleted!");
+      if (error.response && error.response.status === 403) {
+        // Open the dialog for booking error
+        setBookingErrorDialogOpen(true);
+      } else {
+        toast.error("Error marking itinerary as deleted!");
+      }
     }
   };
-  
 
   const handleFlagClick = async (itineraryId, currentInappropriateStatus) => {
     try {
       const newStatus = !currentInappropriateStatus;
       await markItineraryInappropriate(itineraryId, { inappropriate: newStatus });
 
-      setFilteredItineraries((prevItineraries) =>
-        prevItineraries.map((itinerary) =>
-          itinerary._id === itineraryId ? { ...itinerary, inappropriate: newStatus } : itinerary
-        )
-      );
+      setFilteredItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === itineraryId ? { ...itinerary, inappropriate: newStatus } : itinerary)));
 
       toast.success(newStatus ? "Itinerary marked as inappropriate!" : "Itinerary unmarked as inappropriate!");
     } catch (error) {
@@ -161,7 +160,7 @@ const TourGuideItineraries = () => {
   }
 
   return (
-        <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <AppBar position="static" color="primary" sx={{ mb: 4 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
@@ -172,7 +171,7 @@ const TourGuideItineraries = () => {
 
       <Box sx={{ p: 4 }}>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-        {userType === "Tour Guide" && (
+          {userType === "Tour Guide" && (
             <Button color="secondary" variant="contained" onClick={() => navigate("/tour-guide/create-itinerary")}>
               Add +
             </Button>
@@ -254,34 +253,56 @@ const TourGuideItineraries = () => {
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     {itinerary.name}
                   </Typography>
-                  <Typography>Price: ${itinerary.price}</Typography>
+                  <Typography>Price: EGP {itinerary.price}</Typography>
                   <Typography>
                     <strong>Language:</strong> {itinerary.language}
                   </Typography>
                   <Typography>
-                    <strong>Tags:</strong> {itinerary.tags.join(", ")}
+                    <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(", ")}
                   </Typography>
+
                   <Button component={Link} to={`/tour-guide/itinerary/details/${itinerary._id}`} variant="contained" sx={{ mt: 2 }}>
                     View Details
                   </Button>
 
                   <Button
-                    onClick={() => handleDeleteItinerary(itinerary._id)}  // Trigger state update
+                    onClick={() => handleDeleteItinerary(itinerary._id)} // Trigger state update
                     variant="contained"
                     sx={{
                       marginLeft: 2,
                       mt: 2,
-                      backgroundColor: 'red',  // Red color if not deleted
-                      '&:hover': { backgroundColor: '#d32f2f' }  // Hover color
+                      backgroundColor: "red", // Red color if not deleted
+                      "&:hover": { backgroundColor: "#d32f2f" }, // Hover color
                     }}
                   >
-                    <DeleteIcon sx={{ color: 'white', mr: 1 }} /> {/* White color for the icon */}
+                    <DeleteIcon sx={{ color: "white", mr: 1 }} /> {/* White color for the icon */}
                     Delete Itinerary
                   </Button>
-
-
-
                 </CardContent>
+
+                <Dialog open={bookingErrorDialogOpen} onClose={() => setBookingErrorDialogOpen(false)}>
+                  <DialogTitle sx={{ color: "#f44336" }}>Unable to Delete Itinerary</DialogTitle>
+                  <DialogContent>
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                      You have upcoming bookings. Please cancel them before deleting the itinerary.
+                    </Alert>
+                    <DialogContentText>If you need further assistance, please contact our support team.</DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      onClick={() => setBookingErrorDialogOpen(false)}
+                      variant="outlined"
+                      sx={{
+                        color: "#f44336",
+                        borderColor: "#f44336",
+                        ":hover": { backgroundColor: "#fdecea", borderColor: "#f44336" },
+                      }}
+                    >
+                      Close
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+
                 {userType === "Admin" && (
                   <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
                     <FlagIcon />

@@ -14,11 +14,10 @@ import {
   Add as AddIcon,
   Remove as RemoveIcon,
 } from "@mui/icons-material";
-import { getItineraryById, getUserProfile } from "../../services/tourist"
+import { getItineraryById, getUserProfile } from "../../services/tourist";
 import { getActivityById } from "../../services/tourist";
 import axios from "axios";
 import { getUserId, getUserType, getUserCurrency } from "../../utils/authUtils";
-
 
 const ActivityDetails = () => {
   const userCurrency = getUserCurrency();
@@ -38,7 +37,7 @@ const ActivityDetails = () => {
   const handleIncrease = () => setTicketCount(ticketCount + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
@@ -93,44 +92,40 @@ const ActivityDetails = () => {
     }
   };
   const exchangeRates = {
-    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     // Add other currencies as needed
-};
+  };
 
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
-
-      // Check user type and apply currency logic
-  if (getUserType() !== "Tourist") {
-    // If user is not Tourist, format amount in EGP
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'EGP' 
-    }).format(value);
-  }
-  
-    // Ensure amount is a number
     const value = Number(amount);
-  
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
+
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
-  
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
     // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
     //   .format(convertedAmount);
 
-    
-      const formattedAmount = new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: currency 
-      }).format(convertedAmount);
-      
-      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
   const handleEmailShare = () => {
     const emailSubject = `Check out this itinerary: ${activity.name}`;
@@ -139,6 +134,7 @@ const ActivityDetails = () => {
       `I thought you might be interested in this activity!\n\n` +
       `Activity Name: ${activity.name}\n` +
       `Location: ${activity.location}\n` +
+      `Total Price: EGP ${activity.price}\n` +
       `Date:  ${new Date(activity.date).toLocaleDateString()} ` +
       `Price: ${activity.price} \n` +
       `View more details here: http://localhost:3000/activity/${activity._id}`;
@@ -233,6 +229,48 @@ const ActivityDetails = () => {
               </Grid>
             </Grid>
           </CardContent>
+
+          
+          <Dialog
+              open={shareOpen}
+              onClose={handleShareToggle}
+              TransitionComponent={Slide}
+              TransitionProps={{ direction: "up" }}
+              sx={{
+                "& .MuiPaper-root": {
+                  borderRadius: "16px", // Rounded corners
+                  padding: 4, // Added padding
+                  backgroundColor: "#F7F9FC", // Light background color
+                  width: "80%", // Larger dialog width
+                  maxWidth: 600, // Maximum width
+                },
+              }}
+            >
+              <Box sx={{ position: "relative" }}>
+                {/* Close Button */}
+                <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
+                  <CloseIcon />
+                </IconButton>
+
+                {/* Title */}
+                <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
+                  Share this Itinerary
+                </Typography>
+
+                {/* Icon Buttons */}
+                <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
+                  {/* Copy Link Button */}
+                  <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
+                    <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
+                  </IconButton>
+
+                  {/* Email Share Button */}
+                  <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
+                    <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
+                  </IconButton>
+                </Box>
+              </Box>
+            </Dialog>
 
           <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px" }}>
             {userType === "Tourist" && (

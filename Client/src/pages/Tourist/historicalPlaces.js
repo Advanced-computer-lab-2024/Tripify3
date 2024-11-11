@@ -94,13 +94,13 @@ const HistoricalPlaces = () => {
     setSelectedTags(event.target.value);
   };
 
-  // Filter function now runs on the frontend
+  // Filter function to display places that match any selected tag based on tag _id
   const handleFilter = () => {
     let filtered = [...places];
 
     // Filter by tags if any tag is selected
     if (selectedTags.length > 0) {
-      filtered = filtered.filter((place) => selectedTags.every((tag) => place.tags.includes(tag)));
+      filtered = filtered.filter((place) => place.tags.some((tag) => selectedTags.includes(tag._id)));
     }
 
     // Filter by type if selected
@@ -207,6 +207,9 @@ const HistoricalPlaces = () => {
                   </Typography>
                   <Typography>
                     <strong>Description:</strong> {place.description}
+                  </Typography>
+                  <Typography>
+                    <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(", ")}
                   </Typography>
                   <Button component={Link} to={userType === "Tourism Governor" ? `/tourism-governor/historical-places/details/${place._id}` : `/place/${place._id}`} variant="contained" sx={{ mt: 2 }}>
                     View Details

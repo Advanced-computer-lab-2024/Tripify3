@@ -35,5 +35,14 @@ export const createItinerary = async (itinerary) => {
 
 }
 
+export const getItineraryById = async (id) => {
+  const response = await axios.get(`${API_URL}/itinerary/get/${id}`); // Adjust the endpoint as necessary
+  return response;
+}
+
+export const updateItinerary = async (itineraryId, itinerary) => {
+  return await axios.put(`${API_URL}/itinerary/update/${itineraryId}`, itinerary);
+};
+
 
 

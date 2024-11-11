@@ -18,6 +18,7 @@ const TourismGovernorProfile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      window.location.reload();
       try {
         const response = await getProfile(userId);
         setUserProfile(response.data.user);

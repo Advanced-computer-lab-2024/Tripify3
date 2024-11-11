@@ -25,8 +25,8 @@ import axios from "axios";
 import { getUserId } from "../../utils/authUtils";
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllItineraries,getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
-import {  getUserType } from "../../utils/authUtils.js";
+import { getAllItineraries, getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
+import { getUserType } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
 import { markItineraryInappropriate } from "../../services/admin.js";
@@ -62,11 +62,7 @@ const Itineraries = () => {
   const navigate = useNavigate();
   const languageOptions = ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"];
 
-
-
-
-
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
@@ -76,24 +72,23 @@ const Itineraries = () => {
       }
     };
 
-
     setUserType(getUserType()); // Fetch the user type when component mounts
     const fetchData = async () => {
       try {
         const userType = getUserType();
         let itinerariesResponse;
-    if (userType === 'Tourist') {
-      itinerariesResponse = await getAllActiveAppropriateIteneraries();
-    } else {
-      itinerariesResponse = await getAllItineraries();
-    }
+        if (userType === "Tourist") {
+          itinerariesResponse = await getAllActiveAppropriateIteneraries();
+        } else {
+          itinerariesResponse = await getAllItineraries();
+        }
 
-    const tagsResponse = await getAllTags();
+        const tagsResponse = await getAllTags();
 
-    setItineraries(itinerariesResponse.data.data);
-    setFilteredItineraries(itinerariesResponse.data.data);
-    setTags(tagsResponse.data.tags);
-    setLoading(false);
+        setItineraries(itinerariesResponse.data.data);
+        setFilteredItineraries(itinerariesResponse.data.data);
+        setTags(tagsResponse.data.tags);
+        setLoading(false);
       } catch (error) {
         setError("Error fetching itineraries or tags");
         setLoading(false);
@@ -104,16 +99,25 @@ const Itineraries = () => {
     fetchUserProfile();
   }, [id, userId]);
 
+
   useEffect(() => {
     const filtered = itineraries
-      .filter((itinerary) => (searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true))
-      .filter((itinerary) => (selectedTags.length ? selectedTags.every((tag) => itinerary.tags.includes(tag)) : true))
-      .filter((itinerary) => (selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true))
-      .filter((itinerary) => (budget ? itinerary.price <= budget : true));
-
+      .filter((itinerary) =>
+        searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
+      )
+      .filter((itinerary) =>
+        selectedTags.length ? itinerary.tags.some((tag) => selectedTags.includes(tag._id)) : true
+      )
+      .filter((itinerary) => 
+        selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true
+      )
+      .filter((itinerary) => 
+        budget ? itinerary.price <= budget : true
+      );
+  
     setFilteredItineraries(filtered);
   }, [searchQuery, selectedTags, selectedLanguages, budget, itineraries]);
-
+  
   const handleSortByPrice = () => {
     const sorted = [...filteredItineraries].sort((a, b) => {
       if (sortOrder === "asc") return a.price - b.price;
@@ -134,64 +138,54 @@ const Itineraries = () => {
   const handleFlagClick = async (itineraryId, currentInappropriateStatus) => {
     try {
       const newStatus = !currentInappropriateStatus;
-      setFilteredItineraries((prevItineraries) =>
-        prevItineraries.map((itinerary) =>
-          itinerary._id === itineraryId ? { ...itinerary, inappropriate: newStatus } : itinerary
-        )
-      );
+      setFilteredItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === itineraryId ? { ...itinerary, inappropriate: newStatus } : itinerary)));
 
       await markItineraryInappropriate(itineraryId, { inappropriate: newStatus });
 
-    
       toast.success(newStatus ? "Itinerary marked as inappropriate!" : "Itinerary unmarked as inappropriate!");
     } catch (error) {
       toast.error("Error updating itinerary status!");
     }
   };
 
-
   const exchangeRates = {
-    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     // Add other currencies as needed
-};
+  };
 
-  
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
 
-      // Check user type and apply currency logic
-  if (getUserType() !== "Tourist") {
-    // If user is not Tourist, format amount in EGP
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'EGP' 
-    }).format(value);
-  }
-  
     // Ensure amount is a number
     const value = Number(amount);
-  
+
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
-  
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
     // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
     //   .format(convertedAmount);
-    
-      const formattedAmount = new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: currency 
-      }).format(convertedAmount);
-      
-      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
-
-
 
   if (loading) {
     return (
@@ -206,7 +200,7 @@ const Itineraries = () => {
   }
 
   return (
-        <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <AppBar position="static" color="primary" sx={{ mb: 4 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
@@ -217,7 +211,7 @@ const Itineraries = () => {
 
       <Box sx={{ p: 4 }}>
         <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-        {userType === "Tour Guide" && (
+          {userType === "Tour Guide" && (
             <Button color="secondary" variant="contained" onClick={() => navigate("/add-itinerary")}>
               Add +
             </Button>
@@ -304,9 +298,15 @@ const Itineraries = () => {
                     <strong>Language:</strong> {itinerary.language}
                   </Typography>
                   <Typography>
-                    <strong>Tags:</strong> {itinerary.tags.join(", ")}
+                    <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(", ")}
                   </Typography>
-                  <Button component={Link} to={`/tourist/itinerary/${itinerary._id}`} variant="contained" sx={{ mt: 2 }}>
+
+                  <Button
+                    component={Link}
+                    to={getUserType() === "Tourist" ? `/tourist/itinerary/${itinerary._id}` : `/tour-guide/itinerary/details/${itinerary._id}`}
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                  >
                     View Details
                   </Button>
                 </CardContent>

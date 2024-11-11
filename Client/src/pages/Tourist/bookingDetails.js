@@ -29,9 +29,11 @@ import { Favorite, Star } from "@mui/icons-material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import StarIcon from "@mui/icons-material/Star";
 import axios from "axios";
-import { getUserId } from "../../utils/authUtils";
+import { getUserId, getUserType } from "../../utils/authUtils";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+
+import { getUserProfile } from "../../services/tourist";
 
 // API functions to fetch Activity and Itinerary details
 export const getActivityById = async (id) => {
@@ -55,10 +57,11 @@ const BookingDetails = () => {
   const [error, setError] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
+
+  const [currency, setCurrency] = useState("USD");
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [dialogMessage, setDialogMessage] = React.useState("");
@@ -66,11 +69,53 @@ const BookingDetails = () => {
   const [initialComment, setInitialComment] = useState("");
   const [initialTourGuideRating, setInitialTourGuideRating] = useState(0);
   const [initialTourGuideComment, setInitialTourGuideComment] = useState("");
+  const [isEditable, setIsEditable] = useState(initialTourGuideComment === "");
+  const exchangeRates = {
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    // Add other currencies as needed
+  };
+
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+    const value = Number(amount);
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
+
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
+    // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+    //   .format(convertedAmount);
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
+  };
+
+  useEffect(() => {
+    if (initialTourGuideRating !== 0 && booking !== null) {
+      handleTourGuideFeedback();
+    }
+  }, [initialTourGuideRating]);
 
   const handleCancelBooking = async () => {
     try {
       const response = await axios.delete(`http://localhost:8000/booking/delete/${bookingId}`);
-      console.log(response.data);
 
       if (response.status === 200) {
         setDialogMessage("Booking has been cancelled. Your payment will be refunded.");
@@ -95,36 +140,40 @@ const BookingDetails = () => {
   };
 
   useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
     const fetchBooking = async () => {
       try {
         let bookingData;
+        let response;
 
         if (view === "past") {
-          let response;
           if (type === "Activity") {
             response = await axios.get(`http://localhost:8000/booking/get/reviews/${bookingId}/${userId}/activity/${itemId}`);
           } else if (type === "Itinerary") {
             response = await axios.get(`http://localhost:8000/booking/get/reviews/${bookingId}/${userId}/itinerary/${itemId}`);
-
           }
 
           if (response.data.message === "Review found successfully") {
             const { rating, comment } = response.data.review;
-            console.log(rating);
-            console.log(comment);
 
             setReview(response.data.review);
             setRating(rating);
             setComment(comment);
             setInitialRating(rating);
             setInitialComment(comment);
-            // if (type === "Itinerary") {
-            //   setTourGuideReview(response.data.tourGuideReview);
-            //   setTourGuideRating(rating);
-            //   setTourGuideComment(comment);
-            //   setInitialTourGuideRating(rating);
-            //   setInitialTourGuideComment(comment);
-            // }
+          }
+          if (response.data.tourGuideReview) {
+            setTourGuideReview(response.data.tourGuideReview);
+            setInitialTourGuideRating(response.data.tourGuideReview.rating);
+            setInitialTourGuideComment(response.data.tourGuideReview.comment);
+            setIsEditable(false);
           }
         }
         if (type === "Activity") {
@@ -156,6 +205,7 @@ const BookingDetails = () => {
     };
 
     fetchBooking();
+    fetchUserProfile();
   }, [itemId, type, userId, bookingId]);
 
   const handleFollowToggle = async () => {
@@ -199,11 +249,6 @@ const BookingDetails = () => {
   const handleCommentChange = (e) => {
     setComment(e.target.value);
   };
-
-  const handleTourGuideCommentChange = (e) => {
-    setTourGuideComment(e.target.value);
-  };
-
 
   const handleAddComment = async () => {
     if (comment !== initialComment) {
@@ -258,8 +303,8 @@ const BookingDetails = () => {
   const handleTourGuideFeedback = async () => {
     const feedbackData = {
       tourist: userId,
-      rating: tourGuideRating,
-      comment: tourGuideComment,
+      rating: initialTourGuideRating,
+      comment: initialTourGuideComment,
       tourGuide: booking.tourGuide._id,
       booking: bookingId,
     };
@@ -267,8 +312,6 @@ const BookingDetails = () => {
     try {
       await axios.post("http://localhost:8000/tourist/review", feedbackData);
       setFeedbackSubmitted(true);
-      setTourGuideRating(0);
-      setTourGuideComment("");
     } catch (error) {
       console.error("Error submitting tour guide feedback:", error);
     }
@@ -367,7 +410,9 @@ const BookingDetails = () => {
                   <Grid item xs={12} sm={6}>
                     <Box display="flex" alignItems="center">
                       <MonetizationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                      <Typography variant="body1">Total Price: ${booking.price}</Typography>
+                      <Typography variant="body1">    {formatCurrency(booking.price)}
+                         {/* ${booking.price} */}
+                         </Typography>
                     </Box>
                   </Grid>
                 </Grid>
@@ -457,7 +502,7 @@ const BookingDetails = () => {
                     >
                       {/* Rating at top right */}
                       <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-                        <Rating value={review.rating} readOnly precision={0.5} size="small" />
+                        <Rating value={review.rating} readOnly precision={1} size="small" />
                       </Box>
 
                       {/* Comment and Username */}
@@ -510,11 +555,43 @@ const BookingDetails = () => {
                     <Typography variant="h6" sx={{ mb: 2 }}>
                       Rate This Tour Guide 🌟
                     </Typography>
-                    <Rating value={tourGuideRating} onChange={(event, newValue) => setTourGuideRating(newValue)} precision={0.5} size="large" sx={{ mb: 2 }} />
-                    <TextField label="Your Comment" fullWidth multiline rows={4} value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} variant="outlined" sx={{ mb: 2 }} />
-                    <Button variant="contained" color="primary" sx={{ padding: "10px 20px" }} onClick={handleTourGuideFeedback}>
-                      Submit Feedback 📝
-                    </Button>
+                    <Rating value={initialTourGuideRating} onChange={(event, newValue) => setInitialTourGuideRating(newValue)} precision={1} size="large" sx={{ mb: 2 }} />
+                    <TextField
+                      label="Your Comment"
+                      fullWidth
+                      multiline
+                      rows={4}
+                      value={initialTourGuideComment}
+                      onChange={(e) => setInitialTourGuideComment(e.target.value)}
+                      variant="outlined"
+                      sx={{ mb: 2 }}
+                      InputProps={{
+                        readOnly: initialTourGuideComment !== "" && !isEditable, // Make read-only if there is an initial comment and edit mode is off
+                      }}
+                    />
+
+                    {initialTourGuideComment === "" || isEditable ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ padding: "10px 20px", mt: 1 }}
+                        onClick={() => {
+                          handleTourGuideFeedback();
+                          setIsEditable(false); // Set back to non-editable after submitting
+                        }}
+                      >
+                        Add Comment 📝
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        sx={{ ml: 1 }}
+                        onClick={() => setIsEditable(true)} // Enable edit mode
+                      >
+                        Edit
+                      </Button>
+                    )}
                     {feedbackSubmitted && (
                       <Typography variant="body2" color="success.main">
                         Thank you for your feedback!
@@ -522,25 +599,6 @@ const BookingDetails = () => {
                     )}
                   </Box>
                 )}
-
-{/* {view === "past" && (
-                  <>
-                    <Typography variant="h5" sx={{ mb: 2 }}>
-                      Rate Tour Guide
-                    </Typography>
-                    <Rating value={rating} onChange={(event, newValue) => handleTourGuideRatingChange(newValue)} size="large" />
-                    {rating > 0 && (
-                      <Box sx={{ mt: 2 }}>
-                        <TextField fullWidth label="Your Comment" value={comment} onChange={handleTourGuideCommentChange} multiline rows={4} />
-                        {comment && (
-                          <Button variant="contained" sx={{ mt: 2 }} onClick={handleTourGuideAddComment}>
-                            Add Comment
-                          </Button>
-                        )}
-                      </Box>
-                    )}
-                  </>
-                )} */}
               </CardContent>
             </Card>
           </Box>
@@ -610,7 +668,8 @@ const BookingDetails = () => {
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <MonetizationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
                       <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
-                        {booking.price}
+                        {formatCurrency(booking.price)}
+                        {/* {booking.price} */}
                       </Typography>
                     </Box>
                   </Grid>
@@ -706,7 +765,7 @@ const BookingDetails = () => {
                       }}
                     >
                       <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-                        <Rating value={review.rating} readOnly precision={0.5} size="small" />
+                        <Rating value={review.rating} readOnly precision={1} size="small" />
                       </Box>
 
                       <Typography variant="body1" sx={{ fontWeight: "bold" }}>

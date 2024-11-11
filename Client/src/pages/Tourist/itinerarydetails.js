@@ -172,7 +172,9 @@ const ItineraryDetails = () => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
-
+    // Ensure amount is a number
+    const value = Number(amount);
+  
       // Check user type and apply currency logic
   if (getUserType() !== "Tourist") {
     // If user is not Tourist, format amount in EGP
@@ -181,10 +183,7 @@ const ItineraryDetails = () => {
       currency: 'EGP' 
     }).format(value);
   }
-  
-    // Ensure amount is a number
-    const value = Number(amount);
-  
+
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
   
@@ -463,6 +462,10 @@ const ItineraryDetails = () => {
           <Card sx={{ mt: 6, borderRadius: 3, boxShadow: 5, padding: 4 }}>
             <CardContent>
               <Box sx={{ textAlign: "center" }}>
+              <Avatar src={`http://localhost:8000/uploads/${itinerary.tourGuide._id}/${itinerary.tourGuide.profilePicture?.filename}`} sx={{ width: 150, height: 150, mb: 2, mx: "auto" }}>
+                    {/* If profile picture URL is missing or fails to load, show the initial */}
+                    {!itinerary.tourGuide.profilePicture && itinerary.tourGuide.name.charAt(0)}
+                  </Avatar>
                 <Typography variant="h5" sx={{ mb: 1 }}>
                   {itinerary.tourGuide.name}
                 </Typography>

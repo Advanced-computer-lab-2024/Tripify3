@@ -58,7 +58,7 @@ const activitySchema = new mongoose.Schema({
   status:{
     type:String,
     enum: ["Active", "Inactive"],
-    default: "Active"
+    default: "Inactive"
   },
   images: {  // New field for images
     type: [String], // Array of strings to hold URLs of the images

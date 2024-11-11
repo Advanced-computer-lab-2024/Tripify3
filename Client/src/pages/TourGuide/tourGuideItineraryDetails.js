@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import LanguageIcon from '@mui/icons-material/Language';
+import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LanguageIcon from "@mui/icons-material/Language";
+import EventIcon from "@mui/icons-material/Event";
 
-import EventIcon from '@mui/icons-material/Event';
-
-import { Box, Paper, Dialog, Slide, Rating, CardActions, Typography, Button ,CircularProgress , Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
+import { Box, Paper, Dialog, Slide, Rating, CardActions, Typography, Button, CircularProgress, Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Favorite } from "@mui/icons-material";
@@ -15,7 +14,7 @@ import IconButton from "@mui/material/IconButton";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
-import { getUserId } from "../../utils/authUtils";
+import { getUserId, getUserType } from "../../utils/authUtils";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useParams, useNavigate } from "react-router-dom";
@@ -24,6 +23,7 @@ const TourGuideItineraryDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const userId = getUserId();
+  const userType = getUserType();
   const [itinerary, setItinerary] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [review, setReview] = useState(null);
@@ -32,10 +32,8 @@ const TourGuideItineraryDetails = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [ticketCount, setTicketCount] = useState(1);
   const [currency, setCurrency] = useState("USD"); // Default currency
-  const [bookings, setBookings] = useState([]);  // Initialize bookings as an empty array
-
-
-
+  const [bookings, setBookings] = useState([]); // Initialize bookings as an empty array
+ 
 
   // Fetch itinerary and user profile data
   useEffect(() => {
@@ -49,9 +47,6 @@ const TourGuideItineraryDetails = () => {
     };
 
     fetchUserProfile(); // Fetch currency when the component mounts
-
-
-    
 
     const fetchItinerary = async () => {
       try {
@@ -90,7 +85,6 @@ const TourGuideItineraryDetails = () => {
     }
   };
 
-
   const activateItinerary = async () => {
     try {
       const response = await axios.put(`http://localhost:8000/itinerary/activate/${id}`);
@@ -98,15 +92,10 @@ const TourGuideItineraryDetails = () => {
       window.location.reload();
 
       if (response.data.message === "Itinerary activated successfully") {
-        setItineraries((prevItineraries) =>
-          prevItineraries.map((itinerary) =>
-            itinerary._id === id ? { ...itinerary, status: 'Active' } : itinerary
-          )
-        );
+        setItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === id ? { ...itinerary, status: "Active" } : itinerary)));
       }
-
     } catch (error) {
-      console.error(error.response?.data?.message || 'Error activating itinerary');
+      console.error(error.response?.data?.message || "Error activating itinerary");
     }
   };
 
@@ -118,18 +107,12 @@ const TourGuideItineraryDetails = () => {
       window.location.reload();
 
       if (response.data.message === "Itinerary deactivated successfully") {
-        setItineraries((prevItineraries) =>
-          prevItineraries.map((itinerary) =>
-            itinerary._id === id ? { ...itinerary, status: 'Inactive' } : itinerary
-          )
-        );
+        setItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === id ? { ...itinerary, status: "Inactive" } : itinerary)));
       }
-
     } catch (error) {
-      console.error(error.response?.data?.message || 'Error deactivating itinerary');
+      console.error(error.response?.data?.message || "Error deactivating itinerary");
     }
   };
-
 
   const handleShareToggle = () => {
     setShareOpen((prev) => !prev);
@@ -192,8 +175,15 @@ const TourGuideItineraryDetails = () => {
       return amount; // Fallback to amount if currency is not set
     }
 
-    // Ensure amount is a number
     const value = Number(amount);
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
 
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
@@ -217,16 +207,21 @@ const TourGuideItineraryDetails = () => {
         Go Back
       </Button>
 
+              <Button onClick={() => navigate(`/tour-guide/itinerary/edit/${itinerary._id}`)}>Edit</Button>
+
+
+
+
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 4 }}>
         {/* Left: Itinerary Card */}
+
         <Box sx={{ flex: 1, maxWidth: "900px" }}>
           <Card sx={{ mt: 6, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
             <CardContent>
               {/* Main Itinerary Header */}
-              <Typography variant="h4" textAlign="center" sx={{marginBottom: 2}}>
+              <Typography variant="h4" textAlign="center" sx={{ marginBottom: 2 }}>
                 {itinerary.name}
               </Typography>
-              
 
               {/* Tags Section */}
               <Box sx={{ textAlign: "center", mb: 6 }}>
@@ -258,14 +253,10 @@ const TourGuideItineraryDetails = () => {
               </Box>
               {/* Itinerary Summary Section */}
 
-              
-
-
               <Grid container spacing={3}>
-
                 <Grid item xs={12} sm={6}>
                   <Box display="flex" alignItems="center">
-                    <LanguageIcon  sx={{ color: "#5A67D8", mr: 1 }} />
+                    <LanguageIcon sx={{ color: "#5A67D8", mr: 1 }} />
                     <Typography variant="body1">Language: {itinerary.language}</Typography>
                   </Box>
                 </Grid>
@@ -298,21 +289,16 @@ const TourGuideItineraryDetails = () => {
                   </Box>
                 </Grid>
 
-                
                 <Grid item xs={12} sm={6}>
                   <Box display="flex" alignItems="center">
                     <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                    <Typography variant="body1">
-                      Start Date: {new Date(itinerary.timeline.startTime).toLocaleDateString()}
-                    </Typography>
+                    <Typography variant="body1">Start Date: {new Date(itinerary.timeline.startTime).toLocaleDateString()}</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Box display="flex" alignItems="center">
                     <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
-                    <Typography variant="body1">
-                      End Date:{new Date(itinerary.timeline.endTime).toLocaleDateString()}
-                    </Typography>
+                    <Typography variant="body1">End Date:{new Date(itinerary.timeline.endTime).toLocaleDateString()}</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -325,15 +311,14 @@ const TourGuideItineraryDetails = () => {
 
               <Grid item xs={12} sm={6} marginTop={2}>
                 <Box display="flex" alignItems="center">
-                  <EventIcon  sx={{ color: "#5A67D8", mr: 1 }} />
+                  <EventIcon sx={{ color: "#5A67D8", mr: 1 }} />
                   <Typography variant="body1">
                     Available dates:{" "}
                     {itinerary.availableDates && itinerary.availableDates.length > 0
                       ? itinerary.availableDates.map((availableDate, index) => (
                           <Box key={index}>
                             <Typography variant="body2">
-                              {new Date(availableDate.date).toLocaleDateString()} -{" "}
-                              {availableDate.times.join(", ")}
+                              {new Date(availableDate.date).toLocaleDateString()} - {availableDate.times.join(", ")}
                             </Typography>
                           </Box>
                         ))
@@ -384,8 +369,6 @@ const TourGuideItineraryDetails = () => {
                         <Typography variant="body2">Address: {place.location.address} minutes</Typography>
 
                         <Typography variant="body2">Description: {place.description}</Typography>
-                        
-
                       </CardContent>
                     </Card>
                   </Grid>
@@ -394,24 +377,24 @@ const TourGuideItineraryDetails = () => {
 
               {/* Share Button */}
               <CardActions sx={{ padding: "24px 32px" }}>
-                  <Box sx={{ mt: 2 }}>
-                    <Button
-                      variant="outlined"
-                      onClick={handleShareToggle}
-                      startIcon={<ShareIcon />}
-                      sx={{
-                        fontSize: "1rem",
-                        fontWeight: 500,
-                        textTransform: "none",
-                        "&:hover": {
-                          backgroundColor: "#e0e0e0",
-                        },
-                      }}
-                    >
-                      Share
-                    </Button>
+                <Box sx={{ mt: 2 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleShareToggle}
+                    startIcon={<ShareIcon />}
+                    sx={{
+                      fontSize: "1rem",
+                      fontWeight: 500,
+                      textTransform: "none",
+                      "&:hover": {
+                        backgroundColor: "#e0e0e0",
+                      },
+                    }}
+                  >
+                    Share
+                  </Button>
 
-                      {bookings.length === 0 ? (
+                  {/* {bookings.length === 0 ? (
                       <Typography sx={{ marginLeft: 2, color: "gray", fontSize: "0.9rem" }}>
                         This itinerary cannot be activated or deactivated as it has no bookings.
                       </Typography>
@@ -435,12 +418,28 @@ const TourGuideItineraryDetails = () => {
                           Deactivate
                         </Button>
                       ) : null
+                    )} */}
+                  <Box sx={{ position: "relative" }}>
+                    {userType === "Tour Guide" && (
+                      <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 10 }}>
+                        {bookings.length === 0 ? (
+                          <Typography sx={{ color: "gray", fontSize: "0.9rem" }}>This itinerary cannot be activated or deactivated as it has no bookings.</Typography>
+                        ) : itinerary.status === "Inactive" ? (
+                          <Button variant="contained" color="primary" onClick={() => activateItinerary()} sx={{ fontSize: "1rem", textTransform: "none" }}>
+                            Activate
+                          </Button>
+                        ) : itinerary.status === "Active" ? (
+                          <Button variant="contained" color="secondary" onClick={() => deactivateItinerary()} sx={{ fontSize: "1rem", textTransform: "none" }}>
+                            Deactivate
+                          </Button>
+                        ) : null}
+                      </Box>
                     )}
+
+                    {/* Rest of the component's content goes here */}
                   </Box>
-                </CardActions>
-
-
-
+                </Box>
+              </CardActions>
 
               {/* Share Dialog */}
               <Dialog

@@ -245,6 +245,11 @@ const TouristNavbar = () => {
                 <Report sx={{ mr: 1 }} />
                 File a Complaint
               </MenuItem>
+              <MenuItem onClick={() => navigate("/tourist/view/complaints")}>
+                <Report sx={{ mr: 1 }} />
+                View Complaints
+              </MenuItem>
+             
             </Menu>
           </Box>
         </Toolbar>
