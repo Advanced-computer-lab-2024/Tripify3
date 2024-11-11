@@ -288,16 +288,17 @@ export const deleteItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-
-    // Check if there are bookings associated with this itinerary
+  // Check if there are bookings associated with this itinerary
     // if (itinerary.bookings.length > 0) {
     //   return res.status(400).json({ message: "Cannot delete an itinerary with existing bookings" });
-    // }
-
-    // Mark the activity as deleted
+    // }    // Mark the itinerary as deleted
     itinerary.isDeleted = true;
 
-    res.status(204).send(); // No Content
+    // Save the changes to the database
+    await itinerary.save();
+
+    // Respond with status 200 and a message
+    res.status(200).json({ message: "Itinerary marked as deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

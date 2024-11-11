@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   AppBar,
   Toolbar,
@@ -20,6 +21,7 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Link, useNavigate } from "react-router-dom";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -102,6 +104,32 @@ const TourGuideItineraries = () => {
     setSearchQuery("");
     setFilteredItineraries(itineraries);
   };
+
+  const handleDeleteItinerary = async (itineraryId) => {
+    try {
+      // Send PATCH request to mark itinerary as deleted
+      await axios.put(`http://localhost:8000/itinerary/delete/${itineraryId}`);
+  
+      // Update local state
+      setItineraries((prevItineraries) =>
+        prevItineraries.map((itinerary) =>
+          itinerary._id === itineraryId ? { ...itinerary, isDeleted: true } : itinerary
+        )
+      );
+      setFilteredItineraries((prevItineraries) =>
+        prevItineraries.map((itinerary) =>
+          itinerary._id === itineraryId ? { ...itinerary, isDeleted: true } : itinerary
+        )
+      );
+
+      window.location.reload();
+  
+      toast.success("Itinerary marked as deleted!");
+    } catch (error) {
+      toast.error("Error marking itinerary as deleted!");
+    }
+  };
+  
 
   const handleFlagClick = async (itineraryId, currentInappropriateStatus) => {
     try {
@@ -236,6 +264,23 @@ const TourGuideItineraries = () => {
                   <Button component={Link} to={`/tour-guide/itinerary/details/${itinerary._id}`} variant="contained" sx={{ mt: 2 }}>
                     View Details
                   </Button>
+
+                  <Button
+                    onClick={() => handleDeleteItinerary(itinerary._id)}  // Trigger state update
+                    variant="contained"
+                    sx={{
+                      marginLeft: 2,
+                      mt: 2,
+                      backgroundColor: 'red',  // Red color if not deleted
+                      '&:hover': { backgroundColor: '#d32f2f' }  // Hover color
+                    }}
+                  >
+                    <DeleteIcon sx={{ color: 'white', mr: 1 }} /> {/* White color for the icon */}
+                    Delete Itinerary
+                  </Button>
+
+
+
                 </CardContent>
                 {userType === "Admin" && (
                   <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
