@@ -2,12 +2,13 @@ import Tourist from "../../models/tourist.js";
 import Order from "../../models/order.js";
 import Product from "../../models/product.js";
 import Cart from "../../models/cart.js";
+import Review from "../../models/review.js";
 import { sendOutOfStockNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
-
-
 // Controller to get past and upcoming orders based on dropOffDate
+import mongoose from "mongoose";
+
 export const getOrders = async (req, res) => {
-  const  userId = req.params.userId; // tourist ID
+  const userId = req.params.userId; // tourist ID
 
   try {
     // Validate if the tourist exists
@@ -15,6 +16,35 @@ export const getOrders = async (req, res) => {
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });
     }
+
+    // Function to attach ratings to products
+    const attachRatingsToProducts = async (orders) => {
+      return Promise.all(
+        orders.map(async (order) => {
+          // Convert order to plain object
+          order = order.toObject();
+
+          // Loop through each product in the cart
+          order.cart.products = await Promise.all(
+            order.cart.products.map(async (productItem) => {
+              // Find the relevant review for this product, order, and tourist
+              const review = await Review.findOne({
+                product: productItem.product._id,
+                order: order._id,
+                tourist: userId,
+              });
+
+              // Attach touristRating directly, no need to convert productItem
+              productItem.touristRating = review ? review.rating : null;
+
+              return productItem; // Return the modified product item
+            })
+          );
+
+          return order; // Return the modified order with updated cart products
+        })
+      );
+    };
 
     // Get past orders (where dropOffDate is in the past)
     const pastOrders = await Order.find({
@@ -44,9 +74,12 @@ export const getOrders = async (req, res) => {
       })
       .sort({ dropOffDate: 1 });
 
+    // Attach ratings to past order products
+    const pastOrdersWithRatings = await attachRatingsToProducts(pastOrders);
+
     return res.status(200).json({
-      pastOrders,
-      upcomingOrders,
+      pastOrders: JSON.parse(JSON.stringify(pastOrdersWithRatings)),
+      upcomingOrders: JSON.parse(JSON.stringify(upcomingOrders)),
     });
   } catch (error) {
     console.error(error);
@@ -130,4 +163,3 @@ export const checkoutTouristCart = async (req, res) => {
     res.status(500).json({ message: "An error occurred", error: error.message });
   }
 };
-

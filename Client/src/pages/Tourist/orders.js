@@ -38,12 +38,13 @@ const OrdersPage = () => {
     setShowPastOrders(newValue === 0);
   };
 
-  const handleRating = async (productId, rating) => {
+  const handleRating = async (productId, rating, orderId) => {
     try {
       await axios.post(`http://localhost:8000/tourist/review`, {
         tourist: userId,
         product: productId,
         rating: rating,
+        order: orderId
       });
       alert(`Rated ${rating} star(s) successfully!`);
     } catch (error) {
@@ -72,7 +73,7 @@ const OrdersPage = () => {
 
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {order.cart.products.map((productItem) => (
-            <ProductCard key={productItem.product._id} productItem={productItem} showPastOrders={showPastOrders} onRate={handleRating} />
+            <ProductCard key={productItem.product._id} productItem={productItem} showPastOrders={showPastOrders}  onRate={(productId, rating) => handleRating(productId, rating, order._id)}  />
           ))}
         </Grid>
       </CardContent>

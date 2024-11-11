@@ -1,5 +1,5 @@
 import express from "express";
-import { createBooking, cancelBooking, getAllBookings, getTourGuideProfile } from "../controllers/tourist/booking.controller.js";
+import {getReview, createBooking, cancelBooking, getAllBookings, getTourGuideProfile } from "../controllers/tourist/booking.controller.js";
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router.get("/bookings/get/:touristId", getAllBookings);
 router.get("/booking/get/tour-guide/profile/:tourGuideId/:touristId", getTourGuideProfile);
 
 // Delete a booking by ID
-router.delete("/boooking/delete/:bookingId", cancelBooking);
+router.delete("/booking/delete/:bookingId", cancelBooking);
+router.get("/booking/get/reviews/:booking/:tourist/:type/:itemId", getReview);
 
 export default router;

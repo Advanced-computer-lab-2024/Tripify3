@@ -1,6 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DialogActions, DialogContent, DialogContentText, DialogTitle, Box, Typography, Button, CircularProgress, Card, Divider, CardContent, Paper, CardActions, IconButton, Avatar, TextField, Dialog, Slide, Rating, Grid, List, ListItem } from "@mui/material";
+import {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+  Card,
+  Divider,
+  CardContent,
+  Paper,
+  CardActions,
+  IconButton,
+  Avatar,
+  TextField,
+  Dialog,
+  Slide,
+  Rating,
+  Grid,
+  List,
+  ListItem,
+} from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Favorite, Star } from "@mui/icons-material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
@@ -27,6 +50,7 @@ const BookingDetails = () => {
   const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [review, setReview] = useState(null);
+  const [tourGuideReview, setTourGuideReview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rating, setRating] = useState(0);
@@ -38,12 +62,16 @@ const BookingDetails = () => {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [dialogMessage, setDialogMessage] = React.useState("");
+  const [initialRating, setInitialRating] = useState(0);
+  const [initialComment, setInitialComment] = useState("");
+  const [initialTourGuideRating, setInitialTourGuideRating] = useState(0);
+  const [initialTourGuideComment, setInitialTourGuideComment] = useState("");
 
   const handleCancelBooking = async () => {
     try {
-      const response = await axios.delete(`http://localhost:8000/boooking/delete/${bookingId}`);
+      const response = await axios.delete(`http://localhost:8000/booking/delete/${bookingId}`);
       console.log(response.data);
-      
+
       if (response.status === 200) {
         setDialogMessage("Booking has been cancelled. Your payment will be refunded.");
       } else {
@@ -71,6 +99,34 @@ const BookingDetails = () => {
       try {
         let bookingData;
 
+        if (view === "past") {
+          let response;
+          if (type === "Activity") {
+            response = await axios.get(`http://localhost:8000/booking/get/reviews/${bookingId}/${userId}/activity/${itemId}`);
+          } else if (type === "Itinerary") {
+            response = await axios.get(`http://localhost:8000/booking/get/reviews/${bookingId}/${userId}/itinerary/${itemId}`);
+
+          }
+
+          if (response.data.message === "Review found successfully") {
+            const { rating, comment } = response.data.review;
+            console.log(rating);
+            console.log(comment);
+
+            setReview(response.data.review);
+            setRating(rating);
+            setComment(comment);
+            setInitialRating(rating);
+            setInitialComment(comment);
+            // if (type === "Itinerary") {
+            //   setTourGuideReview(response.data.tourGuideReview);
+            //   setTourGuideRating(rating);
+            //   setTourGuideComment(comment);
+            //   setInitialTourGuideRating(rating);
+            //   setInitialTourGuideComment(comment);
+            // }
+          }
+        }
         if (type === "Activity") {
           const activityResponse = await getActivityById(itemId);
           setReview(activityResponse.data.data);
@@ -100,7 +156,7 @@ const BookingDetails = () => {
     };
 
     fetchBooking();
-  }, [itemId, type, userId]);
+  }, [itemId, type, userId, bookingId]);
 
   const handleFollowToggle = async () => {
     try {
@@ -112,11 +168,73 @@ const BookingDetails = () => {
     }
   };
 
-  const handleItemFeedback = async () => {
+  const handleRatingChange = async (newRating) => {
+    setRating(newRating);
+
+    if (newRating !== initialRating) {
+      try {
+        await handleItemFeedback(newRating, comment || "");
+
+        setInitialRating(newRating);
+      } catch (error) {
+        console.error("Error updating rating:", error);
+      }
+    }
+  };
+
+  const handleTourGuideRatingChange = async (newRating) => {
+    setRating(newRating);
+
+    if (newRating !== initialRating) {
+      try {
+        await handleItemFeedback(newRating, comment || "");
+
+        setInitialTourGuideRating(newRating);
+      } catch (error) {
+        console.error("Error updating rating:", error);
+      }
+    }
+  };
+
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+
+  const handleTourGuideCommentChange = (e) => {
+    setTourGuideComment(e.target.value);
+  };
+
+
+  const handleAddComment = async () => {
+    if (comment !== initialComment) {
+      try {
+        await handleItemFeedback(initialRating, comment);
+        setInitialComment(comment);
+        setFeedbackSubmitted(true);
+      } catch (error) {
+        console.error("Error submitting comment:", error);
+      }
+    }
+  };
+
+  const handleTourGuideAddComment = async () => {
+    if (comment !== initialComment) {
+      try {
+        await handleItemFeedback(initialRating, comment);
+        setInitialTourGuideComment(comment);
+        setFeedbackSubmitted(true);
+      } catch (error) {
+        console.error("Error submitting comment:", error);
+      }
+    }
+  };
+
+  const handleItemFeedback = async (rating, comment) => {
     const feedbackData = {
-      tourist: userId, 
+      tourist: userId,
       rating,
       comment,
+      booking: bookingId,
     };
 
     if (type === "Activity") {
@@ -128,9 +246,10 @@ const BookingDetails = () => {
     try {
       await axios.post("http://localhost:8000/tourist/review", feedbackData);
       setFeedbackSubmitted(true);
-      setRating(0);
       setComment("");
-      window.location.reload();
+      if (comment != "") {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Error submitting itinerary feedback:", error);
     }
@@ -139,9 +258,10 @@ const BookingDetails = () => {
   const handleTourGuideFeedback = async () => {
     const feedbackData = {
       tourist: userId,
-      tourGuideRating,
-      tourGuideComment,
+      rating: tourGuideRating,
+      comment: tourGuideComment,
       tourGuide: booking.tourGuide._id,
+      booking: bookingId,
     };
 
     try {
@@ -152,22 +272,6 @@ const BookingDetails = () => {
     } catch (error) {
       console.error("Error submitting tour guide feedback:", error);
     }
-  };
-  const handleShareToggle = () => {
-    setShareOpen(!shareOpen);
-  };
-
-  const handleCopyLink = () => {
-    const link = `http://localhost:3000/tourist/booking/${booking._id}`;
-    navigator.clipboard.writeText(link).then(() => {
-      alert("Link copied to clipboard!");
-      setShareOpen(false);
-    });
-  };
-
-  const handleEmailShare = () => {
-    // Implement email sharing logic if needed
-    alert("Email share functionality not implemented yet.");
   };
 
   if (loading) {
@@ -299,20 +403,17 @@ const BookingDetails = () => {
                     <Typography variant="h5" sx={{ mb: 2 }}>
                       Rate This Itinerary
                     </Typography>
-
-                    <Box sx={{ mb: 2 }}>
-                      <Rating
-                        value={rating}
-                        onChange={(event, newValue) => setRating(newValue)} // Update the rating
-                        size="large" // Increase the size of stars
-                      />
-                    </Box>
-
-                    <TextField fullWidth label="Your Comment" value={comment} onChange={(e) => setComment(e.target.value)} multiline rows={4} sx={{ mt: 2 }} />
-
-                    <Button variant="contained" sx={{ mt: 2 }} onClick={handleItemFeedback}>
-                      Submit Feedback
-                    </Button>
+                    <Rating value={rating} onChange={(event, newValue) => handleRatingChange(newValue)} size="large" />
+                    {rating > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <TextField fullWidth label="Your Comment" value={comment} onChange={handleCommentChange} multiline rows={4} />
+                        {comment && (
+                          <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddComment}>
+                            Add Comment
+                          </Button>
+                        )}
+                      </Box>
+                    )}
                   </>
                 )}
               </CardContent>
@@ -379,7 +480,10 @@ const BookingDetails = () => {
             <Card sx={{ borderRadius: 3, boxShadow: 5, padding: 4 }}>
               <CardContent>
                 <Box sx={{ textAlign: "center" }}>
-                  <Avatar src={`http://localhost:8000/uploads/${booking.tourGuide._id}/${booking.tourGuide.profilePicture.filename}`} sx={{ width: 150, height: 150, mb: 2, mx: "auto" }} />
+                  <Avatar src={`http://localhost:8000/uploads/${booking.tourGuide._id}/${booking.tourGuide.profilePicture?.filename}`} sx={{ width: 150, height: 150, mb: 2, mx: "auto" }}>
+                    {/* If profile picture URL is missing or fails to load, show the initial */}
+                    {!booking.tourGuide.profilePicture && booking.tourGuide.name.charAt(0)}
+                  </Avatar>
                   <Typography variant="h5" sx={{ mb: 1 }}>
                     {booking.tourGuide.name}
                   </Typography>
@@ -418,6 +522,25 @@ const BookingDetails = () => {
                     )}
                   </Box>
                 )}
+
+{/* {view === "past" && (
+                  <>
+                    <Typography variant="h5" sx={{ mb: 2 }}>
+                      Rate Tour Guide
+                    </Typography>
+                    <Rating value={rating} onChange={(event, newValue) => handleTourGuideRatingChange(newValue)} size="large" />
+                    {rating > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <TextField fullWidth label="Your Comment" value={comment} onChange={handleTourGuideCommentChange} multiline rows={4} />
+                        {comment && (
+                          <Button variant="contained" sx={{ mt: 2 }} onClick={handleTourGuideAddComment}>
+                            Add Comment
+                          </Button>
+                        )}
+                      </Box>
+                    )}
+                  </>
+                )} */}
               </CardContent>
             </Card>
           </Box>
@@ -506,7 +629,6 @@ const BookingDetails = () => {
                     </Box>
                   </Grid>
 
-
                   <Grid item xs={12}>
                     <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
                       Category: {booking.category.name}
@@ -522,28 +644,23 @@ const BookingDetails = () => {
                     Cancel Booking
                   </Button>
                 )}
-                
-              
 
                 {view === "past" && (
                   <>
-                    {/* Rating & Comment Fields */}
                     <Typography variant="h5" sx={{ mb: 2 }}>
                       Rate This Itinerary
                     </Typography>
-
-                    {/* Star Rating Component */}
-                    <Box sx={{ mb: 2 }}>
-                      <Rating value={rating} onChange={(event, newValue) => setRating(newValue)} size="large" />
-                    </Box>
-
-                    {/* Comment Field */}
-                    <TextField fullWidth label="Your Comment" value={comment} onChange={(e) => setComment(e.target.value)} multiline rows={4} sx={{ mt: 2 }} />
-
-                    {/* Submit Button */}
-                    <Button variant="contained" sx={{ mt: 2 }} onClick={handleItemFeedback}>
-                      Submit Feedback
-                    </Button>
+                    <Rating value={rating} onChange={(event, newValue) => handleRatingChange(newValue)} size="large" />
+                    {rating > 0 && (
+                      <Box sx={{ mt: 2 }}>
+                        <TextField fullWidth label="Your Comment" value={comment} onChange={handleCommentChange} multiline rows={4} />
+                        {comment && (
+                          <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddComment}>
+                            Add Comment
+                          </Button>
+                        )}
+                      </Box>
+                    )}
                   </>
                 )}
               </CardContent>
@@ -608,7 +725,6 @@ const BookingDetails = () => {
       </Box>
     );
   } else if (type === "Hotel") {
-  } else if (type === "Flight") {
   }
 };
 
