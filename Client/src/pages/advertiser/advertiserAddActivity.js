@@ -96,6 +96,7 @@ const AdvertiserAddActivity = () => {
         duration: "",
       });
       setSelectedTags([]);
+      setOpenModal(true); // Open the modal after successful activity creation
     } catch (error) {
       console.error("Failed to add activity:", error);
     }
@@ -103,12 +104,12 @@ const AdvertiserAddActivity = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setOpenModal(true);
+    handleAddActivity(); // Call handleAddActivity on form submission
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
-    window.location.href = "../homePage.html";
+    window.location.href = "../my-activities";
   };
 
   const handleLocationClick = () => {
@@ -117,11 +118,12 @@ const AdvertiserAddActivity = () => {
 
   useEffect(() => {
     const cairoCoordinates = { lat: 30.0444, lng: 31.2357 };
-    map = L.map(mapRef.current).setView([cairoCoordinates.lat, cairoCoordinates.lng], 12);
+    const map = L.map(mapRef.current).setView([cairoCoordinates.lat, cairoCoordinates.lng], 12);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
 
+    let marker;
     map.on("click", function (e) {
       if (marker) {
         map.removeLayer(marker);
@@ -138,9 +140,6 @@ const AdvertiserAddActivity = () => {
     };
   }, []);
 
-  let map;
-  let marker;
-
   const reverseGeocode = (lat, lng) => {
     setLoadingAddress(true);
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
@@ -155,7 +154,6 @@ const AdvertiserAddActivity = () => {
       .catch((error) => console.error("Error:", error))
       .finally(() => setLoadingAddress(false));
   };
-
   return (
     <div style={{ maxWidth: "800px", margin: "auto", padding: "30px", fontFamily: "Arial, sans-serif" }}>
       <h1 style={{ fontSize: "2.5em", marginBottom: "30px", textAlign: "center", fontWeight: "bold" }}>Add New Activity</h1>
