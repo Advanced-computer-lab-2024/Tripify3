@@ -42,7 +42,6 @@ const AdminNavbar = () => {
   const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget); // New handler for Account dropdown
   const handleAccountClose = () => setAccountAnchorEl(null); // Close Account dropdown
 
-  
   const openLogoutDialog = () => {
     setLogoutDialogOpen(true);
     setSettingsAnchorEl(null);
@@ -75,12 +74,6 @@ const AdminNavbar = () => {
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* Home Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
-              <Home />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Home
-              </Typography>
-            </IconButton>
 
             {/* Account Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
@@ -94,8 +87,6 @@ const AdminNavbar = () => {
                 <AccountCircle sx={{ mr: 1 }} /> My Profile
               </MenuItem>
             </Menu>
-
-            
 
             {/* Settings Icon with Dropdown */}
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
@@ -113,14 +104,11 @@ const AdminNavbar = () => {
                 <ExitToApp sx={{ mr: 1 }} />
                 Logout
               </MenuItem>
-           
             </Menu>
             {/* Help Icon with Dropdown */}
           </Box>
         </Toolbar>
       </AppBar>
-
-
 
       {/* Logout Confirmation Dialog */}
       <Dialog open={logoutDialogOpen} onClose={closeLogoutDialog}>

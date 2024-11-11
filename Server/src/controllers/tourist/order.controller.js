@@ -129,7 +129,8 @@ export const checkoutTouristCart = async (req, res) => {
       // Update the product quantity and sales fields
       const quantityPurchased = item.quantity;
       product.quantity -= quantityPurchased;
-      product.sales += product.price * quantityPurchased;
+      // product.sales += product.price * quantityPurchased;
+      product.sales += quantityPurchased;
 
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {

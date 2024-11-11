@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardHeader, Dialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
+import { Box, Typography,Checkbox ,ListItemText , TextField, Button, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardHeader, Dialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera } from "react-icons/fa";
 import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
 import { getUserId } from "../../utils/authUtils.js";
@@ -12,7 +12,14 @@ const TouristProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [redeemSuccess, setRedeemSuccess] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState("");
-  
+  const vacationOptions = [
+    { value: "historic", label: "Historic Areas" },
+    { value: "beach", label: "Beaches" },
+    { value: "familyFriendly", label: "Family-Friendly" },
+    { value: "shopping", label: "Shopping" },
+    { value: "budget", label: "Budget Travel" },
+  ];
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -24,12 +31,28 @@ const TouristProfile = () => {
     occupation: "",
     gender: "",
     currency: "", // Ensure this matches your profile field
+    preferences: [], // Ensure this matches your profile field
   });
 
   const countries = [
-    "USA", "Canada", "UK", "Germany", "France", "Australia", 
-    "Egypt", "Italy", "Spain", "Brazil", "Argentina", "Mexico", 
-    "India", "China", "Japan", "South Korea", "Saudi Arabia", "United Arab Emirates",
+    "USA",
+    "Canada",
+    "UK",
+    "Germany",
+    "France",
+    "Australia",
+    "Egypt",
+    "Italy",
+    "Spain",
+    "Brazil",
+    "Argentina",
+    "Mexico",
+    "India",
+    "China",
+    "Japan",
+    "South Korea",
+    "Saudi Arabia",
+    "United Arab Emirates",
   ];
 
   useEffect(() => {
@@ -37,7 +60,7 @@ const TouristProfile = () => {
       try {
         const response = await getProfile(userId);
         const fullName = response.data.userProfile.name.split(" ");
-        
+
         setUserProfile(response.data.userProfile);
         setFormData({
           username: response.data.userProfile.username,
@@ -50,6 +73,7 @@ const TouristProfile = () => {
           occupation: response.data.userProfile.occupation,
           currency: response.data.userProfile.currency || "", // Ensure this matches the expected API field
           gender: response.data.userProfile.gender || "",
+          preferences: response.data.userProfile.preferences || [],
           filepath: response.data.userProfile.profilePicture ? `http://localhost:8000/uploads/${userId}/${response.data.userProfile.profilePicture.filename}` : "",
         });
       } catch (error) {
@@ -255,6 +279,30 @@ const TouristProfile = () => {
                   <MenuItem value="Male">Male</MenuItem>
                   <MenuItem value="Female">Female</MenuItem>
                   <MenuItem value="Other">Other</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth sx={{ mx: 2 }}>
+                <InputLabel>Preferences</InputLabel>
+                <Select
+                  name="preferences"
+                  value={formData.preferences}
+                  multiple
+                  disabled={!isEditing}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setFormData((prev) => ({
+                      ...prev,
+                      preferences: typeof value === "string" ? value.split(",") : value,
+                    }));
+                  }}
+                  renderValue={(selected) => selected.map((pref) => vacationOptions.find((option) => option.value === pref)?.label).join(", ")}
+                >
+                  {vacationOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      <Checkbox checked={formData.preferences.includes(option.value)} />
+                      <ListItemText primary={option.label} />
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Box>

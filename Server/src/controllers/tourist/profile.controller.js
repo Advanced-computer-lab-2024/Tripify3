@@ -64,13 +64,15 @@ export const getProfile = async (req, res) => {
 export const editProfile = async (req, res) => {
   try {
     const { id } = req.params; // User ID from the route parameter
-    const { username, email, ...updateData } = req.body; // Destructure to separate username and email
+    const { username, email, preferences, ...updateData } = req.body; // Destructure to separate preferences
     console.log(req.body);
 
     // First, find the user to determine their type
     const currentUser = await User.findById(id); // Assuming User is your main user model
 
     if (!currentUser) {
+      console.log("sjjsjsjsjs");
+      
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -98,6 +100,11 @@ export const editProfile = async (req, res) => {
       }
     }
 
+    // Update tourist preferences if the user type is "Tourist"
+    if (currentUser.type === "Tourist" && preferences) {
+      updateData.preferences = preferences;
+    }
+
     // Determine which model to update based on user type
     switch (currentUser.type) {
       case "Tourist":
@@ -110,21 +117,21 @@ export const editProfile = async (req, res) => {
       case "Seller":
         updatedUserProfile = await Seller.findOneAndUpdate(
           { _id: id },
-          { $set: updateData }, // Update using the filtered updateData
+          { $set: updateData },
           { new: true, runValidators: true }
         );
         break;
       case "Advertiser":
         updatedUserProfile = await Advertiser.findOneAndUpdate(
           { _id: id },
-          { $set: updateData }, // Update using the filtered updateData
+          { $set: updateData },
           { new: true, runValidators: true }
         );
         break;
       case "Tour Guide":
         updatedUserProfile = await TourGuide.findOneAndUpdate(
           { _id: id },
-          { $set: updateData }, // Update using the filtered updateData
+          { $set: updateData },
           { new: true, runValidators: true }
         );
         break;
@@ -132,7 +139,7 @@ export const editProfile = async (req, res) => {
       case "Tourism Governor":
         updatedUserProfile = await User.findOneAndUpdate(
           { _id: id },
-          { $set: updateData }, // Update using the filtered updateData
+          { $set: updateData },
           { new: true, runValidators: true }
         );
         break;
@@ -153,6 +160,7 @@ export const editProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 export const deleteTouristAccount = async (req, res) => {
   const { id } = req.params; // Extract the tourist ID from the request params

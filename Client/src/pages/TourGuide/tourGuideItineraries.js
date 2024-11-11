@@ -254,7 +254,7 @@ const TourGuideItineraries = () => {
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     {itinerary.name}
                   </Typography>
-                  <Typography>Price: ${itinerary.price}</Typography>
+                  <Typography>Price: EGP {itinerary.price}</Typography>
                   <Typography>
                     <strong>Language:</strong> {itinerary.language}
                   </Typography>

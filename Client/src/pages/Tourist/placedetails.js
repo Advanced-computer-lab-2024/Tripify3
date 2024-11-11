@@ -35,7 +35,7 @@ const PlaceDetails = () => {
   const handleIncrease = () => setTicketCount(ticketCount + 1);
   const handleDecrease = () => ticketCount > 1 && setTicketCount(ticketCount - 1);
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
@@ -92,49 +92,47 @@ const PlaceDetails = () => {
     });
   };
   const exchangeRates = {
-    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     // Add other currencies as needed
-};
+  };
 
-  
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
 
-      // Check user type and apply currency logic
-  if (getUserType() !== "Tourist") {
-    // If user is not Tourist, format amount in EGP
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'EGP' 
-    }).format(value);
-  }
-  
     // Ensure amount is a number
     const value = Number(amount);
-  
+
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
+
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
-  
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
     // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
     //   .format(convertedAmount);
 
-      const formattedAmount = new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: currency 
-      }).format(convertedAmount);
-      
-      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
-      
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
 
   const handleShareToggle = () => setShareOpen(!shareOpen);
-  
+
   const handleEmailShare = () => {
     const emailSubject = `Check out this place: ${place.name}`;
     // Construct email body with additional itinerary details
@@ -155,7 +153,6 @@ const PlaceDetails = () => {
     window.open(gmailUrl, "_blank");
   };
 
-
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
@@ -169,12 +166,21 @@ const PlaceDetails = () => {
   }
 
   return (
-    <Box sx={{ p: 3, backgroundColor: "#F5F7FA", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 3,
+        backgroundColor: "#F5F7FA",
+        minHeight: "100vh",
+        display: "flex", // Centering
+        alignItems: "center", // Center vertically
+        justifyContent: "center", // Center horizontally
+      }}
+    >
       <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
         Go Back
       </Button>
 
-      <Grid container spacing={4} sx={{ mt: 5 }}>
+      <Grid container spacing={4} sx={{ mt: 5  }}>
         {/* Place Details Card */}
         <Grid item xs={12} md={6}>
           <Card sx={{ width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
@@ -218,7 +224,7 @@ const PlaceDetails = () => {
               </Grid>
 
               <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
-                Total Price:{formatCurrency(totalPrice)}
+                Total Price: {formatCurrency(totalPrice)}
               </Typography>
 
               <Box sx={{ mt: 3 }}>

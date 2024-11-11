@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {  getUserProfile } from "../../services/tourist";
-import { getUserId, getUserType } from "../../utils/authUtils";///////////////////////
-import { useParams, useNavigate } from "react-router-dom";////////////////////////
-
-
+import { getUserProfile } from "../../services/tourist";
+import { getUserId, getUserType } from "../../utils/authUtils"; ///////////////////////
+import { useParams, useNavigate } from "react-router-dom"; ////////////////////////
 
 import axios from "axios";
 import DatePicker from "react-datepicker";
@@ -12,10 +10,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-
 const Transportation = () => {
   const [source, setSource] = useState("");
-  const { id } = useParams();/////////
+  const { id } = useParams(); /////////
   const userId = getUserId();
   const [currency, setCurrency] = useState("USD"); // Default currency///////////////
 
@@ -31,7 +28,7 @@ const Transportation = () => {
   const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
@@ -57,7 +54,7 @@ const Transportation = () => {
     } else {
       setPrice(0); // Set price to 0 if directionsResponse is null or undefined
     }
-  }, [transportType, directionsResponse,id, userId]);
+  }, [transportType, directionsResponse, id, userId]);
 
   const handleBooking = async () => {
     // Retrieve userId (tourist) from local storage
@@ -98,35 +95,42 @@ const Transportation = () => {
     }
   };
   const exchangeRates = {
-    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     // Add other currencies as needed
-};
+  };
 
   const formatCurrency = (amount) => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
-  
     // Ensure amount is a number
     const value = Number(amount);
-  
+
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
+
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
-  
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
     // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
     //   .format(convertedAmount);
 
-    
-      const formattedAmount = new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: currency 
-      }).format(convertedAmount);
-      
-      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
 
   const fetchSuggestions = async (place, setSuggestions) => {
@@ -137,7 +141,6 @@ const Transportation = () => {
     try {
       const response = await axios.get(`http://localhost:8000/suggestions?city=Cairo&place=${place}`);
       setSuggestions(response.data);
-    
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
