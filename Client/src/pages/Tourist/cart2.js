@@ -19,6 +19,7 @@ import { Add, Remove, Delete } from "@mui/icons-material";
 import { getUserId } from "../../utils/authUtils";
 import axios from "axios";
 import { useEffect, useState } from "react";
+
 export default function QuantityEdit() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
@@ -27,6 +28,25 @@ export default function QuantityEdit() {
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [quant, setQuant] = useState([]);
   const [debounceTimeout, setDebounceTimeout] = useState(null);
+  const [form, setForm] = useState({
+    location: "",
+  });
+  const handleCheckout = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/tourist/checkout?userId=${getUserId()}`,
+        {
+          dropOffLocation: "Cairo International Airport",
+          dropOffDate: "2024-12-05T00:00:00.000+00:00",
+        }
+      );
+      getCart();
+      console.log(response.data);
+    } catch (error) {
+      setErrorMessage("Error creating order: " + error.message);
+    }
+  };
+
   const handleDeliveryChange = (event) => {
     const selectedValue = event.target.value; // Get the selected value
     setSelectedDelivery(selectedValue); // Update the state with the selected value
@@ -38,7 +58,7 @@ export default function QuantityEdit() {
   const getCart = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/tourist/cart/?touristId=672cdfadfd4e3f89e7e69c81"
+        `http://localhost:8000/tourist/cart/?touristId=${getUserId()}`
       );
       setCart(response.data);
     } catch (error) {
@@ -368,12 +388,30 @@ export default function QuantityEdit() {
                         </select>
                       </div>
 
-                      <MDBTypography tag="h5" className="text-uppercase mb-3">
+                      {/* <MDBTypography tag="h5" className="text-uppercase mb-3">
                         Give code
                       </MDBTypography>
 
                       <div className="mb-5">
                         <MDBInput size="lg" label="Enter your code" />
+                      </div> */}
+
+                      <MDBTypography tag="h5" className="text-uppercase mb-3">
+                        Drop-off Location
+                      </MDBTypography>
+
+                      <div className="mb-5">
+                        <MDBInput
+                          size="lg"
+                          label="Drop-off Location"
+                          value={form.location}
+                          onChange={(e) => {
+                            setForm({
+                              ...form,
+                              location: e.target.value,
+                            });
+                          }}
+                        />
                       </div>
 
                       <hr className="my-4" />
@@ -397,7 +435,12 @@ export default function QuantityEdit() {
                         </MDBTypography>
                       </div>
 
-                      <MDBBtn color="dark" block size="lg">
+                      <MDBBtn
+                        color="dark"
+                        block
+                        size="lg"
+                        onClick={handleCheckout}
+                      >
                         Checkout
                       </MDBBtn>
                     </div>
