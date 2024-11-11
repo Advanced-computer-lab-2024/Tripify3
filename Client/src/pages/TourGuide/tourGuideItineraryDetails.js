@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Box, Paper, Dialog, Slide, Rating, CardActions, Typography, Button, CircularProgress, Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
+import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LanguageIcon from '@mui/icons-material/Language';
+
+import EventIcon from '@mui/icons-material/Event';
+
+import { Box, Paper, Dialog, Slide, Rating, CardActions, Typography, Button ,CircularProgress , Grid, Card, CardContent, Avatar, List, ListItem } from "@mui/material";
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Favorite } from "@mui/icons-material";
@@ -26,6 +32,10 @@ const TourGuideItineraryDetails = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [ticketCount, setTicketCount] = useState(1);
   const [currency, setCurrency] = useState("USD"); // Default currency
+  const [bookings, setBookings] = useState([]);  // Initialize bookings as an empty array
+
+
+
 
   // Fetch itinerary and user profile data
   useEffect(() => {
@@ -39,6 +49,9 @@ const TourGuideItineraryDetails = () => {
     };
 
     fetchUserProfile(); // Fetch currency when the component mounts
+
+
+    
 
     const fetchItinerary = async () => {
       try {
@@ -54,6 +67,18 @@ const TourGuideItineraryDetails = () => {
     };
 
     fetchItinerary();
+
+    const fetchBookingsForItinerary = async () => {
+      try {
+        console.log(id);
+        const response = await axios.get(`http://localhost:8000/itinerary/get/bookings/${id}`);
+        setBookings(response.data.bookings); // Store the fetched bookings
+      } catch (err) {
+        console.error("Error fetching bookings", err);
+      }
+    };
+
+    fetchBookingsForItinerary();
   }, [id, userId]);
 
   const fetchTourGuideProfile = async (tourGuideId, touristId) => {
@@ -64,6 +89,47 @@ const TourGuideItineraryDetails = () => {
       console.error("Error fetching tour guide profile:", error);
     }
   };
+
+
+  const activateItinerary = async () => {
+    try {
+      const response = await axios.put(`http://localhost:8000/itinerary/activate/${id}`);
+      console.log(response.data.message);
+      window.location.reload();
+
+      if (response.data.message === "Itinerary activated successfully") {
+        setItineraries((prevItineraries) =>
+          prevItineraries.map((itinerary) =>
+            itinerary._id === id ? { ...itinerary, status: 'Active' } : itinerary
+          )
+        );
+      }
+
+    } catch (error) {
+      console.error(error.response?.data?.message || 'Error activating itinerary');
+    }
+  };
+
+  // Deactivate an itinerary
+  const deactivateItinerary = async () => {
+    try {
+      const response = await axios.put(`http://localhost:8000/itinerary/deactivate/${id}`);
+      console.log(response.data.message);
+      window.location.reload();
+
+      if (response.data.message === "Itinerary deactivated successfully") {
+        setItineraries((prevItineraries) =>
+          prevItineraries.map((itinerary) =>
+            itinerary._id === id ? { ...itinerary, status: 'Inactive' } : itinerary
+          )
+        );
+      }
+
+    } catch (error) {
+      console.error(error.response?.data?.message || 'Error deactivating itinerary');
+    }
+  };
+
 
   const handleShareToggle = () => {
     setShareOpen((prev) => !prev);
@@ -157,12 +223,10 @@ const TourGuideItineraryDetails = () => {
           <Card sx={{ mt: 6, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
             <CardContent>
               {/* Main Itinerary Header */}
-              <Typography variant="h4" textAlign="center">
+              <Typography variant="h4" textAlign="center" sx={{marginBottom: 2}}>
                 {itinerary.name}
               </Typography>
-              <Typography variant="body2" color="textSecondary" textAlign="center">
-                Language: {itinerary.language}
-              </Typography>
+              
 
               {/* Tags Section */}
               <Box sx={{ textAlign: "center", mb: 6 }}>
@@ -192,20 +256,54 @@ const TourGuideItineraryDetails = () => {
                   </Typography>
                 )}
               </Box>
-
               {/* Itinerary Summary Section */}
+
+              
+
+
               <Grid container spacing={3}>
+
+                <Grid item xs={12} sm={6}>
+                  <Box display="flex" alignItems="center">
+                    <LanguageIcon  sx={{ color: "#5A67D8", mr: 1 }} />
+                    <Typography variant="body1">Language: {itinerary.language}</Typography>
+                  </Box>
+                </Grid>
+
                 <Grid item xs={12} sm={6}>
                   <Box display="flex" alignItems="center">
                     <LocationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
                     <Typography variant="body1">Drop-off Location: {itinerary.dropoffLocation}</Typography>
                   </Box>
                 </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Box display="flex" alignItems="center">
+                    <LocationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                    <Typography variant="body1">Pick-Up Location: {itinerary.pickupLocation}</Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Box display="flex" alignItems="center">
+                    <AccessibilityNewIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                    <Typography variant="body1">Accessibility: {itinerary.accessibility}</Typography>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Box display="flex" alignItems="center">
+                    <CheckCircleIcon sx={{ color: "#5A67D8", mr: 1 }} />
+                    <Typography variant="body1">Status: {itinerary.status}</Typography>
+                  </Box>
+                </Grid>
+
+                
                 <Grid item xs={12} sm={6}>
                   <Box display="flex" alignItems="center">
                     <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
                     <Typography variant="body1">
-                      <strong>Start Date:</strong> {new Date(itinerary.timeline.startTime).toLocaleDateString()}
+                      Start Date: {new Date(itinerary.timeline.startTime).toLocaleDateString()}
                     </Typography>
                   </Box>
                 </Grid>
@@ -213,7 +311,7 @@ const TourGuideItineraryDetails = () => {
                   <Box display="flex" alignItems="center">
                     <EventNoteIcon sx={{ color: "#5A67D8", mr: 1 }} />
                     <Typography variant="body1">
-                      <strong>End Date:</strong> {new Date(itinerary.timeline.endTime).toLocaleDateString()}
+                      End Date:{new Date(itinerary.timeline.endTime).toLocaleDateString()}
                     </Typography>
                   </Box>
                 </Grid>
@@ -223,6 +321,25 @@ const TourGuideItineraryDetails = () => {
                     <Typography variant="body1">{formatCurrency(itinerary.price)}</Typography>
                   </Box>
                 </Grid>
+              </Grid>
+
+              <Grid item xs={12} sm={6} marginTop={2}>
+                <Box display="flex" alignItems="center">
+                  <EventIcon  sx={{ color: "#5A67D8", mr: 1 }} />
+                  <Typography variant="body1">
+                    Available dates:{" "}
+                    {itinerary.availableDates && itinerary.availableDates.length > 0
+                      ? itinerary.availableDates.map((availableDate, index) => (
+                          <Box key={index}>
+                            <Typography variant="body2">
+                              {new Date(availableDate.date).toLocaleDateString()} -{" "}
+                              {availableDate.times.join(", ")}
+                            </Typography>
+                          </Box>
+                        ))
+                      : "No available dates"}
+                  </Typography>
+                </Box>
               </Grid>
 
               {/* Activities Section */}
@@ -250,26 +367,80 @@ const TourGuideItineraryDetails = () => {
                 ))}
               </Grid>
 
+              <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
+                Places
+              </Typography>
+              <Grid container spacing={3}>
+                {itinerary.places.map((place) => (
+                  <Grid item xs={12} sm={6} key={place._id}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6">{place.name}</Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          type: {place.type}
+                        </Typography>
+                        <Typography variant="body2">Country: {place.location.country} minutes</Typography>
+                        <Typography variant="body2">City: {place.location.city} minutes</Typography>
+                        <Typography variant="body2">Address: {place.location.address} minutes</Typography>
+
+                        <Typography variant="body2">Description: {place.description}</Typography>
+                        
+
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+
               {/* Share Button */}
               <CardActions sx={{ padding: "24px 32px" }}>
-                <Box sx={{ mt: 2 }}>
-                  <Button
-                    variant="outlined"
-                    onClick={handleShareToggle}
-                    startIcon={<ShareIcon />}
-                    sx={{
-                      fontSize: "1rem",
-                      fontWeight: 500,
-                      textTransform: "none",
-                      "&:hover": {
-                        backgroundColor: "#e0e0e0",
-                      },
-                    }}
-                  >
-                    Share
-                  </Button>
-                </Box>
-              </CardActions>
+                  <Box sx={{ mt: 2 }}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleShareToggle}
+                      startIcon={<ShareIcon />}
+                      sx={{
+                        fontSize: "1rem",
+                        fontWeight: 500,
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "#e0e0e0",
+                        },
+                      }}
+                    >
+                      Share
+                    </Button>
+
+                      {bookings.length === 0 ? (
+                      <Typography sx={{ marginLeft: 2, color: "gray", fontSize: "0.9rem" }}>
+                        This itinerary cannot be activated or deactivated as it has no bookings.
+                      </Typography>
+                    ) : (
+                      itinerary.status === 'Inactive' ? (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => activateItinerary()}
+                          sx={{ marginLeft: 2, fontSize: "1rem", textTransform: "none" }}
+                        >
+                          Activate
+                        </Button>
+                      ) : itinerary.status === 'Active' ? (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => deactivateItinerary()}
+                          sx={{ marginLeft: 2, fontSize: "1rem", textTransform: "none" }}
+                        >
+                          Deactivate
+                        </Button>
+                      ) : null
+                    )}
+                  </Box>
+                </CardActions>
+
+
+
 
               {/* Share Dialog */}
               <Dialog

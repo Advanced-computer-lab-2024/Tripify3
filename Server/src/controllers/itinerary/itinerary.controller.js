@@ -5,6 +5,7 @@ import TourGuide from "../../models/tourGuide.js";
 import Activity from "../../models/activity.js";
 import Place from "../../models/place.js";
 import Review from "../../models/review.js"; 
+import Booking from "../../models/booking.js"; 
 import mongoose from "mongoose"; 
 import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
 // Edit itinerary inappropriate attribute
@@ -329,6 +330,14 @@ export const ActivateItinerary = async (req, res) => {
   const itineraryId = req.params.id;
 
   try {
+    // Find if there are any bookings with this itinerary
+    const bookings = await Booking.find({ itinerary: itineraryId });
+
+    if (bookings.length === 0) {
+      return res.status(400).json({ message: "Itinerary has no bookings, cannot be activated" });
+    }
+
+    // Now find the itinerary based on its ID
     const itinerary = await Itinerary.findById(itineraryId);
 
     if (!itinerary) {
@@ -353,7 +362,19 @@ export const DeactivateItinerary = async (req, res) => {
   const itineraryId = req.params.id;
 
   try {
+    console.log("Attempting to find itinerary with ID:", itineraryId);
+
+    // Find if there are any bookings with this itinerary
+    const bookings = await Booking.find({ itinerary: itineraryId });
+    console.log("Bookings found:", bookings);
+
+    if (bookings.length === 0) {
+      return res.status(400).json({ message: "Itinerary with no bookings cannot be deactivated" });
+    }
+
+    // Now find the itinerary based on its ID
     const itinerary = await Itinerary.findById(itineraryId);
+    console.log("Found itinerary:", itinerary);
 
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
@@ -363,16 +384,39 @@ export const DeactivateItinerary = async (req, res) => {
       return res.status(400).json({ message: "Itinerary is already inactive" });
     }
 
-    // Allow deactivation only if there are bookings
-    if (itinerary.bookings.length === 0) {
-      return res.status(400).json({ message: "Itinerary with no bookings cannot be deactivated" });
-    }
-
     itinerary.status = "Inactive";
     await itinerary.save();
 
     res.status(200).json({ message: "Itinerary deactivated successfully", itinerary });
   } catch (error) {
-    res.status(500).json({ message: "Error deactivating itinerary", error });
+    console.error("Error deactivating itinerary:", error);
+    res.status(500).json({ message: "Error deactivating itinerary", error: error.message || error });
   }
 };
+
+
+export const fetchBookingsForItinerary = async (req, res) => {
+  try {
+    const { itineraryId } = req.params;
+
+    // Validate itinerary ID format
+    if (!mongoose.Types.ObjectId.isValid(itineraryId)) {
+      return res.status(400).json({ message: "Invalid itinerary ID format" });
+    }
+
+    const bookings = await Booking.find({ itinerary: itineraryId })
+      .populate("tourist", "name email")
+      .populate("place", "name location")
+      .populate("activity", "name description");
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ message: "No bookings found for this itinerary" });
+    }
+
+    res.status(200).json({ bookings });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+

@@ -10,7 +10,8 @@ import {
   addActivityToItinerary,
   ActivateItinerary,
   DeactivateItinerary,
-  getAllActiveAppropriateItineraries
+  getAllActiveAppropriateItineraries,
+  fetchBookingsForItinerary
 } from "../controllers/itinerary/itinerary.controller.js";
 
 const router = express.Router();
@@ -27,5 +28,8 @@ router.post("/itinerary/:id/addActivity", addActivityToItinerary);
 router.put("/itinerary/inappropriate/:id", editItineraryAttribute);
 router.put("/itinerary/activate/:id", ActivateItinerary); // tourguide activates or deactivaes it
 router.put("/itinerary/deactivate/:id", DeactivateItinerary); // tourguide activates or deactivaes it
+
+router.get("/itinerary/get/bookings/:itineraryId", fetchBookingsForItinerary);
+
 
 export default router;
