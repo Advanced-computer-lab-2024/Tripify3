@@ -738,6 +738,7 @@ const BookingDetails = () => {
           </Box>
         </Box>
       </Box>
+      
     );
   } else if (type === "Hotel") {
   }
