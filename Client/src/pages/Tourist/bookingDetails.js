@@ -55,7 +55,6 @@ const BookingDetails = () => {
   const [error, setError] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [tourGuideRating, setTourGuideRating] = useState(0);
   const [tourGuideComment, setTourGuideComment] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -66,6 +65,15 @@ const BookingDetails = () => {
   const [initialComment, setInitialComment] = useState("");
   const [initialTourGuideRating, setInitialTourGuideRating] = useState(0);
   const [initialTourGuideComment, setInitialTourGuideComment] = useState("");
+  const [isEditable, setIsEditable] = useState(initialTourGuideComment === "");
+
+  useEffect(() => {
+    if (initialTourGuideRating !== 0 && booking !== null) {
+      console.log("test");
+
+      handleTourGuideFeedback();
+    }
+  }, [initialTourGuideRating]);
 
   const handleCancelBooking = async () => {
     try {
@@ -98,14 +106,13 @@ const BookingDetails = () => {
     const fetchBooking = async () => {
       try {
         let bookingData;
+        let response;
 
         if (view === "past") {
-          let response;
           if (type === "Activity") {
             response = await axios.get(`http://localhost:8000/booking/get/reviews/${bookingId}/${userId}/activity/${itemId}`);
           } else if (type === "Itinerary") {
             response = await axios.get(`http://localhost:8000/booking/get/reviews/${bookingId}/${userId}/itinerary/${itemId}`);
-
           }
 
           if (response.data.message === "Review found successfully") {
@@ -118,13 +125,6 @@ const BookingDetails = () => {
             setComment(comment);
             setInitialRating(rating);
             setInitialComment(comment);
-            // if (type === "Itinerary") {
-            //   setTourGuideReview(response.data.tourGuideReview);
-            //   setTourGuideRating(rating);
-            //   setTourGuideComment(comment);
-            //   setInitialTourGuideRating(rating);
-            //   setInitialTourGuideComment(comment);
-            // }
           }
         }
         if (type === "Activity") {
@@ -132,6 +132,15 @@ const BookingDetails = () => {
           setReview(activityResponse.data.data);
           bookingData = activityResponse.data.data.activity;
         } else if (type === "Itinerary") {
+          console.log(response.data.tourGuideReview);
+
+          if (response.data.tourGuideReview) {
+            setTourGuideReview(response.data.tourGuideReview);
+            setInitialTourGuideRating(response.data.tourGuideReview.rating);
+            setInitialTourGuideComment(response.data.tourGuideReview.comment);
+            setIsEditable(false);
+            console.log("editable", isEditable);
+          }
           const itineraryResponse = await getItineraryById(itemId);
           bookingData = itineraryResponse.data.data.itinerary;
           setReview(itineraryResponse.data.data);
@@ -200,11 +209,6 @@ const BookingDetails = () => {
     setComment(e.target.value);
   };
 
-  const handleTourGuideCommentChange = (e) => {
-    setTourGuideComment(e.target.value);
-  };
-
-
   const handleAddComment = async () => {
     if (comment !== initialComment) {
       try {
@@ -258,8 +262,8 @@ const BookingDetails = () => {
   const handleTourGuideFeedback = async () => {
     const feedbackData = {
       tourist: userId,
-      rating: tourGuideRating,
-      comment: tourGuideComment,
+      rating: initialTourGuideRating,
+      comment: initialTourGuideComment,
       tourGuide: booking.tourGuide._id,
       booking: bookingId,
     };
@@ -267,8 +271,6 @@ const BookingDetails = () => {
     try {
       await axios.post("http://localhost:8000/tourist/review", feedbackData);
       setFeedbackSubmitted(true);
-      setTourGuideRating(0);
-      setTourGuideComment("");
     } catch (error) {
       console.error("Error submitting tour guide feedback:", error);
     }
@@ -457,7 +459,7 @@ const BookingDetails = () => {
                     >
                       {/* Rating at top right */}
                       <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-                        <Rating value={review.rating} readOnly precision={0.5} size="small" />
+                        <Rating value={review.rating} readOnly precision={1} size="small" />
                       </Box>
 
                       {/* Comment and Username */}
@@ -510,11 +512,43 @@ const BookingDetails = () => {
                     <Typography variant="h6" sx={{ mb: 2 }}>
                       Rate This Tour Guide 🌟
                     </Typography>
-                    <Rating value={tourGuideRating} onChange={(event, newValue) => setTourGuideRating(newValue)} precision={0.5} size="large" sx={{ mb: 2 }} />
-                    <TextField label="Your Comment" fullWidth multiline rows={4} value={tourGuideComment} onChange={(e) => setTourGuideComment(e.target.value)} variant="outlined" sx={{ mb: 2 }} />
-                    <Button variant="contained" color="primary" sx={{ padding: "10px 20px" }} onClick={handleTourGuideFeedback}>
-                      Submit Feedback 📝
-                    </Button>
+                    <Rating value={initialTourGuideRating} onChange={(event, newValue) => setInitialTourGuideRating(newValue)} precision={1} size="large" sx={{ mb: 2 }} />
+                    <TextField
+                      label="Your Comment"
+                      fullWidth
+                      multiline
+                      rows={4}
+                      value={initialTourGuideComment}
+                      onChange={(e) => setInitialTourGuideComment(e.target.value)}
+                      variant="outlined"
+                      sx={{ mb: 2 }}
+                      InputProps={{
+                        readOnly: initialTourGuideComment !== "" && !isEditable, // Make read-only if there is an initial comment and edit mode is off
+                      }}
+                    />
+
+                    {initialTourGuideComment === "" || isEditable ? (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ padding: "10px 20px", mt: 1 }}
+                        onClick={() => {
+                          handleTourGuideFeedback();
+                          setIsEditable(false); // Set back to non-editable after submitting
+                        }}
+                      >
+                        Submit Feedback 📝
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        sx={{ ml: 1 }}
+                        onClick={() => setIsEditable(true)} // Enable edit mode
+                      >
+                        Edit
+                      </Button>
+                    )}
                     {feedbackSubmitted && (
                       <Typography variant="body2" color="success.main">
                         Thank you for your feedback!
@@ -522,25 +556,6 @@ const BookingDetails = () => {
                     )}
                   </Box>
                 )}
-
-{/* {view === "past" && (
-                  <>
-                    <Typography variant="h5" sx={{ mb: 2 }}>
-                      Rate Tour Guide
-                    </Typography>
-                    <Rating value={rating} onChange={(event, newValue) => handleTourGuideRatingChange(newValue)} size="large" />
-                    {rating > 0 && (
-                      <Box sx={{ mt: 2 }}>
-                        <TextField fullWidth label="Your Comment" value={comment} onChange={handleTourGuideCommentChange} multiline rows={4} />
-                        {comment && (
-                          <Button variant="contained" sx={{ mt: 2 }} onClick={handleTourGuideAddComment}>
-                            Add Comment
-                          </Button>
-                        )}
-                      </Box>
-                    )}
-                  </>
-                )} */}
               </CardContent>
             </Card>
           </Box>
@@ -706,7 +721,7 @@ const BookingDetails = () => {
                       }}
                     >
                       <Box sx={{ position: "absolute", top: 8, right: 8 }}>
-                        <Rating value={review.rating} readOnly precision={0.5} size="small" />
+                        <Rating value={review.rating} readOnly precision={1} size="small" />
                       </Box>
 
                       <Typography variant="body1" sx={{ fontWeight: "bold" }}>
