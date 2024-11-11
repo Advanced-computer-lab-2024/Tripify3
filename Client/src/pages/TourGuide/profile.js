@@ -6,7 +6,7 @@ import { MdDelete } from "react-icons/md";
 import { getProfile, updateProfile } from "../../services/tourGuide.js";
 import { getUserId } from "../../utils/authUtils.js";
 
-const TouristProfile = () => {
+const TourGuideProfile = () => {
   const userId = getUserId();
   const [user, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -202,4 +202,4 @@ const TouristProfile = () => {
   );
 };
 
-export default TouristProfile;
+export default TourGuideProfile;
