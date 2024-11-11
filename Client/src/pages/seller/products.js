@@ -267,6 +267,7 @@ const Products = () => {
   const [editProduct, setEditProduct] = useState([]);
   const [newImage, setNewImage] = useState([]);
   const [openCreate, setOpenCreate] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAddToCart = async (productId) => {
     try {
@@ -739,7 +740,15 @@ const Products = () => {
                         <Button
                           variant="contained"
                           startIcon={<ShoppingCartIcon />}
-                          onClick={() => handleAddToCart(product._id)} // Assuming you have an add-to-cart function
+                          onClick={async () => {
+                            if (!loading) {
+                              setLoading(true);
+                              await handleAddToCart(product._id);
+                            }
+                            setTimeout(() => {
+                              setLoading(false);
+                            }, 5000);
+                          }} // Assuming you have an add-to-cart function
                           sx={{
                             width: "80%",
                             margin: "16px auto", // Center the button with margin on top and bottom

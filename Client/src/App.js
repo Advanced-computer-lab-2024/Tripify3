@@ -67,6 +67,7 @@ import ProductPage from "./pages/seller/new/productPage.js";
 import Bookings from "./pages/tourist/bookings.js";
 import SellerProfile from "./pages/seller/profile.js";
 import Cart from "./pages/tourist/cart2.js";
+import WishList from "./pages/tourist/wishList.js";
 // Mock function to get the current user role
 const getUserRole = () => {
   return getUserType(); // can be "admin", "seller", etc.
@@ -194,6 +195,10 @@ const App = () => {
         <Route
           path={"/tourist/mycart"}
           element={getLayoutForRole(userRole, <Cart />)}
+        />
+        <Route
+          path={"/tourist/wishlist"}
+          element={getLayoutForRole(userRole, <WishList />)}
         />
         {/* Add the BookingDetails route with dynamic id and type parameters */}
         <Route
