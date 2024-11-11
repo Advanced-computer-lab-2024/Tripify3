@@ -83,12 +83,12 @@ const LoadFlights = () => {
   };
 
   const exchangeRates = {
-    USD: 1,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 0.93,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 0.77,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1.52,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1.39,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
-    EGP: 49
+    EGP: 1,    // Base currency (Egyptian Pound)
+    USD: 0.020, // 1 EGP to USD
+    EUR: 0.019, // 1 EGP to EUR
+    GBP: 0.016, // 1 EGP to GBP
+    AUD: 0.031, // 1 EGP to AUD
+    CAD: 0.028  // 1 EGP to CAD
     // Add other currencies as needed
 };
 
@@ -99,11 +99,11 @@ const LoadFlights = () => {
 
     // Ensure amount is a number
     const value = Number(amount);
-  
+    
     // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+    const convertedAmount = (currency === "USD") ? value : value * ( exchangeRates[currency]);
 
-    console.log(convertedAmount);
+    console.log("converted amount",convertedAmount);
     
   
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
@@ -120,7 +120,7 @@ const LoadFlights = () => {
     Departure Time: ${selectedFlight.departure.time}, 
     Arrival Time: ${selectedFlight.arrival.time}, 
     Duration: ${formatDuration(selectedFlight.duration)}, 
-    Total Price: ${formatPrice(selectedFlight.price)}
+    Total Price: ${selectedFlight.price}
   `;
 
     try {

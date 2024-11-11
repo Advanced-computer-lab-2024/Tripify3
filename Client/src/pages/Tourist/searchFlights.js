@@ -79,7 +79,7 @@ const Flights = () => {
     { city: "Geneva", code: "GVA" },
     { city: "Hamburg", code: "HAM" },
     { city: "Nice", code: "NCE" },
-  
+
     // North America
     { city: "New York", code: "JFK" },
     { city: "Los Angeles", code: "LAX" },
@@ -107,7 +107,7 @@ const Flights = () => {
     { city: "Calgary", code: "YYC" },
     { city: "Tampa", code: "TPA" },
     { city: "Salt Lake City", code: "SLC" },
-  
+
     // Asia & Middle East
     { city: "Dubai", code: "DXB" },
     { city: "Abu Dhabi", code: "AUH" },
@@ -135,7 +135,6 @@ const Flights = () => {
     { city: "Kathmandu", code: "KTM" },
     { city: "Colombo", code: "CMB" },
   ];
-  
 
   return (
     <Box
@@ -173,9 +172,14 @@ const Flights = () => {
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel>Arrival Airport (Egypt)</InputLabel>
           <Select value={arrival} onChange={(e) => setArrival(e.target.value)} required sx={{ backgroundColor: "white", borderRadius: 1 }}>
-            <MenuItem value="CAI">Cairo (CAI)</MenuItem>
-            <MenuItem value="HRG">Hurghada (HRG)</MenuItem>
-            <MenuItem value="ASW">Aswan (ASW)</MenuItem>
+            <MenuItem value="CAI">Cairo - Cairo International Airport (CAI)</MenuItem>
+            <MenuItem value="HRG">Hurghada - Hurghada International Airport (HRG)</MenuItem>
+            <MenuItem value="ASW">Aswan - Aswan International Airport (ASW)</MenuItem>
+            <MenuItem value="LXR">Luxor - Luxor International Airport (LXR)</MenuItem>
+            <MenuItem value="ALY">Alexandria - Borg El Arab Airport (ALY)</MenuItem>
+            <MenuItem value="SSH">Sharm El Sheikh - Sharm El Sheikh International Airport (SSH)</MenuItem>
+            <MenuItem value="RMF">Marsa Alam - Marsa Alam International Airport (RMF)</MenuItem>
+            <MenuItem value="MUH">Mersa Matruh - Mersa Matruh Airport (MUH)</MenuItem>
           </Select>
         </FormControl>
 
