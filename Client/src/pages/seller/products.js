@@ -11,6 +11,10 @@ import AddFile from "./new/addFile";
 import ProductEditModal from "./new/modal";
 import ProductCreateModal from "./new/modalCreate";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import {getUserProfile } from "../../services/tourist";//////////////////////////////////
+import { useParams, useNavigate } from "react-router-dom";////////////////////////
+
+
 
 import {
   AppBar,
@@ -247,6 +251,9 @@ const theme = createTheme({
 });
 
 const Products = () => {
+  const { id } = useParams();/////////
+  const userId = getUserId();////////////
+  const [currency, setCurrency] = useState("USD"); // Default currency///////////////
   const [products, setProducts] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [sellerNames, setSellerNames] = useState({});
@@ -315,10 +322,19 @@ const Products = () => {
       alert("Failed to fetch the wishlist. ");
     }
   };
-
   useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile(userId);
+        setCurrency(response.data.userProfile.currency); // Set user's selected currency
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile(); // Fetch currency when the component mounts
     fetchProducts();
-  }, [effect, wishArray]);
+  }, [effect, wishArray,id,userId]);
   useEffect(() => {
     if (getUserType() === "Tourist") fetchWishList();
   }, []);
@@ -338,6 +354,29 @@ const Products = () => {
     setSortOrder("");
     setFilterOption({ rating: 0 });
     setBudget(""); // Reset budget
+  };
+  const exchangeRates = {
+    USD: 1 / 49,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    // Add other currencies as needed
+};
+
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+  
+    // Ensure amount is a number
+    const value = Number(amount);
+  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = (currency === "EGP") ? value : value * ( exchangeRates[currency]);
+  
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+      .format(convertedAmount);
   };
   const handleArchive = async (productId) => {
     try {
@@ -615,7 +654,7 @@ const Products = () => {
                       >
                         <CardContent>
                           <Typography variant="h5">{product.name}</Typography>
-                          <Typography>Price: ${product.price}</Typography>
+                          <Typography>Price: {formatCurrency(product.price)}</Typography>
                           <Typography>Details: {product.details}</Typography>
                           <Rating name="read-only" value={product.rating} readOnly />
 

@@ -105,14 +105,14 @@ const LoadHotels = () => {
     // Return a placeholder URL if no valid image is found
     return null; // Fallback placeholder image
   };
+
   const exchangeRates = {
-    USD: 1,  // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    USD: 1,     // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
     EUR: 0.93,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
     GBP: 0.77,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
     AUD: 1.52,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
     CAD: 1.39,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
     EGP: 49
-    // Add other currencies as needed
 };
 
   
@@ -139,6 +139,7 @@ const LoadHotels = () => {
     Check-out Date: ${formatDate(checkOutDate)}, 
     Adults: ${adults}, 
     Children: ${children}, 
+    Total Price: ${(selectedHotel.total_rate?.extracted_lowest)*49}
   `;
     setBookingDialog(true);
 
