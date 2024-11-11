@@ -139,9 +139,13 @@ const Activities = () => {
   // Filter activities based on selected categories, budget, and search term
   const handleFilter = () => {
     let filteredActivities = [...originalActivities];
+      console.log("filtered activities",filteredActivities);
 
+    console.log("selected categories",selectedCategories);
+    
     if (selectedCategories.length > 0) {
-      filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category));
+      
+      filteredActivities = filteredActivities.filter((activity) => selectedCategories.includes(activity.category._id));
     }
 
     if (budget) {
@@ -153,6 +157,8 @@ const Activities = () => {
     }
 
     setActivities(filteredActivities);
+    console.log("after setting",activities);
+    
   };
 
   // Automatically filter when search term, selected categories, or budget changes
