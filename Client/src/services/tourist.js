@@ -55,7 +55,6 @@ export const getProfile = async (userId) => {
   return await axios.get(`${API_URL}/tourist/profile/${userId}`);
 };
 
-
 export const getPlaceById =async(placeid)=>{
   return await axios.get(`${API_URL}/place/get/${placeid}`)
 }

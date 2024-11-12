@@ -55,11 +55,7 @@ const AdminNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
-  const handleProfileClick = () => navigate("/tourist/profile");
-  const handleHomeClick = () => navigate("/tourist/homepage");
-  const handleCartClick = () => navigate("/tourist/cart");
-  const handleOrdersClick = () => navigate("/tourist/orders");
-  const handlePaymentsClick = () => navigate("/tourist/payments");
+  const handleProfileClick = () => navigate("/admin/profile");
   const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
   const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
 

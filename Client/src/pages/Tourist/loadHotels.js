@@ -156,7 +156,7 @@ const LoadHotels = () => {
       setBookingLoading(true); // Start loading immediately
       await axios.post("http://localhost:8000/tourist/booking/create", {
         tourist: userId,
-        price: selectedHotel.total_rate?.extracted_lowest,
+        price: selectedHotel.total_rate?.extracted_lowest * 49,
         type: "Hotel",
         details: hotelDetails,
       });

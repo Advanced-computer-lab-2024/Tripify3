@@ -137,7 +137,7 @@ const LoadFlights = () => {
     try {
       await axios.post("http://localhost:8000/tourist/booking/create", {
         tourist: userId,
-        price: selectedFlight.price,
+        price: selectedFlight.price * 49,
         type: "Flight",
         details: flightDetails,
       });

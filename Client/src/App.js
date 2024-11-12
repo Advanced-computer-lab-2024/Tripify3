@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FollowedTourGuides from "./pages/tourist/followedtourguides.js";
 import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
-import AddPlace from "./pages/tourismGovernor/AddPlace.js";
 import PlaceDetails from "./pages/tourist/placeDetails.js";
 import ChangePassword from "./pages/tourist/change-password.js";
 import ActivityDetails from "./pages/tourist/activitydetails.js"; // Create this Component
@@ -21,7 +20,6 @@ import SearchHotels from "./pages/tourist/searchHotels.js";
 import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import Transportation from "./pages/tourist/transportation.js";
-import GovernorHistoricalPlaceDetails from "./pages/tourismGovernor/placeDetails.js";
 import AdvertiserAddActivity from "./pages/advertiser/advertiserAddActivity.js";
 import OrdersPage from "./pages/tourist/orders.js";
 
@@ -36,7 +34,7 @@ import TourGuideItineraryDetails from "./pages/tourGuide/tourGuideItineraryDetai
 import TourGuideCreateItinerary from "./pages/tourGuide/createItinerary.js";
 import TourGuideEditItinerary from "./pages/tourGuide/tourGuideEditItinerary.js";
 
-import GovernorHistoricalPlaces from "./pages/tourismGovernor/historicalPlaces.js";
+import TourismGovernorEditPlace from "./pages/tourismGovernor/tourismGovernorEditPlace.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
 
 import ToursmGovernorProfile from "./pages/tourismGovernor/profile.js";
@@ -50,6 +48,8 @@ import BookingDetails from "./pages/tourist/bookingDetails.js";
 
 import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
 import AdvertiserActivityDetails from "./pages/advertiser/AdvertiserActivityDetails.js";
+import AdminProfile from "./pages/admin/profile.js";
+import TourismGovernorAddPlace from "./pages/tourismGovernor/tourismGovernorAddPlace.js";
 
 // Layouts Import
 import TouristLayout from "./components/tourist/touristLayout.js";
@@ -131,10 +131,10 @@ const App = () => {
         <Route path="/termsAndAgreements" element={<TermsAndAgreements />} />
         <Route path="/goodbye" element={<Goodbye />} />
         {/* Tourism Governor Routes */}
-        <Route path={`/tourism-governor/historical-places/details/:id`} element={getLayoutForRole(userRole, <GovernorHistoricalPlaceDetails />)} />
-        <Route path={`${basePath}/addPlace`} element={getLayoutForRole(userRole, <AddPlace />)} />
+        <Route path={`/tourism-governor/historical-places/edit/:id`} element={getLayoutForRole(userRole, <TourismGovernorEditPlace />)} />
         <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
         <Route path={`/tourism-governor/tags`} element={getLayoutForRole(userRole, <GovernorTags />)} />
+        <Route path={`/tourism-governor/historical-places/add`} element={getLayoutForRole(userRole, <TourismGovernorAddPlace />)} />
         {/* Tourist Routes */}
         <Route path={`/tourist`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`/tourist/homepage`} element={getLayoutForRole(userRole, <TouristHomePage />)} />
@@ -157,7 +157,7 @@ const App = () => {
         {/* Shared Routes */}
         <Route path={`/activity/:id`} element={getLayoutForRole(userRole, <ActivityDetails />)} /> {/* Correct usage */}
         {/* <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} /> */}
-        <Route path={`/place/:id`} element={getLayoutForRole(userRole, <PlaceDetails />)} />
+        <Route path={`/historical-places/:id`} element={getLayoutForRole(userRole, <PlaceDetails />)} />
         <Route path={`${basePath}/activities`} element={getLayoutForRole(userRole, <Activities />)} />
         <Route path={`${basePath}/itineraries`} element={getLayoutForRole(userRole, <Itineraries />)} />
         <Route path={`${basePath}/pasttourguides/:id`} element={getLayoutForRole(userRole, <FollowedTourGuides />)} />
@@ -170,8 +170,6 @@ const App = () => {
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
         <Route path={`/tour-guide/itinerary/details/:id`} element={getLayoutForRole(userRole, <TourGuideItineraryDetails />)} />
         <Route path={`/tour-guide/itinerary/edit/:id`} element={getLayoutForRole(userRole, <TourGuideEditItinerary />)} />
-
-        
         <Route path={`/tour-guide/create-itinerary`} element={getLayoutForRole(userRole, <TourGuideCreateItinerary />)} />
         <Route path={`/tour-guide/profile`} element={getLayoutForRole(userRole, <TourGuideProfile />)} />
         <Route path={`/tour-guide/activities`} element={getLayoutForRole(userRole, <TourGuideActivities />)} />
@@ -187,6 +185,7 @@ const App = () => {
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={getLayoutForRole(userRole, <Chatbot />)} />
         <Route path={`/admin/users`} element={getLayoutForRole(userRole, <Users />)} />
+        <Route path={`/admin/profile`} element={getLayoutForRole(userRole, <AdminProfile />)} />
         <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
         <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />

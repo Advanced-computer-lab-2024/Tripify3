@@ -53,9 +53,9 @@ const HistoricalPlaces = () => {
         let response;
 
         if (userType === "Tourism Governor") {
-          response = await axios.get(`http://localhost:8000/governor/get/places/${userId}`);
-          setPlaces(response.data.place);
-          setFilteredPlaces(response.data.place); // Initialize with all places
+          response = await axios.get(`http://localhost:8000/places/get`);
+          setPlaces(response.data.places);
+          setFilteredPlaces(response.data.places); // Initialize with all places
         } else {
           response = await axios.get("http://localhost:8000/places/get");
           setPlaces(response.data.places);
@@ -182,6 +182,17 @@ const HistoricalPlaces = () => {
               ))}
             </Select>
           </FormControl>
+          {userType === "Tourism Governor" && (
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/tourism-governor/historical-places/add"
+            sx={{ ml: "auto" }}
+          >
+            Add Place
+          </Button>
+        )}
         </Box>
 
         <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
@@ -211,7 +222,7 @@ const HistoricalPlaces = () => {
                   <Typography>
                     <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(", ")}
                   </Typography>
-                  <Button component={Link} to={userType === "Tourism Governor" ? `/tourism-governor/historical-places/details/${place._id}` : `/place/${place._id}`} variant="contained" sx={{ mt: 2 }}>
+                  <Button component={Link} to={`/historical-places/${place._id}`} variant="contained" sx={{ mt: 2 }}>
                     View Details
                   </Button>
                 </CardContent>

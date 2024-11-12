@@ -50,7 +50,7 @@ const Login = () => {
                 navigate("/seller/my-products");
                 break;
             case "Admin":
-                navigate("/admin/users");
+                navigate("/admin/profile");
                 break;
             case "Tour Guide":
                 navigate("/tour-guide/profile");

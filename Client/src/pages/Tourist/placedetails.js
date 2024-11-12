@@ -14,6 +14,7 @@ import {
   Add as AddIcon,
   Remove as RemoveIcon,
 } from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import { getUserProfile } from "../../services/tourist";
 import { getUserId, getUserType } from "../../utils/authUtils";
@@ -21,6 +22,8 @@ import { getUserId, getUserType } from "../../utils/authUtils";
 const PlaceDetails = () => {
   const { id } = useParams();
   const userType = getUserType();
+  console.log(userType);
+  
   const navigate = useNavigate();
   const [place, setPlace] = useState(null);
   const userId = getUserId();
@@ -139,7 +142,9 @@ const PlaceDetails = () => {
     const emailBody =
       `I thought you might be interested in visiting this place!\n\n` +
       `Place Name: ${place.name}\n` +
-      `Address: ${place.location.address}\n` +
+      `Place Type: ${place.type}\n` +
+      `Place Description: ${place.description}\n` +
+      `Address: ${place.location}\n` +
       `Ticket Prices:\n` +
       `  - For foreigners: $${place.ticketPrices.foreigner}\n` +
       `  - For natives: $${place.ticketPrices.native}\n` +
@@ -164,37 +169,75 @@ const PlaceDetails = () => {
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
-
   return (
     <Box
       sx={{
         p: 3,
         backgroundColor: "#F5F7FA",
         minHeight: "100vh",
-        display: "flex", // Centering
-        alignItems: "center", // Center vertically
-        justifyContent: "center", // Center horizontally
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
-        Go Back
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate(-1)}
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          fontSize: "1rem",
+          fontWeight: 500,
+        }}
+      >
+        🔙 Go Back
       </Button>
 
-      <Grid container spacing={4} sx={{ mt: 5  }}>
-        {/* Place Details Card */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
-            <CardContent>
-              <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
-                {place.name}
+      <Grid container spacing={4} sx={{ maxWidth: 800 }}>
+        <Grid item xs={12}>
+          <Card
+            sx={{
+              width: "100%",
+              borderRadius: 3,
+              boxShadow: 5,
+              padding: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
+            
+            {userType === "Tourism Governor" && (
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate(`/tourism-governor/historical-places/edit/${place._id}`)} // Update with the target edit page route
+                  startIcon={<EditIcon />}
+                  sx={{
+                    position: "absolute",
+                    top: 16,
+                    right: 16,
+                    fontSize: "1rem",
+                    fontWeight: 500,
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+            <CardContent sx={{ width: "100%", textAlign: "center" }}>
+              <Typography variant="h4" color="#333" gutterBottom sx={{ mb: 3 }}>
+                📍 {place.name}
               </Typography>
 
-              <Grid container spacing={3}>
+
+              <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <LocationOnIcon sx={{ color: "#5A67D8", mr: 1 }} />
                     <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500 }}>
-                      {place.location.address}, {place.location.city}, {place.location.country}
+                      Location: {place.location}
                     </Typography>
                   </Box>
                 </Grid>
@@ -206,9 +249,16 @@ const PlaceDetails = () => {
                     </Typography>
                   </Box>
                 </Grid>
+
                 <Grid item xs={12}>
-                  <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
-                    Opening Hours:
+                  <Typography variant="body1" sx={{ color: "#4A5568", fontWeight: 500, mt: 2 }}>
+                    📜 Description: {place.description}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant="h6" color="#333" sx={{ mt: 3 }}>
+                    🕒 Opening Hours:
                   </Typography>
                   {place.openingHours.map((hours, index) => (
                     <Typography key={index} variant="body1" color="#666">
@@ -216,20 +266,25 @@ const PlaceDetails = () => {
                     </Typography>
                   ))}
                 </Grid>
+
                 <Grid item xs={12}>
                   <Typography variant="h6" color="#333" sx={{ mt: 1 }}>
-                    Tags: {place.tags.map((tag) => tag.name).join(", ")}
+                    🏷️ Tags: {place.tags.map((tag) => tag.name).join(", ")}
                   </Typography>
                 </Grid>
               </Grid>
 
               <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
-                Total Price: {formatCurrency(totalPrice)}
+                💵 Total Price: {formatCurrency(totalPrice)}
+              </Typography>
+
+              <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
+                💵 Place Type: {place.type} 
               </Typography>
 
               <Box sx={{ mt: 3 }}>
                 <Typography variant="body1" color="#333" sx={{ fontWeight: 500, mb: 1 }}>
-                  Select Ticket Type:
+                  🎟️ Select Ticket Type:
                 </Typography>
                 <Select value={userCategory} onChange={handleUserCategoryChange} sx={{ minWidth: 200 }}>
                   <MenuItem value="foreigner">Foreigner</MenuItem>
@@ -246,41 +301,36 @@ const PlaceDetails = () => {
               TransitionProps={{ direction: "up" }}
               sx={{
                 "& .MuiPaper-root": {
-                  borderRadius: "16px", // Rounded corners
-                  padding: 4, // Added padding
-                  backgroundColor: "#F7F9FC", // Light background color
-                  width: "80%", // Larger dialog width
-                  maxWidth: 600, // Maximum width
+                  borderRadius: "16px",
+                  padding: 4,
+                  backgroundColor: "#F7F9FC",
+                  width: "80%",
+                  maxWidth: 600,
                 },
               }}
             >
               <Box sx={{ position: "relative" }}>
-                {/* Close Button */}
                 <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
                   <CloseIcon />
                 </IconButton>
 
-                {/* Title */}
                 <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
                   Share this Itinerary
                 </Typography>
 
-                {/* Icon Buttons */}
                 <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
-                  {/* Copy Link Button */}
                   <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
-                    <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
+                    <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} />
                   </IconButton>
 
-                  {/* Email Share Button */}
                   <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
-                    <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
+                    <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} />
                   </IconButton>
                 </Box>
               </Box>
             </Dialog>
 
-            <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px" }}>
+            <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px", width: "100%" }}>
               {userType === "Tourist" && (
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
@@ -303,45 +353,6 @@ const PlaceDetails = () => {
             </CardActions>
           </Card>
         </Grid>
-
-        {/* Reviews Card */}
-        {/* <Grid item xs={12} md={6}>
-          <Card sx={{ width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
-            <CardContent>
-              <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-                Reviews
-              </Typography>
-              <Box sx={{ maxHeight: 400, overflowY: "auto" }}>
-                {reviews.map((review) => (
-                  <Paper
-                    key={review._id}
-                    sx={{
-                      mb: 2,
-                      padding: 2,
-                      backgroundColor: "#f9f9f9",
-                      borderRadius: 2,
-                      boxShadow: 1,
-                      position: "relative",
-                      "&:hover": {
-                        boxShadow: 3,
-                      },
-                    }}
-                  >
-                    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                      <Typography variant="subtitle1" fontWeight="bold" sx={{ color: "#333" }}>
-                        {review.tourist.username}
-                      </Typography>
-                      <Rating value={review.rating} precision={0.5} readOnly sx={{ ml: 1 }} />
-                    </Box>
-                    <Typography variant="body2" sx={{ color: "#666", mt: 1 }}>
-                      {review.comment}
-                    </Typography>
-                  </Paper>
-                ))}
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid> */}
       </Grid>
     </Box>
   );

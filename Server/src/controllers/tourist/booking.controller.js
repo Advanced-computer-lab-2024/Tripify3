@@ -69,7 +69,8 @@ export const getReview = async (req, res) => {
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
-
+  console.log(req.body);
+  
   try {
     let item;
     // Use a switch statement to find the correct model based on the type
@@ -153,7 +154,6 @@ export const createBooking = async (req, res) => {
     }
     await booking.save();
 
-    console.log(booking);
 
     // Add the booking ID to the bookings array in the associated model
 

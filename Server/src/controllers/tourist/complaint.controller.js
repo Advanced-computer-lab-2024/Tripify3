@@ -72,7 +72,11 @@ export const createComplaint = async (req, res) => {
 
 export const getAllComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find();
+    const complaints = await Complaint.find().populate({
+      path: 'tourist',  // Adjust this if the field name differs in your Complaint model
+      select: 'username'   // Only retrieve the username field from the Tourist model
+    });
+
     return res.status(200).json({
       message: "Complaints found successfully",
       complaints: complaints,
@@ -82,6 +86,7 @@ export const getAllComplaints = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 

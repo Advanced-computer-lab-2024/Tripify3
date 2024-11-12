@@ -65,34 +65,34 @@ export const createTag = async (req, res) => {
 };
 
 
-export const getPlacesByGovernor = async (req, res) => {
-  try {
-    // Find places by tourismGovernor ID and populate tags to get their names
-    const places = await Place.find({ tourismGovernor: req.params.id }).populate({
-      path: "tags",
-      select: "name", // Specify that you only want the name field from tags
-    });
+// export const getPlacesByGovernor = async (req, res) => {
+//   try {
+//     // Find places by tourismGovernor ID and populate tags to get their names
+//     const places = await Place.find({ tourismGovernor: req.params.id }).populate({
+//       path: "tags",
+//       select: "name", // Specify that you only want the name field from tags
+//     });
 
   
-    // Check if any places were found
-    if (!places.length) {
-      return res.status(http_code.NOT_FOUND).json({
-        status: response_status.NEGATIVE,
-        message: "No places found for this tourism governor.",
-      });
-    }
+//     // Check if any places were found
+//     if (!places.length) {
+//       return res.status(http_code.NOT_FOUND).json({
+//         status: response_status.NEGATIVE,
+//         message: "No places found for this tourism governor.",
+//       });
+//     }
 
-    res.status(http_code.OK).json({
-      status: response_status.POSITIVE,
-      place: places,
-    });
-  } catch (err) {
-    res.status(http_code.BAD_REQUEST).json({
-      status: response_status.NEGATIVE,
-      message: err.message || "An error occurred while fetching places.",
-    });
-  }
-};
+//     res.status(http_code.OK).json({
+//       status: response_status.POSITIVE,
+//       place: places,
+//     });
+//   } catch (err) {
+//     res.status(http_code.BAD_REQUEST).json({
+//       status: response_status.NEGATIVE,
+//       message: err.message || "An error occurred while fetching places.",
+//     });
+//   }
+// };
 
 export const updatePlace = async (req, res) => {
   try {
