@@ -145,6 +145,9 @@ const TourGuideCreateItinerary = () => {
     }
 
     try {
+      console.log("==============================");
+      console.log(selectedTags);
+      
       await createItinerary({
         ...newItinerary,
         tourGuide: userId,

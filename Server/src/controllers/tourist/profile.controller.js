@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import Booking from "../../models/booking.js";
 import Itinerary from "../../models/itinerary.js";
 import Activity from "../../models/activity.js";
+import Order from "../../models/order.js";
 
 export const redeemPoints = async (req, res) => {
   try {
@@ -72,7 +73,7 @@ export const editProfile = async (req, res) => {
 
     if (!currentUser) {
       console.log("sjjsjsjsjs");
-      
+
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -115,33 +116,17 @@ export const editProfile = async (req, res) => {
         );
         break;
       case "Seller":
-        updatedUserProfile = await Seller.findOneAndUpdate(
-          { _id: id },
-          { $set: updateData },
-          { new: true, runValidators: true }
-        );
+        updatedUserProfile = await Seller.findOneAndUpdate({ _id: id }, { $set: updateData }, { new: true, runValidators: true });
         break;
       case "Advertiser":
-        updatedUserProfile = await Advertiser.findOneAndUpdate(
-          { _id: id },
-          { $set: updateData },
-          { new: true, runValidators: true }
-        );
+        updatedUserProfile = await Advertiser.findOneAndUpdate({ _id: id }, { $set: updateData }, { new: true, runValidators: true });
         break;
       case "Tour Guide":
-        updatedUserProfile = await TourGuide.findOneAndUpdate(
-          { _id: id },
-          { $set: updateData },
-          { new: true, runValidators: true }
-        );
+        updatedUserProfile = await TourGuide.findOneAndUpdate({ _id: id }, { $set: updateData }, { new: true, runValidators: true });
         break;
       case "Admin":
       case "Tourism Governor":
-        updatedUserProfile = await User.findOneAndUpdate(
-          { _id: id },
-          { $set: updateData },
-          { new: true, runValidators: true }
-        );
+        updatedUserProfile = await User.findOneAndUpdate({ _id: id }, { $set: updateData }, { new: true, runValidators: true });
         break;
       default:
         return res.status(400).json({ message: "Invalid user type" });
@@ -161,7 +146,6 @@ export const editProfile = async (req, res) => {
   }
 };
 
-
 export const deleteTouristAccount = async (req, res) => {
   const { id } = req.params; // Extract the tourist ID from the request params
 
@@ -175,6 +159,8 @@ export const deleteTouristAccount = async (req, res) => {
     }
     // Fetch bookings for the tourist
     const bookings = await Booking.find({ tourist: id }).populate("itinerary");
+    // Fetch orders for the tourist
+    const orders = await Order.find({ tourist: id });
 
     // Get the current date
     const currentDate = new Date();
@@ -223,6 +209,15 @@ export const deleteTouristAccount = async (req, res) => {
             message: "Account deletion is not allowed. You have upcoming transportation.",
           });
         }
+      }
+    }
+
+    // Check if any orders have a future dropOffDate
+    for (const order of orders) {
+      if (new Date(order.dropOffDate) > currentDate) {
+        return res.status(403).json({
+          message: "Account deletion is not allowed. You have an order with a future drop-off date.",
+        });
       }
     }
 

@@ -1,4 +1,4 @@
-import { getUserId } from "../../utils/authUtils";
+import { getUserId, getUserType } from "../../utils/authUtils";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Card, CardContent, CardMedia, Typography, Grid, Slider, Container, IconButton, Rating } from "@mui/material";
@@ -6,6 +6,7 @@ import { styled } from "@mui/system";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import StarIcon from "@mui/icons-material/Star";
+
 
 const OrderSlider = styled(Slider)({
   width: "100px",
@@ -21,6 +22,46 @@ const OrdersPage = () => {
   const userId = getUserId();
   const [orders, setOrders] = useState({ pastOrders: [], upcomingOrders: [] });
   const [showPastOrders, setShowPastOrders] = useState(true);
+  const [currency, setCurrency] = useState("USD"); // Default currency
+
+
+  const exchangeRates = {
+    USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 1 / 52, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 1 / 63, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1 / 32, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1 / 35, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    // Add other currencies as needed
+  };
+
+  const formatCurrency = (amount) => {
+    if (!currency) {
+      return amount; // Fallback to amount if currency is not set
+    }
+    const value = Number(amount);
+    // Check user type and apply currency logic
+    if (getUserType() !== "Tourist") {
+      // If user is not Tourist, format amount in EGP
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
+
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
+
+    // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
+    //   .format(convertedAmount);
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
+  };
+
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -68,7 +109,7 @@ const OrdersPage = () => {
           <strong>💵 Payment Status:</strong> {order.paymentStatus}
         </Typography>
         <Typography variant="body1" sx={{ color: "#4caf50", fontSize: 18 }}>
-          <strong>💲 Total Price:</strong> ${order.cart.totalPrice}
+          <strong>💲 Total Price:</strong> EGP {order.cart.totalPrice}
         </Typography>
 
         <Grid container spacing={2} sx={{ mt: 2 }}>
@@ -82,7 +123,8 @@ const OrdersPage = () => {
 
   const ProductCard = ({ productItem, showPastOrders, onRate }) => {
     const [imageIndex, setImageIndex] = useState(0);
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState(productItem.touristRating || 0); // Initialize rating with touristRating
+
     const images = productItem.product.imageUrl.map((url) => {
       const filename = url.split("\\").pop();
       return `http://localhost:8000/uploads/${productItem.product.sellerId}/${filename}`;
@@ -140,7 +182,7 @@ const OrdersPage = () => {
               {productItem.product.details}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: 18 }}>
-              <strong>Price:</strong> ${productItem.product.price}
+              <strong>Price:</strong> EGP {productItem.product.price}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: 18 }}>
               <strong>Quantity:</strong> {productItem.quantity}

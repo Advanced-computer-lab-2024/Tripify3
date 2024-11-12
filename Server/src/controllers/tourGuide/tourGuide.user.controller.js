@@ -62,25 +62,25 @@ export const deleteTourGuideAccount = async (req, res) => {
       return res.status(404).json({ message: "Tour guide not found." });
     }
 
-    // // Retrieve all itineraries with endTime > currentDate for this tour guide
-    // const itineraries = await Itinerary.find({
-    //   tourGuide: userId,
-    //   "timeline.endTime": { $gt: currentDate },
-    // });
+    // Retrieve all itineraries with endTime > currentDate for this tour guide
+    const itineraries = await Itinerary.find({
+      tourGuide: userId,
+      "timeline.endTime": { $gt: currentDate },
+    });
 
-    // // Extract itinerary IDs
-    // const itineraryIds = itineraries.map((itinerary) => itinerary._id);
+    // Extract itinerary IDs
+    const itineraryIds = itineraries.map((itinerary) => itinerary._id);
 
-    // // Check for any bookings with these itinerary IDs
-    // const hasUpcomingBookings = await Booking.exists({
-    //   itinerary: { $in: itineraryIds },
-    // });
+    // Check for any bookings with these itinerary IDs
+    const hasUpcomingBookings = await Booking.exists({
+      itinerary: { $in: itineraryIds },
+    });
 
-    // if (hasUpcomingBookings) {
-    //   return res.status(403).json({
-    //     message: "Cannot delete account. You have upcoming bookings for your itineraries.",
-    //   });
-    // }
+    if (hasUpcomingBookings) {
+      return res.status(403).json({
+        message: "Cannot delete account. You have upcoming bookings for your itineraries.",
+      });
+    }
 
     // Mark all products associated with the seller as deleted
     await Itinerary.updateMany({ tourGuide: userId }, { $set: { isDeleted: true } });

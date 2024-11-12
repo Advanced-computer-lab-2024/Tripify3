@@ -4,12 +4,11 @@ import Tag from "../../models/user.js";
 import TourGuide from "../../models/tourGuide.js";
 import Activity from "../../models/activity.js";
 import Place from "../../models/place.js";
-import Review from "../../models/review.js"; 
-import Booking from "../../models/booking.js"; 
-import mongoose from "mongoose"; 
+import Review from "../../models/review.js";
+import Booking from "../../models/booking.js";
+import mongoose from "mongoose";
 import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
 // Edit itinerary inappropriate attribute
-
 
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
@@ -37,7 +36,7 @@ export const editItineraryAttribute = async (req, res) => {
     if (updatedItinerary.inappropriate) {
       const tourGuide = updatedItinerary.tourGuide;
       await sendFlagNotificationEmail(tourGuide, updatedItinerary.name, "Itinerary");
-    } else{
+    } else {
       const tourGuide = updatedItinerary.tourGuide;
       await sendContentRestoredNotificationEmail(tourGuide, updatedItinerary.name, "Itinerary");
     }
@@ -49,56 +48,12 @@ export const editItineraryAttribute = async (req, res) => {
   }
 };
 
-// export const createItinerary = async (req, res) => {
-//   try {
-//     const { tourGuide, activities, places } = req.body;
-
-//     // Validate and check if tour guide exists
-//     if (!mongoose.Types.ObjectId.isValid(tourGuide)) {
-//       return res.status(400).json({ message: "Invalid tour guide ID format" });
-//     }
-//     const tourGuideExists = await TourGuide.exists({ _id: tourGuide });
-//     if (!tourGuideExists) {
-//       return res.status(404).json({ message: "Tour guide not found" });
-//     }
-
-//     // Validate and check if all activities exist
-//     const invalidActivities = activities.some(id => !mongoose.Types.ObjectId.isValid(id));
-//     if (invalidActivities) {
-//       return res.status(400).json({ message: "One or more activity IDs have an invalid format" });
-//     }
-//     const activityChecks = await Promise.all(activities.map(id => Activity.exists({ _id: id })));
-//     const missingActivity = activityChecks.some(exists => !exists);
-//     if (missingActivity) {
-//       return res.status(404).json({ message: "One or more activities not found" });
-//     }
-
-//     // Validate and check if all places exist
-//     const invalidPlaces = places.some(id => !mongoose.Types.ObjectId.isValid(id));
-//     if (invalidPlaces) {
-//       return res.status(400).json({ message: "One or more place IDs have an invalid format" });
-//     }
-//     const placeChecks = await Promise.all(places.map(id => Place.exists({ _id: id })));
-//     const missingPlace = placeChecks.some(exists => !exists);
-//     if (missingPlace) {
-//       return res.status(404).json({ message: "One or more places not found" });
-//     }
-
-//     // If all checks pass, create the itinerary
-//     const itinerary = new Itinerary(req.body);
-//     await itinerary.save();
-//     res.status(201).json(itinerary);
-//   } catch (error) {
-//     console.log(error.message);
-//     res.status(400).json({ message: error.message });
-//   }
-// };
-
 
 export const createItinerary = async (req, res) => {
   try {
     const { name, language, pickupLocation, dropoffLocation, startTime, endTime, price, accessibility, timeline, tags, activities, places, tourGuide } = req.body;
-
+    console.log(req.body);
+    console.log(req.body.tags);
     const newItinerary = new Itinerary({
       name,
       language,
@@ -112,17 +67,16 @@ export const createItinerary = async (req, res) => {
       tags,
       activities,
       places,
-      tourGuide
+      tourGuide,
     });
 
     await newItinerary.save();
-    res.status(201).json({ message: 'Itinerary created successfully', itinerary: newItinerary });
+    res.status(201).json({ message: "Itinerary created successfully", itinerary: newItinerary });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
 
 export const getAllItineraries = async (req, res) => {
   try {
@@ -140,6 +94,10 @@ export const getAllItineraries = async (req, res) => {
         },
       })
       .populate({
+        path: "tags", // Populate the tags field
+        select: "name", // Only retrieve the tag's name
+      })
+      .populate({
         path: "places",
         populate: {
           path: "tags", // Populate the tags within locations
@@ -148,24 +106,24 @@ export const getAllItineraries = async (req, res) => {
       });
 
     // Transform the itineraries to include a combined tags array
-    let response = itineraries.map((itinerary) => {
-      // Extract tags from activities
-      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
-      // Extract tags from locations
-      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
+    // let response = itineraries.map((itinerary) => {
+    //   // Extract tags from activities
+    //   const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
+    //   // Extract tags from locations
+    //   const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
 
-      // Combine activity and location tags into one array
-      const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
+    //   // Combine activity and location tags into one array
+    //   const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
 
-      return {
-        ...itinerary.toObject(), // Convert Mongoose document to plain object
-        tags: combinedTags, // Add combined tags array to the itinerary
-      };
-    });
+    //   return {
+    //     ...itinerary.toObject(), // Convert Mongoose document to plain object
+    //     tags: combinedTags, // Add combined tags array to the itinerary
+    //   };
+    // });
 
     return res.status(200).json({
       message: "Iteneraries found successfully",
-      data: response,
+      data: itineraries,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -176,14 +134,16 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
   try {
     const currentDate = new Date(); // Define currentDate as the current date and time
 
-    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false,
-      "timeline.startTime": { $gt: currentDate } })
+    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false, "timeline.startTime": { $gt: currentDate } })
       .populate({
         path: "activities",
         populate: {
           path: "tags",
           select: "name",
         },
+      })  .populate({
+        path: "tags", // Populate the tags field
+        select: "name", // Only retrieve the tag's name
       })
       .populate({
         path: "places",
@@ -194,20 +154,20 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
       });
 
     // Transform the itineraries to include a combined tags array
-    let response = itineraries.map((itinerary) => {
-      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
-      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
-      const combinedTags = [...new Set([...activityTags, ...locationTags])];
+    // let response = itineraries.map((itinerary) => {
+    //   const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
+    //   const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
+    //   const combinedTags = [...new Set([...activityTags, ...locationTags])];
 
-      return {
-        ...itinerary.toObject(),
-        tags: combinedTags,
-      };
-    });
+    //   return {
+    //     ...itinerary.toObject(),
+    //     tags: combinedTags,
+    //   };
+    // });
 
     return res.status(200).json({
       message: "Itineraries found successfully",
-      data: response,
+      data: itineraries,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -220,14 +180,16 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
     const currentDate = new Date(); // Define currentDate as the current date and time
 
     // Find the tour guide's itineraries directly from the Itinerary model
-    const itineraries = await Itinerary.find({ tourGuide: id ,isDeleted: false,
-      "timeline.endTime": { $gt: currentDate } })
+    const itineraries = await Itinerary.find({ tourGuide: id, isDeleted: false, "timeline.endTime": { $gt: currentDate } })
       .populate({
         path: "activities",
         populate: {
           path: "tags", // Populate the tags within activities
           select: "name", // Select only the 'name' field of the tags
         },
+      }).populate({
+        path: "tags", // Populate the tags field
+        select: "name", // Only retrieve the tag's name
       })
       .populate({
         path: "places",
@@ -246,31 +208,31 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
     }
 
     // Transform the itineraries to include a combined tags array
-    let response = itineraries.map((itinerary) => {
-      // Extract tags from activities
-      const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
-      // Extract tags from locations
-      const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
+    // let response = itineraries.map((itinerary) => {
+    //   // Extract tags from activities
+    //   const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
+    //   // Extract tags from locations
+    //   const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
 
-      // Combine activity and location tags into one array
-      const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
+    //   // Combine activity and location tags into one array
+    //   const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
 
-      return {
-        ...itinerary.toObject(), // Convert Mongoose document to plain object
-        tags: combinedTags, // Add combined tags array to the itinerary
-      };
-    });
+    //   return {
+    //     ...itinerary.toObject(), // Convert Mongoose document to plain object
+    //     tags: combinedTags, // Add combined tags array to the itinerary
+    //   };
+    // });
 
-    // Assuming 'user' variable is not needed anymore (as you no longer need to filter by user type)
-    const user = await User.findById(id);
-    if (user && user.type === "Tourist") {
-      // Filter itineraries for tourists to exclude inappropriate ones
-      response = response.filter((itinerary) => !itinerary.inappropriate);
-    }
+    // // Assuming 'user' variable is not needed anymore (as you no longer need to filter by user type)
+    // const user = await User.findById(id);
+    // if (user && user.type === "Tourist") {
+    //   // Filter itineraries for tourists to exclude inappropriate ones
+    //   response = response.filter((itinerary) => !itinerary.inappropriate);
+    // }
 
     return res.status(200).json({
       message: "Itineraries found successfully",
-      data: response, // Return the itineraries data
+      data: itineraries, // Return the itineraries data
     });
   } catch (error) {
     console.error("Error fetching itineraries:", error);
@@ -317,7 +279,7 @@ export const deleteItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-  // Check if there are bookings associated with this itinerary
+    // Check if there are bookings associated with this itinerary
     // if (itinerary.bookings.length > 0) {
     //   return res.status(400).json({ message: "Cannot delete an itinerary with existing bookings" });
     // }    // Mark the itinerary as deleted
@@ -424,7 +386,6 @@ export const DeactivateItinerary = async (req, res) => {
   }
 };
 
-
 export const fetchBookingsForItinerary = async (req, res) => {
   try {
     const { itineraryId } = req.params;
@@ -434,10 +395,7 @@ export const fetchBookingsForItinerary = async (req, res) => {
       return res.status(400).json({ message: "Invalid itinerary ID format" });
     }
 
-    const bookings = await Booking.find({ itinerary: itineraryId })
-      .populate("tourist", "name email")
-      .populate("place", "name location")
-      .populate("activity", "name description");
+    const bookings = await Booking.find({ itinerary: itineraryId }).populate("tourist", "name email").populate("place", "name location").populate("activity", "name description");
 
     if (!bookings || bookings.length === 0) {
       return res.status(404).json({ message: "No bookings found for this itinerary" });
@@ -449,4 +407,3 @@ export const fetchBookingsForItinerary = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-

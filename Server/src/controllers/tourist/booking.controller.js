@@ -9,7 +9,6 @@ import Review from "../../models/review.js"; // Adju
 export const getReview = async (req, res) => {
   const { booking, itemId, type, tourist } = req.params;
   console.log(req.params);
-  console.log("93939393");
   
   try {
     // Validate input parameters
@@ -29,7 +28,6 @@ export const getReview = async (req, res) => {
 
     if (type.toLowerCase() === "activity") {
       model = Activity;
-      console.log("93939393");
       
        review = await Review.findOne({ tourist, booking, [type]: itemId });
        if (review) {
@@ -173,6 +171,10 @@ export const cancelBooking = async (req, res) => {
     // Check if the cancellation is at least 48 hours before the event
     const currentTime = new Date();
     const hoursDifference = (new Date(eventDate) - currentTime) / (1000 * 60 * 60);
+    console.log(hoursDifference);
+    console.log(new Date(eventDate));
+    console.log(currentTime);
+    
     if (hoursDifference < 48) {
       return res.status(400).json({
         message: "Cancellations must be made at least 48 hours before the event",

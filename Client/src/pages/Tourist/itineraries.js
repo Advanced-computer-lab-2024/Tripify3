@@ -99,16 +99,25 @@ const Itineraries = () => {
     fetchUserProfile();
   }, [id, userId]);
 
+
   useEffect(() => {
     const filtered = itineraries
-      .filter((itinerary) => (searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true))
-      .filter((itinerary) => (selectedTags.length ? selectedTags.every((tag) => itinerary.tags.includes(tag)) : true))
-      .filter((itinerary) => (selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true))
-      .filter((itinerary) => (budget ? itinerary.price <= budget : true));
-
+      .filter((itinerary) =>
+        searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
+      )
+      .filter((itinerary) =>
+        selectedTags.length ? itinerary.tags.some((tag) => selectedTags.includes(tag._id)) : true
+      )
+      .filter((itinerary) => 
+        selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true
+      )
+      .filter((itinerary) => 
+        budget ? itinerary.price <= budget : true
+      );
+  
     setFilteredItineraries(filtered);
   }, [searchQuery, selectedTags, selectedLanguages, budget, itineraries]);
-
+  
   const handleSortByPrice = () => {
     const sorted = [...filteredItineraries].sort((a, b) => {
       if (sortOrder === "asc") return a.price - b.price;
@@ -289,11 +298,12 @@ const Itineraries = () => {
                     <strong>Language:</strong> {itinerary.language}
                   </Typography>
                   <Typography>
-                    <strong>Tags:</strong> {itinerary.tags.join(", ")}
+                    <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(", ")}
                   </Typography>
+
                   <Button
                     component={Link}
-                    to={getUserType() === "tourist" ? `/tourist/itinerary/${itinerary._id}` : `/tour-guide/itinerary/details/${itinerary._id}`}
+                    to={getUserType() === "Tourist" ? `/tourist/itinerary/${itinerary._id}` : `/tour-guide/itinerary/details/${itinerary._id}`}
                     variant="contained"
                     sx={{ mt: 2 }}
                   >
