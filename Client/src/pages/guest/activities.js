@@ -43,7 +43,7 @@ const theme = createTheme({
   },
 });
 
-const Activities = () => {
+const GuestActivities = () => {
   const userType = getUserType();
   let userPreferences;
   if (userType === "Tourist") {
@@ -79,7 +79,7 @@ const Activities = () => {
     fetchUserProfile();
     const fetchData = async () => {
       try {
-        const fetchActivities = userType === "Tourist" ? getAllActivitiesForTourist : getAllActivities;
+        const fetchActivities = userType === "Tourist" || userType === "Guest" ? getAllActivitiesForTourist : getAllActivities;
         const [activitiesResponse, categoriesResponse] = await Promise.all([fetchActivities(), getAllCategories()]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
@@ -201,21 +201,17 @@ const Activities = () => {
 
   // Sort activities to prioritize recommended ones based on user preferences
   // Updated getRecommendedActivities function
-const getRecommendedActivities = () => {
-  if (userType === "Tourist") {
-    const recommendedActivities = activities.filter((activity) =>
-      activity.tags.some((tag) => userPreferences.includes(tag.name))
-    );
-    const otherActivities = activities.filter((activity) =>
-      !activity.tags.some((tag) => userPreferences.includes(tag.name))
-    );
+  const getRecommendedActivities = () => {
+    if (userType === "Tourist") {
+      const recommendedActivities = activities.filter((activity) => activity.tags.some((tag) => userPreferences.includes(tag.name)));
+      const otherActivities = activities.filter((activity) => !activity.tags.some((tag) => userPreferences.includes(tag.name)));
 
-    return [...recommendedActivities, ...otherActivities];
-  }
+      return [...recommendedActivities, ...otherActivities];
+    }
 
-  // For non-tourists, return all activities
-  return activities;
-};
+    // For non-tourists, return all activities
+    return activities;
+  };
 
   if (loading) {
     return (
@@ -301,130 +297,124 @@ const getRecommendedActivities = () => {
         {/* Activities Section */}
         {userType === "Tourist" ? (
           <>
-  <Box sx={{ mb: 4 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
-      Recommended Activities
-    </Typography>
-    <Grid container spacing={3}>
-      {getRecommendedActivities()
-        .filter((activity) =>
-          activity.tags.some((tag) => userPreferences.includes(tag.name))
-        )
-        .map((activity) => (
-          <Grid item xs={12} key={activity._id}>
-            <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-              <CardContent>
-                <Typography variant="h6" color="secondary">
-                  {activity.name} {<Chip label="Recommended" color="secondary" sx={{ ml: 1 }} />}
-                </Typography>
-                <Typography>
-                  <strong>Price:</strong> {formatCurrency(activity.price)}
-                </Typography>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+                Recommended Activities
+              </Typography>
+              <Grid container spacing={3}>
+                {getRecommendedActivities()
+                  .filter((activity) => activity.tags.some((tag) => userPreferences.includes(tag.name)))
+                  .map((activity) => (
+                    <Grid item xs={12} key={activity._id}>
+                      <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                        <CardContent>
+                          <Typography variant="h6" color="secondary">
+                            {activity.name} {<Chip label="Recommended" color="secondary" sx={{ ml: 1 }} />}
+                          </Typography>
+                          <Typography>
+                            <strong>Price:</strong> {formatCurrency(activity.price)}
+                          </Typography>
 
-                <Typography>
-                  <strong>Category:</strong> {activity.category.name}
-                </Typography>
-                <Typography>
-                  <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
-                </Typography>
-                <Typography>
-                  <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-                </Typography>
+                          <Typography>
+                            <strong>Category:</strong> {activity.category.name}
+                          </Typography>
+                          <Typography>
+                            <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                          </Typography>
+                          <Typography>
+                            <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                          </Typography>
 
-                <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                  View Details
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-    </Grid>
-  </Box> 
-  <Box sx={{ mb: 4 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
-      All Activities
-    </Typography>
-    <Grid container spacing={3}>
-      {getRecommendedActivities().map((activity) => (
-        <Grid item xs={12} key={activity._id}>
-          <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-            <CardContent>
-              <Typography variant="h6" color="secondary">
-                {activity.name}
+                          <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                            View Details
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+              </Grid>
+            </Box>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+                All Activities
               </Typography>
-              <Typography>
-                <strong>Price:</strong> {formatCurrency(activity.price)}
-              </Typography>
+              <Grid container spacing={3}>
+                {getRecommendedActivities().map((activity) => (
+                  <Grid item xs={12} key={activity._id}>
+                    <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                      <CardContent>
+                        <Typography variant="h6" color="secondary">
+                          {activity.name}
+                        </Typography>
+                        <Typography>
+                          <strong>Price:</strong> {formatCurrency(activity.price)}
+                        </Typography>
 
-              <Typography>
-                <strong>Category:</strong> {activity.category.name}
-              </Typography>
-              <Typography>
-                <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
-              </Typography>
-              <Typography>
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-              </Typography>
+                        <Typography>
+                          <strong>Category:</strong> {activity.category.name}
+                        </Typography>
+                        <Typography>
+                          <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                        </Typography>
+                        <Typography>
+                          <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                        </Typography>
 
-              <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  </Box> 
-  </>
-) : (
-  <Box sx={{ mb: 4 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
-      All Activities
-    </Typography>
-    <Grid container spacing={3}>
-      {getRecommendedActivities().map((activity) => (
-        <Grid item xs={12} key={activity._id}>
-          <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-            <CardContent>
-              <Typography variant="h6" color="secondary">
-                {activity.name}
-              </Typography>
-              <Typography>
-                <strong>Price:</strong> {formatCurrency(activity.price)}
-              </Typography>
+                        <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                          View Details
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+              All Activities
+            </Typography>
+            <Grid container spacing={3}>
+              {getRecommendedActivities().map((activity) => (
+                <Grid item xs={12} key={activity._id}>
+                  <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                    <CardContent>
+                      <Typography variant="h6" color="secondary">
+                        {activity.name}
+                      </Typography>
+                      <Typography>
+                        <strong>Price:</strong> {formatCurrency(activity.price)}
+                      </Typography>
 
-              <Typography>
-                <strong>Category:</strong> {activity.category.name}
-              </Typography>
-              <Typography>
-                <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
-              </Typography>
-              <Typography>
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-              </Typography>
+                      <Typography>
+                        <strong>Category:</strong> {activity.category.name}
+                      </Typography>
+                      <Typography>
+                        <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                      </Typography>
+                      <Typography>
+                        <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                      </Typography>
 
-              <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                View Details
-              </Button>
-            </CardContent>
-            {userType === "Admin" && (
-              <IconButton
-                color={activity.inappropriate ? "error" : "default"}
-                onClick={() => handleFlagClick(activity._id, activity.inappropriate)}
-              >
-                <FlagIcon />
-              </IconButton>
-            )}
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-)}
-
+                      <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                        View Details
+                      </Button>
+                    </CardContent>
+                    {userType === "Admin" && (
+                      <IconButton color={activity.inappropriate ? "error" : "default"} onClick={() => handleFlagClick(activity._id, activity.inappropriate)}>
+                        <FlagIcon />
+                      </IconButton>
+                    )}
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
       </Box>
     </ThemeProvider>
   );
 };
 
-export default Activities;
+export default GuestActivities;

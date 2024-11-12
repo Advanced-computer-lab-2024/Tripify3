@@ -98,9 +98,6 @@ const LoadFlights = () => {
       return amount; // Fallback to amount if currency is not set
     }
 
-      // Check user type and apply currency logic
-
-    // Ensure amount is a number
     const value = Number(amount);
     
     // Convert amount from EGP to chosen currency if currency is EGP
@@ -111,7 +108,6 @@ const LoadFlights = () => {
   
     // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
     //   .format(convertedAmount);
-
     
       const formattedAmount = new Intl.NumberFormat('en-US', { 
         style: 'currency', 

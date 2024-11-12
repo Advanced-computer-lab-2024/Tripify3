@@ -5,7 +5,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import backgroundImage from "../../assets/signup/CarouselLogin1.png";
-import { setUser } from "../../utils/authUtils.js";
+import { setUser,setUserType } from "../../utils/authUtils.js";
+
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -17,55 +18,55 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await fetch("http://localhost:8000/access/user/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
-        });
+      const response = await fetch("http://localhost:8000/access/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-        if (!response.ok) {
-            setErrorMessage("Invalid username or password.");
-            return;
-        }
+      if (!response.ok) {
+        setErrorMessage("Invalid username or password.");
+        return;
+      }
 
-        const data = await response.json();
-        setUser(data.user); // Store user info in the utility file
+      const data = await response.json();
+      setUser(data.user); // Store user info in the utility file
 
-        // Check if the user needs to accept terms
-        if ((data.user.type === "Seller" || data.user.type === "Tour Guide" || data.user.type === "Advertiser") && !data.user.hasAcceptedTerms) {
-            navigate("/TermsAndAgreements");
-            return; // Ensure that we exit the function after navigating
-        }
+      // Check if the user needs to accept terms
+      if ((data.user.type === "Seller" || data.user.type === "Tour Guide" || data.user.type === "Advertiser") && !data.user.hasAcceptedTerms) {
+        navigate("/TermsAndAgreements");
+        return; // Ensure that we exit the function after navigating
+      }
 
-        switch (data.user.type) {
-            case "Tourism Governor":
-                navigate("/tourism-governor/profile");
-                break;
-            case "Tourist":
-                navigate("/tourist/homepage");
-                break;
-            case "Seller":
-                navigate("/seller/my-products");
-                break;
-            case "Admin":
-                navigate("/admin/profile");
-                break;
-            case "Tour Guide":
-                navigate("/tour-guide/profile");
-                break;
-            case "Advertiser":
-                navigate("/advertiser/my-activities");
-                break;
-            default:
-                console.error("Unknown user type:", data.user.type);
-        }
+      switch (data.user.type) {
+        case "Tourism Governor":
+          navigate("/tourism-governor/profile");
+          break;
+        case "Tourist":
+          navigate("/tourist/homepage");
+          break;
+        case "Seller":
+          navigate("/seller/my-products");
+          break;
+        case "Admin":
+          navigate("/admin/profile");
+          break;
+        case "Tour Guide":
+          navigate("/tour-guide/profile");
+          break;
+        case "Advertiser":
+          navigate("/advertiser/my-activities");
+          break;
+        default:
+          console.error("Unknown user type:", data.user.type);
+      }
     } catch (error) {
-        console.error("Error:", error);
-        setErrorMessage("An error occurred while logging in.");
+      console.error("Error:", error);
+      setErrorMessage("An error occurred while logging in.");
     }
-};
+  };
 
   return (
     <Container
@@ -180,7 +181,14 @@ const Login = () => {
               </Typography>
               <Typography variant="body2" sx={{ marginTop: "5px", color: "gray", textAlign: "center" }}>
                 continue as{" "}
-                <Link href="/tourist" underline="none" sx={{ color: "#00695C" }}>
+                <Link
+                  href="/guest/activities"
+                  underline="none"
+                  sx={{ color: "#00695C" }}
+                  onClick={() => {
+                    setUserType("Guest"); // Set the user type to Guest
+                  }}
+                >
                   Guest
                 </Link>
               </Typography>

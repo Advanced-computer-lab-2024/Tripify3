@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getAllTags } from "../../services/advertiser.js";
-import { getAllPlaces, getAllActivities } from "../../services/tourGuide.js";
+import { getAllPlaces } from "../../services/tourGuide.js";
+import {  getAllActivitiesForTourist } from "../../services/tourist.js";
 import { createItinerary } from "../../services/tourGuide.js";
 import { getUserId } from "../../utils/authUtils.js";
 import { useNavigate } from "react-router-dom";
@@ -56,7 +57,7 @@ const TourGuideCreateItinerary = () => {
   };
   const fetchActivities = async () => {
     try {
-      const response = await getAllActivities();
+      const response = await getAllActivitiesForTourist();
       setActivities(response.data.activities);
     } catch (error) {
       console.error("Failed to fetch activities:", error);

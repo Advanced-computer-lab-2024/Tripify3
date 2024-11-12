@@ -58,6 +58,7 @@ import AdvertiserLayout from "./components/advertiser/advertiserLayout.js";
 import AdminLayout from "./components/admin/adminLayout.js";
 import TourGuideLayout from "./components/tourGuide/tourGuideLayout.js";
 import TourismGovernorLayout from "./components/tourismGoverner/tourismGovernorLayout.js";
+import GuestLayout from "./components/guest/guestLayout.js";
 import Goodbye from "./components/goodbye.js";
 
 import { getUserType } from "./utils/authUtils.js";
@@ -71,7 +72,12 @@ import SellerProfile from "./pages/seller/profile.js";
 import Cart from "./pages/tourist/cart2.js";
 import WishList from "./pages/tourist/wishList.js";
 import Payment from "./pages/tourist/payment/payment.js";
-import Completion  from "./pages/tourist/payment/completion.js";
+import Completion from "./pages/tourist/payment/completion.js";
+import GuestHistoricalPlaces from "./pages/guest/historicalPlaces.js";
+import GuestPlaceDetails from "./pages/guest/placeDetails.js";
+import GuestActivities from "./pages/guest/activities.js";
+import GuestItineraries from "./pages/guest/itineraries.js";
+import GuestActivityDetails from "./pages/guest/activitydetails.js";
 // Mock function to get the current user role
 const getUserRole = () => {
   return getUserType(); // can be "admin", "seller", etc.
@@ -95,6 +101,8 @@ const App = () => {
         return <AdvertiserLayout>{children}</AdvertiserLayout>;
       case "Tour Guide":
         return <TourGuideLayout>{children}</TourGuideLayout>;
+      case "Guest":
+        return <GuestLayout>{children}</GuestLayout>;
       case "Tourism Governor":
         return <TourismGovernorLayout>{children}</TourismGovernorLayout>;
       default:
@@ -130,6 +138,14 @@ const App = () => {
         <Route path="/new-password" element={<NewPassword />} />
         <Route path="/termsAndAgreements" element={<TermsAndAgreements />} />
         <Route path="/goodbye" element={<Goodbye />} />
+        {/* Guest Routes */}
+        <Route path={`/guest/historical-places`} element={getLayoutForRole(userRole, <GuestHistoricalPlaces />)} />
+        <Route path={`/guest/historical-places/:id`} element={getLayoutForRole(userRole, <GuestPlaceDetails />)} />
+        <Route path={`/guest/itineraries`} element={getLayoutForRole(userRole, <GuestItineraries />)} />
+        <Route path={`/guest/itineraries`} element={getLayoutForRole(userRole, <GuestItineraries />)} />
+        <Route path={`/guest/activities`} element={getLayoutForRole(userRole, <GuestActivities />)} />
+        <Route path={`/guest/activity/:id`} element={getLayoutForRole(userRole, <GuestActivityDetails />)} />
+
         {/* Tourism Governor Routes */}
         <Route path={`/tourism-governor/historical-places/edit/:id`} element={getLayoutForRole(userRole, <TourismGovernorEditPlace />)} />
         <Route path={`/tourism-governor/profile`} element={getLayoutForRole(userRole, <ToursmGovernorProfile />)} />
@@ -145,8 +161,8 @@ const App = () => {
         <Route path={"/load_hotels"} element={getLayoutForRole(userRole, <LoadHotels />)} />
         <Route path={"/transportation"} element={getLayoutForRole(userRole, <Transportation />)} />
         <Route path={"/tourist/my-orders"} element={getLayoutForRole(userRole, <OrdersPage />)} />
-        <Route path={"/tourist/payment"} element={getLayoutForRole(userRole, <Payment />)}  />
-        <Route path={"/tourist/completionn"} element={getLayoutForRole(userRole, <Completion  />)}  />
+        <Route path={"/tourist/payment"} element={getLayoutForRole(userRole, <Payment />)} />
+        <Route path={"/tourist/completionn"} element={getLayoutForRole(userRole, <Completion />)} />
         <Route path={"/tourist/view/complaints"} element={getLayoutForRole(userRole, <ViewComplaints />)} />
         <Route path={"/tourist/itinerary/:id"} element={getLayoutForRole(userRole, <ItinerariesDetails />)} />
         <Route path={"/tourist/bookings"} element={getLayoutForRole(userRole, <Bookings />)} />
