@@ -1,22 +1,7 @@
 import React, { useState } from "react";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-  Alert,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Alert } from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
@@ -62,8 +47,7 @@ const TouristNavbar = () => {
 
   const handleHelpClick = (event) => setHelpAnchorEl(event.currentTarget);
   const handleHelpClose = () => setHelpAnchorEl(null);
-  const handleSettingsClick = (event) =>
-    setSettingsAnchorEl(event.currentTarget);
+  const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
   const handleSettingsClose = () => setSettingsAnchorEl(null);
   const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget);
   const handleAccountClose = () => setAccountAnchorEl(null);
@@ -82,12 +66,9 @@ const TouristNavbar = () => {
 
   const confirmDeleteAccount = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8000/tourist/delete/${userId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`http://localhost:8000/tourist/delete/${userId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         setDeleteDialogOpen(false);
@@ -121,48 +102,32 @@ const TouristNavbar = () => {
   const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
   const handleComplaintsClick = () => navigate("/tourist/view/complaints/");
 
-  const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
-  const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
+  const isChatbotRoute = location.pathname === "/chatbot";
 
   return (
     <>
       {/* Top Navbar */}
-      <AppBar
-        position="fixed"
-        sx={{ backgroundColor: "#003366", zIndex: 1300 }}
-      >
+      <AppBar position="fixed" sx={{ backgroundColor: "#003366", zIndex: 1300 }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fff" }}>
             Tripify
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              color="inherit"
-              sx={{ color: "#fff" }}
-              onClick={handleHomeClick}
-            >
+            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
               <Home />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Home
               </Typography>
             </IconButton>
 
-            <IconButton
-              color="inherit"
-              sx={{ color: "#fff", ml: 2 }}
-              onClick={handleAccountClick}
-            >
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Account
               </Typography>
             </IconButton>
-            <Menu
-              anchorEl={accountAnchorEl}
-              open={Boolean(accountAnchorEl)}
-              onClose={handleAccountClose}
-            >
+            <Menu anchorEl={accountAnchorEl} open={Boolean(accountAnchorEl)} onClose={handleAccountClose}>
               <MenuItem onClick={handleProfileClick}>
                 <AccountCircle sx={{ mr: 1 }} /> My Profile
               </MenuItem>
@@ -186,32 +151,20 @@ const TouristNavbar = () => {
               </MenuItem>
             </Menu>
 
-            <IconButton
-              color="inherit"
-              sx={{ color: "#fff", ml: 2 }}
-              onClick={handleCartClick}
-            >
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
               <ShoppingCart />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Cart
               </Typography>
             </IconButton>
 
-            <IconButton
-              color="inherit"
-              sx={{ color: "#fff", ml: 2 }}
-              onClick={handleSettingsClick}
-            >
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Settings
               </Typography>
             </IconButton>
-            <Menu
-              anchorEl={settingsAnchorEl}
-              open={Boolean(settingsAnchorEl)}
-              onClose={handleSettingsClose}
-            >
+            <Menu anchorEl={settingsAnchorEl} open={Boolean(settingsAnchorEl)} onClose={handleSettingsClose}>
               <MenuItem onClick={() => navigate("/tourist/change-password")}>
                 <LockOpen sx={{ mr: 1 }} />
                 Change Password
@@ -226,21 +179,13 @@ const TouristNavbar = () => {
               </MenuItem>
             </Menu>
 
-            <IconButton
-              color="inherit"
-              sx={{ color: "#fff", ml: 2 }}
-              onClick={handleHelpClick}
-            >
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
               <HelpOutline />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Help
               </Typography>
             </IconButton>
-            <Menu
-              anchorEl={helpAnchorEl}
-              open={Boolean(helpAnchorEl)}
-              onClose={handleHelpClose}
-            >
+            <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
               <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
                 <Report sx={{ mr: 1 }} />
                 File a Complaint
@@ -249,7 +194,6 @@ const TouristNavbar = () => {
                 <Report sx={{ mr: 1 }} />
                 View Complaints
               </MenuItem>
-             
             </Menu>
           </Box>
         </Toolbar>
@@ -259,10 +203,7 @@ const TouristNavbar = () => {
       <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
         <DialogTitle>Delete Account</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your account? This action cannot be
-            undone.
-          </DialogContentText>
+          <DialogContentText>Are you sure you want to delete your account? This action cannot be undone.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button
@@ -276,32 +217,20 @@ const TouristNavbar = () => {
           >
             Cancel
           </Button>
-          <Button
-            onClick={confirmDeleteAccount}
-            color="error"
-            variant="contained"
-          >
+          <Button onClick={confirmDeleteAccount} color="error" variant="contained">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Booking Error Dialog */}
-      <Dialog
-        open={bookingErrorDialogOpen}
-        onClose={() => setBookingErrorDialogOpen(false)}
-      >
-        <DialogTitle sx={{ color: "#f44336" }}>
-          Unable to Delete Account
-        </DialogTitle>
+      <Dialog open={bookingErrorDialogOpen} onClose={() => setBookingErrorDialogOpen(false)}>
+        <DialogTitle sx={{ color: "#f44336" }}>Unable to Delete Account</DialogTitle>
         <DialogContent>
           <Alert severity="error" sx={{ mb: 2 }}>
-            You have upcoming bookings. Please cancel them before deleting your
-            account.
+            You have upcoming bookings. Please cancel them before deleting your account.
           </Alert>
-          <DialogContentText>
-            If you need further assistance, please contact our support team.
-          </DialogContentText>
+          <DialogContentText>If you need further assistance, please contact our support team.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button
@@ -322,9 +251,7 @@ const TouristNavbar = () => {
       <Dialog open={logoutDialogOpen} onClose={closeLogoutDialog}>
         <DialogTitle>Logout</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to log out?
-          </DialogContentText>
+          <DialogContentText>Are you sure you want to log out?</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button
@@ -343,92 +270,62 @@ const TouristNavbar = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <AppBar
-        position="fixed"
-        sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}
-      >
-        <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff" }}
-            onClick={() => navigate("/search_hotels")}
-          >
-            <Hotel />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Hotels
-            </Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff" }}
-            onClick={() => navigate("/transportation")}
-          >
-            <DirectionsCar sx={{ display: "inline" }} />{" "}
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              To Go
-            </Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff", ml: 2 }}
-            onClick={() => navigate("/tourist/itineraries")}
-          >
-            <ListAlt />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Itineraries
-            </Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff", ml: 2 }}
-            onClick={() => navigate("/tourist/historical-places")}
-          >
-            <AccountBalanceIcon />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Historical Places
-            </Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff", ml: 2 }}
-            onClick={() => navigate("/tourist/products")}
-          >
-            <AccountBalanceIcon />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Products
-            </Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff", ml: 2 }}
-            onClick={() => navigate("/tourist/activities")}
-          >
-            <DirectionsRun />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Activities
-            </Typography>
-          </IconButton>
-          <IconButton
-            color="inherit"
-            sx={{ color: "#fff", ml: 2 }}
-            onClick={() => navigate("/search_flights")}
-          >
-            <Flight />
-            <Typography variant="body1" sx={{ ml: 1 }}>
-              Flights
-            </Typography>
-          </IconButton>
 
-          <Box
-            sx={{ display: "flex", alignItems: "center", marginLeft: "0px" }}
-          >
-            <CartIcon /> {/* Cart icon in desired color */}
-            <Typography variant="body1" sx={{ fontWeight: 500, ml: "-4px" }}>
-              Cart
-            </Typography>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      {!isChatbotRoute && (
+        <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
+          <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
+            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={() => navigate("/search_hotels")}>
+              <Hotel />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Hotels
+              </Typography>
+            </IconButton>
+            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={() => navigate("/transportation")}>
+              <DirectionsCar sx={{ display: "inline" }} />{" "}
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                To Go
+              </Typography>
+            </IconButton>
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}>
+              <ListAlt />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Itineraries
+              </Typography>
+            </IconButton>
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/historical-places")}>
+              <AccountBalanceIcon />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Historical Places
+              </Typography>
+            </IconButton>
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/products")}>
+              <AccountBalanceIcon />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Products
+              </Typography>
+            </IconButton>
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}>
+              <DirectionsRun />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Activities
+              </Typography>
+            </IconButton>
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}>
+              <Flight />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Flights
+              </Typography>
+            </IconButton>
+
+            <Box sx={{ display: "flex", alignItems: "center", marginLeft: "0px" }}>
+              <CartIcon /> {/* Cart icon in desired color */}
+              <Typography variant="body1" sx={{ fontWeight: 500, ml: "-4px" }}>
+                Cart
+              </Typography>
+            </Box>
+          </Toolbar>
+        </AppBar>
+      )}
     </>
   );
 };

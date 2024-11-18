@@ -29,7 +29,7 @@ import { getUserId } from "../../utils/authUtils";///////////////////////
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useParams, useNavigate } from "react-router-dom";////////////////////////
-import { getUserType } from "../../utils/authUtils";
+import { getUserType, setTouristData } from "../../utils/authUtils";
 
 const ItineraryDetails = () => {
   const navigate = useNavigate();
@@ -106,6 +106,9 @@ const ItineraryDetails = () => {
     const type = "Itinerary";
     const itemId = itinerary._id;
     const booking = { tourist, price, type, itemId, tickets: ticketCount };
+
+    setTouristData(booking);
+
     try {
       const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
       alert(response.data.message);

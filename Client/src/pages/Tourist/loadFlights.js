@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {  getUserProfile } from "../../services/tourist";
+import { getUserProfile } from "../../services/tourist";
 import { getUserId } from "../../utils/authUtils";
-import { useParams } from "react-router-dom";///////
+import { useParams } from "react-router-dom"; ///////
 import { Card, Typography, CardMedia, Grid, Box, CircularProgress, Divider, Button, Modal, IconButton, Dialog, DialogContent, DialogActions } from "@mui/material";
 import { AccessTime, Luggage, Star, Close, CheckCircleOutline } from "@mui/icons-material";
-import { getUserType } from "../../utils/authUtils";
+import { getUserType, setTouristData } from "../../utils/authUtils";
 
 const LoadFlights = () => {
   const location = useLocation();
-  const { id } = useParams();/////////
+  const { id } = useParams(); /////////
   const userId1 = getUserId();
   const [currency, setCurrency] = useState("USD"); // Default currency///////////////
   const navigate = useNavigate();
@@ -42,21 +42,20 @@ const LoadFlights = () => {
 
   const formatDate = (dateString) => new Date(dateString).toLocaleDateString("en-CA");
   const formatDuration = (minutes) => `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
-  const formatPrice = (price) => price.toLocaleString('en-US', { style: 'currency', currency: currency });
+  const formatPrice = (price) => price.toLocaleString("en-US", { style: "currency", currency: currency });
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
         setCurrency(response.data.userProfile.currency); // Set user's selected currency
         console.log(response.data.userProfile.currency);
-        
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
     };
 
-    fetchUserProfile(); 
+    fetchUserProfile();
     const fetchFlights = async () => {
       setLoading(true);
       try {
@@ -71,7 +70,7 @@ const LoadFlights = () => {
     };
 
     fetchFlights();
-  }, [departure, arrival, travelDate, adults, kids, travelClass,id, userId1]);
+  }, [departure, arrival, travelDate, adults, kids, travelClass, id, userId1]);
 
   const handleOpen = (flight) => {
     setSelectedFlight(flight);
@@ -84,14 +83,13 @@ const LoadFlights = () => {
   };
 
   const exchangeRates = {
-    USD: 1,     // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
-    EUR: 0.93,  // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
-    GBP: 0.77,  // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
-    AUD: 1.52,  // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
-    CAD: 1.39,  // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
-    EGP: 49
-};
-
+    USD: 1, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
+    EUR: 0.93, // 1 EGP = 0.0192 EUR (1 EUR = 52 EGP)
+    GBP: 0.77, // 1 EGP = 0.0159 GBP (1 GBP = 63 EGP)
+    AUD: 1.52, // 1 EGP = 0.03125 AUD (1 AUD = 32 EGP)
+    CAD: 1.39, // 1 EGP = 0.02857 CAD (1 CAD = 35 EGP)
+    EGP: 49,
+  };
 
   const formatCurrency = (amount) => {
     if (!currency) {
@@ -99,22 +97,21 @@ const LoadFlights = () => {
     }
 
     const value = Number(amount);
-    
-    // Convert amount from EGP to chosen currency if currency is EGP
-    const convertedAmount = (currency === "USD") ? value : value * ( exchangeRates[currency]);
 
-    console.log("converted amount",convertedAmount);
-    
-  
+    // Convert amount from EGP to chosen currency if currency is EGP
+    const convertedAmount = currency === "USD" ? value : value * exchangeRates[currency];
+
+    console.log("converted amount", convertedAmount);
+
     // return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency })
     //   .format(convertedAmount);
-    
-      const formattedAmount = new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: currency 
-      }).format(convertedAmount);
-      
-      return formattedAmount.replace(/(\D)(\d)/, '$1 $2');
+
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
+    }).format(convertedAmount);
+
+    return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
   // Book flight function
   const handleBookFlight = async () => {
@@ -129,6 +126,10 @@ const LoadFlights = () => {
     Duration: ${formatDuration(selectedFlight.duration)}, 
     Total Price: ${selectedFlight.price}
   `;
+
+    const booking = { tourist: userId, price: selectedFlight.price * 49, type: "Flight", details: flightDetails };
+
+    setTouristData(booking);
 
     try {
       await axios.post("http://localhost:8000/tourist/booking/create", {

@@ -14,12 +14,16 @@ def home():
 @app.route('/chat', methods=['POST'])
 def chat():
     user_input = request.json.get('message')
+    user_info = request.json.get('user_info')
 
-    if not user_input:
-        return jsonify({"error": "Please provide a message"}), 400
+    print(request.json)
 
+    # if not user_input:
+    #     return jsonify({"error": "Please provide a message"}), 400
+    
+    places = ["Pyramids of Giza", "Egyptian Museum in Cairo", "Cairo Citadel (Saladin Citadel)"]
     # Get the chatbot's response from the main logic
-    response = chatbot_response(user_input)
+    response = chatbot_response(user_input, user_info, places)
 
     return jsonify({"response": response})
 

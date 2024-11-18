@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getUserProfile } from "../../services/tourist";
-import { getUserId, getUserType } from "../../utils/authUtils"; ///////////////////////
+import { getUserId, getUserType, setTouristData } from "../../utils/authUtils"; ///////////////////////
 import { useParams, useNavigate } from "react-router-dom"; ////////////////////////
 
 import axios from "axios";
@@ -70,6 +70,9 @@ const Transportation = () => {
     // Set the price (this should already be calculated from your previous logic)
     const calculatedPrice = price; // Make sure price state is set correctly earlier
 
+    const booking = { tourist: userId, price: calculatedPrice, type: "Transportation", details: details };
+
+    setTouristData(booking);
     try {
       // Show loading indicator
       setLoading(true);

@@ -17,13 +17,13 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import { getUserProfile } from "../../services/tourist";
-import { getUserId, getUserType } from "../../utils/authUtils";
+import { getUserId, getUserType, setTouristData } from "../../utils/authUtils";
 
 const PlaceDetails = () => {
   const { id } = useParams();
   const userType = getUserType();
   console.log(userType);
-  
+
   const navigate = useNavigate();
   const [place, setPlace] = useState(null);
   const userId = getUserId();
@@ -78,6 +78,8 @@ const PlaceDetails = () => {
   const BookPlace = async () => {
     const tourist = getUserId();
     const booking = { tourist, price: totalPrice, type: "Place", itemId: place._id, tickets: ticketCount };
+   
+    setTouristData(booking);
 
     try {
       const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
@@ -209,28 +211,26 @@ const PlaceDetails = () => {
               position: "relative",
             }}
           >
-            
             {userType === "Tourism Governor" && (
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate(`/tourism-governor/historical-places/edit/${place._id}`)} // Update with the target edit page route
-                  startIcon={<EditIcon />}
-                  sx={{
-                    position: "absolute",
-                    top: 16,
-                    right: 16,
-                    fontSize: "1rem",
-                    fontWeight: 500,
-                  }}
-                >
-                  Edit
-                </Button>
-              )}
+              <Button
+                variant="outlined"
+                onClick={() => navigate(`/tourism-governor/historical-places/edit/${place._id}`)} // Update with the target edit page route
+                startIcon={<EditIcon />}
+                sx={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
+              >
+                Edit
+              </Button>
+            )}
             <CardContent sx={{ width: "100%", textAlign: "center" }}>
               <Typography variant="h4" color="#333" gutterBottom sx={{ mb: 3 }}>
                 📍 {place.name}
               </Typography>
-
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -279,7 +279,7 @@ const PlaceDetails = () => {
               </Typography>
 
               <Typography variant="h6" color="#333" sx={{ mt: 2 }}>
-                💵 Place Type: {place.type} 
+                💵 Place Type: {place.type}
               </Typography>
 
               <Box sx={{ mt: 3 }}>

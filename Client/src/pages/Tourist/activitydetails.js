@@ -17,7 +17,7 @@ import {
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import { getActivityById } from "../../services/tourist";
 import axios from "axios";
-import { getUserId, getUserType, getUserCurrency } from "../../utils/authUtils";
+import { getUserId, getUserType, getUserCurrency, setTouristData, getTouristData } from "../../utils/authUtils";
 
 const ActivityDetails = () => {
   const userCurrency = getUserCurrency();
@@ -83,7 +83,10 @@ const ActivityDetails = () => {
     const tourist = getUserId();
     const price = ticketCount * activity.price;
     const booking = { tourist, price, type: "Activity", itemId: activity._id, tickets: ticketCount };
+    setTouristData(booking);
 
+    console.log(getTouristData());
+    
     try {
       const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
       alert(response.data.message);
