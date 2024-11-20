@@ -10,13 +10,10 @@ const paymentSchema = new mongoose.Schema({
   },
   paymentDate: { type: Date, default: Date.now },
   amount: { type: Number, required: true },
-  paymentMethod: { type: String, enum: ["Credit Card", "PayPal", "Bank Transfer"], required: true },
-  paymentStatus: { type: String, enum: ["pending", "completed", "failed"], default: "pending" },
-  items: [{
-    type: { type: String, enum: ["Product", "Activity", "Itinerary", "Place", "Event"] },
-    itemId: { type: mongoose.Schema.Types.ObjectId },
-    price: Number
-  }]
+  paymentMethod: { type: String, enum: ["Visa", "Wallet", "Cash on Delivery"], required: true },
+  paymentStatus: { type: String, enum: ["Pending", "Completed", "Failed"], default: "Completed" },
+  cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
+  booking: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
 });
 
 

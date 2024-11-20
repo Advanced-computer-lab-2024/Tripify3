@@ -104,8 +104,43 @@ export const sendPaymentOTPEmail = async (user, OTP) => {
   }
 };
 
+// Function to send email notification to admin for all out-of-stock products
+export const sendOutOfStockNotificationEmailToAdmin = async (adminEmail, outOfStockProducts) => {
+  // Create a formatted list of product names
+  const productList = outOfStockProducts.map((product) => `<li>${product}</li>`).join("");
+
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: adminEmail,
+    subject: "Alert: Products Out of Stock",
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #d9534f;">Out of Stock Products Notification</h2>
+        <p>Dear Admin,</p>
+        <p>The following products are currently out of stock:</p>
+        <ul>
+          ${productList}
+        </ul>
+        <p>Please take appropriate action to coordinate with sellers for restocking these items.</p>
+        <p>Best regards,<br>Your Tripify Support Team</p>
+        <hr style="border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Out of stock notification email sent to admin successfully");
+  } catch (error) {
+    console.error("Error sending out of stock notification email to admin:", error);
+    throw new Error("Error sending out of stock notification email to admin");
+  }
+};
+
+
 // Function to send email notification for out-of-stock products
-export const sendOutOfStockNotificationEmail = async (user, productName) => {
+export const sendOutOfStockNotificationEmailToSeller = async (user, productName) => {
   const mailOptions = {
     from: "tripify.planner@gmail.com",
     to: user.email,
@@ -188,5 +223,84 @@ export const sendContentRestoredNotificationEmail = async (user, contentName, co
   } catch (error) {
     console.error('Error sending content restored notification email:', error);
     throw new Error('Error sending content restored notification email');
+  }
+};
+
+
+export const sendPromoCodeEmail = async (user, discount, expiryDate, promoCode) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "Exclusive Promo Code Just for You!",
+    text: `Dear ${user.name || 'User'},\n\nYou have received an exclusive promo code: ${promoCode}. Enjoy a ${discount}% discount on your next purchase! Use it before ${new Date(expiryDate).toLocaleDateString()}.\n\nHappy Shopping!\nYour Support Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <h2 style="color: #00695c;">Congratulations!</h2>
+        <p>Dear ${user.name || 'User'},</p>
+        <p>We are thrilled to offer you an exclusive promo code as a token of appreciation:</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <span style="font-size: 24px; font-weight: bold; color: #00695c; background-color: #f4f4f4; padding: 10px 20px; border-radius: 8px;">${promoCode}</span>
+        </div>
+        <p><strong>Discount:</strong> ${discount}%</p>
+        <p><strong>Expiry Date:</strong> ${new Date(expiryDate).toLocaleDateString()}</p>
+        <p>Don't miss out! Use this code at checkout to enjoy your discount.</p>
+        <p>Best regards,<br>Your Support Team</p>
+        <hr style="border: none; border-top: 1px solid #ddd;">
+        <p style="font-size: 12px; color: #999;">This is an automated message, please do not reply.</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Promo code email sent successfully');
+  } catch (error) {
+    console.error('Error sending promo code email:', error);
+    throw new Error('Error sending promo code email');
+  }
+};
+
+
+export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, promoCode) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "🎉 Happy Birthday! Here's a Special Gift for You 🎁",
+    text: `Dear ${user.name || 'User'},\n\nHappy Birthday! 🎂 To make your day extra special, we've got a surprise for you. Use your exclusive promo code: ${promoCode} to enjoy ${discount}% off your next purchase! 🎉\n\nThis special gift is valid until ${new Date(expiryDate).toLocaleDateString()}. Don't miss out!\n\nWishing you a fantastic birthday filled with joy and laughter!\n\nBest wishes,\nYour Support Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 2px dashed #f9a825; border-radius: 12px; background-color: #fff7e6;">
+        <h1 style="color: #f57c00; text-align: center;">🎉 Happy Birthday, ${user.name || 'User'}! 🎂</h1>
+        <p style="font-size: 18px; color: #555; text-align: center;">
+          We hope your day is filled with joy, laughter, and amazing memories. As a token of our celebration, here's a special gift just for you:
+        </p>
+        <div style="text-align: center; margin: 20px 0;">
+          <span style="font-size: 28px; font-weight: bold; color: #f57c00; background-color: #ffe0b2; padding: 15px 30px; border-radius: 12px; display: inline-block;">${promoCode}</span>
+        </div>
+        <p style="font-size: 18px; text-align: center; color: #444;">
+          Use this code to enjoy <strong>${discount}% off</strong> your next purchase! 🎁<br>
+          <strong>Valid until:</strong> ${new Date(expiryDate).toLocaleDateString()}
+        </p>
+        <p style="font-size: 16px; color: #555; text-align: center;">
+          Don't wait too long—celebrate your birthday with something special!
+        </p>
+        <div style="text-align: center; margin-top: 30px;">
+          <img src="https://example.com/happy-birthday.gif" alt="Happy Birthday" style="max-width: 100%; height: auto; border-radius: 12px;">
+        </div>
+        <p style="font-size: 16px; text-align: center; margin-top: 20px; color: #555;">
+          Wishing you the best birthday ever! 🎈
+        </p>
+        <p style="font-size: 14px; text-align: center; color: #999; margin-top: 20px;">
+          This is an automated message, please do not reply.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Birthday promo code email sent successfully");
+  } catch (error) {
+    console.error("Error sending birthday promo code email:", error);
+    throw new Error("Error sending birthday promo code email");
   }
 };

@@ -1,8 +1,7 @@
 import seller from "../../models/seller.js"; // Adjust the path as necessary
 import product from "../../models/product.js"; // Adjust the path as necessary
 import Order from "../../models/order.js"; // Adjust the path as necessary
-import Cart from "../../models/cart.js"; // Adjust the path as necessary
-import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
+import Cart from "../../models/cart.js"; // Adjust the path as necessary // Adjust the path as necessary
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import path from "path";

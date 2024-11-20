@@ -1,23 +1,27 @@
 import Activity from "../../models/activity.js";
+import Payment from "../../models/payment.js";
 import Stripe from "stripe";
 import Itinerary from "../../models/itinerary.js";
 import Product from "../../models/product.js";
+import Tourist from "../../models/tourist.js";
 import dotenv from "dotenv";
 import { sendPaymentOTPEmail } from "../../middlewares/sendEmail.middleware.js";
 dotenv.config(); // Load environment variables
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-export const createPayment = async (req, res) => {
-  const { amount } = req.body;
-  console.log(amount);
+export const createPaymentIntent = async (req, res) => {
+  const { price } = req.body;
+
+  console.log(req.body);
+  
+
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-        currency: "EGP",
-        amount: 7373,
-        automatic_payment_methods: { enabled: true },
-      });
-    console.log(paymentIntent);
+      currency: "EGP",
+      amount: price * 100,
+      automatic_payment_methods: { enabled: true },
+    });
     res.send({
       clientSecret: paymentIntent.client_secret,
     });
@@ -31,7 +35,6 @@ export const createPayment = async (req, res) => {
     });
   }
 };
-
 
 export const getConfig = (req, res) => {
   // console.log(process.env.STRIPE_PUBLISHABLE_KEY);
@@ -123,5 +126,78 @@ export const sendConfirmation = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+export const createPayment = async (req, res) => {
+  try {
+    const { touristId, amount, paymentMethod, cartId, bookingId } = req.body;
+
+    console.log(req.body);
+
+    // Validate input
+    if (!touristId || !amount || !paymentMethod) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    // Check if the tourist exists
+    const tourist = await Tourist.findById(touristId);
+    if (!tourist) {
+      console.log("sjsjsjsjs");
+      
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Create a new payment
+    const payment = new Payment({
+      tourist: touristId,
+      amount,
+      paymentMethod,
+      cart: cartId || null,
+      booking: bookingId || null,
+    });
+
+    // Save payment to the database
+    const savedPayment = await payment.save();
+
+    // Get cart details and check if wallet balance is sufficient
+
+    const totalPrice = amount;
+
+    if (paymentMethod === "Wallet") {
+      if (tourist.walletAmount < totalPrice) {
+        return res.status(400).json({ message: "Insufficient wallet balance" });
+      }
+    }
+    // Calculate loyalty points based on total amount paid
+    let loyaltyPoints = 0;
+    if (tourist.loyaltyPoints <= 100000) {
+      // Level 1
+      loyaltyPoints = totalPrice * 0.5;
+    } else if (tourist.loyaltyPoints <= 500000) {
+      // Level 2
+      loyaltyPoints = totalPrice * 1;
+    } else {
+      // Level 3
+      loyaltyPoints = totalPrice * 1.5;
+    }
+
+    // Add loyalty points to tourist's account
+    tourist.loyaltyPoints = (tourist.loyaltyPoints || 0) + loyaltyPoints;
+
+    if (paymentMethod === "Wallet") {
+      // Deduct total price from tourist's wallet
+      tourist.walletAmount -= totalPrice;
+    }
+    await tourist.save(); // Save the updated tourist document
+
+    return res.status(201).json({
+      message: "Payment created successfully.",
+      payment: savedPayment,
+    });
+  } catch (error) {
+    console.error(error);
+    console.log(error);    
+    res.status(500).json({ message: "An error occurred while creating payment." });
   }
 };

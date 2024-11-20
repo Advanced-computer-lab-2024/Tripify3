@@ -82,17 +82,21 @@ const ActivityDetails = () => {
   const BookActivity = async () => {
     const tourist = getUserId();
     const price = ticketCount * activity.price;
-    const booking = { tourist, price, type: "Activity", itemId: activity._id, tickets: ticketCount };
+    const itemId = activity._id;
+    const tickets = ticketCount;
+    const booking = { tourist, price, type: "Activity", itemId, tickets };
     setTouristData(booking);
 
     console.log(getTouristData());
     
-    try {
-      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
-      alert(response.data.message);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+    // try {
+    //   const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
+    //   alert(response.data.message);
+    // } catch (error) {
+    //   console.error("Error sending message:", error);
+    // }
+
+    navigate(`/tourist/payment/${price}/Activity/${itemId}/${tickets}/${null}/${null}`);
   };
   const exchangeRates = {
     USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)

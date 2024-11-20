@@ -33,7 +33,7 @@ import { getUserType, setTouristData } from "../../utils/authUtils";
 
 const ItineraryDetails = () => {
   const navigate = useNavigate();
-  const { id } = useParams();/////////
+  const { id } = useParams();
   const userId = getUserId();
   const [itinerary, setItinerary] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -105,16 +105,19 @@ const ItineraryDetails = () => {
     const price = ticketCount * itinerary.price; // Calculate total price
     const type = "Itinerary";
     const itemId = itinerary._id;
-    const booking = { tourist, price, type, itemId, tickets: ticketCount };
+    const tickets = ticketCount;
+    const booking = { tourist, price, type, itemId, tickets };
 
     setTouristData(booking);
 
-    try {
-      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
-      alert(response.data.message);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+    // try {
+    //   const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
+    //   alert(response.data.message);
+    // } catch (error) {
+    //   console.error("Error sending message:", error);
+    // }
+
+    navigate(`/tourist/payment/${price}/${type}/${itemId}/${tickets}/${null}/${null}`);
   };
 
   const handleShareToggle = () => {

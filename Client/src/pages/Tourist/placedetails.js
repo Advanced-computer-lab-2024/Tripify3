@@ -77,16 +77,21 @@ const PlaceDetails = () => {
 
   const BookPlace = async () => {
     const tourist = getUserId();
-    const booking = { tourist, price: totalPrice, type: "Place", itemId: place._id, tickets: ticketCount };
+    const price = totalPrice;
+    const itemId = place._id;
+    const tickets = ticketCount;
+    const booking = { tourist, price, type: "Place", itemId, tickets };
    
     setTouristData(booking);
 
-    try {
-      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
-      alert(response.data.message);
-    } catch (error) {
-      console.error("Error sending booking:", error);
-    }
+    // try {
+    //   const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
+    //   alert(response.data.message);
+    // } catch (error) {
+    //   console.error("Error sending booking:", error);
+    // }
+
+    navigate(`/tourist/payment/${price}/Place/${itemId}/${tickets}/${null}/${null}`);
   };
 
   const handleCopyLink = () => {

@@ -1,3 +1,4 @@
+import cron from "node-cron";
 import User from "../../models/user.js";
 import Category from "../../models/category.js";
 import Advertiser from "../../models/advertiser.js";
@@ -7,8 +8,9 @@ import Tourist from "../../models/tourist.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
 import Product from "../../models/product.js";
-import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
-// Edit itinerary inappropriate attribute
+import PromoCode from "../../models/promoCode.js";
+import Notification from "../../models/notification.js";
+import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail, sendPromoCodeEmail, sendBirthdayPromoCodeEmail } from "../../middlewares/sendEmail.middleware.js";
 
 export const getAllAcceptedUsers = async (req, res) => {
   try {
@@ -287,3 +289,115 @@ export const markActivityInappropriate = async (req, res) => {
     res.status(500).json({ message: error.message }); // Handle errors
   }
 };
+
+// Helper function to generate a random 6-character alphanumeric code
+const generatePromoCode = () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return code;
+};
+
+// Controller to create a promo code for a specific tourist
+export const createPromoCode = async (req, res) => {
+  const { touristId, discount, expiryDate } = req.body;
+
+  // Input validation
+  if (!touristId || !discount || !expiryDate) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+    // Check if the tourist exists
+    const tourist = await Tourist.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
+
+    // Generate a unique 6-character promo code
+    const code = generatePromoCode();
+
+    // Create the promo code
+    const promoCode = new PromoCode({
+      tourist: touristId,
+      discount,
+      expiryDate,
+      code,
+    });
+
+    // Save the promo code
+    await promoCode.save();
+
+    // Create a notification for the tourist
+    const notificationMessage = `You've received a promo code: ${code} for ${discount}% off! Use it before ${new Date(expiryDate).toLocaleDateString()}.`;
+    const notification = new Notification({
+      user: touristId,
+      message: notificationMessage,
+    });
+
+    // Save the notification
+    await notification.save();
+
+    await sendPromoCodeEmail(tourist, discount, expiryDate, code);
+
+    res.status(201).json({
+      message: "Promo code created successfully.",
+      promoCode,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+};
+
+// Cron job runs daily at midnight
+cron.schedule("0 0 * * *", async () => {
+  const today = new Date();
+  const month = today.getMonth() + 1; // Months are zero-based in JavaScript
+  const day = today.getDate();
+
+  try {
+    // Find tourists whose birthday matches today's date
+    const tourists = await Tourist.find({
+      birthDate: { $regex: `-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}$` },
+    });
+
+    for (const tourist of tourists) {
+      const discount = 50; // 50% discount for birthdays
+      const expiryDate = new Date();
+      expiryDate.setMonth(expiryDate.getMonth() + 1); // Promo code expires in 1 month
+
+      const code = generatePromoCode();
+
+      // Create promo code
+      const promoCode = new PromoCode({
+        tourist: tourist._id,
+        discount,
+        expiryDate,
+        code,
+      });
+
+      await promoCode.save();
+
+      // Create a notification for the tourist's birthday
+      const notificationMessage = `🎉 Happy Birthday ${tourist.name || "User"}! 🎂 As a gift, enjoy ${discount}% off with your promo code: ${code}. Redeem it before ${new Date(
+        expiryDate
+      ).toLocaleDateString()}. Have a wonderful day!`;
+
+      // Create the notification object
+      const notification = new Notification({
+        user: tourist._id,
+        message: notificationMessage,
+      });
+
+      await notification.save();
+
+      // Send promo code email
+      await sendBirthdayPromoCodeEmail(tourist, discount, expiryDate, code);
+    }
+  } catch (error) {
+    console.error("Error processing birthday promo codes:", error);
+  }
+});

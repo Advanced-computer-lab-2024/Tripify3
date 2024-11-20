@@ -6,66 +6,6 @@ import Place from "../../models/place.js";
 import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js"; // Adju
 
-export const getReview = async (req, res) => {
-  const { booking, itemId, type, tourist } = req.params;
-  console.log(req.params);
-
-  try {
-    // Validate input parameters
-    if (!booking || !itemId || !type || !tourist) {
-      return res.status(400).json({ message: "Booking, itemId, type, and tourist are required." });
-    }
-
-    // Check if type is valid
-    if (!["activity", "itinerary"].includes(type.toLowerCase())) {
-      return res.status(400).json({ message: "Type must be either 'activity' or 'itinerary'." });
-    }
-
-    // Define the search criteria based on type
-    let itemCriteria = { _id: itemId };
-    let model;
-    let review;
-
-    if (type.toLowerCase() === "activity") {
-      model = Activity;
-
-      review = await Review.findOne({ tourist, booking, [type]: itemId });
-      if (review) {
-        return res.status(200).json({ message: "Review found successfully", review: review });
-      } else {
-        return res.status(200).json({ message: "No review found.", review: {} });
-      }
-    } else if (type.toLowerCase() === "itinerary") {
-      model = Itinerary;
-      const itinerary = await Itinerary.findById(itemId);
-
-      if (!itinerary) {
-        return res.status(404).json({ message: "Itinerary not found." });
-      }
-      const tourGuideId = itinerary.tourGuide;
-      console.log("----------------------------");
-      console.log(tourGuideId);
-
-      // Then, search for a review from this tourist for this tour guide on the given booking
-      const tourGuideReview = await Review.findOne({ tourist, booking, tourGuide: tourGuideId });
-      console.log("-------------------------");
-      console.log(tourGuideReview);
-
-      review = await Review.findOne({ tourist, booking, [type]: itemId });
-      if (review) {
-        return res.status(200).json({ message: "Review found successfully", tourGuideReview, review });
-      } else {
-        return res.status(200).json({ message: "No review found.", review: {} });
-      }
-    }
-    // Search for an existing review by tourist and booking
-
-    // Return review if found, otherwise empty response
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error fetching review", error: error.message });
-  }
-};
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
@@ -109,10 +49,6 @@ export const createBooking = async (req, res) => {
       return res.status(404).json({ message: "Tourist not found" });
     }
      
-    if (user.walletAmount < price) {
-      return res.status(400).json({ message: "Insufficient wallet balance" });
-    }
-
     let loyaltyPoints = 0;
     if (user.loyaltyPoints <= 100000) {
       // Level 1
@@ -128,7 +64,6 @@ export const createBooking = async (req, res) => {
     // Add loyalty points to tourist's account
     user.loyaltyPoints = (user.loyaltyPoints || 0) + loyaltyPoints;
     // Deduct total price from tourist's wallet
-    user.walletAmount -= price;
     await user.save(); // Save the updated tourist document
 
     // Create a new booking

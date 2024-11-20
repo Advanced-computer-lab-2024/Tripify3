@@ -5,6 +5,7 @@ import TourGuide from "../../models/tourGuide.js";
 import Booking from "../../models/booking.js";
 import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js";
+import Notification from "../../models/notification.js";
 import User from "../../models/user.js"; // Assuming this is the User model
 import Tourist from "../../models/tourist.js"; // Importing the Tourist model (similar for other types)
 import { sendPasswordResetEmail } from "../../middlewares/sendEmail.middleware.js";
@@ -254,11 +255,6 @@ export const userDeleteAccount = async (req, res) => {
 };
 
 
-
-
-
-
-
 // Delete account controller
 export const getProfile = async (req, res) => {
   const { userId } = req.params;
@@ -281,3 +277,24 @@ export const getProfile = async (req, res) => {
 };
 
 
+
+
+export const getNotificationsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Validate userId
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    // Find notifications for the given userId
+    const notifications = await Notification.find({ user: userId }).sort({ createdAt: -1 });
+
+    // Respond with the notifications
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "An error occurred while fetching notifications." });
+  }
+};

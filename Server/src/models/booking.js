@@ -8,7 +8,7 @@ const bookingSchema = new mongoose.Schema({
   }, // Reference to the tourist booking the trip
 
   date: { type: Date, default: Date.now },
-  paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Unpaid" },
+  paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Paid" },
   details: {
     type: String,
   },

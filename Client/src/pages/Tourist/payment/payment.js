@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { useParams } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./checkoutForm";
 import { loadStripe } from "@stripe/stripe-js";
@@ -7,6 +7,7 @@ import { loadStripe } from "@stripe/stripe-js";
 function Payment() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
+  const { price } = useParams(); // Retrieve the price from the route params
 
   useEffect(() => {
     fetch("http://localhost:8000/tourist/payment/config").then(async (r) => {
@@ -17,9 +18,17 @@ function Payment() {
   }, []);
 
   useEffect(() => {
+    console.log("===========");
+    console.log(price);
+    console.log("===========");
+ 
+    
     fetch("http://localhost:8000/tourist/create/payment/intent", {
       method: "POST",
-      body: JSON.stringify({}),
+      headers: {
+        "Content-Type": "application/json", // Specify the content type
+      },
+      body: JSON.stringify({price}),
     }).then(async (result) => {
       var { clientSecret } = await result.json();
       setClientSecret(clientSecret);

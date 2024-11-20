@@ -8,11 +8,11 @@ import { initializeCart, addToCart, getTouristCart, removeFromCart, Decrementor,
 import { redeemPoints, deleteTouristAccount } from "../controllers/tourist/profile.controller.js";
 import { touristReview } from "../controllers/tourist/review.controller.js";
 import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js";
-import { getConfig, createPayment } from "../controllers/tourist/payment.controller.js";
+import { getConfig, createPaymentIntent, createPayment } from "../controllers/tourist/payment.controller.js";
 import { cancelBooking, createBooking } from "../controllers/tourist/booking.controller.js";
 import { updateItinerariesAttended } from "../controllers/tourist/itineraries.controller.js";
 import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
-import { checkoutTouristCart, getOrders } from "../controllers/tourist/order.controller.js";
+import { checkoutTouristCart, getOrders, validatePromoCode } from "../controllers/tourist/order.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -53,11 +53,16 @@ router.put("/tourist/itinerary/attend", updateItinerariesAttended); //attend iti
 router.post("/tourist/booking/create", createBooking); // Create a booking
 
 router.get("/tourist/payment/config", getConfig); // Cancel booking
-router.post("/tourist/create/payment/intent", createPayment); // Cancel booking
+router.post("/tourist/create/payment/intent", createPaymentIntent); // Cancel booking
+router.post("/tourist/create/payment", createPayment); // Cancel booking
 
 //checkout to order
 router.post("/tourist/checkout", checkoutTouristCart);
 // Route to get orders for a tourist (past and upcoming)
 router.get("/tourist/get/orders/:userId", getOrders);
+
+// Route
+router.get("/validate-promo/:userId/:code", validatePromoCode);
+
 
 export default router;

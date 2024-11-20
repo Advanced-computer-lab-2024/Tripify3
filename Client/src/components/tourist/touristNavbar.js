@@ -1,7 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
-
-import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Alert } from "@mui/material";
+import axios from "axios";
+import {
+  AppBar,
+  List,
+  ListItem,
+  ListItemText,
+  Toolbar,
+  Typography,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+  Alert,
+} from "@mui/material";
 import {
   AccountCircle,
   ShoppingCart,
@@ -10,6 +28,8 @@ import {
   Event,
   DirectionsRun,
   ListAlt,
+  Badge,
+  Notifications,
   RoomService,
   HelpOutline,
   Settings,
@@ -34,8 +54,41 @@ import { useNavigate, useLocation } from "react-router-dom";
 const TouristNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const userId = getUserId();
+
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+
+  // Fetch notifications
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/get/notifications/${userId}`);
+      setNotifications(response.data);
+    
+      setUnreadCount(response.data.filter((n) => !n.readStatus).length);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  // Use effect to fetch notifications every 30 seconds
+  useEffect(() => {
+    fetchNotifications(); // Fetch immediately on mount
+    const interval = setInterval(fetchNotifications, 30000); // Fetch every 30 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
+  // Open notification menu
+  const handleNotificationClick = (event) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+
+  // Close notification menu
+  const handleNotificationClose = () => {
+    setNotificationAnchorEl(null);
+  };
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [helpAnchorEl, setHelpAnchorEl] = useState(null);
@@ -120,6 +173,41 @@ const TouristNavbar = () => {
                 Home
               </Typography>
             </IconButton>
+            {/* Notifications Icon */}
+            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleNotificationClick}>
+              <Badge badgeContent={unreadCount} color="error" max={99}>
+                <Notifications />
+              </Badge>
+            </IconButton>
+
+            {/* Notifications Menu */}
+            <Menu
+              anchorEl={notificationAnchorEl}
+              open={Boolean(notificationAnchorEl)}
+              onClose={handleNotificationClose}
+              PaperProps={{
+                style: {
+                  maxHeight: 300, // Limit menu height
+                  width: 350,
+                  transition: "transform 0.2s ease-in-out", // Add smooth animation
+                },
+              }}
+            >
+              <Typography variant="h6" sx={{ padding: "8px 16px", fontWeight: "bold", color: "#003366" }}>
+                Notifications
+              </Typography>
+              <List>
+                {notifications.length > 0 ? (
+                  notifications.map((notification, index) => (
+                    <ListItem key={index} divider>
+                      <ListItemText primary={notification.message} secondary={new Date(notification.createdAt).toLocaleString()} />
+                    </ListItem>
+                  ))
+                ) : (
+                  <MenuItem>No notifications</MenuItem>
+                )}
+              </List>
+            </Menu>
 
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
