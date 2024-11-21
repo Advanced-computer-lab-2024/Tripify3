@@ -33,6 +33,7 @@ const TourGuideItineraryDetails = () => {
   const [ticketCount, setTicketCount] = useState(1);
   const [currency, setCurrency] = useState("USD"); // Default currency
   const [bookings, setBookings] = useState([]); // Initialize bookings as an empty array
+ 
 
   // Fetch itinerary and user profile data
   useEffect(() => {
@@ -206,8 +207,14 @@ const TourGuideItineraryDetails = () => {
         Go Back
       </Button>
 
+              <Button onClick={() => navigate(`/tour-guide/itinerary/edit/${itinerary._id}`)}>Edit</Button>
+
+
+
+
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 4 }}>
         {/* Left: Itinerary Card */}
+
         <Box sx={{ flex: 1, maxWidth: "900px" }}>
           <Card sx={{ mt: 6, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
             <CardContent>

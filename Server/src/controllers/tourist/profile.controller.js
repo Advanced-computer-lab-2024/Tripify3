@@ -14,13 +14,17 @@ export const redeemPoints = async (req, res) => {
     const { id } = req.params; // User ID
     const { pointsToRedeem } = req.body; // Points to redeem
 
+    console.log(pointsToRedeem);
+    
+
     const userProfile = await Tourist.findById(id);
 
     if (!userProfile) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (pointsToRedeem >= userProfile.loyaltyPoints) {
+    if (pointsToRedeem > userProfile.loyaltyPoints) {
+      console.log(jsjsjs);    
       return res.status(400).json({ message: "Not enough loyalty points" });
     }
 

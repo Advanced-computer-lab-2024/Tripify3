@@ -29,7 +29,7 @@ const AdvertiserAddActivity = () => {
     price: "",
     category: "",
     specialDiscount: "",
-    booking: false,
+    status: false,
     duration: "",
   });
 
@@ -92,7 +92,7 @@ const AdvertiserAddActivity = () => {
         price: "",
         category: "",
         specialDiscount: "",
-        booking: false,
+        status: false,
         duration: "",
       });
       setSelectedTags([]);
@@ -221,6 +221,8 @@ const AdvertiserAddActivity = () => {
           name="price"
           value={newActivity.price}
           onChange={handleInputChange}
+          type="number" 
+          inputProps={{ min: 1 }}
           sx={{ mb: 2 }}
           required
         />
@@ -267,17 +269,19 @@ const AdvertiserAddActivity = () => {
         {/* Single Special Discount Field */}
         <TextField
           fullWidth
-          label="Special Discount"
+          label="Special Discount %"
           name="specialDiscount"
           value={newActivity.specialDiscount}
           onChange={handleInputChange}
+          type="number" 
+          inputProps={{ min: 1, max: 100 }}
           sx={{ mb: 2 }}
         />
         <FormControlLabel
           control={
             <Checkbox
-              checked={newActivity.booking}
-              onChange={(e) => setNewActivity({ ...newActivity, booking: e.target.checked })}
+              checked={newActivity.status}
+              onChange={(e) => setNewActivity({ ...newActivity, status: e.target.checked })}
               sx={{ color: "#00796b" }}
             />
           }

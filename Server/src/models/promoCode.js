@@ -1,21 +1,27 @@
 import mongoose from "mongoose";
 
 const promoCodeSchema = new mongoose.Schema({
-  name: { 
-    type: String, 
-    required: true 
-  },  // Name of the promo code
-  value: { 
+  tourist: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tourist",
+    required: true,
+  }, // Reference to the tourist making the order
+  discount: { 
     type: Number, 
     required: true 
   },  // Discount value of the promo code
-  expiry: { 
+  expiryDate: { 
     type: Date, 
     required: true 
   },  // Expiry date of the promo code
-  id: { 
+  code: { 
     type: String, 
     required: true 
+  },  // Unique ID for the promo code
+  used: { 
+    type: Boolean, 
+    required: true,
+    default: false 
   },  // Unique ID for the promo code
   creationDate: { 
     type: Date, 

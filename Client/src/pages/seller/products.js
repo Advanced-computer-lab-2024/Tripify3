@@ -290,7 +290,7 @@ const Products = () => {
       if (getUserType() === "Seller") {
         setProducts(response.data.filter((product) => product.sellerId === getUserId()));
       } else {
-        setProducts(response.data);
+        setProducts(response.data.filter((product) => product.quantity > 0));
       }
       fetchSellerNames(response.data);
     } catch (error) {

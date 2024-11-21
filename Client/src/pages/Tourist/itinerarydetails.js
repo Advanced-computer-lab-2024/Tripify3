@@ -29,11 +29,11 @@ import { getUserId } from "../../utils/authUtils";///////////////////////
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useParams, useNavigate } from "react-router-dom";////////////////////////
-import { getUserType } from "../../utils/authUtils";
+import { getUserType, setTouristData } from "../../utils/authUtils";
 
 const ItineraryDetails = () => {
   const navigate = useNavigate();
-  const { id } = useParams();/////////
+  const { id } = useParams();
   const userId = getUserId();
   const [itinerary, setItinerary] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -105,13 +105,19 @@ const ItineraryDetails = () => {
     const price = ticketCount * itinerary.price; // Calculate total price
     const type = "Itinerary";
     const itemId = itinerary._id;
-    const booking = { tourist, price, type, itemId, tickets: ticketCount };
-    try {
-      const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
-      alert(response.data.message);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
+    const tickets = ticketCount;
+    const booking = { tourist, price, type, itemId, tickets };
+
+    setTouristData(booking);
+
+    // try {
+    //   const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
+    //   alert(response.data.message);
+    // } catch (error) {
+    //   console.error("Error sending message:", error);
+    // }
+
+    navigate(`/tourist/payment/${price}/${type}/${itemId}/${tickets}/${null}/${null}`);
   };
 
   const handleShareToggle = () => {
@@ -462,6 +468,10 @@ const ItineraryDetails = () => {
           <Card sx={{ mt: 6, borderRadius: 3, boxShadow: 5, padding: 4 }}>
             <CardContent>
               <Box sx={{ textAlign: "center" }}>
+              <Avatar src={`http://localhost:8000/uploads/${itinerary.tourGuide._id}/${itinerary.tourGuide.profilePicture?.filename}`} sx={{ width: 150, height: 150, mb: 2, mx: "auto" }}>
+                    {/* If profile picture URL is missing or fails to load, show the initial */}
+                    {!itinerary.tourGuide.profilePicture && itinerary.tourGuide.name.charAt(0)}
+                  </Avatar>
                 <Typography variant="h5" sx={{ mb: 1 }}>
                   {itinerary.tourGuide.name}
                 </Typography>

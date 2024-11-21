@@ -55,7 +55,6 @@ export const getProfile = async (userId) => {
   return await axios.get(`${API_URL}/tourist/profile/${userId}`);
 };
 
-
 export const getPlaceById =async(placeid)=>{
   return await axios.get(`${API_URL}/place/get/${placeid}`)
 }
@@ -63,3 +62,4 @@ export const getPlaceById =async(placeid)=>{
 export const updateProfile = async (userId, formData) => {
   return await axios.put(`${API_URL}/tourist/profile/${userId}`, formData);
 };
+  

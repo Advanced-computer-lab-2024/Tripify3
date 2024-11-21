@@ -10,10 +10,16 @@ import {
   Typography,
   TextField,
   Select,
+  DialogTitle,
+  DialogContent,
+  Alert,
+  DialogContentText,
+  DialogActions,
   MenuItem,
   InputLabel,
   FormControl,
   Chip,
+  Dialog,
   Checkbox,
   OutlinedInput,
   ListItemText,
@@ -54,6 +60,7 @@ const TourGuideItineraries = () => {
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [userType, setUserType] = useState("");
+  const [bookingErrorDialogOpen, setBookingErrorDialogOpen] = useState(false);
 
   const userId = getUserId();
 
@@ -118,7 +125,12 @@ const TourGuideItineraries = () => {
 
       toast.success("Itinerary marked as deleted!");
     } catch (error) {
-      toast.error("Error marking itinerary as deleted!");
+      if (error.response && error.response.status === 403) {
+        // Open the dialog for booking error
+        setBookingErrorDialogOpen(true);
+      } else {
+        toast.error("Error marking itinerary as deleted!");
+      }
     }
   };
 
@@ -267,6 +279,30 @@ const TourGuideItineraries = () => {
                     Delete Itinerary
                   </Button>
                 </CardContent>
+
+                <Dialog open={bookingErrorDialogOpen} onClose={() => setBookingErrorDialogOpen(false)}>
+                  <DialogTitle sx={{ color: "#f44336" }}>Unable to Delete Itinerary</DialogTitle>
+                  <DialogContent>
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                      You have upcoming bookings. Please cancel them before deleting the itinerary.
+                    </Alert>
+                    <DialogContentText>If you need further assistance, please contact our support team.</DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      onClick={() => setBookingErrorDialogOpen(false)}
+                      variant="outlined"
+                      sx={{
+                        color: "#f44336",
+                        borderColor: "#f44336",
+                        ":hover": { backgroundColor: "#fdecea", borderColor: "#f44336" },
+                      }}
+                    >
+                      Close
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+
                 {userType === "Admin" && (
                   <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
                     <FlagIcon />

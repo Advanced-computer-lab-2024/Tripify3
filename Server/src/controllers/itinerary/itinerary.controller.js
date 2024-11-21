@@ -275,25 +275,54 @@ export const updateItinerary = async (req, res) => {
 // Delete an itinerary by ID
 export const deleteItinerary = async (req, res) => {
   try {
+    // Validate the ID parameter
+    if (!req.params.id) {
+      return res.status(400).json({ message: "Itinerary ID is required" });
+    }
+
+    // Find the itinerary by ID
     const itinerary = await Itinerary.findById(req.params.id);
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
-    // Check if there are bookings associated with this itinerary
-    // if (itinerary.bookings.length > 0) {
-    //   return res.status(400).json({ message: "Cannot delete an itinerary with existing bookings" });
-    // }    // Mark the itinerary as deleted
+
+    console.log("Itinerary found: ", itinerary); // Log the itinerary data
+
+    // Check for bookings associated with the itinerary
+    const bookings = await Booking.find({ itinerary: itinerary._id });
+    console.log("Bookings found: ", bookings); // Log the bookings data
+
+    // Check if there are bookings and if the end time is in the future
+    if (bookings.length > 0 && Date.now() < new Date(itinerary.timeline.endTime)) {
+      return res.status(403).json({ message: "Cannot delete an itinerary with bookings and an end time in the future" });
+    }
+
+    // Mark itinerary as deleted
     itinerary.isDeleted = true;
-
-    // Save the changes to the database
     await itinerary.save();
+    return res.status(200).json({ message: "Itinerary marked as deleted" });
 
-    // Respond with status 200 and a message
-    res.status(200).json({ message: "Itinerary marked as deleted" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    // Log the error for debugging
+    console.error("Delete itinerary error: ", error);
+
+    // Check if the error is a MongoDB error (for instance, invalid ObjectId format)
+    if (error.name === "CastError" && error.kind === "ObjectId") {
+      return res.status(400).json({ message: "Invalid itinerary ID format" });
+    }
+
+    // Handle database connection errors
+    if (error.name === "MongoNetworkError") {
+      return res.status(500).json({ message: "Database connection error. Please try again later." });
+    }
+
+    // Generic server error message
+    return res.status(500).json({ message: "An error occurred while deleting the itinerary. Please try again later." });
   }
 };
+
+
+
 
 export const addActivityToItinerary = async (req, res) => {
   try {

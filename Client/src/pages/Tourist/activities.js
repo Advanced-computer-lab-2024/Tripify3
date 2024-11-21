@@ -23,7 +23,7 @@ import {
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
 import { getUserProfile } from "../../services/tourist";
-import { getUserId, getUserType } from "../../utils/authUtils";
+import { getUserId, getUserType, getUserPreferences } from "../../utils/authUtils";
 import { useParams, useNavigate } from "react-router-dom"; ////////////////////////
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -45,6 +45,10 @@ const theme = createTheme({
 
 const Activities = () => {
   const userType = getUserType();
+  let userPreferences;
+  if (userType === "Tourist") {
+    userPreferences = getUserPreferences();
+  }
   const { id } = useParams();
   const userId = getUserId();
   const [activities, setActivities] = useState([]);
@@ -60,6 +64,9 @@ const Activities = () => {
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
+    console.log("userPreferences");
+    console.log(userPreferences);
+
     const fetchUserProfile = async () => {
       try {
         const response = await getUserProfile(userId);
@@ -76,6 +83,8 @@ const Activities = () => {
         const [activitiesResponse, categoriesResponse] = await Promise.all([fetchActivities(), getAllCategories()]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
+        console.log("Test", activitiesResponse.data.activities);
+
         setCategories(categoriesResponse.data);
         setLoading(false);
       } catch (error) {
@@ -126,8 +135,8 @@ const Activities = () => {
     if (!currency) {
       return amount; // Fallback to amount if currency is not set
     }
-     // Ensure amount is a number
-     const value = Number(amount);
+    // Ensure amount is a number
+    const value = Number(amount);
 
     // Check user type and apply currency logic
     if (getUserType() !== "Tourist") {
@@ -138,7 +147,6 @@ const Activities = () => {
       }).format(value);
     }
 
-   
     // Convert amount from EGP to chosen currency if currency is EGP
     const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
 
@@ -190,6 +198,24 @@ const Activities = () => {
     setSearchTerm(""); // Reset search term
     setActivities(originalActivities);
   };
+
+  // Sort activities to prioritize recommended ones based on user preferences
+  // Updated getRecommendedActivities function
+const getRecommendedActivities = () => {
+  if (userType === "Tourist") {
+    const recommendedActivities = activities.filter((activity) =>
+      activity.tags.some((tag) => userPreferences.includes(tag.name))
+    );
+    const otherActivities = activities.filter((activity) =>
+      !activity.tags.some((tag) => userPreferences.includes(tag.name))
+    );
+
+    return [...recommendedActivities, ...otherActivities];
+  }
+
+  // For non-tourists, return all activities
+  return activities;
+};
 
   if (loading) {
     return (
@@ -273,34 +299,129 @@ const Activities = () => {
         </Box>
 
         {/* Activities Section */}
-        <Grid container spacing={3}>
-          {activities.map((activity) => (
-            <Grid item xs={12} key={activity._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-                <CardContent>
-                  <Typography variant="h6" color="secondary">
-                    {activity.name}
-                  </Typography>
-                  <Typography>
-                    <strong>Price:</strong> {formatCurrency(activity.price)}
-                  </Typography>
-                  <Typography>
-                    <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-                  </Typography>
+        {userType === "Tourist" ? (
+          <>
+  <Box sx={{ mb: 4 }}>
+    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+      Recommended Activities
+    </Typography>
+    <Grid container spacing={3}>
+      {getRecommendedActivities()
+        .filter((activity) =>
+          activity.tags.some((tag) => userPreferences.includes(tag.name))
+        )
+        .map((activity) => (
+          <Grid item xs={12} key={activity._id}>
+            <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+              <CardContent>
+                <Typography variant="h6" color="secondary">
+                  {activity.name} {<Chip label="Recommended" color="secondary" sx={{ ml: 1 }} />}
+                </Typography>
+                <Typography>
+                  <strong>Price:</strong> {formatCurrency(activity.price)}
+                </Typography>
 
-                  <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                    View Details
-                  </Button>
-                </CardContent>
-                {userType === "Admin" && (
-                  <IconButton color={activity.inappropriate ? "error" : "default"} onClick={() => handleFlagClick(activity._id, activity.inappropriate)}>
-                    <FlagIcon />
-                  </IconButton>
-                )}
-              </Card>
-            </Grid>
-          ))}
+                <Typography>
+                  <strong>Category:</strong> {activity.category.name}
+                </Typography>
+                <Typography>
+                  <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                </Typography>
+                <Typography>
+                  <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                </Typography>
+
+                <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                  View Details
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+    </Grid>
+  </Box> 
+  <Box sx={{ mb: 4 }}>
+    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+      All Activities
+    </Typography>
+    <Grid container spacing={3}>
+      {getRecommendedActivities().map((activity) => (
+        <Grid item xs={12} key={activity._id}>
+          <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+            <CardContent>
+              <Typography variant="h6" color="secondary">
+                {activity.name}
+              </Typography>
+              <Typography>
+                <strong>Price:</strong> {formatCurrency(activity.price)}
+              </Typography>
+
+              <Typography>
+                <strong>Category:</strong> {activity.category.name}
+              </Typography>
+              <Typography>
+                <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+              </Typography>
+              <Typography>
+                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+              </Typography>
+
+              <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                View Details
+              </Button>
+            </CardContent>
+          </Card>
         </Grid>
+      ))}
+    </Grid>
+  </Box> 
+  </>
+) : (
+  <Box sx={{ mb: 4 }}>
+    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+      All Activities
+    </Typography>
+    <Grid container spacing={3}>
+      {getRecommendedActivities().map((activity) => (
+        <Grid item xs={12} key={activity._id}>
+          <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+            <CardContent>
+              <Typography variant="h6" color="secondary">
+                {activity.name}
+              </Typography>
+              <Typography>
+                <strong>Price:</strong> {formatCurrency(activity.price)}
+              </Typography>
+
+              <Typography>
+                <strong>Category:</strong> {activity.category.name}
+              </Typography>
+              <Typography>
+                <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+              </Typography>
+              <Typography>
+                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+              </Typography>
+
+              <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                View Details
+              </Button>
+            </CardContent>
+            {userType === "Admin" && (
+              <IconButton
+                color={activity.inappropriate ? "error" : "default"}
+                onClick={() => handleFlagClick(activity._id, activity.inappropriate)}
+              >
+                <FlagIcon />
+              </IconButton>
+            )}
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
+)}
+
       </Box>
     </ThemeProvider>
   );

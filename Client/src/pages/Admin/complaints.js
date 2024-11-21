@@ -11,6 +11,7 @@ function Complaints() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedTouristId, setSelectedTouristId] = useState(null);
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
   const [replyComment, setReplyComment] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -66,8 +67,9 @@ function Complaints() {
     return complaint.status === statusFilter;
   });
 
-  const handleOpenDialog = (touristId) => {
+  const handleOpenDialog = (touristId, complaintId) => {
     setSelectedTouristId(touristId);
+    setSelectedComplaintId(complaintId);
     setOpenDialog(true);
   };
 
@@ -79,7 +81,7 @@ function Complaints() {
   const handleSubmitReply = async () => {
     setLoading(true); // Start loading
     try {
-      await postComplaintReply(selectedTouristId, replyComment);
+      await postComplaintReply(selectedTouristId, replyComment, selectedComplaintId);
       setSnackbarMessage('Reply sent successfully!');
       setSnackbarOpen(true);
       handleCloseDialog();
@@ -134,6 +136,9 @@ function Complaints() {
                 Date
               </TableCell>
               <TableCell style={{ backgroundColor: '#aeeeee', width: '20%', fontWeight: 'bold', textAlign: 'center', fontSize: '16px' }}>
+                Username
+              </TableCell>
+              <TableCell style={{ backgroundColor: '#aeeeee', width: '20%', fontWeight: 'bold', textAlign: 'center', fontSize: '16px' }}>
                 Title
               </TableCell>
               <TableCell style={{ backgroundColor: '#aeeeee', width: '20%', maxWidth: '150px', fontWeight: 'bold', textAlign: 'center', fontSize: '16px' }}>
@@ -157,6 +162,7 @@ function Complaints() {
                   </Button>
                 </TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{dayjs(complaint.date).format('YYYY-MM-DD')}</TableCell>
+                <TableCell style={{ textAlign: 'center' }}>{complaint.tourist.username}</TableCell>
                 <TableCell style={{ textAlign: 'center' }}>{complaint.title}</TableCell>
                 <TableCell style={{ maxWidth: '150px', wordWrap: 'break-word', textAlign: 'center' }}>
                   <Tooltip title={complaint.body} arrow>
@@ -166,7 +172,7 @@ function Complaints() {
                   </Tooltip>
                 </TableCell>
                 <TableCell style={{ textAlign: 'center' }}>
-                  <Button variant="contained" color="secondary" onClick={() => handleOpenDialog(complaint.touristId)}>
+                  <Button variant="contained" color="secondary" onClick={() => handleOpenDialog(complaint.tourist.id, complaint._id)}>
                     Reply
                   </Button>
                 </TableCell>

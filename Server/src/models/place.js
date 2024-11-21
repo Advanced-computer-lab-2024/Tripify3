@@ -22,35 +22,29 @@ const placeSchema = new Schema(
     },
     pictures: [
       {
-        type: String,  // Corrected type declaration for array elements
+        filename: String,
+        filepath: String,
+        uploadedAt: { type: Date, default: Date.now },
       },
     ],
     location: {
-      address: {
-        type: String,
-        required: true
-      },
-      city: {
-        type: String,
-        required: true
-      },
-      country: {
-        type: String,
-        required: true
-      },
+      type: String,
+      required: true,
     },
+    openingDays: [
+      {
+        type: String,
+        required: true, // e.g., 'Monday', 'Tuesday'
+      },
+    ],
     openingHours: [
       {
-        day: {
-          type: String,
-          required: true, // Day of the week (e.g., Monday, Tuesday)
-        },
         from: {
-          type: String, // Opening time (e.g., 09:00)
+          type: String, // e.g., '09:00'
           required: true,
         },
         to: {
-          type: String, // Closing time (e.g., 18:00)
+          type: String, // e.g., '18:00'
           required: true,
         },
       },
@@ -58,15 +52,15 @@ const placeSchema = new Schema(
     ticketPrices: {
       foreigner: {
         type: Number,
-        required: true
+        required: true,
       },
       native: {
         type: Number,
-        required: true
+        required: true,
       },
       student: {
         type: Number,
-        required: true
+        required: true,
       },
     },
     tags: [
@@ -75,15 +69,14 @@ const placeSchema = new Schema(
         ref: "Tag",
       },
     ], // Array of tags related to the place
-    tourismGovernor: 
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      }
-     // Array of tags related to the place
+    tourismGovernor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    // Array of tags related to the place
   },
   { timestamps: true }
 );
 
-const Place = mongoose.model("Place", placeSchema);  // Capitalized model name
+const Place = mongoose.model("Place", placeSchema); // Capitalized model name
 export default Place;

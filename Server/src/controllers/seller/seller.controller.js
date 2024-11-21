@@ -1,7 +1,7 @@
 import seller from "../../models/seller.js"; // Adjust the path as necessary
 import product from "../../models/product.js"; // Adjust the path as necessary
 import Order from "../../models/order.js"; // Adjust the path as necessary
-import { sendEmailNotification } from "../../middlewares/sendEmailOutOfstock.js"; // Adjust the path as necessary
+import Cart from "../../models/cart.js"; // Adjust the path as necessary // Adjust the path as necessary
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -478,6 +478,7 @@ export const SearchProductById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 export const deleteSellerAccount = async (req, res) => {
   try {
     const sellerId = req.params.id; // Get the seller ID from request parameters
@@ -490,40 +491,51 @@ export const deleteSellerAccount = async (req, res) => {
         .json({ success: false, message: "Seller not found" });
     }
 
-    // Check for any upcoming orders with a future drop-off date
-    const hasUpcomingOrders = await Order.exists({
-      "cart.products.product": {
-        $in: await product.find({ sellerId }).select("_id"),
-      },
-      dropOffDate: { $gt: new Date() }, // Check if dropOffDate is in the future
+    // Get all products associated with the seller
+    const sellerProducts = await product.find({ sellerId }).select("_id");
+    const productIds = sellerProducts.map((product) => product._id);
+
+    // Check for orders with a future dropOffDate and retrieve their carts
+    const futureOrders = await Order.find({
+      dropOffDate: { $gt: new Date() }
+    }).select("cart");
+
+    const cartIds = futureOrders.map((order) => order.cart);
+
+    // Find carts that contain products from the seller
+    const conflictingCarts = await Cart.find({
+      _id: { $in: cartIds },
+      "products.product": { $in: productIds }
     });
 
-    if (hasUpcomingOrders) {
+    // If there are no conflicting carts, proceed with the deletion
+    if (conflictingCarts.length === 0) {
+      // Mark all products associated with the seller as deleted
+      await product.updateMany(
+        { sellerId },
+        { $set: { isDeleted: true } }
+      );
+
+      // Delete the seller's account
+      const deletedSeller = await seller.findByIdAndDelete(sellerId);
+      if (deletedSeller) {
+        return res.status(200).json({
+          success: true,
+          message:
+            "Seller account and all associated products deleted successfully.",
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: "Seller not found.",
+        });
+      }
+    } else {
+      // If there are conflicting carts, return an error response
       return res.status(403).json({
         success: false,
         message:
-          "Cannot delete account. You have upcoming orders with future drop-off dates.",
-      });
-    }
-
-    // Mark all products associated with the seller as deleted
-    await product.updateMany(
-      { sellerId: sellerId },
-      { $set: { isDeleted: true } }
-    );
-
-    // Proceed to delete the seller's account
-    const deletedSeller = await seller.findByIdAndDelete(sellerId);
-    if (deletedSeller) {
-      return res.status(200).json({
-        success: true,
-        message:
-          "Seller account and all associated products deleted successfully.",
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: "Seller not found.",
+          "Cannot delete account. You have upcoming orders with future drop-off dates that include your products.",
       });
     }
   } catch (error) {

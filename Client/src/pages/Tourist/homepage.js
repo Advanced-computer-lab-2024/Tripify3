@@ -40,7 +40,7 @@ const hotels = [
 
 const TouristHomepage = () => {
   const navigate = useNavigate(); // Hook to navigate to the chatbot page
-
+  
   return (
 
     <Card

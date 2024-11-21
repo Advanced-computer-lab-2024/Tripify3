@@ -1,9 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography,Checkbox ,ListItemText , TextField, Button, Select, MenuItem, InputLabel, FormControl, Card, CardContent, CardHeader, Dialog, DialogTitle, DialogContent, DialogActions, Avatar } from "@mui/material";
+
+import {
+  Box,
+  Typography,
+  Checkbox,
+  ListItemText,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Avatar,} from "@mui/material";
+
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera } from "react-icons/fa";
-import { getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
-import { getUserId } from "../../utils/authUtils.js";
+import { getAllTags, getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
+import { getUserId, setUserPreferences } from "../../utils/authUtils.js";
 import Wallet from "./wallet.js";
 
 const TouristProfile = () => {
@@ -12,13 +32,7 @@ const TouristProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [redeemSuccess, setRedeemSuccess] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState("");
-  const vacationOptions = [
-    { value: "historic", label: "Historic Areas" },
-    { value: "beach", label: "Beaches" },
-    { value: "familyFriendly", label: "Family-Friendly" },
-    { value: "shopping", label: "Shopping" },
-    { value: "budget", label: "Budget Travel" },
-  ];
+  const [vacationOptions, setVacationOptions] = useState([]);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -81,7 +95,17 @@ const TouristProfile = () => {
       }
     };
 
+    const fetchTags = async () => {
+      try {
+        const response = await getAllTags();
+        setVacationOptions(response.data.tags.map((tag) => ({ value: tag.name, label: tag.name })));
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+
     fetchProfile();
+    fetchTags();
   }, [userId]);
 
   const handleChange = (e) => {
@@ -117,6 +141,7 @@ const TouristProfile = () => {
       const response = await updateProfile(userId, formData);
       setUserProfile(response.data.userProfile);
       setIsEditing(false);
+      setUserPreferences(formData.preferences);
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -147,6 +172,14 @@ const TouristProfile = () => {
 
   const handleCloseRedeemSuccess = () => {
     setRedeemSuccess(false);
+  };
+
+  const handlePreferencesChange = (e) => {
+    const { value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      preferences: typeof value === "string" ? value.split(",") : value,
+    }));
   };
 
   return (
@@ -288,13 +321,7 @@ const TouristProfile = () => {
                   value={formData.preferences}
                   multiple
                   disabled={!isEditing}
-                  onChange={(e) => {
-                    const { value } = e.target;
-                    setFormData((prev) => ({
-                      ...prev,
-                      preferences: typeof value === "string" ? value.split(",") : value,
-                    }));
-                  }}
+                  onChange={handlePreferencesChange}
                   renderValue={(selected) => selected.map((pref) => vacationOptions.find((option) => option.value === pref)?.label).join(", ")}
                 >
                   {vacationOptions.map((option) => (

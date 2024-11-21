@@ -4,6 +4,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import PersonIcon from "@mui/icons-material/Person";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import { getUser } from "../../utils/authUtils";
+
 
 // Custom professional theme
 const theme = createTheme({
@@ -29,6 +31,9 @@ const Chatbot = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [botTyping, setBotTyping] = useState(false);
   const chatWindowRef = useRef(null);
+  const user = getUser();
+  const initialMessageSent = useRef(false); // Flag to track initial message
+
 
   const scrollToBottom = () => {
     if (chatWindowRef.current) {
@@ -47,7 +52,9 @@ const Chatbot = () => {
     setBotTyping(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", { message: inputMessage });
+      const response = await axios.post("http://localhost:5000/chat", { message: inputMessage, user_info: user });
+      console.log(user);
+      
       setBotTyping(false);
       const botMessage = { sender: "bot", text: response.data.response };
       setMessages((prev) => [...prev, botMessage]);
@@ -56,6 +63,29 @@ const Chatbot = () => {
       console.error("Error sending message:", error);
     }
   };
+
+  const sendInitialMessage = async () => {
+    if (initialMessageSent.current) return; // Prevent duplicate calls
+    initialMessageSent.current = true;
+
+    setBotTyping(true);
+
+    try {
+      const response = await axios.post("http://localhost:5000/chat", { message: "", user_info: user });
+      setBotTyping(false);
+      const botMessage = { sender: "bot", text: response.data.response };
+      setMessages((prev) => [...prev, botMessage]);
+      scrollToBottom();
+    } catch (error) {
+      console.error("Error sending initial message:", error);
+      setBotTyping(false);
+    }
+  };
+
+  useEffect(() => {
+    sendInitialMessage();
+  }, []); // Runs only once when the component mounts
+
 
   useEffect(() => {
     scrollToBottom();

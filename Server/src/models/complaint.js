@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const complaintSchema = new mongoose.Schema({
-  touristId :{
-    type :mongoose.Schema.Types.ObjectId,
+  tourist: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Tourist',
   },
   title: {
@@ -17,16 +17,15 @@ const complaintSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  status: {
-    type: String,
-    enum: ["Open", "In Progress", "Resolved"],
-    default: "Open",
-  },
   status: { 
     type: String, 
     enum: ['Pending', 'Resolved'], 
     default: 'Pending' 
-  }
+  },
+  adminReplies: {
+    type: [String], // Array of strings to hold replies
+    default: [], // Default to an empty array
+  },
 });
 
 const Complaint = mongoose.model("Complaint", complaintSchema);

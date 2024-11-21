@@ -90,6 +90,6 @@ export const putComplaintStatus = async (id, status) => {
   return await axios.put(`${API_URL}/admin/complaint/mark-status/${id}`, { status });
 };
 
-export const postComplaintReply = async (touristId, reply) => {
-  return await axios.post(`${API_URL}/admin/complaint/reply`, { reply, touristId });
+export const postComplaintReply = async (touristId, reply, complaintId) => {
+  return await axios.post(`${API_URL}/admin/complaint/reply`, { reply, touristId,complaintId });
 };

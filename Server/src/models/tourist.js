@@ -26,12 +26,10 @@ const touristSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-
   walletAmount: {
     type: Number,
     default: 0,
   },
-
   gender: {
     type: String,
     enum: ["Male", "Female"],
@@ -57,23 +55,22 @@ const touristSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Cart",
   },
-  preferences: { type: [String],
-     required: false },
+  preferences: { type: [String], required: false },
 
-//added by basil 
+  //added by basil
   currency: {
     type: String,
-    enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP",], // Modify as needed
-    default: "EGP"
+    enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP"], // Modify as needed
+    default: "EGP",
   },
 
-  following: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Tour Guide",
-  }],
-
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tour Guide",
+    },
+  ],
 });
-
 
 touristSchema.virtual("level").get(function () {
   if (this.loyaltyPoints > 500000) {
@@ -90,4 +87,4 @@ touristSchema.set("toObject", { virtuals: true });
 
 const Tourist = User.discriminator("Tourist", touristSchema);
 
-export default Tourist;
+export default Tourist;

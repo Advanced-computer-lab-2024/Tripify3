@@ -26,7 +26,7 @@ import { getUserId } from "../../utils/authUtils";
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getAllItineraries, getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
-import { getUserType } from "../../utils/authUtils.js";
+import { getUserType, getUserPreferences } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
 import { markItineraryInappropriate } from "../../services/admin.js";
@@ -46,6 +46,8 @@ const theme = createTheme({
 const Itineraries = () => {
   const { id } = useParams();
   const userId = getUserId();
+  const userType = getUserType();
+  const userPreferences = userType === "Tourist" ? getUserPreferences() : [];
   const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +58,6 @@ const Itineraries = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [budget, setBudget] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [userType, setUserType] = useState("");
   const [currency, setCurrency] = useState("USD"); // Default currency
 
   const navigate = useNavigate();
@@ -72,10 +73,8 @@ const Itineraries = () => {
       }
     };
 
-    setUserType(getUserType()); // Fetch the user type when component mounts
     const fetchData = async () => {
       try {
-        const userType = getUserType();
         let itinerariesResponse;
         if (userType === "Tourist") {
           itinerariesResponse = await getAllActiveAppropriateIteneraries();
@@ -102,19 +101,17 @@ const Itineraries = () => {
 
   useEffect(() => {
     const filtered = itineraries
-      .filter((itinerary) =>
-        searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true
-      )
-      .filter((itinerary) =>
-        selectedTags.length ? itinerary.tags.some((tag) => selectedTags.includes(tag._id)) : true
-      )
-      .filter((itinerary) => 
-        selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true
-      )
-      .filter((itinerary) => 
-        budget ? itinerary.price <= budget : true
-      );
-  
+      .filter((itinerary) => (searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true))
+      .filter((itinerary) => (selectedTags.length ? itinerary.tags.some((tag) => selectedTags.includes(tag._id)) : true))
+      .filter((itinerary) => (selectedLanguages.length ? selectedLanguages.includes(itinerary.language) : true))
+      .filter((itinerary) => {
+        if (!budget) return true; // If no budget is set, include all itineraries
+        const priceInSelectedCurrency = currency === "EGP" ? itinerary.price : itinerary.price * exchangeRates[currency];
+        return userType === "Tourist" ? priceInSelectedCurrency <= parseFloat(budget) : itinerary.price <= parseFloat(budget);
+      });
+
+    setFilteredItineraries(filtered);
+
     setFilteredItineraries(filtered);
   }, [searchQuery, selectedTags, selectedLanguages, budget, itineraries]);
   
@@ -125,6 +122,11 @@ const Itineraries = () => {
       return 0;
     });
     setFilteredItineraries(sorted);
+  };
+
+  // Get recommended itineraries based on user preferences
+  const getRecommendedItineraries = () => {
+    return itineraries.filter((itinerary) => itinerary.tags.some((tag) => userPreferences.includes(tag.name)));
   };
 
   const handleResetFilters = () => {
@@ -198,6 +200,8 @@ const Itineraries = () => {
   if (error) {
     return <Typography color="error">{error}</Typography>;
   }
+
+  const recommendedItineraries = getRecommendedItineraries();
 
   return (
     <ThemeProvider theme={theme}>
@@ -284,40 +288,49 @@ const Itineraries = () => {
             Reset Filters
           </Button>
         </Box>
-
         <Grid container spacing={3}>
-          {filteredItineraries.map((itinerary) => (
-            <Grid item xs={12} md={6} key={itinerary._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    {itinerary.name}
-                  </Typography>
-                  <Typography>Price: {formatCurrency(itinerary.price)}</Typography>
-                  <Typography>
-                    <strong>Language:</strong> {itinerary.language}
-                  </Typography>
-                  <Typography>
-                    <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(", ")}
-                  </Typography>
+          {filteredItineraries.map((itinerary) => {
+            // Check if the itinerary is recommended for tourists
+            const isRecommended = userType === "Tourist" && recommendedItineraries.some((recommended) => recommended._id === itinerary._id);
 
-                  <Button
-                    component={Link}
-                    to={getUserType() === "Tourist" ? `/tourist/itinerary/${itinerary._id}` : `/tour-guide/itinerary/details/${itinerary._id}`}
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                  >
-                    View Details
-                  </Button>
-                </CardContent>
-                {userType === "Admin" && (
-                  <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
-                    <FlagIcon />
-                  </IconButton>
-                )}
-              </Card>
-            </Grid>
-          ))}
+            return (
+              <Grid item xs={12} md={6} key={itinerary._id}>
+                <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {itinerary.name}
+                    </Typography>
+                    {isRecommended && (
+                      <Typography variant="body2" color="secondary" sx={{ mb: 1 }}>
+                        Recommended
+                      </Typography>
+                    )}
+                    <Typography>Price: {formatCurrency(itinerary.price)}</Typography>
+                    <Typography>
+                      <strong>Language:</strong> {itinerary.language}
+                    </Typography>
+                    <Typography>
+                      <strong>Tags:</strong> {itinerary.tags.map((tag) => tag.name).join(", ")}
+                    </Typography>
+
+                    <Button
+                      component={Link}
+                      to={getUserType() === "Tourist" ? `/tourist/itinerary/${itinerary._id}` : `/tour-guide/itinerary/details/${itinerary._id}`}
+                      variant="contained"
+                      sx={{ mt: 2 }}
+                    >
+                      View Details
+                    </Button>
+                  </CardContent>
+                  {userType === "Admin" && (
+                    <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
+                      <FlagIcon />
+                    </IconButton>
+                  )}
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
       </Box>
     </ThemeProvider>

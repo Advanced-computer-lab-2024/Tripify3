@@ -1,5 +1,6 @@
 import express from "express";
-import {getReview, createBooking, cancelBooking, getAllBookings, getTourGuideProfile } from "../controllers/tourist/booking.controller.js";
+import { createBooking, cancelBooking, getAllBookings, getTourGuideProfile } from "../controllers/tourist/booking.controller.js";
+import { getReview } from "../controllers/tourist/review.controller.js";
 
 const router = express.Router();
 

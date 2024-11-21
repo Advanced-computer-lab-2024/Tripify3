@@ -6,73 +6,11 @@ import Place from "../../models/place.js";
 import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js"; // Adju
 
-export const getReview = async (req, res) => {
-  const { booking, itemId, type, tourist } = req.params;
-  console.log(req.params);
-  
-  try {
-    // Validate input parameters
-    if (!booking || !itemId || !type || !tourist) {
-      return res.status(400).json({ message: "Booking, itemId, type, and tourist are required." });
-    }
-
-    // Check if type is valid
-    if (!["activity", "itinerary"].includes(type.toLowerCase())) {
-      return res.status(400).json({ message: "Type must be either 'activity' or 'itinerary'." });
-    }
-
-    // Define the search criteria based on type
-    let itemCriteria = { _id: itemId };
-    let model;
-    let review;
-
-    if (type.toLowerCase() === "activity") {
-      model = Activity;
-      
-       review = await Review.findOne({ tourist, booking, [type]: itemId });
-       if (review) {
-        return res.status(200).json({ message: "Review found successfully", review: review});
-      } else {
-        return res.status(200).json({ message: "No review found.", review: {} });
-      }
-    } else if (type.toLowerCase() === "itinerary") {
-      model = Itinerary;
-      const itinerary = await Itinerary.findById(itemId);
-      
-      if (!itinerary) {
-        return res.status(404).json({ message: "Itinerary not found." });
-      }
-      const tourGuideId = itinerary.tourGuide;
-      console.log("----------------------------");
-      console.log(tourGuideId);
-      
-      // Then, search for a review from this tourist for this tour guide on the given booking
-      const tourGuideReview = await Review.findOne({ tourist, booking, tourGuide: tourGuideId });
-      console.log("-------------------------");
-      console.log(tourGuideReview);
-      
-      review = await Review.findOne({ tourist, booking, [type]: itemId });
-      if (review) {
-        return res.status(200).json({ message: "Review found successfully",  tourGuideReview,review});
-      } else {
-        return res.status(200).json({ message: "No review found.", review: {} });
-      }
-    }
-    // Search for an existing review by tourist and booking
-
-
-    // Return review if found, otherwise empty response
-  
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error fetching review", error: error.message });
-  }
-};
-
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
-
+  console.log(req.body);
+  
   try {
     let item;
     // Use a switch statement to find the correct model based on the type
@@ -100,10 +38,33 @@ export const createBooking = async (req, res) => {
     }
 
     // Check if the item was found
-    
-    if (!item && type != 'Hotel' && type != 'Flight' &&  type != 'Transportation') {
+
+    if (!item && type != "Hotel" && type != "Flight" && type != "Transportation") {
       return res.status(404).json({ message: `${type} not found` });
     }
+
+    // Find the tourist by ID and check if they exist
+    const user = await Tourist.findById(tourist);
+    if (!user) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+     
+    let loyaltyPoints = 0;
+    if (user.loyaltyPoints <= 100000) {
+      // Level 1
+      loyaltyPoints = price * 0.5;
+    } else if (user.loyaltyPoints <= 500000) {
+      // Level 2
+      loyaltyPoints = price * 1;
+    } else {
+      // Level 3
+      loyaltyPoints = price * 1.5;
+    }
+
+    // Add loyalty points to tourist's account
+    user.loyaltyPoints = (user.loyaltyPoints || 0) + loyaltyPoints;
+    // Deduct total price from tourist's wallet
+    await user.save(); // Save the updated tourist document
 
     // Create a new booking
     let booking = new Booking({
@@ -113,6 +74,7 @@ export const createBooking = async (req, res) => {
       type,
       details,
     });
+
     if (type === "Itinerary") {
       booking.itinerary = itemId;
     }
@@ -127,7 +89,6 @@ export const createBooking = async (req, res) => {
     }
     await booking.save();
 
-    console.log(booking);
 
     // Add the booking ID to the bookings array in the associated model
 
@@ -174,7 +135,7 @@ export const cancelBooking = async (req, res) => {
     console.log(hoursDifference);
     console.log(new Date(eventDate));
     console.log(currentTime);
-    
+
     if (hoursDifference < 48) {
       return res.status(400).json({
         message: "Cancellations must be made at least 48 hours before the event",
@@ -190,7 +151,6 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: "Failed to cancel booking" });
   }
 };
-
 
 export const getAllBookings = async (req, res) => {
   try {
