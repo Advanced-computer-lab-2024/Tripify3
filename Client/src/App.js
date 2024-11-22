@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import FollowedTourGuides from "./pages/tourist/followedtourguides.js";
 import Signup from "./pages/Auth/Signup.js";
 import Login from "./pages/Auth/Login.js";
-import PlaceDetails from "./pages/tourist/placeDetails.js";
+import PlaceDetails from "./pages/tourist/placedetails.js";
 import ChangePassword from "./pages/tourist/change-password.js";
 import ActivityDetails from "./pages/tourist/activitydetails.js"; // Create this Component
 import EmailInput from "./pages/Auth/ResetPassword/EmailPage.js";
@@ -17,7 +17,7 @@ import TouristProfile from "./pages/tourist/profile.js";
 import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
 import SearchHotels from "./pages/tourist/searchHotels.js";
-import ComplaintForm from "./pages/tourist/complaintForm.js";
+import ComplaintForm from "./pages/tourist/ComplaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import Transportation from "./pages/tourist/transportation.js";
 import AdvertiserAddActivity from "./pages/advertiser/advertiserAddActivity.js";
@@ -40,7 +40,7 @@ import GovernorTags from "./pages/tourismGovernor/tags.js";
 import ToursmGovernorProfile from "./pages/tourismGovernor/profile.js";
 import FileViewer from "./pages/admin/fileViewer.js";
 import Complaints from "./pages/admin/complaints.js";
-
+import SaleReport from "./pages/admin/saleReport.js"
 import TourGuideItinerary from "./pages/tourGuide/tourGuideItineraries.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
 //import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
@@ -206,6 +206,8 @@ const App = () => {
         <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />
         <Route path={`${basePath}/complaints`} element={getLayoutForRole(userRole, <Complaints />)} />
+        <Route path={`${basePath}/saleReport`} element={getLayoutForRole(userRole, <SaleReport />)} />
+
       </Routes>
     </Router>
   );

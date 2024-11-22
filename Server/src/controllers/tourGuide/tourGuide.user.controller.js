@@ -1,6 +1,7 @@
 import TourGuide from "../../models/tourGuide.js"; // Import your Tour Guide model
 import Itinerary from "../../models/itinerary.js";
 import Booking from "../../models/booking.js";
+
 // Update Tour Guide Profile
 export const updateTourGuideProfile = async (req, res) => {
   try {
@@ -92,5 +93,43 @@ export const deleteTourGuideAccount = async (req, res) => {
   } catch (error) {
     console.error("Error deleting account:", error);
     res.status(500).json({ message: "Error deleting the account and itineraries" });
+  }
+};
+
+export const getPaidItinerariesAndRevenue = async (req, res) => {
+  try {
+    // Get the tour guide ID from the request parameters
+    const { id: tourGuideId } = req.params;
+
+    if (!tourGuideId) {
+      return res.status(400).json({ message: "Tour guide ID is required." });
+    }
+
+    // Find itineraries related to the tour guide
+    const itineraries = await Itinerary.find({ tourGuide: tourGuideId });
+
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: "No itineraries found for this tour guide." });
+    }
+
+    // Extract itinerary IDs
+    const itineraryIds = itineraries.map((itinerary) => itinerary._id);
+
+    // Fetch paid bookings related to the itineraries
+    const paidBookings = await Booking.find({
+      itinerary: { $in: itineraryIds },
+      paymentStatus: "Paid",
+    });
+
+    // Calculate total revenue
+    const totalRevenue = paidBookings.reduce((sum, booking) => sum + booking.price, 0);
+
+    res.status(200).json({
+      numberOfPaidItineraries: paidBookings.length,
+      totalRevenue,
+    });
+  } catch (error) {
+    console.error("Error fetching paid itineraries and revenue:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

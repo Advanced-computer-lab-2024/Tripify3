@@ -99,8 +99,8 @@ const AdminSidebar = () => {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton component={Link} to="/admin/ayahag" sx={subLinkStyle}>
-                Ayahag
+              <ListItemButton component={Link} to="/admin/saleReport" sx={subLinkStyle}>
+                Sales Report
               </ListItemButton>
             </ListItem>
           </List>
