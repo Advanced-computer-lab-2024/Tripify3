@@ -189,7 +189,6 @@ export const deleteAdvertiserAccount = async (req, res) => {
 };
 
 
-
 export const getAdvertiserActivityRevenue = async (req, res) => {
   try {
     const { id: advertiserId } = req.params; // Get the advertiser ID from the request parameters
@@ -199,7 +198,7 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
     }
 
     // Step 1: Find all activities by the advertiser
-    const activities = await Activity.find({ advertiser: advertiserId }).select("_id name price");
+    const activities = await Activity.find({ advertiser: advertiserId }).select("_id name price date");
 
     if (activities.length === 0) {
       return res.status(404).json({ message: "No activities found for this advertiser." });
@@ -239,6 +238,7 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
       return {
         activityId: activity._id,
         activityName: activity.name,
+        activityDate: activity.date,  // Include activity date here
         bookingCount: bookingsForActivity.length,
         revenue: totalRevenueForActivity,
         distinctUsers: distinctUsers.size,
@@ -259,4 +259,5 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
