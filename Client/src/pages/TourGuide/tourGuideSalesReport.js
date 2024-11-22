@@ -14,6 +14,7 @@ const TourGuideSalesReport = () => {
   const [filteredData, setFilteredData] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedItinerary, setSelectedItinerary] = useState(null); // New state for itinerary filter
 
   const userId = getUserId(); // Get the userId for the API request
 
@@ -30,18 +31,23 @@ const TourGuideSalesReport = () => {
     fetchSalesData();
   }, [userId]);
 
-  // Filter data based on selected month or date
+  // Filter data based on selected month, date, or itinerary
   const handleMonthChange = (month) => {
     setSelectedMonth(month);
-    filterData(month, selectedDate);
+    filterData(month, selectedDate, selectedItinerary);
   };
 
   const handleDateChange = (date, dateString) => {
     setSelectedDate(dateString);
-    filterData(selectedMonth, dateString);
+    filterData(selectedMonth, dateString, selectedItinerary);
   };
 
-  const filterData = (month, date) => {
+  const handleItineraryChange = (itinerary) => {
+    setSelectedItinerary(itinerary);
+    filterData(selectedMonth, selectedDate, itinerary);
+  };
+
+  const filterData = (month, date, itinerary) => {
     let filtered = salesData?.itineraries || [];
 
     if (month) {
@@ -50,6 +56,10 @@ const TourGuideSalesReport = () => {
 
     if (date) {
       filtered = filtered.filter(item => dayjs(item.startDate).format('YYYY-MM-DD') === date);
+    }
+
+    if (itinerary) {
+      filtered = filtered.filter(item => item.itineraryName === itinerary);
     }
 
     setFilteredData({
@@ -62,6 +72,7 @@ const TourGuideSalesReport = () => {
   const resetFilters = () => {
     setSelectedMonth(null);
     setSelectedDate(null);
+    setSelectedItinerary(null);
     setFilteredData(salesData); // Reset filtered data to original state
   };
 
@@ -97,6 +108,9 @@ const TourGuideSalesReport = () => {
     month,
     revenue: barData[month],
   }));
+
+  // Get all distinct itinerary names for the filter dropdown
+  const itineraryOptions = [...new Set((salesData?.itineraries || []).map(item => item.itineraryName))];
 
   // Table columns configuration
   const columns = [
@@ -171,6 +185,16 @@ const TourGuideSalesReport = () => {
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD"
               />
+              <Select
+                placeholder="Filter by itinerary"
+                value={selectedItinerary}
+                onChange={handleItineraryChange}
+                style={{ width: '100%' }}
+              >
+                {itineraryOptions.map((itinerary) => (
+                  <Option key={itinerary} value={itinerary}>{itinerary}</Option>
+                ))}
+              </Select>
               <Button type="primary" onClick={resetFilters} style={{ width: '100%' }}>
                 Reset Filters
               </Button>
@@ -216,26 +240,21 @@ const TourGuideSalesReport = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="revenue" fill="#8884d8" />
+                <Bar dataKey="revenue" fill="#82ca9d" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
         </Col>
       </Row>
 
-      {/* Table of Itinerary Sales Data */}
-      <Row gutter={16} style={{ marginTop: '20px' }}>
-        <Col span={24}>
-          <Card title="Itinerary Sales Data">
-            <Table
-              columns={columns}
-              dataSource={filteredData?.itineraries || []}
-              pagination={{ pageSize: 5 }}
-              rowKey="itineraryName"
-            />
-          </Card>
-        </Col>
-      </Row>
+      {/* Table to Display Itinerary Sales */}
+      <Table
+        columns={columns}
+        dataSource={filteredData?.itineraries || []}
+        pagination={{ pageSize: 5 }}
+        rowKey="itineraryName"
+        style={{ marginTop: '20px' }}
+      />
     </div>
   );
 };

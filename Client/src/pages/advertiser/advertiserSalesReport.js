@@ -13,6 +13,7 @@ const AdvertiserSalesReport = () => {
   const [filteredData, setFilteredData] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null); // New state for activity filter
 
   const userId = getUserId(); // Get the userId for the API request
 
@@ -29,18 +30,23 @@ const AdvertiserSalesReport = () => {
     fetchSalesData();
   }, [userId]);
 
-  // Filter data based on selected month or date
+  // Filter data based on selected month, date, or activity
   const handleMonthChange = (month) => {
     setSelectedMonth(month);
-    filterData(month, selectedDate);
+    filterData(month, selectedDate, selectedActivity);
   };
 
   const handleDateChange = (date, dateString) => {
     setSelectedDate(dateString);
-    filterData(selectedMonth, dateString);
+    filterData(selectedMonth, dateString, selectedActivity);
   };
 
-  const filterData = (month, date) => {
+  const handleActivityChange = (activity) => {
+    setSelectedActivity(activity);
+    filterData(selectedMonth, selectedDate, activity);
+  };
+
+  const filterData = (month, date, activity) => {
     let filtered = salesData?.activityStats || [];
 
     if (month) {
@@ -49,6 +55,10 @@ const AdvertiserSalesReport = () => {
 
     if (date) {
       filtered = filtered.filter(item => dayjs(item.activityDate).format('YYYY-MM-DD') === date);
+    }
+
+    if (activity) {
+      filtered = filtered.filter(item => item.activityName === activity);
     }
 
     setFilteredData({
@@ -61,6 +71,7 @@ const AdvertiserSalesReport = () => {
   const resetFilters = () => {
     setSelectedMonth(null);
     setSelectedDate(null);
+    setSelectedActivity(null); // Reset activity filter
     setFilteredData(salesData); // Reset filtered data to original state
   };
 
@@ -131,6 +142,9 @@ const AdvertiserSalesReport = () => {
     },
   ];
 
+  // Get distinct activity names for the filter dropdown
+  const activityOptions = [...new Set((salesData?.activityStats || []).map(item => item.activityName))];
+
   return (
     <div style={{ padding: '20px' }}>
       <Title level={2}>Advertiser Sales Report</Title>
@@ -170,6 +184,16 @@ const AdvertiserSalesReport = () => {
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD"
               />
+              <Select
+                placeholder="Filter by activity"
+                value={selectedActivity}
+                onChange={handleActivityChange}
+                style={{ width: '100%' }}
+              >
+                {activityOptions.map((activity) => (
+                  <Option key={activity} value={activity}>{activity}</Option>
+                ))}
+              </Select>
               <Button type="primary" onClick={resetFilters} style={{ width: '100%' }}>
                 Reset Filters
               </Button>
@@ -227,10 +251,10 @@ const AdvertiserSalesReport = () => {
         <Col span={24}>
           <Card title="Activity Sales Data">
             <Table
+              dataSource={filteredData?.activityStats}
               columns={columns}
-              dataSource={filteredData?.activityStats || []}
+              rowKey="activityName"
               pagination={{ pageSize: 5 }}
-              rowKey="activityId"
             />
           </Card>
         </Col>
