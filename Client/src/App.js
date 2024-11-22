@@ -26,7 +26,7 @@ import OrdersPage from "./pages/tourist/orders.js";
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
 import Activities from "./pages/tourist/activities.js";
-
+import SalesReport from "./pages/seller/salesReport.js"
 import Categories from "./pages/admin/categories.js";
 import ItinerariesDetails from "./pages/tourist/itinerarydetails.js";
 import TourGuideActivities from "./pages/advertiser/advertiserActivities.js";
@@ -187,6 +187,8 @@ const App = () => {
         
         <Route path={`/tour-guide/salesReport`} element={getLayoutForRole(userRole, <TourGuideSalesReport />)} />
         <Route path={`/advertiser/salesReport`} element={getLayoutForRole(userRole, <AdvertiserSalesReport />)} />
+        
+        <Route path={`/seller/salesReport`} element={getLayoutForRole(userRole, <SalesReport />)} />
 
         <Route path={`/tour-guide/itinerary/details/:id`} element={getLayoutForRole(userRole, <TourGuideItineraryDetails />)} />
         <Route path={`/tour-guide/itinerary/edit/:id`} element={getLayoutForRole(userRole, <TourGuideEditItinerary />)} />

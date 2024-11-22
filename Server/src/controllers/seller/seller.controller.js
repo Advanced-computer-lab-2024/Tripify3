@@ -548,3 +548,70 @@ export const deleteSellerAccount = async (req, res) => {
     });
   }
 };
+
+export const getSellerRevenue = async (req, res) => {
+  try {
+    // Step 1: Get the seller's user ID from the URL path
+    const sellerId = req.params.sellerId;
+
+    if (!sellerId) {
+      return res.status(400).json({ message: "Seller ID is required" });
+    }
+
+    // Step 2: Fetch all orders with 'Paid' status
+    const paidOrders = await Order.find({ paymentStatus: "Unpaid" }).populate("cart");
+
+    let totalRevenue = 0;
+    let productsSold = {};
+
+    // Step 3: Iterate over orders and calculate revenue for this seller
+    for (const order of paidOrders) {
+      const cart = await Cart.findById(order.cart).populate("products.product");
+
+      for (const cartItem of cart.products) {
+        const product = cartItem.product;
+
+        // Check if the product belongs to this seller
+        if (product.sellerId.toString() === sellerId.toString()) {
+          const revenueFromProduct = product.price * cartItem.quantity;
+
+          // Add product revenue to total
+          totalRevenue += revenueFromProduct;
+
+          // Track product sales details
+          if (!productsSold[product._id]) {
+            productsSold[product._id] = {
+              name: product.name,
+              price: product.price,
+              quantitySold: 0,
+              revenue: 0,
+              saleDates: [], // New field to track sale dates
+            };
+          }
+          productsSold[product._id].quantitySold += cartItem.quantity;
+          productsSold[product._id].revenue += revenueFromProduct;
+
+          // Add full sale date to the product's saleDates array
+          const saleDate = order.orderDate.toISOString(); // ISO format for consistency
+          productsSold[product._id].saleDates.push(saleDate);
+        }
+      }
+    }
+
+    // Convert productsSold to an array for better response structure
+    const productDetails = Object.values(productsSold);
+
+    // Step 4: Return response
+    res.status(200).json({
+      sellerId,
+      totalRevenue,
+      products: productDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching seller revenue:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
+

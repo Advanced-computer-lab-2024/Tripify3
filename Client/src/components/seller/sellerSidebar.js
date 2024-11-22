@@ -34,6 +34,12 @@ const SellerSidebar = () => {
           </ListItemButton>
         </ListItem>
 
+        <ListItem disablePadding>
+        <ListItemButton component={Link} to="/seller/salesReport" sx={linkStyle}>
+           Sales Report
+          </ListItemButton>
+        </ListItem>
+
        
         
       </List>

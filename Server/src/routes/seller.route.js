@@ -23,6 +23,7 @@ import {
   getSalesHistory,
   SearchProductById,
   deleteSellerAccount,
+  getSellerRevenue
 } from "../controllers/seller/seller.controller.js";
 const router = express.Router();
 //search for a seller by username
@@ -75,4 +76,6 @@ router.put(
 router.get("/uploads/:sellerId/:filename", getImage);
 router.delete("/uploads/:sellerId/:filename", deleteImage);
 router.get("/access/seller/SearchProductById", SearchProductById);
+router.get('/revenue/:sellerId', getSellerRevenue);
+
 export default router;
