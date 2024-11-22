@@ -187,3 +187,60 @@ export const deleteAdvertiserAccount = async (req, res) => {
     res.status(500).json({ message: 'Error deleting the account and itineraries' });
   }
 };
+
+export const getAdvertiserActivityRevenue = async (req, res) => {
+  try {
+    const { id: advertiserId } = req.params; // Get the advertiser ID from the request parameters
+
+    if (!advertiserId) {
+      return res.status(400).json({ message: "Advertiser ID is required." });
+    }
+
+    // Step 1: Find all activities by the advertiser
+    const activities = await Activity.find({ advertiser: advertiserId }).select("_id name price");
+
+    if (activities.length === 0) {
+      return res.status(404).json({ message: "No activities found for this advertiser." });
+    }
+
+    // Step 2: Extract activity IDs
+    const activityIds = activities.map((activity) => activity._id);
+
+    // Step 3: Find paid bookings related to these activities
+    const paidBookings = await Booking.find({
+      activity: { $in: activityIds },
+      paymentStatus: "Paid",
+    });
+
+    // Step 4: Aggregate data for each activity
+    const activityStats = activities.map((activity) => {
+      const bookingsForActivity = paidBookings.filter(
+        (booking) => booking.activity.toString() === activity._id.toString()
+      );
+
+      const totalRevenueForActivity = bookingsForActivity.reduce(
+        (sum, booking) => sum + booking.price,
+        0
+      );
+
+      return {
+        activityId: activity._id,
+        activityName: activity.name,
+        bookingCount: bookingsForActivity.length,
+        revenue: totalRevenueForActivity,
+      };
+    });
+
+    // Step 5: Calculate total revenue across all activities
+    const totalRevenue = activityStats.reduce((sum, stat) => sum + stat.revenue, 0);
+
+    res.status(200).json({
+      totalRevenue,
+      numberOfPaidActivities: paidBookings.length,
+      activityStats,
+    });
+  } catch (error) {
+    console.error("Error fetching advertiser activity revenue:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
