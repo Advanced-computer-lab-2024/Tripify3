@@ -146,6 +146,23 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
       const startDate = itinerary.timeline.startTime;
       const startMonth = startDate.toLocaleString("default", { month: "long" });
 
+      // Get the booking date and month
+      const bookingDates = await Booking.aggregate([
+        { $match: { itinerary: itinerary._id, paymentStatus: "Paid" } },
+        { $project: { date: 1 } },
+        { $group: { _id: null, bookingDates: { $push: "$date" } } }
+      ]);
+
+      const formattedBookingDates = bookingDates.length > 0 ? bookingDates[0].bookingDates : [];
+
+      // Format the dates and months for each booking
+      const formattedBookings = formattedBookingDates.map((date) => {
+        const bookingDate = new Date(date);
+        const month = bookingDate.toLocaleString("default", { month: "long" });
+        const day = bookingDate.getDate();
+        return { date: bookingDate, month, day };
+      });
+
       result.push({
         itineraryName: itinerary.name,
         numberOfBookings: paidBookings.length, // Number of distinct bookings
@@ -153,6 +170,7 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
         distinctUsersCount, // Number of distinct users who booked this itinerary
         startDate: startDate,
         startMonth: startMonth,
+        bookingDetails: formattedBookings, // Include booking date and month
       });
     }
 
@@ -171,6 +189,8 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
 
 
 
