@@ -188,6 +188,8 @@ export const deleteAdvertiserAccount = async (req, res) => {
   }
 };
 
+
+
 export const getAdvertiserActivityRevenue = async (req, res) => {
   try {
     const { id: advertiserId } = req.params; // Get the advertiser ID from the request parameters
@@ -223,11 +225,24 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
         0
       );
 
+      // Get distinct users who booked this activity
+      const distinctUsers = new Set(
+        bookingsForActivity.map((booking) => booking.tourist.toString())
+      );
+
+      // Extract booking dates and months
+      const bookingDatesAndMonths = bookingsForActivity.map((booking) => ({
+        date: booking.date,
+        month: booking.date.getMonth() + 1, // Months are zero-indexed in JavaScript
+      }));
+
       return {
         activityId: activity._id,
         activityName: activity.name,
         bookingCount: bookingsForActivity.length,
         revenue: totalRevenueForActivity,
+        distinctUsers: distinctUsers.size,
+        bookingDatesAndMonths,
       };
     });
 
@@ -244,3 +259,4 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+

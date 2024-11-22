@@ -96,61 +96,64 @@ export const deleteTourGuideAccount = async (req, res) => {
   }
 };
 
+
+// Get Paid Itineraries and Revenue for a specific tour guide
 export const getPaidItinerariesAndRevenue = async (req, res) => {
   try {
-    // Get the tour guide ID from the request parameters
-    const { id: tourGuideId } = req.params;
+    const { id: tourGuideId } = req.params; // Get the tour guide ID from the request params
 
     if (!tourGuideId) {
       return res.status(400).json({ message: "Tour guide ID is required." });
     }
 
-    // Find itineraries related to the tour guide
-    const itineraries = await Itinerary.find({ tourGuide: tourGuideId }).select("_id name");
+    // Fetch itineraries for the tour guide
+    const itineraries = await Itinerary.find({ tourGuide: tourGuideId });
 
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No itineraries found for this tour guide." });
     }
 
-    // Extract itinerary IDs
-    const itineraryIds = itineraries.map((itinerary) => itinerary._id);
+    const result = [];
 
-    // Fetch paid bookings related to the itineraries
-    const paidBookings = await Booking.find({
-      itinerary: { $in: itineraryIds },
-      paymentStatus: "Paid",
-    });
+    // Loop through each itinerary to fetch the necessary data
+    for (let itinerary of itineraries) {
+      // Fetch paid bookings for this itinerary
+      const paidBookings = await Booking.find({
+        itinerary: itinerary._id,
+        paymentStatus: "Paid",
+      });
 
-    // Group bookings by itinerary and calculate revenue and count for each
-    const itineraryStats = itineraries.map((itinerary) => {
-      const bookingsForItinerary = paidBookings.filter(
-        (booking) => booking.itinerary.toString() === itinerary._id.toString()
-      );
+      // Calculate total revenue and the number of bookings
+      const revenue = paidBookings.reduce((sum, booking) => sum + booking.price, 0);
+      const bookingCount = paidBookings.length;
 
-      const totalRevenueForItinerary = bookingsForItinerary.reduce(
-        (sum, booking) => sum + booking.price,
-        0
-      );
+      // Get the start date and month of the itinerary
+      const startDate = itinerary.timeline.startTime;
+      const startMonth = startDate.toLocaleString("default", { month: "long" });
 
-      return {
-        itineraryId: itinerary._id,
+      result.push({
         itineraryName: itinerary.name,
-        bookingCount: bookingsForItinerary.length,
-        revenue: totalRevenueForItinerary,
-      };
-    });
+        numberOfBookings: bookingCount,
+        revenueFromItinerary: revenue,
+        startDate: startDate,
+        startMonth: startMonth,
+      });
+    }
 
-    // Calculate total revenue across all itineraries
-    const totalRevenue = itineraryStats.reduce((sum, stat) => sum + stat.revenue, 0);
+    // Calculate total revenue from all paid bookings
+    const totalRevenue = result.reduce((sum, item) => sum + item.revenueFromItinerary, 0);
 
+    // Return the results
     res.status(200).json({
       totalRevenue,
-      numberOfPaidItineraries: paidBookings.length,
-      itineraryStats,
+      itineraries: result,
     });
   } catch (error) {
     console.error("Error fetching paid itineraries and revenue:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+
 

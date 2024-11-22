@@ -48,6 +48,12 @@ const TourGuideSidebar = () => {
           </ListItemButton>
         </ListItem>
 
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/tour-guide/salesReport" sx={linkStyle}>
+            Sales Report
+          </ListItemButton>
+        </ListItem>
+
     
       </List>
     </Box>

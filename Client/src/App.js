@@ -33,7 +33,7 @@ import TourGuideActivities from "./pages/advertiser/advertiserActivities.js";
 import TourGuideItineraryDetails from "./pages/tourGuide/tourGuideItineraryDetails.js";
 import TourGuideCreateItinerary from "./pages/tourGuide/createItinerary.js";
 import TourGuideEditItinerary from "./pages/tourGuide/tourGuideEditItinerary.js";
-
+import TourGuideSalesReport from "./pages/tourGuide/tourGuideSalesReport.js"
 import TourismGovernorEditPlace from "./pages/tourismGovernor/tourismGovernorEditPlace.js";
 import GovernorTags from "./pages/tourismGovernor/tags.js";
 
@@ -184,6 +184,9 @@ const App = () => {
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />
+        
+        <Route path={`/tour-guide/salesReport`} element={getLayoutForRole(userRole, <TourGuideSalesReport />)} />
+
         <Route path={`/tour-guide/itinerary/details/:id`} element={getLayoutForRole(userRole, <TourGuideItineraryDetails />)} />
         <Route path={`/tour-guide/itinerary/edit/:id`} element={getLayoutForRole(userRole, <TourGuideEditItinerary />)} />
         <Route path={`/tour-guide/create-itinerary`} element={getLayoutForRole(userRole, <TourGuideCreateItinerary />)} />
@@ -207,7 +210,6 @@ const App = () => {
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />
         <Route path={`${basePath}/complaints`} element={getLayoutForRole(userRole, <Complaints />)} />
         <Route path={`${basePath}/saleReport`} element={getLayoutForRole(userRole, <SaleReport />)} />
-
       </Routes>
     </Router>
   );
