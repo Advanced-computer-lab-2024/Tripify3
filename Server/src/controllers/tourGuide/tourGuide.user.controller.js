@@ -106,7 +106,7 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
     }
 
     // Find itineraries related to the tour guide
-    const itineraries = await Itinerary.find({ tourGuide: tourGuideId });
+    const itineraries = await Itinerary.find({ tourGuide: tourGuideId }).select("_id name");
 
     if (itineraries.length === 0) {
       return res.status(404).json({ message: "No itineraries found for this tour guide." });
@@ -121,15 +121,36 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
       paymentStatus: "Paid",
     });
 
-    // Calculate total revenue
-    const totalRevenue = paidBookings.reduce((sum, booking) => sum + booking.price, 0);
+    // Group bookings by itinerary and calculate revenue and count for each
+    const itineraryStats = itineraries.map((itinerary) => {
+      const bookingsForItinerary = paidBookings.filter(
+        (booking) => booking.itinerary.toString() === itinerary._id.toString()
+      );
+
+      const totalRevenueForItinerary = bookingsForItinerary.reduce(
+        (sum, booking) => sum + booking.price,
+        0
+      );
+
+      return {
+        itineraryId: itinerary._id,
+        itineraryName: itinerary.name,
+        bookingCount: bookingsForItinerary.length,
+        revenue: totalRevenueForItinerary,
+      };
+    });
+
+    // Calculate total revenue across all itineraries
+    const totalRevenue = itineraryStats.reduce((sum, stat) => sum + stat.revenue, 0);
 
     res.status(200).json({
-      numberOfPaidItineraries: paidBookings.length,
       totalRevenue,
+      numberOfPaidItineraries: paidBookings.length,
+      itineraryStats,
     });
   } catch (error) {
     console.error("Error fetching paid itineraries and revenue:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
