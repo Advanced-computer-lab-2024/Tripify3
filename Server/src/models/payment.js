@@ -14,6 +14,8 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ["Pending", "Completed", "Failed"], default: "Completed" },
   cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
   booking: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
+  type: { type: String, enum: ["Event", "Itinerary", "Products"] },
+
 });
 
 
