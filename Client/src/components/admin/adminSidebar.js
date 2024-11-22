@@ -93,6 +93,11 @@ const AdminSidebar = () => {
         </ListItem>
         <Collapse in={showAnalytics} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
+          <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/userData" sx={subLinkStyle}>
+                User stats
+              </ListItemButton>
+            </ListItem>
             <ListItem disablePadding>
               <ListItemButton component={Link} to="/admin/complaints" sx={subLinkStyle}>
                 Complaints
@@ -103,6 +108,8 @@ const AdminSidebar = () => {
                 Sales Report
               </ListItemButton>
             </ListItem>
+
+            
           </List>
         </Collapse>
       </List>

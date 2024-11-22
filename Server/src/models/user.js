@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-  }, 
+  },
   email: {
     type: String,
   },
@@ -22,7 +22,11 @@ const userSchema = new mongoose.Schema({
   hasAcceptedTerms: {
     type: Boolean,
     default: false,  // Default to false, indicating they haven't accepted yet
-  }
+  },
+  joinDate: {
+    type: Date,
+    default: Date.now,  // Automatically sets the current date and time when the user is created
+  },
 });
 
 const User = mongoose.model("User", userSchema);

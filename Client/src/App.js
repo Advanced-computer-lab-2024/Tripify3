@@ -45,7 +45,6 @@ import TourGuideItinerary from "./pages/tourGuide/tourGuideItineraries.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
 //import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 import BookingDetails from "./pages/tourist/bookingDetails.js";
-
 import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
 import AdvertiserActivityDetails from "./pages/advertiser/AdvertiserActivityDetails.js";
 import AdminProfile from "./pages/admin/profile.js";
@@ -78,6 +77,7 @@ import GuestPlaceDetails from "./pages/guest/placeDetails.js";
 import GuestActivities from "./pages/guest/activities.js";
 import GuestItineraries from "./pages/guest/itineraries.js";
 import GuestActivityDetails from "./pages/guest/activitydetails.js";
+import UserData from "./pages/admin/userData.js"
 // Mock function to get the current user role
 const getUserRole = () => {
   return getUserType(); // can be "admin", "seller", etc.
@@ -211,6 +211,8 @@ const App = () => {
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />
         <Route path={`${basePath}/complaints`} element={getLayoutForRole(userRole, <Complaints />)} />
         <Route path={`${basePath}/saleReport`} element={getLayoutForRole(userRole, <SaleReport />)} />
+        <Route path={`/admin/userData`} element={getLayoutForRole(userRole, <UserData />)} />
+
       </Routes>
     </Router>
   );

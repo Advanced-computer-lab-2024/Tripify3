@@ -1,8 +1,8 @@
 import express from "express";
-import {markActivityInappropriate,updateUserStatus, findUser,deleteUser, addUser,addCategory,getAllCategories,updateCategory,deleteCategory, getAllAcceptedUsers, getAllPendingUsers, createPromoCode } from "../controllers/admin/admin.user.controller.js";
+import {markActivityInappropriate,updateUserStatus, findUser,deleteUser, addUser,addCategory,getAllCategories,updateCategory,deleteCategory, getAllAcceptedUsers, getAllPendingUsers, createPromoCode, getAllUsersWithJoinDate } from "../controllers/admin/admin.user.controller.js";
 import {getComplaintById, markStatus } from "../controllers/admin/admin.complaint.controller.js";
  const router = express.Router();
-
+router.get('/admin/getAllUsers', getAllUsersWithJoinDate);
 router.get("/admin/findUser", findUser);
 router.get("/users/accepted", getAllAcceptedUsers);
 router.get("/users/pending", getAllPendingUsers);

@@ -300,6 +300,26 @@ const generatePromoCode = () => {
   return code;
 };
 
+export const getAllUsersWithJoinDate = async (req, res) => {
+  try {
+    // Find all users and select the join date along with other details
+    const users = await User.find({}, { username: 1, joinDate: 1, type: 1 });
+
+    // Get the total count of users
+    const totalUsers = await User.countDocuments();
+
+    // Return the response with the users and the total count
+    return res.status(200).json({
+      totalCount: totalUsers,
+      users,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 // Controller to create a promo code for a specific tourist
 export const createPromoCode = async (req, res) => {
   const { touristId, discount, expiryDate } = req.body;
@@ -401,3 +421,5 @@ cron.schedule("0 0 * * *", async () => {
     console.error("Error processing birthday promo codes:", error);
   }
 });
+
+

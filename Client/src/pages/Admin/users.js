@@ -23,6 +23,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Add, Delete, CheckCircle, Cancel, Visibility, VisibilityOff } from "@mui/icons-material";
 import { getUploadedFiles, getAllAcceptedUsers, getAllPendingUsers, updateUserStatus, removeUser, addUser } from "../../services/admin.js";
 import { useNavigate } from "react-router-dom"; // Import useNavigate from React Router
+import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 const theme = createTheme({
   palette: {
@@ -253,6 +254,7 @@ const Users = () => {
         </Dialog>
       </Box>
     </ThemeProvider>
+
   );
 };
 
