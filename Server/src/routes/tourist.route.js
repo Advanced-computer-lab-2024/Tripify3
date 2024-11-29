@@ -13,6 +13,7 @@ import { cancelBooking, createBooking } from "../controllers/tourist/booking.con
 import { updateItinerariesAttended } from "../controllers/tourist/itineraries.controller.js";
 import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
 import { checkoutTouristCart, getOrders, validatePromoCode } from "../controllers/tourist/order.controller.js";
+import { toggleBookmark } from "../controllers/tourist/bookmark.controller.js";
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -63,6 +64,10 @@ router.get("/tourist/get/orders/:userId", getOrders);
 
 // Route
 router.get("/validate-promo/:userId/:code", validatePromoCode);
+
+// Route to toggle an itinerary or activity in bookmarks
+router.post("/toggle-bookmark", toggleBookmark);
+
 
 
 export default router;

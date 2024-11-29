@@ -17,7 +17,7 @@ import TouristProfile from "./pages/tourist/profile.js";
 import SearchFlights from "./pages/tourist/searchFlights.js";
 import LoadFlights from "./pages/tourist/loadFlights.js";
 import SearchHotels from "./pages/tourist/searchHotels.js";
-import ComplaintForm from "./pages/tourist/ComplaintForm.js";
+import ComplaintForm from "./pages/tourist/complaintForm.js";
 import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import Transportation from "./pages/tourist/transportation.js";
 import AdvertiserAddActivity from "./pages/advertiser/advertiserAddActivity.js";

@@ -78,7 +78,7 @@ function product() {
       ];
       const sellerPromises = sellerIds.map((sellerId) =>
         axios.get(
-          `http://localhost:8000/access/seller/findSeller?id=${sellerId}`
+          `http://localhost:8000/access/seller/find/seller?id=${sellerId}`
         )
       );
       const sellerResponses = await Promise.all(sellerPromises);

@@ -33,15 +33,15 @@ export const getUserProfile = async(userId) =>{
 }
 
 export const getAllActiveAppropriateIteneraries = async (userId) => {
-  return await axios.get(`${API_URL}/itineraries/active/appropriate/get`);
+  return await axios.get(`${API_URL}/itineraries/active/appropriate/get/${userId}`);
 };
 
 export const getAllActivities = async () => {
   return await axios.get(`${API_URL}/activity/get`);
 };
 
-export const getAllActivitiesForTourist = async () => {
-  return await axios.get(`${API_URL}/tourist/activity/get`);
+export const getAllActivitiesForTourist = async (userId) => {
+  return await axios.get(`${API_URL}/tourist/activity/get/${userId}`);
 };
 
 export const getAllActivitiesForAdvertiser = async (userId) => {
@@ -62,4 +62,9 @@ export const getPlaceById =async(placeid)=>{
 export const updateProfile = async (userId, formData) => {
   return await axios.put(`${API_URL}/tourist/profile/${userId}`, formData);
 };
+
+export const toggleBookmark = async ( formData) => {
+  return await axios.post(`${API_URL}/toggle-bookmark`, formData);
+};
+  
   

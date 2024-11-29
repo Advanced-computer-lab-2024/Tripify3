@@ -1,14 +1,11 @@
 import Itinerary from "../../models/itinerary.js";
 import User from "../../models/user.js";
 import Tag from "../../models/user.js";
-import TourGuide from "../../models/tourGuide.js";
-import Activity from "../../models/activity.js";
-import Place from "../../models/place.js";
+import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js";
 import Booking from "../../models/booking.js";
 import mongoose from "mongoose";
 import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
-// Edit itinerary inappropriate attribute
 
 export const editItineraryAttribute = async (req, res) => {
   const { id } = req.params; // Get itinerary ID from request parameters
@@ -32,13 +29,35 @@ export const editItineraryAttribute = async (req, res) => {
       return res.status(404).json({ message: "Itinerary not found" });
     }
 
+    let notificationMessage;
+
     // Send notification email to the tour guide
     if (updatedItinerary.inappropriate) {
       const tourGuide = updatedItinerary.tourGuide;
       await sendFlagNotificationEmail(tourGuide, updatedItinerary.name, "Itinerary");
+
+      notificationMessage = `Your itinerary "${updatedItinerary.name}" has been flagged as inappropriate by the admin. It will no longer be visible to tourists. Please review the content and make necessary adjustments. If you believe this is a mistake, feel free to contact support.`;
+
+      // Save the notification in the database
+      const notification = new Notification({
+        user: tourGuide._id, // Assuming `seller` is the seller's user ID
+        message: notificationMessage,
+      });
+
+      await notification.save();
     } else {
       const tourGuide = updatedItinerary.tourGuide;
       await sendContentRestoredNotificationEmail(tourGuide, updatedItinerary.name, "Itinerary");
+
+      notificationMessage = `Good news! Your itinerary "${updatedItinerary.name}" has been reviewed and is now deemed appropriate. It is visible to tourists again. Thank you for maintaining quality content!`;
+
+      // Save the notification in the database
+      const notification = new Notification({
+        user: tourGuide._id, // Assuming `seller` is the seller's user ID
+        message: notificationMessage,
+      });
+
+      await notification.save();
     }
 
     res.status(200).json(updatedItinerary); // Return the updated itinerary
@@ -47,7 +66,6 @@ export const editItineraryAttribute = async (req, res) => {
     res.status(500).json({ message: error.message }); // Handle errors
   }
 };
-
 
 export const createItinerary = async (req, res) => {
   try {
@@ -134,6 +152,10 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
   try {
     const currentDate = new Date(); // Define currentDate as the current date and time
 
+    const { userId } = req.params;
+
+    console.log(userId);
+
     const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false, "timeline.startTime": { $gt: currentDate } })
       .populate({
         path: "activities",
@@ -141,7 +163,8 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
           path: "tags",
           select: "name",
         },
-      })  .populate({
+      })
+      .populate({
         path: "tags", // Populate the tags field
         select: "name", // Only retrieve the tag's name
       })
@@ -153,21 +176,24 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
         },
       });
 
-    // Transform the itineraries to include a combined tags array
-    // let response = itineraries.map((itinerary) => {
-    //   const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
-    //   const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
-    //   const combinedTags = [...new Set([...activityTags, ...locationTags])];
+    let bookmarkedItineraries = [];
+    if (userId) {
+      // Fetch the user's bookmarked itineraries
+      const tourist = await Tourist.findById(userId).select("userBookmarkedItineraries");
+      if (tourist) {
+        bookmarkedItineraries = tourist.userBookmarkedItineraries.map((id) => id.toString());
+      }
+    }
 
-    //   return {
-    //     ...itinerary.toObject(),
-    //     tags: combinedTags,
-    //   };
-    // });
+    // Add the `isBookmarked` field to each itinerary
+    const itinerariesWithBookmarkStatus = itineraries.map((itinerary) => ({
+      ...itinerary.toObject(),
+      isBookmarked: bookmarkedItineraries.includes(itinerary._id.toString()),
+    }));
 
     return res.status(200).json({
       message: "Itineraries found successfully",
-      data: itineraries,
+      data: itinerariesWithBookmarkStatus,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -187,7 +213,8 @@ export const getAllItinerariesForTourGuide = async (req, res) => {
           path: "tags", // Populate the tags within activities
           select: "name", // Select only the 'name' field of the tags
         },
-      }).populate({
+      })
+      .populate({
         path: "tags", // Populate the tags field
         select: "name", // Only retrieve the tag's name
       })
@@ -301,7 +328,6 @@ export const deleteItinerary = async (req, res) => {
     itinerary.isDeleted = true;
     await itinerary.save();
     return res.status(200).json({ message: "Itinerary marked as deleted" });
-
   } catch (error) {
     // Log the error for debugging
     console.error("Delete itinerary error: ", error);
@@ -320,9 +346,6 @@ export const deleteItinerary = async (req, res) => {
     return res.status(500).json({ message: "An error occurred while deleting the itinerary. Please try again later." });
   }
 };
-
-
-
 
 export const addActivityToItinerary = async (req, res) => {
   try {

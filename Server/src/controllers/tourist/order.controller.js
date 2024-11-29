@@ -4,6 +4,7 @@ import Product from "../../models/product.js";
 import Cart from "../../models/cart.js";
 import Review from "../../models/review.js";
 import PromoCode from "../../models/promoCode.js";
+import User from "../../models/user.js";
 import Notification from "../../models/notification.js";
 import { sendOutOfStockNotificationEmailToSeller, sendOutOfStockNotificationEmailToAdmin } from "../../middlewares/sendEmail.middleware.js";
 // Controller to get past and upcoming orders based on dropOffDate
@@ -91,6 +92,11 @@ export const getOrders = async (req, res) => {
 
 export const checkoutTouristCart = async (req, res) => {
   const { userId } = req.query;
+  const promoCode = req.body.promoCode;
+
+  console.log(promoCode);
+  console.log("-----------------------------");
+  
   try {
     // Find the tourist by ID and check if they exist
     const tourist = await Tourist.findById(userId).populate("cart");
@@ -105,6 +111,14 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Get cart details and check if wallet balance is sufficient
     const cartDetails = tourist.cart;
+
+    if (promoCode) {
+      cartDetails.promoCode = promoCode / 100;
+    }
+    
+
+    await cartDetails.save();
+    
 
     // Create a new order with the cart details and tourist ID
     const order = new Order({
@@ -123,12 +137,15 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Loop through each product in the cart and update product quantities and sales
     for (const item of cartDetails.products) {
+      console.log(item);
+
       const product = await Product.findById(item.product).populate("sellerId");
 
       if (!product) continue; // Skip if product not found
 
       // Update the product quantity and sales fields
       const quantityPurchased = item.quantity;
+      console.log(quantityPurchased);
       product.quantity -= quantityPurchased;
       // product.sales += product.price * quantityPurchased;
       product.sales += quantityPurchased;
@@ -148,30 +165,54 @@ export const checkoutTouristCart = async (req, res) => {
       await product.save(); // Save the updated product document
     }
 
+    let notificationMessage;
+
     // Send out-of-stock notifications to each seller with relevant products
     for (const sellerId in outOfStockProductsBySeller) {
       const { seller, products } = outOfStockProductsBySeller[sellerId];
       const productNames = products.join(", ");
+      console.log(productNames);
+
       await sendOutOfStockNotificationEmailToSeller(seller, productNames);
 
       // Create a suitable message for the notification
-      const notificationMessage = `The following products are out of stock: ${productNames}. Please restock them to continue sales.`;
+       notificationMessage = `The following products are out of stock: ${productNames}. Please restock them to continue sales.`;
       // Save the notification in the database
       const notification = new Notification({
         user: sellerId, // Assuming `seller` is the seller's user ID
         message: notificationMessage,
       });
 
-      try {
-        await notification.save();
-        console.log(`Notification added for seller ${sellerId}`);
-      } catch (error) {
-        console.error(`Failed to add notification for seller ${sellerId}:`, error);
+      await notification.save();
+    }
+
+    // Notify all admins for all out-of-stock products
+    const adminUsers = await User.find({ type: "Admin" }); 
+    // Flatten all products grouped by sellers into a single list
+    const outOfStockProductNames = Object.values(outOfStockProductsBySeller).flatMap((sellerInfo) => sellerInfo.products);
+
+    console.log("==========================");
+    console.log(outOfStockProductNames);
+    console.log("===========================");
+    
+    for (const admin of adminUsers) {
+      if (outOfStockProductNames.length > 0) {
+        await sendOutOfStockNotificationEmailToAdmin(admin.email, outOfStockProductNames);
       }
+
+        // Create a suitable message for the notification
+        notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
+        // Save the notification in the database
+        const notification = new Notification({
+          user: admin._id, // Assuming `seller` is the seller's user ID
+          message: notificationMessage,
+        });
+  
+        await notification.save();
     }
 
     // Respond with the new order details
-    res.status(201).json({
+    return res.status(201).json({
       message: "Order created successfully, inventory updated, and notifications sent",
       order,
     });

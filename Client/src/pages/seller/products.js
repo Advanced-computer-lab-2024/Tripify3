@@ -14,8 +14,6 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import {getUserProfile } from "../../services/tourist";//////////////////////////////////
 import { useParams, useNavigate } from "react-router-dom";////////////////////////
 
-
-
 import {
   AppBar,
   Toolbar,
@@ -300,19 +298,33 @@ const Products = () => {
 
   const fetchSellerNames = async (products) => {
     try {
-      const sellerIds = [...new Set(products.map((product) => product.sellerId))];
-      const sellerPromises = sellerIds.map((sellerId) => axios.get(`http://localhost:8000/access/seller/findSeller?id=${sellerId}`));
+      // Extract sellerIds or fallback to adminIds if sellerId is null
+      const sellerIds = [
+        ...new Set(
+          products.map((product) => product.sellerId || product.adminId) // Fallback to adminId if sellerId is null
+        ),
+      ];
+  
+      // Fetch seller/admin names for each unique ID
+      const sellerPromises = sellerIds.map((id) =>
+        axios.get(`http://localhost:8000/access/seller/find/seller?id=${id}`)
+      );
+  
       const sellerResponses = await Promise.all(sellerPromises);
+  
+      // Map responses to an object with ID as key and name as value
       const sellerData = sellerResponses.reduce((acc, response) => {
         const { _id, name } = response.data;
         acc[_id] = name;
         return acc;
       }, {});
+  
       setSellerNames(sellerData);
     } catch (error) {
       setErrorMessage("Error fetching seller names: " + error.message);
     }
   };
+  
   const fetchWishList = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/tourist/wishlist/get?touristId=${getUserId()}`);

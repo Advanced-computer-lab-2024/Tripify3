@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
     required: true,
   }, // Reference to the tourist making the order
   orderDate: { type: Date, default: Date.now },
-  paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Unpaid" },
+  paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Paid" },
   cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart", required: true },
   dropOffLocation: { type: String, required: true },
   dropOffDate: { type: Date, required: true },

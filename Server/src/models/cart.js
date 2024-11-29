@@ -31,6 +31,10 @@ const cartSchema = new mongoose.Schema({
     required: true,
     default: 0,
   }, // Total number of products in the cart
+  promoCode: {
+    type: Number,
+    default: 1
+  }
 });
 
 const Cart = mongoose.model("Cart", cartSchema);

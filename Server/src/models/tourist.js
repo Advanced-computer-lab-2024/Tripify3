@@ -42,6 +42,18 @@ const touristSchema = new mongoose.Schema({
     },
   ],
 
+  userBookmarkedItineraries : [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Itinerary",
+    },
+  ],
+  userBookmarkedActivities: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Activity",
+    },
+  ],
   wishlist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Wishlist",

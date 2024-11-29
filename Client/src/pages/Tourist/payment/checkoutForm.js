@@ -89,12 +89,14 @@ export default function CheckoutForm() {
         await axios.post(`http://localhost:8000/tourist/checkout?userId=${userId}`, {
           dropOffLocation: "Cairo International Airport",
           dropOffDate: "2024-12-05T00:00:00.000+00:00",
+          promoCode: discount
         });
 
         await axios.post(`http://localhost:8000/tourist/create/payment`, {
           touristId: userId,
           amount: calculateFinalPrice(),
           paymentMethod: selectedMethod,
+          promoCode
         });
       } else {
         const booking = { tourist: userId, price: calculateFinalPrice(), type, itemId, tickets };
@@ -103,6 +105,7 @@ export default function CheckoutForm() {
           touristId: userId,
           amount: calculateFinalPrice(),
           paymentMethod: selectedMethod,
+          promoCode
         });
       }
       setMessage("Payment successful!");

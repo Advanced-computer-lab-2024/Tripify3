@@ -190,10 +190,3 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-

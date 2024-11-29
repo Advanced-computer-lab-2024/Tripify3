@@ -23,11 +23,7 @@ export const getFollowingTourGuides = async (req, res) => {
 
 export const followTourGuide = async (req, res) => {
   const { touristId, tourGuideId } = req.params; // Extract touristId and tourGuideId from parameters
-  const { follow } = req.body; // Extract touristId and tourGuideId from parameters
-  console.log(follow);
-  console.log(touristId);
-  console.log(tourGuideId);
-  
+  const { follow } = req.body; // Extract touristId and tourGuideId from parameters  
 
   try {
     // Check if the tourist exists

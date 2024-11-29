@@ -83,18 +83,24 @@ export const findUser = async (req, res) => {
 };
 
 export const addUser = async (req, res) => {
-  const { username, password, type } = req.body;
+  const { username, password, type, email } = req.body;
 
   console.log(req.body);
   try {
     // Check if the username already exists
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
+    const existingUsername = await User.findOne({ username });
+    const existingEmail = await User.findOne({ email });
+
+    if (existingUsername) {
       return res.status(400).json({ message: "Username already exists" });
     }
 
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists." });
+    }
+
     // If the username is available, create a new user
-    const newUser = await User.create({ username, password, type });
+    const newUser = await User.create({ username, password, type, email });
     res.status(201).json(newUser); // Ensure you're returning the correct variable
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -119,6 +125,7 @@ export const getAllCategories = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const updateCategory = async (req, res) => {
   const { oldName, newName } = req.body;
   try {
@@ -275,12 +282,34 @@ export const markActivityInappropriate = async (req, res) => {
       return res.status(404).json({ message: "Activity not found" });
     }
 
+    let notificationMessage;
     // Send notification email to the advertiser
     const advertiser = updatedActivity.advertiser;
     if (updatedActivity.inappropriate) {
       await sendFlagNotificationEmail(advertiser, updatedActivity.name, "Activity");
+
+      
+      notificationMessage = `Your activity "${updatedActivity.name}" has been flagged as inappropriate by the admin. It will no longer be visible to tourists. Please review the content and make necessary adjustments. If you believe this is a mistake, feel free to contact support.`;
+
+      // Save the notification in the database
+      const notification = new Notification({
+        user: advertiser._id, // Assuming `seller` is the seller's user ID
+        message: notificationMessage,
+      });
+
+      await notification.save();
     } else {
       await sendContentRestoredNotificationEmail(advertiser, updatedActivity.name, "Activity");
+   
+      notificationMessage = `Good news! Your activity "${updatedActivity.name}" has been reviewed and is now deemed appropriate. It is visible to tourists again. Thank you for maintaining quality content!`;
+
+      // Save the notification in the database
+      const notification = new Notification({
+        user: advertiser._id, // Assuming `seller` is the seller's user ID
+        message: notificationMessage,
+      });
+
+      await notification.save();
     }
 
     res.status(200).json(updatedActivity); // Return the updated activity
@@ -318,7 +347,6 @@ export const getAllUsersWithJoinDate = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // Controller to create a promo code for a specific tourist
 export const createPromoCode = async (req, res) => {
@@ -372,26 +400,26 @@ export const createPromoCode = async (req, res) => {
   }
 };
 
-// Cron job runs daily at midnight
+// Cron job runs daily at 1 AM
 cron.schedule("0 0 * * *", async () => {
   const today = new Date();
-  const month = today.getMonth() + 1; // Months are zero-based in JavaScript
-  const day = today.getDate();
+  const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Format month as two digits (e.g., 09 for September)
+  const day = today.getDate().toString().padStart(2, "0"); // Format day as two digits (e.g., 28)
 
   try {
-    // Find tourists whose birthday matches today's date
+    // Find tourists whose birthdate (in YYYY-MM-DD format) matches today's month and day
     const tourists = await Tourist.find({
-      birthDate: { $regex: `-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}$` },
+      birthDate: { $regex: `-${month}-${day}$` }, // Matches the last part of the date: "-MM-DD"
     });
 
     for (const tourist of tourists) {
       const discount = 50; // 50% discount for birthdays
-      const expiryDate = new Date();
-      expiryDate.setMonth(expiryDate.getMonth() + 1); // Promo code expires in 1 month
+      const expiryDate = new Date(); // Expiry date is the end of the current day
+      expiryDate.setHours(23, 59, 59, 999); // Set to 23:59:59.999 of today
 
-      const code = generatePromoCode();
+      const code = generatePromoCode(); // Generate a unique promo code
 
-      // Create promo code
+      // Create a promo code entry
       const promoCode = new PromoCode({
         tourist: tourist._id,
         discount,
@@ -402,9 +430,9 @@ cron.schedule("0 0 * * *", async () => {
       await promoCode.save();
 
       // Create a notification for the tourist's birthday
-      const notificationMessage = `🎉 Happy Birthday ${tourist.name || "User"}! 🎂 As a gift, enjoy ${discount}% off with your promo code: ${code}. Redeem it before ${new Date(
-        expiryDate
-      ).toLocaleDateString()}. Have a wonderful day!`;
+      const notificationMessage = `🎉 Happy Birthday ${
+        tourist.name || "User"
+      }! 🎂 As a gift, enjoy ${discount}% off with your promo code: ${code}. Redeem it before ${expiryDate.toLocaleString()}. Have a wonderful day!`;
 
       // Create the notification object
       const notification = new Notification({
@@ -416,10 +444,10 @@ cron.schedule("0 0 * * *", async () => {
 
       // Send promo code email
       await sendBirthdayPromoCodeEmail(tourist, discount, expiryDate, code);
+
+      console.log(`Promo code and notification sent to tourist: ${tourist.name || tourist._id}`);
     }
   } catch (error) {
     console.error("Error processing birthday promo codes:", error);
   }
 });
-
-

@@ -28,8 +28,12 @@ export const getAllActivitiesForTourist = async (req, res) => {
   try {
     const currentDate = new Date();
 
+     const {userId} = req.params;
+
+     console.log(userId);
+
     // Fetch activities with future dates and populate tag names
-    const activities = await Activity.find({ date: { $gt: currentDate }, isDeleted: false,inappropriate: false, status: "Active" })
+    const activities = await Activity.find({ date: { $gt: currentDate }, isDeleted: false, inappropriate: false, status: "Active" })
       .populate({
         path: "tags", // Populate the tags field
         select: "name", // Only retrieve the tag's name
@@ -39,13 +43,29 @@ export const getAllActivitiesForTourist = async (req, res) => {
         select: "name", // Only retrieve the category's name
       });
 
-    res.status(200).json({ activities: activities });
+    console.log(activities);
+
+    let bookmarkedActivities = [];
+    if (userId) {
+      // Fetch the user's bookmarked activities
+      const tourist = await Tourist.findById(userId).select("userBookmarkedActivities");
+      if (tourist) {
+        bookmarkedActivities = tourist.userBookmarkedActivities.map((id) => id.toString());
+      }
+    }
+
+    // Add the `isBookmarked` field to each activity
+    const activitiesWithBookmarkStatus = activities.map((activity) => ({
+      ...activity.toObject(),
+      isBookmarked: bookmarkedActivities.includes(activity._id.toString()),
+    }));
+
+    return res.status(200).json({ activities: activitiesWithBookmarkStatus });
   } catch (error) {
     res.status(500).json({ message: error.message });
+    console.log(error);
   }
 };
-
-
 
 // Get a single activity by ID with reviews
 export const getActivityById = async (req, res) => {
@@ -60,14 +80,11 @@ export const getActivityById = async (req, res) => {
       return res.status(404).json({ error: "Activity not found" });
     }
 
-    const reviews = await Review.find({ activity: req.params.activityId })
-    .populate("tourist", "username")
-    .select("rating comment tourist");  // Select only the fields we need
+    const reviews = await Review.find({ activity: req.params.activityId }).populate("tourist", "username").select("rating comment tourist"); // Select only the fields we need
 
-  
     return res.status(200).json({
       message: "Activity found successfully",
-      data: {activity,reviews }// Now the reviews are nested inside the activity object
+      data: { activity, reviews }, // Now the reviews are nested inside the activity object
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -155,4 +172,3 @@ export const addActivityToItinerary = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-

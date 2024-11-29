@@ -32,7 +32,7 @@ router.get("/access/seller/getSellerByUserName", getSellerByUserName);
 router.delete("/seller/delete/:id", deleteSellerAccount);
 
 //search for a seller
-router.get("/access/seller/findSeller", findSeller);
+router.get("/access/seller/find/seller", findSeller);
 //search for a seller
 router.get("/access/seller/viewSeller", viewSeller);
 //signUp as a seller
@@ -64,7 +64,7 @@ router.put("/access/seller/unarchiveProduct", unarchiveProduct);
 router.get("/access/seller/getSalesHistory", getSalesHistory);
 
 router.post(
-  "/access/seller/createProductM",
+  "/access/seller/create/product",
   upload.array("images", 5),
   createProduct
 );

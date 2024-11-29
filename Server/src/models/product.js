@@ -36,7 +36,10 @@ const productSchema = new Schema(
     sellerId: {
       type: mongoose.Schema.Types.ObjectId, // Reference to the User who is a seller
       ref: "Seller", // Referencing the Users model
-      required: true,
+    },
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId, // Reference to the User who is a seller
+      ref: "User", // Referencing the Users model
     },
     sales: {
       type: Number,

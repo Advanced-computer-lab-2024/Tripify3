@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+
 import {
   AppBar,
   Toolbar,
@@ -25,7 +28,7 @@ import axios from "axios";
 import { getUserId } from "../../utils/authUtils";
 import { getItineraryById, getUserProfile } from "../../services/tourist";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllItineraries, getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
+import { toggleBookmark, getAllItineraries, getAllActiveAppropriateIteneraries, getAllTags } from "../../services/tourist.js";
 import { getUserType, getUserPreferences } from "../../utils/authUtils.js";
 import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
@@ -77,7 +80,7 @@ const Itineraries = () => {
       try {
         let itinerariesResponse;
         if (userType === "Tourist") {
-          itinerariesResponse = await getAllActiveAppropriateIteneraries();
+          itinerariesResponse = await getAllActiveAppropriateIteneraries(userId);
         } else {
           itinerariesResponse = await getAllItineraries();
         }
@@ -98,7 +101,6 @@ const Itineraries = () => {
     fetchUserProfile();
   }, [id, userId]);
 
-
   useEffect(() => {
     const filtered = itineraries
       .filter((itinerary) => (searchQuery ? itinerary.name.toLowerCase().includes(searchQuery.toLowerCase()) : true))
@@ -114,7 +116,7 @@ const Itineraries = () => {
 
     setFilteredItineraries(filtered);
   }, [searchQuery, selectedTags, selectedLanguages, budget, itineraries]);
-  
+
   const handleSortByPrice = () => {
     const sorted = [...filteredItineraries].sort((a, b) => {
       if (sortOrder === "asc") return a.price - b.price;
@@ -187,6 +189,27 @@ const Itineraries = () => {
     }).format(convertedAmount);
 
     return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
+  };
+
+  const handleToggleBookmark = async (itineraryId, isCurrentlyBookmarked) => {
+    try {
+      const newStatus = !isCurrentlyBookmarked;
+
+      // Update the UI optimistically
+      setItineraries((prevItineraries) => prevItineraries.map((itinerary) => (itinerary._id === itineraryId ? { ...itinerary, isBookmarked: newStatus } : itinerary)));
+
+      // Call the API to toggle the bookmark
+      await toggleBookmark({
+        userId,
+        itemType: "itinerary",
+        itemId: itineraryId,
+      });
+
+      toast.success(newStatus ? "Itinerary added to bookmarks!" : "Itinerary removed from bookmarks!");
+    } catch (error) {
+      toast.error("Error toggling bookmark!");
+      console.error("Error:", error);
+    }
   };
 
   if (loading) {
@@ -325,6 +348,12 @@ const Itineraries = () => {
                   {userType === "Admin" && (
                     <IconButton color={itinerary.inappropriate ? "error" : "primary"} onClick={() => handleFlagClick(itinerary._id, itinerary.inappropriate)}>
                       <FlagIcon />
+                    </IconButton>
+                  )}
+
+                  {userType === "Tourist" && (
+                    <IconButton onClick={() => handleToggleBookmark(itinerary._id, itinerary.isBookmarked)} color="secondary">
+                      {itinerary.isBookmarked ? <StarIcon style={{ color: "yellow" }} /> : <StarBorderIcon />}
                     </IconButton>
                   )}
                 </Card>

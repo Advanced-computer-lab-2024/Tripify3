@@ -29,7 +29,8 @@ const ProductCreateModal = ({ open, handleClose }) => {
     quantity: "",
     category: "",
     imageUrl: [],
-    sellerId: getUserType() === "Seller" ? getUserId() : "",
+    userId: getUserId(),
+    userType: getUserType(),
   });
   const [newImages, setNewImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -71,7 +72,8 @@ const ProductCreateModal = ({ open, handleClose }) => {
     newFormData.append("details", newProduct.details);
     newFormData.append("quantity", newProduct.quantity);
     newFormData.append("category", newProduct.category);
-    newFormData.append("sellerId", newProduct.sellerId);
+    newFormData.append("userId", newProduct.userId);
+    newFormData.append("userType", newProduct.userType);
 
     newImages.forEach((image, index) => {
       newFormData.append(
@@ -83,18 +85,15 @@ const ProductCreateModal = ({ open, handleClose }) => {
     console.log("thus is the new form data", newFormData);
     try {
       const response = await axios.post(
-        `http://localhost:8000/access/seller/createProductM`,
+        `http://localhost:8000/access/seller/create/product`,
         newFormData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "user-id":
-              getUserType() === "Seller" ? getUserId() : newProduct.sellerId,
           },
         }
       );
       handleClose();
-      console.log("Product created successfully", response.data);
     } catch (error) {
       setErrorMessage(
         error.response?.data?.message || error.response?.data || error.message
@@ -185,19 +184,6 @@ const ProductCreateModal = ({ open, handleClose }) => {
               ))}
             </Select>
           </FormControl>
-
-          {getUserType() == "Admin" ? (
-            <TextField
-              label="sellerId"
-              fullWidth
-              margin="normal"
-              value={newProduct.sellerId}
-              onChange={(e) => handleChange("sellerId", e.target.value)}
-            />
-          ) : (
-            <></>
-          )}
-
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             Images
           </Typography>

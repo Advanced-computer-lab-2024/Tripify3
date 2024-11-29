@@ -20,7 +20,7 @@ const router = express.Router();
 router.post("/itinerary/create", createItinerary); // Create a new itinerary
 router.get("/itineraries/get/tourGuide/:id", getAllItinerariesForTourGuide); // Get all itineraries
 router.get("/itineraries/get", getAllItineraries); // Get all itineraries
-router.get("/itineraries/active/appropriate/get", getAllActiveAppropriateItineraries); // Get all itineraries
+router.get("/itineraries/active/appropriate/get/:userId", getAllActiveAppropriateItineraries); // Get all itineraries
 router.get("/itinerary/get/:id", getItineraryById); // Get an itinerary by ID
 router.put("/itinerary/update/:id", updateItinerary); // Update an itinerary by ID
 router.put("/itinerary/delete/:id", deleteItinerary); // Delete an itinerary by ID

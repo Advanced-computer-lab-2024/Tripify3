@@ -304,3 +304,100 @@ export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, pro
     throw new Error("Error sending birthday promo code email");
   }
 };
+
+
+export const sendActivityReminderEmail = async (tourist, activity) => {
+  const formattedDate = new Date(activity.date).toLocaleDateString();
+
+  console.log(tourist);
+  console.log(activity);
+  
+
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: tourist.email,
+    subject: "📅 Reminder: Your Activity is Scheduled for Tomorrow!",
+    text: `Dear ${tourist.name || 'Traveler'},\n\nThis is a friendly reminder about your upcoming activity scheduled for tomorrow:\n\nActivity: ${activity.name}\nDate: ${formattedDate}\nLocation: ${activity.location}\n\nPlease make sure you're prepared and on time. If you have any questions or need assistance, feel free to reach out.\n\nSafe travels and enjoy your activity!\n\nBest regards,\nYour Tripify Support Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 2px solid #2196f3; border-radius: 12px; background-color: #e3f2fd;">
+        <h1 style="color: #1565c0; text-align: center;">📅 Reminder: Your Activity is Scheduled for Tomorrow!</h1>
+        <p style="font-size: 18px; color: #555; text-align: center;">
+          Dear <strong>${tourist.name || 'Traveler'}</strong>,<br>
+          We’re excited to remind you of your activity tomorrow! Here are the details:
+        </p>
+        <div style="font-size: 16px; color: #444; background-color: #bbdefb; padding: 15px; border-radius: 12px; margin: 20px auto; text-align: left;">
+          <p><strong>Activity:</strong> ${activity.name}</p>
+          <p><strong>Date:</strong> ${formattedDate}</p>
+          <p><strong>Location:</strong> ${activity.location}</p>
+        </div>
+        <p style="font-size: 16px; text-align: center; color: #444;">
+          Don’t forget to arrive on time and have everything you need for the activity. If you have questions, we’re just a message away!
+        </p>
+        <div style="text-align: center; margin-top: 30px;">
+          <img src="https://example.com/activity-reminder.jpg" alt="Activity Reminder" style="max-width: 100%; height: auto; border-radius: 12px;">
+        </div>
+        <p style="font-size: 16px; text-align: center; margin-top: 20px; color: #555;">
+          Have an amazing experience!
+        </p>
+        <p style="font-size: 14px; text-align: center; color: #999; margin-top: 20px;">
+          This is an automated message, please do not reply.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Activity reminder email sent successfully");
+  } catch (error) {
+    console.error("Error sending activity reminder email:", error);
+    throw new Error("Error sending activity reminder email");
+  }
+};
+
+
+export const sendItineraryReminderEmail = async (tourist, itinerary) => {
+  const formattedStartDate = new Date(itinerary.timeline.startDate).toLocaleDateString();
+  const formattedEndDate = new Date(itinerary.timeline.endDate).toLocaleDateString();
+
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: tourist.email,
+    subject: "🗺️ Reminder: Your Itinerary Starts Tomorrow!",
+    text: `Dear ${tourist.name || 'Traveler'},\n\nThis is a friendly reminder about your exciting journey that starts tomorrow:\n\nItinerary: ${itinerary.name}\nStart Date: ${formattedStartDate}\nEnd Date: ${formattedEndDate}\n\nPlease double-check your plans, and feel free to reach out if you have any questions.\n\nHave a fantastic trip!\n\nBest regards,\nYour Tripify Support Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 2px solid #ff5722; border-radius: 12px; background-color: #ffe0b2;">
+        <h1 style="color: #e64a19; text-align: center;">🗺️ Reminder: Your Itinerary Starts Tomorrow!</h1>
+        <p style="font-size: 18px; color: #555; text-align: center;">
+          Dear <strong>${tourist.name || 'Traveler'}</strong>,<br>
+          Your exciting journey begins tomorrow! Here’s a summary of your itinerary:
+        </p>
+        <div style="font-size: 16px; color: #444; background-color: #ffccbc; padding: 15px; border-radius: 12px; margin: 20px auto; text-align: left;">
+          <p><strong>Itinerary:</strong> ${itinerary.name}</p>
+          <p><strong>Start Date:</strong> ${formattedStartDate}</p>
+          <p><strong>End Date:</strong> ${formattedEndDate}</p>
+        </div>
+        <p style="font-size: 16px; text-align: center; color: #444;">
+          Make sure to review your plans and get ready for an unforgettable adventure! If you need assistance, we’re here to help.
+        </p>
+        <div style="text-align: center; margin-top: 30px;">
+          <img src="https://example.com/itinerary-reminder.jpg" alt="Itinerary Reminder" style="max-width: 100%; height: auto; border-radius: 12px;">
+        </div>
+        <p style="font-size: 16px; text-align: center; margin-top: 20px; color: #555;">
+          Have an amazing trip filled with wonderful memories!
+        </p>
+        <p style="font-size: 14px; text-align: center; color: #999; margin-top: 20px;">
+          This is an automated message, please do not reply.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Itinerary reminder email sent successfully");
+  } catch (error) {
+    console.error("Error sending itinerary reminder email:", error);
+    throw new Error("Error sending itinerary reminder email");
+  }
+};

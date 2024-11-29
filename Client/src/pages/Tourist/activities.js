@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+
 import {
   AppBar,
   Toolbar,
@@ -24,10 +27,10 @@ import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
 import { getUserProfile } from "../../services/tourist";
 import { getUserId, getUserType, getUserPreferences } from "../../utils/authUtils";
-import { useParams, useNavigate } from "react-router-dom"; ////////////////////////
+import { useParams, useNavigate } from "react-router-dom"; 
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllActivities, getAllCategories, getAllActivitiesForTourist } from "../../services/tourist.js";
+import { toggleBookmark, getAllActivities, getAllCategories, getAllActivitiesForTourist } from "../../services/tourist.js";
 import { Link } from "react-router-dom";
 
 import { markActivityInappropriate } from "../../services/admin.js";
@@ -79,17 +82,16 @@ const Activities = () => {
     fetchUserProfile();
     const fetchData = async () => {
       try {
-        const fetchActivities = userType === "Tourist" ? getAllActivitiesForTourist : getAllActivities;
+        const fetchActivities = userType === "Tourist" ? () => getAllActivitiesForTourist(userId) : getAllActivities;
         const [activitiesResponse, categoriesResponse] = await Promise.all([fetchActivities(), getAllCategories()]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
-        console.log("Test", activitiesResponse.data.activities);
-
         setCategories(categoriesResponse.data);
         setLoading(false);
       } catch (error) {
         setError("Error fetching activities or categories");
         setLoading(false);
+        console.log(error);
       }
     };
 
@@ -201,21 +203,38 @@ const Activities = () => {
 
   // Sort activities to prioritize recommended ones based on user preferences
   // Updated getRecommendedActivities function
-const getRecommendedActivities = () => {
-  if (userType === "Tourist") {
-    const recommendedActivities = activities.filter((activity) =>
-      activity.tags.some((tag) => userPreferences.includes(tag.name))
-    );
-    const otherActivities = activities.filter((activity) =>
-      !activity.tags.some((tag) => userPreferences.includes(tag.name))
-    );
+  const getRecommendedActivities = () => {
+    if (userType === "Tourist") {
+      const recommendedActivities = activities.filter((activity) => activity.tags.some((tag) => userPreferences.includes(tag.name)));
+      const otherActivities = activities.filter((activity) => !activity.tags.some((tag) => userPreferences.includes(tag.name)));
 
-    return [...recommendedActivities, ...otherActivities];
-  }
+      return [...recommendedActivities, ...otherActivities];
+    }
 
-  // For non-tourists, return all activities
-  return activities;
-};
+    // For non-tourists, return all activities
+    return activities;
+  };
+
+  const handleToggleBookmark = async (activityId, isCurrentlyBookmarked) => {
+    try {
+      const newStatus = !isCurrentlyBookmarked;
+
+      // Update the UI optimistically
+      setActivities((prevActivities) => prevActivities.map((activity) => (activity._id === activityId ? { ...activity, isBookmarked: newStatus } : activity)));
+
+      // Call the API to toggle the bookmark
+      await toggleBookmark({
+        userId,
+        itemType: "activity",
+        itemId: activityId,
+      });
+
+      toast.success(newStatus ? "Activity added to bookmarks!" : "Activity removed from bookmarks!");
+    } catch (error) {
+      toast.error("Error toggling bookmark!");
+      console.error("Error:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -301,127 +320,131 @@ const getRecommendedActivities = () => {
         {/* Activities Section */}
         {userType === "Tourist" ? (
           <>
-  <Box sx={{ mb: 4 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
-      Recommended Activities
-    </Typography>
-    <Grid container spacing={3}>
-      {getRecommendedActivities()
-        .filter((activity) =>
-          activity.tags.some((tag) => userPreferences.includes(tag.name))
-        )
-        .map((activity) => (
-          <Grid item xs={12} key={activity._id}>
-            <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-              <CardContent>
-                <Typography variant="h6" color="secondary">
-                  {activity.name} {<Chip label="Recommended" color="secondary" sx={{ ml: 1 }} />}
-                </Typography>
-                <Typography>
-                  <strong>Price:</strong> {formatCurrency(activity.price)}
-                </Typography>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+                Recommended Activities
+              </Typography>
+              <Grid container spacing={3}>
+                {getRecommendedActivities()
+                  .filter((activity) => activity.tags.some((tag) => userPreferences.includes(tag.name)))
+                  .map((activity) => (
+                    <Grid item xs={12} key={activity._id}>
+                      <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                        <CardContent>
+                          <Typography variant="h6" color="secondary">
+                            {activity.name} {<Chip label="Recommended" color="secondary" sx={{ ml: 1 }} />}
+                          </Typography>
+                          <Typography>
+                            <strong>Price:</strong> {formatCurrency(activity.price)}
+                          </Typography>
 
-                <Typography>
-                  <strong>Category:</strong> {activity.category.name}
-                </Typography>
-                <Typography>
-                  <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
-                </Typography>
-                <Typography>
-                  <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-                </Typography>
+                          <Typography>
+                            <strong>Category:</strong> {activity.category.name}
+                          </Typography>
+                          <Typography>
+                            <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                          </Typography>
+                          <Typography>
+                            <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                          </Typography>
 
-                <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                  View Details
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-    </Grid>
-  </Box> 
-  <Box sx={{ mb: 4 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
-      All Activities
-    </Typography>
-    <Grid container spacing={3}>
-      {getRecommendedActivities().map((activity) => (
-        <Grid item xs={12} key={activity._id}>
-          <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-            <CardContent>
-              <Typography variant="h6" color="secondary">
-                {activity.name}
+                          <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                            View Details
+                          </Button>
+                        </CardContent>
+                        {userType === "Tourist" && (
+                          <IconButton onClick={() => handleToggleBookmark(activity._id, activity.isBookmarked)} color="secondary">
+                            {activity.isBookmarked ? <StarIcon style={{ color: "yellow" }} /> : <StarBorderIcon />}
+                          </IconButton>
+                        )}
+                      </Card>
+                    </Grid>
+                  ))}
+              </Grid>
+            </Box>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+                All Activities
               </Typography>
-              <Typography>
-                <strong>Price:</strong> {formatCurrency(activity.price)}
-              </Typography>
+              <Grid container spacing={3}>
+                {getRecommendedActivities().map((activity) => (
+                  <Grid item xs={12} key={activity._id}>
+                    <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                      <CardContent>
+                        <Typography variant="h6" color="secondary">
+                          {activity.name}
+                        </Typography>
+                        <Typography>
+                          <strong>Price:</strong> {formatCurrency(activity.price)}
+                        </Typography>
 
-              <Typography>
-                <strong>Category:</strong> {activity.category.name}
-              </Typography>
-              <Typography>
-                <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
-              </Typography>
-              <Typography>
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-              </Typography>
+                        <Typography>
+                          <strong>Category:</strong> {activity.category.name}
+                        </Typography>
+                        <Typography>
+                          <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                        </Typography>
+                        <Typography>
+                          <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                        </Typography>
 
-              <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  </Box> 
-  </>
-) : (
-  <Box sx={{ mb: 4 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
-      All Activities
-    </Typography>
-    <Grid container spacing={3}>
-      {getRecommendedActivities().map((activity) => (
-        <Grid item xs={12} key={activity._id}>
-          <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
-            <CardContent>
-              <Typography variant="h6" color="secondary">
-                {activity.name}
-              </Typography>
-              <Typography>
-                <strong>Price:</strong> {formatCurrency(activity.price)}
-              </Typography>
+                        <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                          View Details
+                        </Button>
+                      </CardContent>
+                      {userType === "Tourist" && (
+                        <IconButton onClick={() => handleToggleBookmark(activity._id, activity.isBookmarked)} color="secondary">
+                          {activity.isBookmarked ? <StarIcon style={{ color: "yellow" }} /> : <StarBorderIcon />}
+                        </IconButton>
+                      )}
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold", mb: 2 }} color="secondary">
+              All Activities
+            </Typography>
+            <Grid container spacing={3}>
+              {getRecommendedActivities().map((activity) => (
+                <Grid item xs={12} key={activity._id}>
+                  <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                    <CardContent>
+                      <Typography variant="h6" color="secondary">
+                        {activity.name}
+                      </Typography>
+                      <Typography>
+                        <strong>Price:</strong> {formatCurrency(activity.price)}
+                      </Typography>
 
-              <Typography>
-                <strong>Category:</strong> {activity.category.name}
-              </Typography>
-              <Typography>
-                <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
-              </Typography>
-              <Typography>
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-              </Typography>
+                      <Typography>
+                        <strong>Category:</strong> {activity.category.name}
+                      </Typography>
+                      <Typography>
+                        <strong>Tags:</strong> {activity.tags.map((tag) => tag.name).join(", ")}
+                      </Typography>
+                      <Typography>
+                        <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+                      </Typography>
 
-              <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
-                View Details
-              </Button>
-            </CardContent>
-            {userType === "Admin" && (
-              <IconButton
-                color={activity.inappropriate ? "error" : "default"}
-                onClick={() => handleFlagClick(activity._id, activity.inappropriate)}
-              >
-                <FlagIcon />
-              </IconButton>
-            )}
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-)}
-
+                      <Button component={Link} to={`/activity/${activity._id}`} variant="contained" sx={{ mt: 2 }}>
+                        View Details
+                      </Button>
+                    </CardContent>
+                    {userType === "Admin" && (
+                      <IconButton color={activity.inappropriate ? "error" : "default"} onClick={() => handleFlagClick(activity._id, activity.inappropriate)}>
+                        <FlagIcon />
+                      </IconButton>
+                    )}
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
       </Box>
     </ThemeProvider>
   );

@@ -42,6 +42,7 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newUsername, setNewUsername] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newUserType, setNewUserType] = useState("Admin"); // Default to Admin
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
@@ -112,16 +113,17 @@ const Users = () => {
 
   const handleAddUser = async () => {
     setAddUserError(""); // Reset error message
-    if (!newUsername || !newPassword) {
-      alert("Username and password are required");
+    if (!newUsername || !newPassword || !newEmail) {
+      alert("Username, email, and password are required");
       return;
     }
 
     try {
-      const response = await addUser({ username: newUsername, password: newPassword, type: newUserType });
+      const response = await addUser({ username: newUsername, password: newPassword, type: newUserType, email: newEmail });
       setAcceptedUsers([...acceptedUsers, response.data]);
       setNewUsername("");
       setNewPassword("");
+      setNewEmail("");
       setOpenAddUserDialog(false);
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -222,6 +224,7 @@ const Users = () => {
               </Typography>
             )}
             <TextField label="Username" variant="outlined" value={newUsername} onChange={(e) => setNewUsername(e.target.value)} fullWidth sx={{ mb: 2 }} />
+            <TextField label="Email" variant="outlined" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} fullWidth sx={{ mb: 2 }} />
             <TextField
               label="Password"
               type={showPassword ? "text" : "password"}

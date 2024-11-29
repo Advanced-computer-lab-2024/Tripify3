@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import Itinerary from "../../models/itinerary.js";
 import Product from "../../models/product.js";
 import Tourist from "../../models/tourist.js";
+import PromoCode from "../../models/promoCode.js";
 import dotenv from "dotenv";
 import { sendPaymentOTPEmail } from "../../middlewares/sendEmail.middleware.js";
 dotenv.config(); // Load environment variables
@@ -37,8 +38,6 @@ export const createPaymentIntent = async (req, res) => {
 };
 
 export const getConfig = (req, res) => {
-  // console.log(process.env.STRIPE_PUBLISHABLE_KEY);
-  console.log("2992992");
 
   return res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
@@ -131,9 +130,7 @@ export const sendConfirmation = async (req, res) => {
 
 export const createPayment = async (req, res) => {
   try {
-    const { touristId, amount, paymentMethod, cartId, bookingId } = req.body;
-
-    console.log(req.body);
+    const { touristId, amount, paymentMethod, cartId, bookingId, promoCode } = req.body;
 
     // Validate input
     if (!touristId || !amount || !paymentMethod) {
@@ -142,10 +139,19 @@ export const createPayment = async (req, res) => {
 
     // Check if the tourist exists
     const tourist = await Tourist.findById(touristId);
-    if (!tourist) {
-      console.log("sjsjsjsjs");
-      
+    if (!tourist) {      
       return res.status(404).json({ message: "Tourist not found." });
+    }
+
+
+    const existingPromoCode = await PromoCode.findOne({ code: promoCode });
+
+    if (existingPromoCode) {
+      // Delete the promo code from the table
+      await PromoCode.deleteOne({ _id: existingPromoCode._id });
+      console.log(`Promo code ${promoCode} deleted successfully`);
+    } else {
+      console.log(`Promo code ${promoCode} not found`);
     }
 
     // Create a new payment
@@ -154,7 +160,7 @@ export const createPayment = async (req, res) => {
       amount,
       paymentMethod,
       cart: cartId || null,
-      booking: bookingId || null,
+      booking: bookingId || null
     });
 
     // Save payment to the database
