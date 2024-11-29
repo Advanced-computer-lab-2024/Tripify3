@@ -5,6 +5,10 @@ import User from "../../models/user.js";
 import Place from "../../models/place.js";
 import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js"; // Adju
+import Notification from "../../models/notification.js";
+import cron from "node-cron";
+import { sendItineraryReminderEmail, sendActivityReminderEmail } from "../../middlewares/sendEmail.middleware.js";
+
 
 
 export const createBooking = async (req, res) => {
@@ -229,3 +233,68 @@ export const getTourGuideProfile = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+
+
+
+// Cron job runs daily at midnight
+cron.schedule("14 18 * * *", async () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1); // Get tomorrow's date
+  tomorrow.setHours(0, 0, 0, 0); // Reset time to midnight
+
+  const nextDay = new Date(tomorrow);
+  nextDay.setHours(23, 59, 59, 999); // End of tomorrow
+
+  try {
+    // Fetch all bookings
+    const bookings = await Booking.find().populate("tourist activity itinerary");
+
+    let notificationMessage;
+
+    for (const booking of bookings) {
+      if (booking.activity) {
+        const activity = await Activity.findById(booking.activity);
+        if (activity && new Date(activity.date).getTime() >= tomorrow.getTime() && new Date(activity.date).getTime() <= nextDay.getTime()) {
+          const tourist = await Tourist.findById(booking.tourist);
+          console.log(booking);
+          console.log(tourist);
+        
+
+          await sendActivityReminderEmail(tourist, activity);
+
+          // Create a suitable message for the notification
+          notificationMessage = `This is a friendly reminder about your exciting journey that starts tomorrow: Activity: ${activity.name}`;
+          // Save the notification in the database
+          const notification = new Notification({
+            user: tourist._id, // Assuming `seller` is the seller's user ID
+            message: notificationMessage,
+          });
+
+          await notification.save();
+        }
+      }
+
+      if (booking.itinerary) {
+        const itinerary = await Itinerary.findById(booking.itinerary);
+        if (itinerary && new Date(itinerary.timeline.startTime).getTime() >= tomorrow.getTime() && new Date(itinerary.timeline.startTime).getTime() <= nextDay.getTime()) {
+          const tourist = await Tourist.findById(booking.tourist);
+          await sendItineraryReminderEmail(tourist, itinerary);
+
+          // Create a suitable message for the notification
+          notificationMessage = `This is a friendly reminder about your exciting journey that starts tomorrow: Iitnerary: ${itinerary.name}.`;
+          // Save the notification in the database
+          const notification = new Notification({
+            user: tourist._id, // Assuming `seller` is the seller's user ID
+            message: notificationMessage,
+          });
+          await notification.save();
+        }
+      }
+    }
+
+    console.log("Reminder emails sent for tomorrow's activities and itineraries.");
+  } catch (error) {
+    console.error("Error processing reminder emails:", error);
+  }
+});

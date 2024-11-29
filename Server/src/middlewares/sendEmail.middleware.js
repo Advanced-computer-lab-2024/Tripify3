@@ -357,8 +357,8 @@ export const sendActivityReminderEmail = async (tourist, activity) => {
 
 
 export const sendItineraryReminderEmail = async (tourist, itinerary) => {
-  const formattedStartDate = new Date(itinerary.timeline.startDate).toLocaleDateString();
-  const formattedEndDate = new Date(itinerary.timeline.endDate).toLocaleDateString();
+  const formattedStartDate = new Date(itinerary.timeline.startTime).toLocaleDateString();
+  const formattedEndDate = new Date(itinerary.timeline.endTime).toLocaleDateString();  
 
   const mailOptions = {
     from: "tripify.planner@gmail.com",
