@@ -6,8 +6,6 @@ import { sendAdminReplyEmail } from '../../middlewares/sendEmail.middleware.js';
 
 export const handleAdminReply = async (req, res) => {
   const { touristId, complaintId, reply } = req.body;
-  console.log(req.body);
-  
 
   if (!touristId || !complaintId || !reply) {
     return res.status(400).json({ message: "Tourist ID, complaint ID, and reply comment are required." });

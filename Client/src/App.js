@@ -22,6 +22,9 @@ import ViewComplaints from "./pages/tourist/viewComplaints.js";
 import Transportation from "./pages/tourist/transportation.js";
 import AdvertiserAddActivity from "./pages/advertiser/advertiserAddActivity.js";
 import OrdersPage from "./pages/tourist/orders.js";
+import AddAddress from "./pages/tourist/addAddress.js";
+import SelectAddress from "./pages/tourist/selectAddress.js";
+import PaymentSuccess from "./pages/tourist/paymentSuccess.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -43,7 +46,6 @@ import Complaints from "./pages/admin/complaints.js";
 import SaleReport from "./pages/admin/saleReport.js"
 import TourGuideItinerary from "./pages/tourGuide/tourGuideItineraries.js";
 import TourGuideProfile from "./pages/tourGuide/profile.js";
-//import ActivateDeactivateItinerary from "./pages/tourGuide/activateDeactivateItinerary.js";
 import BookingDetails from "./pages/tourist/bookingDetails.js";
 import TermsAndAgreements from "./pages/Auth/TermsAndAgreements.js";
 import AdvertiserActivityDetails from "./pages/advertiser/AdvertiserActivityDetails.js";
@@ -142,7 +144,6 @@ const App = () => {
         <Route path={`/guest/historical-places`} element={getLayoutForRole(userRole, <GuestHistoricalPlaces />)} />
         <Route path={`/guest/historical-places/:id`} element={getLayoutForRole(userRole, <GuestPlaceDetails />)} />
         <Route path={`/guest/itineraries`} element={getLayoutForRole(userRole, <GuestItineraries />)} />
-        <Route path={`/guest/itineraries`} element={getLayoutForRole(userRole, <GuestItineraries />)} />
         <Route path={`/guest/activities`} element={getLayoutForRole(userRole, <GuestActivities />)} />
         <Route path={`/guest/activity/:id`} element={getLayoutForRole(userRole, <GuestActivityDetails />)} />
 
@@ -168,6 +169,7 @@ const App = () => {
         <Route path={"/tourist/bookings"} element={getLayoutForRole(userRole, <Bookings />)} />
         <Route path={"/tourist/mycart"} element={getLayoutForRole(userRole, <Cart />)} />
         <Route path={"/tourist/wishlist"} element={getLayoutForRole(userRole, <WishList />)} />
+        <Route path={"/tourist/payment/success"} element={getLayoutForRole(userRole, <PaymentSuccess />)} />
         {/* Add the BookingDetails route with dynamic id and type parameters */}
         <Route path="/tourist/booking-details/:itemId/:type/:view/:bookingId" element={getLayoutForRole(userRole, <BookingDetails />)} />
         {/* Shared Routes */}
@@ -181,6 +183,9 @@ const App = () => {
         <Route path={`${basePath}/change-password`} element={getLayoutForRole(userRole, <ChangePassword />)} />
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
         <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
+        <Route path={`${basePath}/add/address`} element={getLayoutForRole(userRole, <AddAddress />)}  />
+        <Route path={`${basePath}/select/address/:price/:type/:dropOffDate`} element={getLayoutForRole(userRole, <SelectAddress />)}  />
+
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
         <Route path={`/tour-guide/itinerary`} element={getLayoutForRole(userRole, <TourGuideItinerary />)} />

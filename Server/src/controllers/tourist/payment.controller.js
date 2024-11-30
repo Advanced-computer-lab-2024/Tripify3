@@ -1,21 +1,21 @@
 import Activity from "../../models/activity.js";
+import cron from "node-cron";
 import Payment from "../../models/payment.js";
+import Order from "../../models/order.js";
 import Stripe from "stripe";
 import Itinerary from "../../models/itinerary.js";
 import Product from "../../models/product.js";
 import Tourist from "../../models/tourist.js";
 import PromoCode from "../../models/promoCode.js";
+import Booking from "../../models/booking.js";
 import dotenv from "dotenv";
-import { sendPaymentOTPEmail } from "../../middlewares/sendEmail.middleware.js";
+import { sendPaymentReceiptEmail } from "../../middlewares/sendEmail.middleware.js";
 dotenv.config(); // Load environment variables
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createPaymentIntent = async (req, res) => {
   const { price } = req.body;
-
-  console.log(req.body);
-  
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -27,8 +27,6 @@ export const createPaymentIntent = async (req, res) => {
       clientSecret: paymentIntent.client_secret,
     });
   } catch (e) {
-    console.log(e);
-
     return res.status(400).send({
       error: {
         message: e.message,
@@ -38,7 +36,6 @@ export const createPaymentIntent = async (req, res) => {
 };
 
 export const getConfig = (req, res) => {
-
   return res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
   });
@@ -130,8 +127,8 @@ export const sendConfirmation = async (req, res) => {
 
 export const createPayment = async (req, res) => {
   try {
-    const { touristId, amount, paymentMethod, cartId, bookingId, promoCode } = req.body;
-
+    const { touristId, amount, paymentMethod, bookingId, promoCode, type } = req.body;
+    
     // Validate input
     if (!touristId || !amount || !paymentMethod) {
       return res.status(400).json({ message: "Missing required fields." });
@@ -139,34 +136,9 @@ export const createPayment = async (req, res) => {
 
     // Check if the tourist exists
     const tourist = await Tourist.findById(touristId);
-    if (!tourist) {      
+    if (!tourist) {
       return res.status(404).json({ message: "Tourist not found." });
     }
-
-
-    const existingPromoCode = await PromoCode.findOne({ code: promoCode });
-
-    if (existingPromoCode) {
-      // Delete the promo code from the table
-      await PromoCode.deleteOne({ _id: existingPromoCode._id });
-      console.log(`Promo code ${promoCode} deleted successfully`);
-    } else {
-      console.log(`Promo code ${promoCode} not found`);
-    }
-
-    // Create a new payment
-    const payment = new Payment({
-      tourist: touristId,
-      amount,
-      paymentMethod,
-      cart: cartId || null,
-      booking: bookingId || null
-    });
-
-    // Save payment to the database
-    const savedPayment = await payment.save();
-
-    // Get cart details and check if wallet balance is sufficient
 
     const totalPrice = amount;
 
@@ -175,6 +147,77 @@ export const createPayment = async (req, res) => {
         return res.status(400).json({ message: "Insufficient wallet balance" });
       }
     }
+
+    let discount = 0;
+    if (promoCode) {
+
+    const existingPromoCode = await PromoCode.findOne({ code: promoCode });
+
+    if (existingPromoCode) {
+
+      discount = existingPromoCode.discount || 0; // Get the discount value
+      // Delete the promo code from the table
+      await PromoCode.deleteOne({ _id: existingPromoCode._id });
+      console.log(`Promo code ${promoCode} deleted successfully`);
+    } else {
+      console.log(`Promo code ${promoCode} not found`);
+    }
+  }
+
+    // Check if bookingId exists and fetch booking details
+    let tickets = 0;
+    let totalAmount = amount; // Default to provided amount
+    let bookingDetails = {};
+
+    if (bookingId) {
+      const booking = await Booking.findById(bookingId)
+        .populate("activity", "name date") // Populate activity name if type is Activity
+        .populate("itinerary", "name timeline"); // Populate itinerary name if type is Itinerary
+        
+
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found." });
+      }
+
+      tickets = booking.tickets || 0;
+      totalAmount = booking.price || totalAmount; // Use booking price if available
+
+      if (booking.type === "Activity" && booking.activity) {
+        bookingDetails = {
+          type: "Activity",
+          name: booking.activity.name,
+          date: booking.activity.date,
+        };
+      } else if (booking.type === "Itinerary" && booking.itinerary) {
+        bookingDetails = {
+          type: "Itinerary",
+          name: booking.itinerary.name,
+          date: booking.itinerary.timeline.startTime
+        };
+      }
+
+      await sendPaymentReceiptEmail(tourist, bookingDetails, tickets, totalAmount, discount );
+
+    }    
+   
+
+    // Create a new payment
+    const payment = new Payment({
+      tourist: touristId,
+      amount,
+      paymentMethod,
+      cart: bookingId ? null : (tourist.cart || null), 
+      booking: bookingId || null,
+      type,
+      paymentStatus: paymentMethod === "Cash on Delivery" ? "Pending" : "Completed",
+    });
+
+    // Save payment to the database
+    const savedPayment = await payment.save();
+
+    // Get cart details and check if wallet balance is sufficient
+
+  
     // Calculate loyalty points based on total amount paid
     let loyaltyPoints = 0;
     if (tourist.loyaltyPoints <= 100000) {
@@ -196,14 +239,46 @@ export const createPayment = async (req, res) => {
       tourist.walletAmount -= totalPrice;
     }
     await tourist.save(); // Save the updated tourist document
-
+    
     return res.status(201).json({
       message: "Payment created successfully.",
       payment: savedPayment,
     });
   } catch (error) {
     console.error(error);
-    console.log(error);    
     res.status(500).json({ message: "An error occurred while creating payment." });
   }
 };
+
+
+// Cron job runs daily at 1 AM
+cron.schedule("05 16 * * *", async () => {
+  try {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Set the time to midnight for accurate date comparison
+
+    // Find all unpaid orders
+    const unpaidOrders = await Order.find({ paymentStatus: "Unpaid", dropOffDate: { $lt: currentDate }, });
+
+    for (const order of unpaidOrders) {
+      // Update the order payment status to "Paid"
+      order.paymentStatus = "Paid";
+      await order.save();
+      console.log(`Order with ID ${order._id} marked as Paid.`);
+
+      // Find payments related to the cart in the order
+      const relatedPayments = await Payment.find({ cart: order.cart, paymentStatus: "Pending" });
+
+      for (const payment of relatedPayments) {
+        // Update the payment status to "Completed"
+        payment.paymentStatus = "Completed";
+        await payment.save();
+        console.log(`Payment with ID ${payment._id} marked as Completed.`);
+      }
+    }
+  } catch (error) {
+    console.error("Error during cron job execution:", error);
+  }
+
+  console.log("Cron job finished.");
+});

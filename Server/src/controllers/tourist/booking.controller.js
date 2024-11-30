@@ -4,17 +4,14 @@ import Booking from "../../models/booking.js";
 import User from "../../models/user.js";
 import Place from "../../models/place.js";
 import Tourist from "../../models/tourist.js";
-import Review from "../../models/review.js"; // Adju
+import Payment from "../../models/payment.js";
 import Notification from "../../models/notification.js";
 import cron from "node-cron";
 import { sendItineraryReminderEmail, sendActivityReminderEmail } from "../../middlewares/sendEmail.middleware.js";
 
-
-
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
-  console.log(req.body);
-  
+
   try {
     let item;
     // Use a switch statement to find the correct model based on the type
@@ -52,23 +49,7 @@ export const createBooking = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "Tourist not found" });
     }
-     
-    let loyaltyPoints = 0;
-    if (user.loyaltyPoints <= 100000) {
-      // Level 1
-      loyaltyPoints = price * 0.5;
-    } else if (user.loyaltyPoints <= 500000) {
-      // Level 2
-      loyaltyPoints = price * 1;
-    } else {
-      // Level 3
-      loyaltyPoints = price * 1.5;
-    }
 
-    // Add loyalty points to tourist's account
-    user.loyaltyPoints = (user.loyaltyPoints || 0) + loyaltyPoints;
-    // Deduct total price from tourist's wallet
-    await user.save(); // Save the updated tourist document
 
     // Create a new booking
     let booking = new Booking({
@@ -92,7 +73,6 @@ export const createBooking = async (req, res) => {
       booking.place = itemId;
     }
     await booking.save();
-
 
     // Add the booking ID to the bookings array in the associated model
 
@@ -136,15 +116,30 @@ export const cancelBooking = async (req, res) => {
     // Check if the cancellation is at least 48 hours before the event
     const currentTime = new Date();
     const hoursDifference = (new Date(eventDate) - currentTime) / (1000 * 60 * 60);
-    console.log(hoursDifference);
-    console.log(new Date(eventDate));
-    console.log(currentTime);
 
     if (hoursDifference < 48) {
       return res.status(400).json({
         message: "Cancellations must be made at least 48 hours before the event",
       });
     }
+
+    // Find the related payment in the Payment table
+    const payment = await Payment.findOne({ booking: bookingId });
+    if (!payment) {
+      return res.status(404).json({ message: "Payment record not found for this booking" });
+    }
+
+    // Update the tourist's wallet
+    const tourist = await Tourist.findById(payment.tourist);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    tourist.walletAmount += payment.amount; // Add the payment amount to the wallet
+    await tourist.save();
+
+    // Delete the payment record
+    await payment.deleteOne();
 
     // Delete the booking from the Booking model
     await booking.deleteOne();
@@ -234,9 +229,6 @@ export const getTourGuideProfile = async (req, res) => {
   }
 };
 
-
-
-
 // Cron job runs daily at midnight
 cron.schedule("14 18 * * *", async () => {
   const tomorrow = new Date();
@@ -257,9 +249,6 @@ cron.schedule("14 18 * * *", async () => {
         const activity = await Activity.findById(booking.activity);
         if (activity && new Date(activity.date).getTime() >= tomorrow.getTime() && new Date(activity.date).getTime() <= nextDay.getTime()) {
           const tourist = await Tourist.findById(booking.tourist);
-          console.log(booking);
-          console.log(tourist);
-        
 
           await sendActivityReminderEmail(tourist, activity);
 

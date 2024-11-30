@@ -261,6 +261,62 @@ export const sendPromoCodeEmail = async (user, discount, expiryDate, promoCode) 
 };
 
 
+export const sendPaymentReceiptEmail = async (user, bookingDetails, tickets, totalAmount, discount) => {
+  const today = new Date().toLocaleDateString();
+
+  const eventDate = new Date(bookingDetails.date).toLocaleDateString();
+
+
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "🧾 Payment Receipt for Your Booking",
+    text: `Dear ${user.name || 'User'},\n\nThank you for your payment! We’re excited to confirm your booking.\n\nHere are the details of your booking and payment:\n\n- Booking Type: ${bookingDetails.type}\n- Booking Name: ${bookingDetails.name}\n- Number of Tickets: ${tickets}\n- Total Amount Paid: $${totalAmount}\n- Discount Applied: ${discount}%\n- Payment Date: ${today}\n\nWe appreciate your trust in us and look forward to providing you with an amazing experience!\n\nIf you have any questions or need assistance, please don’t hesitate to reach out.\n\nBest regards,\nYour Support Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 12px; background-color: #f9f9f9;">
+        <h1 style="color: #4caf50; text-align: center;">🧾 Payment Receipt</h1>
+        <p style="font-size: 18px; color: #555; text-align: center;">
+          Thank you, <strong>${user.name || 'User'}</strong>, for your payment! We are delighted to confirm your booking.
+        </p>
+        <h2 style="color: #1976d2; text-align: center; margin: 20px 0;">"${bookingDetails.name}"</h2>
+        <div style="font-size: 16px; color: #333; margin: 20px 0;">
+          <p><strong>Booking Details:</strong></p>
+          <ul style="list-style-type: none; padding: 0;">
+            <li>📝 <strong>Booking Type:</strong> ${bookingDetails.type}</li>
+            <li>🎟️ <strong>Number of Tickets:</strong> ${tickets}</li>
+            <li>💰 <strong>Total Amount Paid:</strong> ${totalAmount} EGP</li>
+            <li>🎉 <strong>Discount Applied:</strong> ${discount}%</li>
+            <li>📅 <strong>Event Date:</strong> ${eventDate}</li>
+            <li>📅 <strong>Payment Date:</strong> ${today}</li>
+          </ul>
+        </div>
+        <p style="font-size: 16px; text-align: center; color: #555;">
+          Please keep this receipt for your records. If you have any questions or need further assistance, feel free to reach out to our support team.
+        </p>
+        <div style="text-align: center; margin-top: 30px;">
+          <img src="https://example.com/payment-confirmation.png" alt="Payment Confirmed" style="max-width: 100%; height: auto; border-radius: 12px;">
+        </div>
+        <p style="font-size: 16px; text-align: center; margin-top: 20px; color: #555;">
+          Thank you for choosing us! We look forward to making your experience memorable. 😊
+        </p>
+        <p style="font-size: 14px; text-align: center; color: #999; margin-top: 20px;">
+          This is an automated message, please do not reply.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending birthday promo code email:", error);
+    throw new Error("Error sending birthday promo code email");
+  }
+
+};
+
+
+
 export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, promoCode) => {
   const mailOptions = {
     from: "tripify.planner@gmail.com",
@@ -278,7 +334,7 @@ export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, pro
         </div>
         <p style="font-size: 18px; text-align: center; color: #444;">
           Use this code to enjoy <strong>${discount}% off</strong> your next purchase! 🎁<br>
-          <strong>Valid until:</strong> ${new Date(expiryDate).toLocaleDateString()}
+          <strong>Valid until the end of the day</strong> 
         </p>
         <p style="font-size: 16px; color: #555; text-align: center;">
           Don't wait too long—celebrate your birthday with something special!
@@ -298,7 +354,6 @@ export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, pro
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log("Birthday promo code email sent successfully");
   } catch (error) {
     console.error("Error sending birthday promo code email:", error);
     throw new Error("Error sending birthday promo code email");
@@ -308,10 +363,6 @@ export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, pro
 
 export const sendActivityReminderEmail = async (tourist, activity) => {
   const formattedDate = new Date(activity.date).toLocaleDateString();
-
-  console.log(tourist);
-  console.log(activity);
-  
 
   const mailOptions = {
     from: "tripify.planner@gmail.com",

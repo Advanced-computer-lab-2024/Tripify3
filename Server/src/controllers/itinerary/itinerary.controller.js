@@ -150,13 +150,15 @@ export const getAllItineraries = async (req, res) => {
 
 export const getAllActiveAppropriateItineraries = async (req, res) => {
   try {
-    const currentDate = new Date(); // Define currentDate as the current date and time
+    const currentDate = new Date(); // Get the current date and time
+    const tomorrow = new Date(currentDate);
+    tomorrow.setDate(currentDate.getDate() + 1); // Increment the day to get tomorrow's date
+    tomorrow.setHours(0, 0, 0, 0); // Set the time to the start of tomorrow (midnight)
 
     const { userId } = req.params;
 
-    console.log(userId);
 
-    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false, "timeline.startTime": { $gt: currentDate } })
+    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false, "timeline.startTime": { $gt: tomorrow } })
       .populate({
         path: "activities",
         populate: {

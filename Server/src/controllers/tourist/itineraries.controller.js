@@ -1,7 +1,6 @@
 import Itinerary from "../../models/itinerary.js";
 import Booking from "../../models/booking.js";
 import Tourist from "../../models/tourist.js";
-
 import mongoose from "mongoose";
 
 export const getSortedItineraries = async (req, res) => {
@@ -63,8 +62,7 @@ export const getFilteredItineraries = async (req, res) => {
       })
       .populate("locations tags"); // Optionally populate other fields like locations and itinerary-level tags
 
-    console.log(itineraries);
-
+ 
     return res.status(200).json(itineraries);
   } catch (error) {
     console.error(error.message);

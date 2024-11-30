@@ -14,9 +14,6 @@ export const redeemPoints = async (req, res) => {
     const { id } = req.params; // User ID
     const { pointsToRedeem } = req.body; // Points to redeem
 
-    console.log(pointsToRedeem);
-    
-
     const userProfile = await Tourist.findById(id);
 
     if (!userProfile) {
@@ -24,7 +21,7 @@ export const redeemPoints = async (req, res) => {
     }
 
     if (pointsToRedeem > userProfile.loyaltyPoints) {
-      console.log(jsjsjs);    
+    
       return res.status(400).json({ message: "Not enough loyalty points" });
     }
 
@@ -70,14 +67,11 @@ export const editProfile = async (req, res) => {
   try {
     const { id } = req.params; // User ID from the route parameter
     const { username, email, preferences, ...updateData } = req.body; // Destructure to separate preferences
-    console.log(req.body);
 
     // First, find the user to determine their type
     const currentUser = await User.findById(id); // Assuming User is your main user model
 
     if (!currentUser) {
-      console.log("sjjsjsjsjs");
-
       return res.status(404).json({ message: "User not found" });
     }
 
@@ -94,8 +88,6 @@ export const editProfile = async (req, res) => {
       delete updateData.username;
       delete updateData.email;
     } else {
-      console.log(updateData);
-
       // For Admin and Tourism Governor, check if the email already exists if it is being updated
       if (email && email !== currentUser.email) {
         const emailExists = await User.findOne({ email });
@@ -198,8 +190,7 @@ export const deleteTouristAccount = async (req, res) => {
       } else if (booking.type === "Hotel") {
         // Assuming hotel has check-out date in booking details, check if it is in the future
         const hotelDetails = parseHotelDetails(booking.details);
-        console.log(hotelDetails);
-
+     
         if (hotelDetails.checkOut && hotelDetails.checkOut > currentDate) {
           return res.status(403).json({
             message: "Account deletion is not allowed. You have an upcoming hotel stay.",

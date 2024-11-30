@@ -14,6 +14,7 @@ const AdminProfile = () => {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    email: "",
   });
 
   useEffect(() => {
@@ -24,6 +25,7 @@ const AdminProfile = () => {
         setFormData({
           username: response.data.user.username,
           password: response.data.user.password,
+          email: response.data.user.email,
         });
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -44,9 +46,9 @@ const AdminProfile = () => {
         <Box sx={{ maxWidth: "600px", margin: "auto" }}>
           <Card sx={{ borderRadius: "10px", padding: 3 }}>
             <CardHeader title="Profile Information" titleTypographyProps={{ variant: "h6", sx: { marginLeft: -2 } }} />
-
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <TextField label="Username" name="username" value={formData.username} disabled fullWidth />
+              <TextField label="Email" name="email" value={formData.email} disabled fullWidth />
               <TextField
                 label="Password"
                 type={showPassword ? "text" : "password"}

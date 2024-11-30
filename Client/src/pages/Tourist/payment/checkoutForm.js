@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { getUserId } from "../../../utils/authUtils";
 import { getUserProfile } from "../../../services/tourist";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function CheckoutForm() {
   const stripe = useStripe();
@@ -20,6 +21,7 @@ export default function CheckoutForm() {
   const [error, setError] = useState(null);
   const [walletAmount, setWalletAmount] = useState(0);
   const [clientSecret, setClientSecret] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -46,13 +48,11 @@ export default function CheckoutForm() {
         const discountedPrice = initialPrice - (initialPrice * discount) / 100;
         const newPrice = discountedPrice.toFixed(2); // Format to 2 decimal places
 
-        
-           const paymentIntentResponse = await axios.post("http://localhost:8000/tourist/create/payment/intent", {
-             price: newPrice,
-           });
-           
-   
-           setClientSecret(paymentIntentResponse.data.clientSecret);
+        const paymentIntentResponse = await axios.post("http://localhost:8000/tourist/create/payment/intent", {
+          price: newPrice,
+        });
+
+        setClientSecret(paymentIntentResponse.data.clientSecret);
       }
     } catch (err) {
       if (err.response && err.response.status === 400) {
@@ -85,30 +85,37 @@ export default function CheckoutForm() {
     setIsProcessing(true);
 
     try {
-      if (tickets === 'null' && itemId === 'null' && type === 'null') {
-        await axios.post(`http://localhost:8000/tourist/checkout?userId=${userId}`, {
-          dropOffLocation: "Cairo International Airport",
-          dropOffDate: "2024-12-05T00:00:00.000+00:00",
-          promoCode: discount
+      if (type === "Product") {
+        await axios.post(`http://localhost:8000/tourist/create/payment`, {
+          touristId: userId,
+          amount: calculateFinalPrice(),
+          paymentMethod: selectedMethod,
+          promoCode,
+          type
         });
+
+        await axios.post(`http://localhost:8000/tourist/checkout?userId=${userId}`, {
+          dropOffLocation,
+          dropOffDate,
+          promoCode: discount,
+          paymentMethod: selectedMethod,
+        });
+      } else {
+        const booking = { tourist: userId, price: calculateFinalPrice(), type, itemId, tickets };
+
+        const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
 
         await axios.post(`http://localhost:8000/tourist/create/payment`, {
           touristId: userId,
           amount: calculateFinalPrice(),
           paymentMethod: selectedMethod,
-          promoCode
-        });
-      } else {
-        const booking = { tourist: userId, price: calculateFinalPrice(), type, itemId, tickets };
-        await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
-        await axios.post(`http://localhost:8000/tourist/create/payment`, {
-          touristId: userId,
-          amount: calculateFinalPrice(),
-          paymentMethod: selectedMethod,
-          promoCode
+          promoCode,
+          bookingId: response.data.booking._id,
+          type
         });
       }
-      setMessage("Payment successful!");
+
+      navigate(`/tourist/payment/success`);
     } catch (err) {
       console.error("Error processing wallet payment:", err);
       setMessage("An error occurred during payment.");
@@ -131,7 +138,7 @@ export default function CheckoutForm() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/tourist/homepage`,
+        return_url: `${window.location.origin}/tourist/payment/success`,
       },
     });
 
@@ -184,20 +191,22 @@ export default function CheckoutForm() {
         >
           Wallet
         </button>
-        <button
-          type="button"
-          onClick={() => handlePaymentMethodChange("Cash on Delivery")}
-          style={{
-            flex: 1,
-            backgroundColor: selectedMethod === "Cash on Delivery" ? "#003366" : "#fff",
-            color: selectedMethod === "Cash on Delivery" ? "#fff" : "#000",
-            border: "1px solid #003366",
-            borderRadius: "4px",
-            padding: "10px",
-          }}
-        >
-          Cash on Delivery
-        </button>
+        {type === "Product" && (
+          <button
+            type="button"
+            onClick={() => handlePaymentMethodChange("Cash on Delivery")}
+            style={{
+              flex: 1,
+              backgroundColor: selectedMethod === "Cash on Delivery" ? "#003366" : "#fff",
+              color: selectedMethod === "Cash on Delivery" ? "#fff" : "#000",
+              border: "1px solid #003366",
+              borderRadius: "4px",
+              padding: "10px",
+            }}
+          >
+            Cash on Delivery
+          </button>
+        )}
       </div>
 
       {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
@@ -308,6 +317,7 @@ export default function CheckoutForm() {
               Add
             </button>
           </div>
+          {error && <div style={{ color: "red", marginTop: "5px" }}>{error}</div>}
 
           <div style={{ marginBottom: "10px", fontSize: "16px", fontWeight: "bold", textAlign: "center" }}>Total Price: {calculateFinalPrice()} EGP</div>
 

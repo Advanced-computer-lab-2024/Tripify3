@@ -1,13 +1,20 @@
 import React from "react";
-import TouristSidebar from "./touristSidebar.js";
 import TouristNavbar from "./touristNavbar.js";
 import { useLocation } from "react-router-dom";
+import { useMatch } from "react-router-dom";
+
+
 
 const TouristLayout = ({ children }) => {
   const location = useLocation();
 
   // Check if the current route is '/chatbot'
   const isChatbotRoute = location.pathname === "/chatbot";
+  const isSelectAddressRoute = useMatch("/tourist/select/address/:price/:type/:dropOffDate");
+  const isPaymentRoute = useMatch("/tourist/payment/:price/:type/:itemId/:tickets/:dropOffLocation/:dropOffDate");
+  
+   // Determine margin for main content based on current route
+   const topMargin = isChatbotRoute || isSelectAddressRoute || isPaymentRoute ? "60px" : "120px";
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
@@ -19,7 +26,7 @@ const TouristLayout = ({ children }) => {
         style={{
           display: "flex",
           flexGrow: 1,
-          marginTop: isChatbotRoute ? "60px" : "120px", // Adjust for Navbar height conditionally
+          marginTop: topMargin // Adjust for Navbar height conditionally
         }}
       >
         {/* Scrollable Content Area */}

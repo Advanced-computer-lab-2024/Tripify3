@@ -48,6 +48,8 @@ import Delete from "@mui/icons-material/Delete";
 import ExitToApp from "@mui/icons-material/ExitToApp";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import CartIcon from "../../pages/seller/new/assets/cartIcon.js";
+import { useMatch } from "react-router-dom";
+
 
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -90,7 +92,6 @@ const TouristNavbar = () => {
     setNotificationAnchorEl(null);
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
   const [helpAnchorEl, setHelpAnchorEl] = useState(null);
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null);
@@ -156,7 +157,9 @@ const TouristNavbar = () => {
   const handleComplaintsClick = () => navigate("/tourist/view/complaints/");
 
   const isChatbotRoute = location.pathname === "/chatbot";
-
+  const isSelectAddressRoute = useMatch("/tourist/select/address/:price/:type/:dropOffDate");
+  const isPaymentRoute = useMatch("/tourist/payment/:price/:type/:itemId/:tickets/:dropOffLocation/:dropOffDate");
+  
   return (
     <>
       {/* Top Navbar */}
@@ -359,7 +362,7 @@ const TouristNavbar = () => {
         </DialogActions>
       </Dialog>
 
-      {!isChatbotRoute && (
+      {!isChatbotRoute && !isSelectAddressRoute && !isPaymentRoute && (
         <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
           <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
             <IconButton color="inherit" sx={{ color: "#fff" }} onClick={() => navigate("/search_hotels")}>

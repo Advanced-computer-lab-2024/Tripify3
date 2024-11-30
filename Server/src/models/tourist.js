@@ -42,7 +42,7 @@ const touristSchema = new mongoose.Schema({
     },
   ],
 
-  userBookmarkedItineraries : [
+  userBookmarkedItineraries: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Itinerary",
@@ -75,7 +75,18 @@ const touristSchema = new mongoose.Schema({
     enum: ["USD", "CAD", "GBP", "EUR", "AUD", "EGP"], // Modify as needed
     default: "EGP",
   },
-
+  addresses: [
+    {
+      location: {
+        type: String,
+        required: true, // Ensure the location field is required
+      },
+      label: {
+        type: String,
+        required: true, // Ensure the label field is required
+      },
+    },
+  ],  
   following: [
     {
       type: mongoose.Schema.Types.ObjectId,

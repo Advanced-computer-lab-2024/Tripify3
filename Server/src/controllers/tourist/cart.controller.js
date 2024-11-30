@@ -66,7 +66,6 @@ export const addToCart = async (req, res) => {
       tourist.cart = cart._id;
       await tourist.save(); // Save the tourist with the updated cart reference
 
-      console.log("New cart created and associated with tourist.");
     }
 
     // Fetch the product details (assuming you have a Product model)

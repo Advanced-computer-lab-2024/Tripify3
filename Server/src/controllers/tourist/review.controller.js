@@ -12,12 +12,11 @@ export const touristReview = async (req, res) => {
   try {
     // 1. Validate input
     if (!tourist) {
-      console.log("Tourist ID is required.");
+      
       return res.status(400).json({ message: "Tourist ID is required." });
     }
 
     if (!rating && !comment) {
-      console.log("Either Rating or Comment is required.");
       return res.status(400).json({ message: "Either Rating or Comment is required." });
     }
 
@@ -25,7 +24,6 @@ export const touristReview = async (req, res) => {
     // 2. Find the tourist to check if they follow the tourist being reviewed
     const user = await Tourist.findById(tourist);
 
-    console.log(req.body);
 
     if (!user) {
       return res.status(404).json({ message: "Tourist not found." });
@@ -83,8 +81,7 @@ export const touristReview = async (req, res) => {
         } else if (product) {
           model = await Product.findById(product);
         }
-        console.log(place);
-    
+
         if (!model) {
           return res.status(404).json({ message: "Reviewed item not found." });
         }
@@ -126,7 +123,6 @@ export const touristReview = async (req, res) => {
     } else if (product) {
       model = await Product.findById(product);
     }
-    console.log(place);
 
     if (!model) {
       return res.status(404).json({ message: "Reviewed item not found." });
@@ -207,7 +203,6 @@ export const touristEditReview = async (req, res) => {
 
 export const getReview = async (req, res) => {
   const { booking, itemId, type, tourist } = req.params;
-  console.log(req.params);
 
   try {
     // Validate input parameters
@@ -242,13 +237,10 @@ export const getReview = async (req, res) => {
         return res.status(404).json({ message: "Itinerary not found." });
       }
       const tourGuideId = itinerary.tourGuide;
-      console.log("----------------------------");
-      console.log(tourGuideId);
+   
 
       // Then, search for a review from this tourist for this tour guide on the given booking
       const tourGuideReview = await Review.findOne({ tourist, booking, tourGuide: tourGuideId });
-      console.log("-------------------------");
-      console.log(tourGuideReview);
 
       review = await Review.findOne({ tourist, booking, [type]: itemId });
       if (review) {

@@ -452,7 +452,6 @@ export const getSalesHistory = async (req, res) => {
       sellerId: sellerId,
     });
 
-    console.log(existingProduct);
     if (!existingProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -592,7 +591,7 @@ export const getSellerRevenue = async (req, res) => {
     const productDetails = Object.values(productsSold);
 
     // Step 4: Return response
-    res.status(200).json({
+  return res.status(200).json({
       sellerId,
       totalRevenue,
       products: productDetails,

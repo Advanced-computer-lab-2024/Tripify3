@@ -24,20 +24,10 @@ export default function QuantityEdit() {
     location: "",
   });
   const handleCheckout = async () => {
-    // try {
-    //   const response = await axios.post(`http://localhost:8000/tourist/checkout?userId=${getUserId()}`, {
-    //     dropOffLocation: "Cairo International Airport",
-    //     dropOffDate: "2024-12-05T00:00:00.000+00:00",
-    //   });
-    //   getCart();
-    // } catch (error) {
-    //   setErrorMessage("Error creating order: " + error.message);
-    // }
-
-    const dropOffLocation = "Cairo International Airport";
+  
     const dropOffDate = "2024-12-05T00:00:00.000+00:00";
 
-    navigate(`/tourist/payment/${cart.totalPrice}/${null}/${null}/${null}/${dropOffLocation}/${dropOffDate}`);
+    navigate(`/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}`);
   };
 
   const handleDeliveryChange = (event) => {
@@ -289,33 +279,7 @@ export default function QuantityEdit() {
                           <option value="4">Same-Day-Delivery - $20.00</option>
                         </select>
                       </div>
-
-                      {/* <MDBTypography tag="h5" className="text-uppercase mb-3">
-                        Give code
-                      </MDBTypography>
-
-                      <div className="mb-5">
-                        <MDBInput size="lg" label="Enter your code" />
-                      </div> */}
-
-                      <MDBTypography tag="h5" className="text-uppercase mb-3">
-                        Drop-off Location
-                      </MDBTypography>
-
-                      <div className="mb-5">
-                        <MDBInput
-                          size="lg"
-                          label="Drop-off Location"
-                          value={form.location}
-                          onChange={(e) => {
-                            setForm({
-                              ...form,
-                              location: e.target.value,
-                            });
-                          }}
-                        />
-                      </div>
-
+                     
                       <hr className="my-4" />
 
                       <div className="d-flex justify-content-between mb-5">

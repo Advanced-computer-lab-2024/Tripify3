@@ -14,6 +14,13 @@ import { updateItinerariesAttended } from "../controllers/tourist/itineraries.co
 import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
 import { checkoutTouristCart, getOrders, validatePromoCode } from "../controllers/tourist/order.controller.js";
 import { toggleBookmark } from "../controllers/tourist/bookmark.controller.js";
+import {
+    addAddress,
+    editAddress,
+    deleteAddress,
+    getAllAddresses,
+  } from "../controllers/tourist/order.controller.js";
+  
 const router = express.Router();
 
 router.get("/tourist/profile/:id", getProfile); // Get filtered activities
@@ -69,5 +76,17 @@ router.get("/validate-promo/:userId/:code", validatePromoCode);
 router.post("/toggle-bookmark", toggleBookmark);
 
 
+
+// Route to add an address
+router.post("/tourist/add/address/:userId", addAddress);
+
+// Route to edit an address
+router.put("/tourist/edit/address/:userId", editAddress);
+
+// Route to delete an address
+router.delete("/tourist/delete/address/:userId", deleteAddress);
+
+// Route to get all addresses for a user
+router.get("/tourist/get/addresses/:userId", getAllAddresses);
 
 export default router;

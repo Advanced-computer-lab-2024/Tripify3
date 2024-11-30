@@ -26,14 +26,17 @@ export const getAllActivities = async (req, res) => {
 
 export const getAllActivitiesForTourist = async (req, res) => {
   try {
-    const currentDate = new Date();
+    const currentDate = new Date(); // Get the current date and time
+    const tomorrow = new Date(currentDate);
+    tomorrow.setDate(currentDate.getDate() + 1); // Increment the day to get tomorrow's date
+    tomorrow.setHours(0, 0, 0, 0); // Set the time to the start of tomorrow (midnight)
 
      const {userId} = req.params;
 
      console.log(userId);
 
     // Fetch activities with future dates and populate tag names
-    const activities = await Activity.find({ date: { $gt: currentDate }, isDeleted: false, inappropriate: false, status: "Active" })
+    const activities = await Activity.find({ date: { $gt: tomorrow }, isDeleted: false, inappropriate: false, status: "Active" })
       .populate({
         path: "tags", // Populate the tags field
         select: "name", // Only retrieve the tag's name

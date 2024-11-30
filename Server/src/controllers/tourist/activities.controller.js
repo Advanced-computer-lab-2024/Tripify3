@@ -1,8 +1,5 @@
-import Activity from "../../models/activity.js";
 import Booking from "../../models/booking.js";
 import Tourist from "../../models/tourist.js";
-import Itinerary from "../../models/itinerary.js";
-import Notification from "../../models/notification.js";
 import cron from "node-cron";
 import { sendItineraryReminderEmail, sendActivityReminderEmail } from "../../middlewares/sendEmail.middleware.js";
 
