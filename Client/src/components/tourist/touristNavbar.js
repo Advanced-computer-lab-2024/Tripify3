@@ -401,7 +401,7 @@ const TouristNavbar = () => {
 
             <Box sx={{ display: "flex", alignItems: "center", marginLeft: "0px" }}>
               <CartIcon /> {/* Cart icon in desired color */}
-              <Typography variant="body1" sx={{ fontWeight: 500, ml: "-4px" }}>
+              <Typography variant="body1" sx={{ fontWeight: 500, ml: "-8px" }}>
                 Cart
               </Typography>
             </Box>
