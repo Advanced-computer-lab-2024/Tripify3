@@ -121,7 +121,7 @@ const AdvertiserSalesReport = () => {
       dataIndex: 'revenue',
       key: 'revenue',
       sorter: (a, b) => a.revenue - b.revenue,
-      render: (text) => <span>${text}</span>,
+      render: (text) => <span>{text} EGP</span>,
     },
     {
       title: 'Bookings',
@@ -158,7 +158,7 @@ const AdvertiserSalesReport = () => {
         </Col>
         <Col span={12}>
           <Card title="Total Revenue">
-            <p>${totalRevenue}</p>
+            <p>{totalRevenue} EGP</p>
           </Card>
         </Col>
       </Row>

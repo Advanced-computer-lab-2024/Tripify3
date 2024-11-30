@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 import axios from "axios";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+
 import {
   AppBar,
   List,
@@ -50,7 +52,6 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import CartIcon from "../../pages/seller/new/assets/cartIcon.js";
 import { useMatch } from "react-router-dom";
 
-
 import { useNavigate, useLocation } from "react-router-dom";
 
 const TouristNavbar = () => {
@@ -67,7 +68,7 @@ const TouristNavbar = () => {
     try {
       const response = await axios.get(`http://localhost:8000/get/notifications/${userId}`);
       setNotifications(response.data);
-    
+
       setUnreadCount(response.data.filter((n) => !n.readStatus).length);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -159,7 +160,7 @@ const TouristNavbar = () => {
   const isChatbotRoute = location.pathname === "/chatbot";
   const isSelectAddressRoute = useMatch("/tourist/select/address/:price/:type/:dropOffDate");
   const isPaymentRoute = useMatch("/tourist/payment/:price/:type/:itemId/:tickets/:dropOffLocation/:dropOffDate");
-  
+
   return (
     <>
       {/* Top Navbar */}
@@ -176,42 +177,7 @@ const TouristNavbar = () => {
                 Home
               </Typography>
             </IconButton>
-            {/* Notifications Icon */}
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleNotificationClick}>
-              <Badge badgeContent={unreadCount} color="error" max={99}>
-                <Notifications />
-              </Badge>
-            </IconButton>
-
-            {/* Notifications Menu */}
-            <Menu
-              anchorEl={notificationAnchorEl}
-              open={Boolean(notificationAnchorEl)}
-              onClose={handleNotificationClose}
-              PaperProps={{
-                style: {
-                  maxHeight: 300, // Limit menu height
-                  width: 350,
-                  transition: "transform 0.2s ease-in-out", // Add smooth animation
-                },
-              }}
-            >
-              <Typography variant="h6" sx={{ padding: "8px 16px", fontWeight: "bold", color: "#003366" }}>
-                Notifications
-              </Typography>
-              <List>
-                {notifications.length > 0 ? (
-                  notifications.map((notification, index) => (
-                    <ListItem key={index} divider>
-                      <ListItemText primary={notification.message} secondary={new Date(notification.createdAt).toLocaleString()} />
-                    </ListItem>
-                  ))
-                ) : (
-                  <MenuItem>No notifications</MenuItem>
-                )}
-              </List>
-            </Menu>
-
+           
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
               <AccountCircle />
               <Typography variant="body1" sx={{ ml: 1 }}>
@@ -241,14 +207,12 @@ const TouristNavbar = () => {
                 <CardGiftcard sx={{ mr: 1 }} /> Gift Cards
               </MenuItem>
             </Menu>
-
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
               <ShoppingCart />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Cart
               </Typography>
             </IconButton>
-
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
               <Settings />
               <Typography variant="body1" sx={{ ml: 1 }}>
@@ -269,7 +233,6 @@ const TouristNavbar = () => {
                 Delete Account
               </MenuItem>
             </Menu>
-
             <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
               <HelpOutline />
               <Typography variant="body1" sx={{ ml: 1 }}>
@@ -281,10 +244,38 @@ const TouristNavbar = () => {
                 <Report sx={{ mr: 1 }} />
                 File a Complaint
               </MenuItem>
-              <MenuItem onClick={() => navigate("/tourist/view/complaints")}>
-                <Report sx={{ mr: 1 }} />
-                View Complaints
-              </MenuItem>
+            </Menu>
+             {/* Notifications Icon */}
+             <IconButton color="inherit" sx={{ color: "#fff", ml:2 }} onClick={handleNotificationClick}>
+              <NotificationsNoneIcon />
+            </IconButton>
+            {/* Notifications Menu */}
+            <Menu
+              anchorEl={notificationAnchorEl}
+              open={Boolean(notificationAnchorEl)}
+              onClose={handleNotificationClose}
+              PaperProps={{
+                style: {
+                  maxHeight: 300, // Limit menu height
+                  width: 350,
+                  transition: "transform 0.2s ease-in-out", // Add smooth animation
+                },
+              }}
+            >
+              <Typography variant="h6" sx={{ padding: "8px 16px", fontWeight: "bold", color: "#003366" }}>
+                Notifications
+              </Typography>
+              <List>
+                {notifications.length > 0 ? (
+                  notifications.map((notification, index) => (
+                    <ListItem key={index} divider>
+                      <ListItemText primary={notification.message} secondary={new Date(notification.createdAt).toLocaleString()} />
+                    </ListItem>
+                  ))
+                ) : (
+                  <MenuItem>No notifications</MenuItem>
+                )}
+              </List>
             </Menu>
           </Box>
         </Toolbar>

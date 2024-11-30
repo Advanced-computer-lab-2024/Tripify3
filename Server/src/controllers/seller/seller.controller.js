@@ -41,7 +41,7 @@ export const getAllProductImages = (req, res) => {
     }
 
     // Send the list of product image names
-   return res.json(productImages);
+    return res.json(productImages);
   });
 };
 
@@ -120,7 +120,6 @@ export const getImage = (req, res) => {
   });
 };
 
-
 export const findSeller = async (req, res) => {
   try {
     const { id } = req.query;
@@ -144,7 +143,6 @@ export const findSeller = async (req, res) => {
   }
 };
 
-
 export const viewSeller = async (req, res) => {
   try {
     const { username } = req.query; // Get the username from query parameters
@@ -163,13 +161,11 @@ export const updateSeller = async (req, res) => {
   const { name, description } = req.body; // Expecting name and description in the request body
 
   try {
-    const user = await Seller
-      .findByIdAndUpdate(
-        id, // Search by id
-        { name: name, description: description }, // Fields to update
-        { new: true } // Return the updated document
-      )
-      .select("-__t -__v");
+    const user = await Seller.findByIdAndUpdate(
+      id, // Search by id
+      { name: name, description: description }, // Fields to update
+      { new: true } // Return the updated document
+    ).select("-__t -__v");
 
     if (!user) {
       return res.status(404).json({ message: "Seller not found." });
@@ -185,8 +181,7 @@ export const updateSeller = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const {userId, userType, name, price, details, quantity, category } = req.body;
-    
+    const { userId, userType, name, price, details, quantity, category } = req.body;
 
     if (!name || !price || !details || !quantity || !category || !userId) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -434,7 +429,6 @@ export const addProdImage = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-
     existingProduct.imageUrl.push(imageUrl); // Add the Base64 image string to the array
     await existingProduct.save();
 
@@ -560,29 +554,31 @@ export const getSellerRevenue = async (req, res) => {
       for (const cartItem of cart.products) {
         const product = cartItem.product;
 
-        // Check if the product belongs to this seller
-        if (product.sellerId.toString() === sellerId.toString()) {
-          const revenueFromProduct = product.price * cartItem.quantity * promoCode;
+        if (product.sellerId != null) {
+          // Check if the product belongs to this seller
+          if (product.sellerId.toString() === sellerId.toString()) {
+            const revenueFromProduct = product.price * cartItem.quantity * promoCode;
 
-          // Add product revenue to total
-          totalRevenue += revenueFromProduct;
+            // Add product revenue to total
+            totalRevenue += revenueFromProduct;
 
-          // Track product sales details
-          if (!productsSold[product._id]) {
-            productsSold[product._id] = {
-              name: product.name,
-              price: product.price * promoCode,
-              quantitySold: 0,
-              revenue: 0,
-              saleDates: [], // New field to track sale dates
-            };
+            // Track product sales details
+            if (!productsSold[product._id]) {
+              productsSold[product._id] = {
+                name: product.name,
+                price: product.price * promoCode,
+                quantitySold: 0,
+                revenue: 0,
+                saleDates: [], // New field to track sale dates
+              };
+            }
+            productsSold[product._id].quantitySold += cartItem.quantity;
+            productsSold[product._id].revenue += revenueFromProduct;
+
+            // Add full sale date to the product's saleDates array
+            const saleDate = order.orderDate.toISOString(); // ISO format for consistency
+            productsSold[product._id].saleDates.push(saleDate);
           }
-          productsSold[product._id].quantitySold += cartItem.quantity;
-          productsSold[product._id].revenue += revenueFromProduct;
-
-          // Add full sale date to the product's saleDates array
-          const saleDate = order.orderDate.toISOString(); // ISO format for consistency
-          productsSold[product._id].saleDates.push(saleDate);
         }
       }
     }
@@ -591,7 +587,7 @@ export const getSellerRevenue = async (req, res) => {
     const productDetails = Object.values(productsSold);
 
     // Step 4: Return response
-  return res.status(200).json({
+    return res.status(200).json({
       sellerId,
       totalRevenue,
       products: productDetails,

@@ -222,7 +222,7 @@ export default function QuantityEdit() {
 
                               <MDBCol md="3" lg="2" xl="2" className="text-end">
                                 <MDBTypography tag="h6" className="mb-0">
-                                  € {product.price.toFixed(2)}
+                                   {product.price.toFixed(2)} EGP
                                 </MDBTypography>
                               </MDBCol>
 
@@ -259,7 +259,7 @@ export default function QuantityEdit() {
                         <MDBTypography tag="h5" className="text-uppercase">
                           {cart ? cart.itemCount : 0} items
                         </MDBTypography>
-                        <MDBTypography tag="h5">${cart && cart.totalPrice}.00</MDBTypography>
+                        <MDBTypography tag="h5">{cart && cart.totalPrice}.00 EGP</MDBTypography>
                       </div>
 
                       <MDBTypography tag="h5" className="text-uppercase mb-3">
@@ -273,10 +273,10 @@ export default function QuantityEdit() {
                           value={selectedDelivery} // Bind the select value to the state
                           onChange={handleDeliveryChange}
                         >
-                          <option value="1">Standard-Delivery - $5.00</option>
-                          <option value="2">Express-Delivery - $10.00</option>
-                          <option value="3">Next-Day-Delivery - $15.00</option>
-                          <option value="4">Same-Day-Delivery - $20.00</option>
+                          <option value="1">Standard-Delivery - 5.00 EGP</option>
+                          <option value="2">Express-Delivery - 10.00 EGP</option>
+                          <option value="3">Next-Day-Delivery - 15.00 EGP</option>
+                          <option value="4">Same-Day-Delivery - 20.00 EGP</option>
                         </select>
                       </div>
                      
@@ -287,12 +287,12 @@ export default function QuantityEdit() {
                           Total price
                         </MDBTypography>
                         <MDBTypography tag="h5">
-                          $
+                          
                           {cart && cart.totalPrice
                             ? deliveryPrice
                               ? (parseFloat(cart.totalPrice) + parseFloat(deliveryPrice)).toFixed(2)
                               : (parseFloat(cart.totalPrice) + parseFloat(5.0)).toFixed(2)
-                            : "0.00"}
+                            : "0.00"} EGP
                         </MDBTypography>
                       </div>
 

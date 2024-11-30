@@ -241,7 +241,7 @@ const SalesReport = () => {
               </TableCell>
               <TableCell>Payment Method</TableCell>
               <TableCell>Payment Date</TableCell>
-      
+              <TableCell>Type</TableCell>
               <TableCell>App Rate</TableCell>
             </TableRow>
           </TableHead>
@@ -253,8 +253,8 @@ const SalesReport = () => {
                     <TableCell>{payment.amount}</TableCell>
                     <TableCell>{payment.paymentMethod}</TableCell>
                     <TableCell>{formatDate(payment.paymentDate)}</TableCell>
-                 
-                    <TableCell>{payment.paymentMethod === 'Visa'&&paymentGroup.type!="Products" ? payment.amount * 0.1 : 0}</TableCell>
+                    <TableCell>{paymentGroup.type}</TableCell>
+                    <TableCell>{payment.paymentMethod === 'Visa' && paymentGroup.type!="Product" ? payment.amount * 0.1 : 0}</TableCell>
                   </TableRow>
                 ))}
               </>

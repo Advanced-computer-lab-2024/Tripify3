@@ -136,7 +136,7 @@ const SalesReport = () => {
 
       <div style={{ marginBottom: "20px" }}>
         <h3 style={{ fontSize: "20px", color: "#333" }}>
-          Total Revenue: ${filteredData.totalRevenue}
+          Total Revenue: {filteredData.totalRevenue} EGP
         </h3>
       </div>
 

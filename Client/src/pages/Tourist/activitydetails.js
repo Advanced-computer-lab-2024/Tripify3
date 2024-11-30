@@ -141,7 +141,7 @@ const ActivityDetails = () => {
       `I thought you might be interested in this activity!\n\n` +
       `Activity Name: ${activity.name}\n` +
       `Location: ${activity.location}\n` +
-      `Total Price: EGP ${activity.price}\n` +
+      `Total Price: ${activity.price} EGP\n` +
       `Date:  ${new Date(activity.date).toLocaleDateString()} ` +
       `Price: ${activity.price} \n` +
       `View more details here: http://localhost:3000/activity/${activity._id}`;
