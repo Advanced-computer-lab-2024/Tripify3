@@ -134,16 +134,27 @@ const TouristNavbar = () => {
       setShowInstructions(true);
     }
     fetchNotifications(); // Fetch immediately on mount
-    const interval = setInterval(fetchNotifications, 30000); // Fetch every 30 seconds
+    const interval = setInterval(fetchNotifications, 20000); // Fetch every 30 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
-  // Open notification menu
-  const handleNotificationClick = (event) => {
-    setNotificationAnchorEl(event.currentTarget);
-  };
-
+    // Open notification menu and mark all notifications as read
+    const handleNotificationClick = async (event) => {
+      setNotificationAnchorEl(event.currentTarget); // Open the notification menu
+  
+      try {
+        // Call the API to mark all notifications as read
+        const response = await axios.put(`http://localhost:8000/notifications/read/${userId}`);
+  
+        if (response.data.success) {
+          // Update the unread count to 0 since all are marked as read
+          setUnreadCount(0);
+        }
+      } catch (error) {
+        console.error("Error marking notifications as read:", error);
+      }
+    };
   // Close notification menu
   const handleNotificationClose = () => {
     setNotificationAnchorEl(null);
@@ -334,6 +345,18 @@ const TouristNavbar = () => {
               </MenuItem>
             </Menu>
             {/* Notifications Icon */}
+
+            <Badge
+              badgeContent={unreadCount}
+              sx={{
+                "& .MuiBadge-badge": {
+                  backgroundColor: "orange", // Set the background color to yellow
+                  color: "white", // Adjust text color for contrast
+                  top: 8, // Adjust vertical position
+                  right: 28, // Adjust horizontal position
+                },
+              }}
+            >
             <IconButton
               id="notifications"
               ref={refs.current.notifications}
@@ -345,8 +368,12 @@ const TouristNavbar = () => {
               }}
             >
               <NotificationsNoneIcon />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Notifications
+              </Typography>
             </IconButton>
-            Notifications
+            </Badge>
+          
             {/* Notifications Menu */}
             <Menu
               anchorEl={notificationAnchorEl}
