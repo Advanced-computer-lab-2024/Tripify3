@@ -6,7 +6,7 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
-    navigate("/"); // Navigate to the home page or desired route
+    navigate("/tourist/homepage"); // Navigate to the home page or desired route
   };
 
   return (

@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Badge from "@mui/material/Badge";
+import { AppBar,  List,
+  ListItem,
+  ListItemText, Toolbar, Typography, Box, IconButton, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import {
   AccountCircle,
   ShoppingCart,
@@ -26,21 +32,48 @@ import ExitToApp from "@mui/icons-material/ExitToApp"; // For Logout
 import ReportProblemIcon from "@mui/icons-material/ReportProblem"; // Import the complaint icon
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { clearUser } from "../../utils/authUtils";
+import { clearUser, getUserId } from "../../utils/authUtils";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const userId = getUserId();
 
   const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
   const [accountAnchorEl, setAccountAnchorEl] = useState(null); // New state for Account dropdown
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+
   const handleSettingsClick = (event) => setSettingsAnchorEl(event.currentTarget);
   const handleSettingsClose = () => setSettingsAnchorEl(null);
   const handleAccountClick = (event) => setAccountAnchorEl(event.currentTarget); // New handler for Account dropdown
   const handleAccountClose = () => setAccountAnchorEl(null); // Close Account dropdown
+
+   // Fetch notifications
+   const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/get/notifications/${userId}`);
+      setNotifications(response.data);
+
+      setUnreadCount(response.data.filter((n) => !n.readStatus).length);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  
+  // Use effect to fetch notifications every 30 seconds
+  useEffect(() => {
+    fetchNotifications(); // Fetch immediately on mount
+    const interval = setInterval(fetchNotifications, 30000); // Fetch every 30 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
+
 
   const openLogoutDialog = () => {
     setLogoutDialogOpen(true);
@@ -55,6 +88,28 @@ const AdminNavbar = () => {
     navigate("/login"); // Redirect to login page after logout
   };
 
+     // Open notification menu and mark all notifications as read
+const handleNotificationClick = async (event) => {
+  setNotificationAnchorEl(event.currentTarget); // Open the notification menu
+
+  try {
+    // Call the API to mark all notifications as read
+    const response = await axios.put(`http://localhost:8000/notifications/read/${userId}`);
+    
+    if (response.data.success) {
+      // Update the unread count to 0 since all are marked as read
+      setUnreadCount(0);
+    }
+  } catch (error) {
+    console.error("Error marking notifications as read:", error);
+  }
+};
+
+    // Close notification menu
+    const handleNotificationClose = () => {
+      setNotificationAnchorEl(null);
+    };
+  
   const handleProfileClick = () => navigate("/admin/profile");
   const hiddenRoutes = ["/tourist/profile", "/tourist/wishlist"];
   const hideProfileAndWishlist = hiddenRoutes.includes(location.pathname);
@@ -100,6 +155,49 @@ const AdminNavbar = () => {
                 <ExitToApp sx={{ mr: 1 }} />
                 Logout
               </MenuItem>
+            </Menu>
+            <Badge
+              badgeContent={unreadCount}
+              sx={{
+                "& .MuiBadge-badge": {
+                  backgroundColor: "orange", // Set the background color to yellow
+                  color: "white", // Adjust text color for contrast
+                  top: 8, // Adjust vertical position
+                  right: 8, // Adjust horizontal position
+                },
+              }}
+            >
+              <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleNotificationClick}>
+                <NotificationsNoneIcon />
+              </IconButton>
+            </Badge>
+            {/* Notifications Menu */}
+            <Menu
+              anchorEl={notificationAnchorEl}
+              open={Boolean(notificationAnchorEl)}
+              onClose={handleNotificationClose}
+              PaperProps={{
+                style: {
+                  maxHeight: 300, // Limit menu height
+                  width: 350,
+                  transition: "transform 0.2s ease-in-out", // Add smooth animation
+                },
+              }}
+            >
+              <Typography variant="h6" sx={{ padding: "8px 16px", fontWeight: "bold", color: "#003366" }}>
+                Notifications
+              </Typography>
+              <List>
+                {notifications.length > 0 ? (
+                  notifications.map((notification, index) => (
+                    <ListItem key={index} divider>
+                      <ListItemText primary={notification.message} secondary={new Date(notification.createdAt).toLocaleString()} />
+                    </ListItem>
+                  ))
+                ) : (
+                  <MenuItem>No notifications</MenuItem>
+                )}
+              </List>
             </Menu>
             {/* Help Icon with Dropdown */}
           </Box>

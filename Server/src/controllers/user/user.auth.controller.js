@@ -309,3 +309,30 @@ export const getNotificationsByUserId = async (req, res) => {
     res.status(500).json({ message: "An error occurred while fetching notifications." });
   }
 };
+
+
+export const markAllNotificationsAsRead = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Update all notifications for the user to set readStatus to true
+    const result = await Notification.updateMany(
+      { user: userId },
+      { $set: { readStatus: true } }
+    );
+
+    // Respond with the number of updated documents
+   return res.status(200).json({
+      success: true,
+      message: 'All notifications marked as read.',
+      updatedCount: result.nModified, // Number of documents updated
+    });
+  } catch (error) {
+    console.error('Error marking notifications as read:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating notifications.',
+      error: error.message,
+    });
+  }
+};

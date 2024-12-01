@@ -148,7 +148,13 @@ export const checkoutTouristCart = async (req, res) => {
 
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {
-        const sellerId = product.sellerId._id;
+        let sellerId;
+        if (product.sellerId?.id) { // Safely check if sellerId and its _id exist
+          sellerId = product.sellerId._id;
+          console.log(sellerId);
+          console.log("-----323223");
+          
+        }         
         if (!outOfStockProductsBySeller[sellerId]) {
           outOfStockProductsBySeller[sellerId] = {
             seller: product.sellerId,
@@ -165,9 +171,19 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Send out-of-stock notifications to each seller with relevant products
     for (const sellerId in outOfStockProductsBySeller) {
+      console.log(outOfStockProductsBySeller);
+      console.log("00000000000000000000");
+      
       const { seller, products } = outOfStockProductsBySeller[sellerId];
+      if (!seller) {
+        console.log(`Skipping sellerId: ${sellerId} as seller is undefined.`);
+        continue; // Move to the next iteration
+      }
+    
       const productNames = products.join(", ");
       console.log(productNames);
+      console.log("====================");
+      console.log(seller);
 
       await sendOutOfStockNotificationEmailToSeller(seller, productNames);
 

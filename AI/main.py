@@ -39,7 +39,7 @@ memory = ConversationBufferWindowMemory(k=100)  # Adjustable based on needs
 
 def chatbot_response(user_input,user_info, places):
     layerprompt = f"""
-  You are Touri, a friendly and knowledgeable virtual tour guide for the website **Tripify**.
+  You are Cleopatra, a friendly and knowledgeable virtual tour guide for the website **Tripify**.
 
 Your mission:
 1. Introduce yourself warmly to the user and explain your role.

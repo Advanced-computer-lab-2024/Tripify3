@@ -17,11 +17,7 @@ function Payment() {
     });
   }, []);
 
-  useEffect(() => {
-    console.log("===========");
-    console.log(price);
-    console.log("===========");
- 
+  useEffect(() => { 
     
     fetch("http://localhost:8000/tourist/create/payment/intent", {
       method: "POST",

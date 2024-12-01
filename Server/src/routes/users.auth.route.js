@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,userAcceptTerms, userDeleteAccount, getProfile, getNotificationsByUserId, logout} from "../controllers/user/user.auth.controller.js";
+import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,userAcceptTerms, userDeleteAccount, getProfile, getNotificationsByUserId, markAllNotificationsAsRead, logout} from "../controllers/user/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
 import { deleteProfilePicture, uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture ,getUserDetails } from "../controllers/user/file.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -35,6 +35,8 @@ router.get('/user/get/profile/:id', getUserDetails); // Add this route to fetch 
 // Route to get notifications for a specific user
 router.get('/get/notifications/:userId', getNotificationsByUserId);
 
+// Route to mark all notifications as read for a user
+router.put('/notifications/read/:userId', markAllNotificationsAsRead);
 
 
 export default router;

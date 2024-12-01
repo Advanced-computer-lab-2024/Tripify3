@@ -3,6 +3,7 @@ import { getUserId, clearUser } from "../../utils/authUtils.js";
 import axios from "axios";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
+import Badge from "@mui/material/Badge";
 import {
   AppBar,
   List,
@@ -30,7 +31,6 @@ import {
   Event,
   DirectionsRun,
   ListAlt,
-  Badge,
   Notifications,
   RoomService,
   HelpOutline,

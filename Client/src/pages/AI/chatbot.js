@@ -114,7 +114,7 @@ const Chatbot = () => {
           }}
         >
           <Typography variant="h4" fontWeight="bold">
-            Chat with Touri
+            Chat with Cleopatra
           </Typography>
         </Box>
 
