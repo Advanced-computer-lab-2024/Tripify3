@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 import axios from "axios";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import CategoryIcon from "@mui/icons-material/Category";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import Badge from "@mui/material/Badge";
 import {
   AppBar,
@@ -120,7 +124,7 @@ const TouristNavbar = () => {
     }
   }, [currentStep]);
 
-  const handleNextStep = async() => {
+  const handleNextStep = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
@@ -129,8 +133,7 @@ const TouristNavbar = () => {
         try {
           // Send POST request to the logout endpoint with the username
           await axios.post("http://localhost:8000/access/user/logout", { username });
-          sessionStorage.setItem("firstTimeLogin",false);
-
+          sessionStorage.setItem("firstTimeLogin", false);
         } catch (error) {
           console.error("Error during logout:", error.response ? error.response.data : error.message);
         }
@@ -150,22 +153,22 @@ const TouristNavbar = () => {
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
-    // Open notification menu and mark all notifications as read
-    const handleNotificationClick = async (event) => {
-      setNotificationAnchorEl(event.currentTarget); // Open the notification menu
-  
-      try {
-        // Call the API to mark all notifications as read
-        const response = await axios.put(`http://localhost:8000/notifications/read/${userId}`);
-  
-        if (response.data.success) {
-          // Update the unread count to 0 since all are marked as read
-          setUnreadCount(0);
-        }
-      } catch (error) {
-        console.error("Error marking notifications as read:", error);
+  // Open notification menu and mark all notifications as read
+  const handleNotificationClick = async (event) => {
+    setNotificationAnchorEl(event.currentTarget); // Open the notification menu
+
+    try {
+      // Call the API to mark all notifications as read
+      const response = await axios.put(`http://localhost:8000/notifications/read/${userId}`);
+
+      if (response.data.success) {
+        // Update the unread count to 0 since all are marked as read
+        setUnreadCount(0);
       }
-    };
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+    }
+  };
   // Close notification menu
   const handleNotificationClose = () => {
     setNotificationAnchorEl(null);
@@ -298,8 +301,9 @@ const TouristNavbar = () => {
               <MenuItem onClick={handleWishlistClick}>
                 <Favorite sx={{ mr: 1 }} /> Wishlist
               </MenuItem>
+
               <MenuItem onClick={handleGiftCardsClick}>
-                <CardGiftcard sx={{ mr: 1 }} /> Gift Cards
+                <BookmarkIcon sx={{ mr: 1 }} /> Bookmarked Events
               </MenuItem>
             </Menu>
             <IconButton
@@ -342,7 +346,7 @@ const TouristNavbar = () => {
                   window.location.reload(); // Re-render components by refreshing the page
                 }}
               >
-                Review Tutorial
+                <HelpOutlineIcon sx={{ mr: 1 }} /> Review Tutorial
               </MenuItem>
             </Menu>
             {/* Notifications Icon */}
@@ -358,23 +362,23 @@ const TouristNavbar = () => {
                 },
               }}
             >
-            <IconButton
-              id="notifications"
-              ref={refs.current.notifications}
-              color="inherit"
-              sx={{ color: "#fff", ml: 2 }}
-              onClick={(event) => {
-                handleNotificationClick(event);
-                if (showInstructions && steps[currentStep].id === "notifications") handleNextStep();
-              }}
-            >
-              <NotificationsNoneIcon />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Notifications
-              </Typography>
-            </IconButton>
+              <IconButton
+                id="notifications"
+                ref={refs.current.notifications}
+                color="inherit"
+                sx={{ color: "#fff", ml: 2 }}
+                onClick={(event) => {
+                  handleNotificationClick(event);
+                  if (showInstructions && steps[currentStep].id === "notifications") handleNextStep();
+                }}
+              >
+                <NotificationsNoneIcon />
+                <Typography variant="body1" sx={{ ml: 1 }}>
+                  Notifications
+                </Typography>
+              </IconButton>
             </Badge>
-          
+
             {/* Notifications Menu */}
             <Menu
               anchorEl={notificationAnchorEl}
@@ -495,8 +499,15 @@ const TouristNavbar = () => {
       </Dialog>
 
       {!isChatbotRoute && !isSelectAddressRoute && !isPaymentRoute && (
-        <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
-          <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
+        <AppBar position="fixed" sx={{ minHeight: "30px", top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
+          <Toolbar
+            sx={{
+              minHeight: "30px",
+              padding: "0 16px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <IconButton
               id="hotels"
               ref={refs.current.hotels}
@@ -567,7 +578,7 @@ const TouristNavbar = () => {
                 if (showInstructions && steps[currentStep].id === "products") handleNextStep();
               }}
             >
-              <AccountBalanceIcon />
+              <CategoryIcon />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Products
               </Typography>

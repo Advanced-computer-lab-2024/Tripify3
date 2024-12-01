@@ -37,7 +37,6 @@ const Cart = ({
   totalPrice,
   setTotal,
 }) => {
-  console.log("this is the product", productDetails); // Log the product
   return (
     <section className="cart">
       <div className="head">
@@ -97,8 +96,7 @@ const Product = ({
 }) => {
   const quant = quantArray.filter((item) => item.product === PID); // Use filter instead of findAll
   const quantity = quant.length > 0 ? quant[quant.length - 1] : undefined; // Access the last element safely
-  console.log("qunatity", quantity);
-  console.log("quant array", quantArray);
+
   return (
     <div className="product">
       <img
@@ -241,8 +239,21 @@ function App() {
   const [totalPrice, setTotal] = useState(0); // Initialize the total price state
 
   useEffect(() => {
-    getTouristCart(setProductList, setItemCount, setTotal);
+    // Define a function to fetch data at regular intervals
+    const fetchCartData = () => {
+      getTouristCart(setProductList, setItemCount, setTotal);
+    };
+  
+    // Call the function immediately on component mount
+    fetchCartData();
+  
+    // Set up the interval to call the function every 10 seconds
+    const intervalId = setInterval(fetchCartData, 10000); // 10 seconds = 10000 milliseconds
+  
+    // Cleanup the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, []);
+  
 
   useEffect(() => {
     console.log("this is the product list", productList);
