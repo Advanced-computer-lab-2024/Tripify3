@@ -129,7 +129,7 @@ const TouristNavbar = () => {
   };
   // Use effect to fetch notifications every 30 seconds
   useEffect(() => {
-    const isFirstTime = localStorage.getItem("firstTimeLogin");
+    const isFirstTime = sessionStorage.getItem("firstTimeLogin");
     if (isFirstTime === "true") {
       setShowInstructions(true);
     }
@@ -199,7 +199,7 @@ const TouristNavbar = () => {
 
   const confirmLogout = async () => {
     setLogoutDialogOpen(false);
-    const username = localStorage.getItem("username");
+    const username = sessionStorage.getItem("username");
     if (username) {
       try {
         // Send POST request to the logout endpoint with the username
@@ -326,7 +326,7 @@ const TouristNavbar = () => {
               </MenuItem>
               <MenuItem
                 onClick={() => {
-                  localStorage.setItem("firstTimeLogin", true); // Set firstTimeLogin to true
+                  sessionStorage.setItem("firstTimeLogin", true); // Set firstTimeLogin to true
                   window.location.reload(); // Re-render components by refreshing the page
                 }}
               >
