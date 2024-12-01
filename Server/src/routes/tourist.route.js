@@ -9,7 +9,7 @@ import { redeemPoints, deleteTouristAccount } from "../controllers/tourist/profi
 import { touristReview } from "../controllers/tourist/review.controller.js";
 import { getFollowingTourGuides, followTourGuide } from "../controllers/tourist/pastfollowed.controller.js";
 import { getConfig, createPaymentIntent, createPayment } from "../controllers/tourist/payment.controller.js";
-import { cancelBooking, createBooking } from "../controllers/tourist/booking.controller.js";
+import { cancelBooking, createBooking, getTouristBookmarks } from "../controllers/tourist/booking.controller.js";
 import { updateItinerariesAttended } from "../controllers/tourist/itineraries.controller.js";
 import { getComplaintsForTourist } from "../controllers/tourist/complaint.controller.js";
 import { checkoutTouristCart, getOrders, validatePromoCode } from "../controllers/tourist/order.controller.js";
@@ -88,5 +88,9 @@ router.delete("/tourist/delete/address/:userId", deleteAddress);
 
 // Route to get all addresses for a user
 router.get("/tourist/get/addresses/:userId", getAllAddresses);
+
+
+// Route to get bookmarked itineraries and activities for a user
+router.get("/tourist/bookmarks/:userId", getTouristBookmarks);
 
 export default router;

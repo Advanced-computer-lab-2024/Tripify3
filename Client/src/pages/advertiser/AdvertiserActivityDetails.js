@@ -1,25 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  Typography,
-  Button,
-  CircularProgress,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Chip,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
+import axios from "axios";
+import { Box, Typography, Button, CircularProgress, Grid, Card, CardContent, CardActions, Chip, TextField, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { LocationOn as LocationOnIcon } from "@mui/icons-material";
 import { updateActivity, getAllCategories, getAllTags } from "../../services/advertiser.js";
 import { getActivityById } from "../../services/tourist";
-import { getUserId } from "../../utils/authUtils";
+import { getUserId, getUserType } from "../../utils/authUtils";
 
 // Function to render stars based on rating
 const renderStars = (rating) => {
@@ -35,6 +21,7 @@ const renderStars = (rating) => {
 
 const AdvertiserActivityDetails = () => {
   const { id } = useParams();
+  const userType = getUserType();
   const navigate = useNavigate();
   const [activity, setActivity] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,6 +35,7 @@ const AdvertiserActivityDetails = () => {
   const [location, setLocation] = useState("");
   const [specialDiscount, setSpecialDiscount] = useState(0);
   const userId = getUserId();
+  const [bookings, setBookings] = useState([]); // Initialize bookings as an empty array
 
   useEffect(() => {
     const fetchActivityData = async () => {
@@ -77,11 +65,47 @@ const AdvertiserActivityDetails = () => {
       }
     };
 
+    const fetchBookingsForActivity = async () => {
+      try {
+        console.log(id);
+        const response = await axios.get(`http://localhost:8000/activity/get/bookings/${id}`);
+        console.log(response.data.bookings);
+        console.log("==================");
+
+        setBookings(response.data.bookings); // Store the fetched bookings
+      } catch (err) {
+        console.error("Error fetching bookings", err);
+      }
+    };
+
+    fetchBookingsForActivity();
+
     fetchActivityData();
     fetchCategoriesAndTags();
   }, [id]);
 
   const handleUpdateToggle = () => setEditMode((prev) => !prev);
+
+  const activateActivity = async () => {
+    try {
+      const response = await axios.put(`http://localhost:8000/activity/activate/${id}`);
+      console.log(response.data.message);
+      window.location.reload();
+    } catch (error) {
+      console.error(error.response?.data?.message || "Error activating itinerary");
+    }
+  };
+
+  // Deactivate an itinerary
+  const deactivateActivity = async () => {
+    try {
+      const response = await axios.put(`http://localhost:8000/activity/deactivate/${id}`);
+      console.log(response.data.message);
+      window.location.reload();
+    } catch (error) {
+      console.error(error.response?.data?.message || "Error deactivating itinerary");
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -123,11 +147,7 @@ const AdvertiserActivityDetails = () => {
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
-                {editMode ? (
-                  <TextField label="Activity Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth sx={{ mb: 2 }} />
-                ) : (
-                  activity?.name || "Activity Name"
-                )}
+                {editMode ? <TextField label="Activity Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth sx={{ mb: 2 }} /> : activity?.name || "Activity Name"}
               </Typography>
               <Button variant="contained" color="secondary" onClick={handleUpdateToggle}>
                 {editMode ? "Cancel" : "Edit"}
@@ -181,20 +201,13 @@ const AdvertiserActivityDetails = () => {
               </Grid>
 
               {editMode && (
-              <Grid item xs={12} sm={6}>
-                <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
-                  Special Discount
-                </Typography>
-                <TextField
-                  type="number"
-                  label="Special Discount (%)"
-                  value={specialDiscount}
-                  onChange={(e) => setSpecialDiscount(e.target.value)}
-                  fullWidth
-                  sx={{ mb: 2 }}
-                />
-              </Grid>
-            )}
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
+                    Special Discount
+                  </Typography>
+                  <TextField type="number" label="Special Discount (%)" value={specialDiscount} onChange={(e) => setSpecialDiscount(e.target.value)} fullWidth sx={{ mb: 2 }} />
+                </Grid>
+              )}
 
               {/* Rating Display */}
               <Grid item xs={12}>
@@ -219,11 +232,7 @@ const AdvertiserActivityDetails = () => {
                           key={tag._id}
                           label={tag.name}
                           clickable
-                          onClick={() =>
-                            setSelectedTags((prevTags) =>
-                              prevTags.includes(tag._id) ? prevTags.filter((id) => id !== tag._id) : [...prevTags, tag._id]
-                            )
-                          }
+                          onClick={() => setSelectedTags((prevTags) => (prevTags.includes(tag._id) ? prevTags.filter((id) => id !== tag._id) : [...prevTags, tag._id]))}
                           color={selectedTags.includes(tag._id) ? "primary" : "default"}
                         />
                       ))
@@ -241,6 +250,26 @@ const AdvertiserActivityDetails = () => {
             </CardActions>
           )}
         </Card>
+
+        <Box sx={{ position: "relative" }}>
+          {userType === "Advertiser" && (
+            <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 10 }}>
+              {bookings.length === 0 ? (
+                <Typography sx={{ color: "gray", fontSize: "0.9rem" }}>This itinerary cannot be deactivated as it has no bookings yet.</Typography>
+              ) : activity.status === "Inactive" ? (
+                <Button variant="contained" color="primary" onClick={() => activateActivity()} sx={{ fontSize: "1rem", textTransform: "none" }}>
+                  Activate
+                </Button>
+              ) : activity.status === "Active" ? (
+                <Button variant="contained" color="secondary" onClick={() => deactivateActivity()} sx={{ fontSize: "1rem", textTransform: "none" }}>
+                  Deactivate
+                </Button>
+              ) : null}
+            </Box>
+          )}
+
+          {/* Rest of the component's content goes here */}
+        </Box>
       </Box>
     </Box>
   );

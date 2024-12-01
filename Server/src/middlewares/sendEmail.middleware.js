@@ -360,6 +360,47 @@ export const sendItineraryActiveEmail = async (user, itineraryName, bookingLink)
 };
 
 
+export const sendActivityActiveEmail = async (user, activityName, bookingLink) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "📢 Your Favorite Activity is Now Available! 🌟",
+    text: `Dear ${user.name || 'User'},\n\nExciting news! The activity you showed interest in, "${activityName}", is now available for booking! 🎉\n\nDon't miss out on this incredible experience.\n\nClick here to book now: ${bookingLink}\n\nBest regards,\nYour Tripify Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 2px solid #2196f3; border-radius: 12px; background-color: #e3f2fd;">
+        <h1 style="color: #1565c0; text-align: center;">📢 Exciting News, ${user.name || 'User'}! 🌟</h1>
+        <p style="font-size: 18px; color: #555; text-align: center;">
+          The activity you were interested in, <strong>"${activityName}"</strong>, is now <span style="color: #1565c0; font-weight: bold;">available</span> and open for booking! 🎉
+        </p>
+        <p style="font-size: 18px; text-align: center; color: #444;">
+          Don’t wait—secure your spot for this amazing activity today!
+        </p>
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="${bookingLink}" style="font-size: 20px; font-weight: bold; color: #fff; background-color: #1565c0; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">Book Now</a>
+        </div>
+       
+        <div style="text-align: center; margin-top: 30px;">
+          <img src="https://example.com/activity-active.jpg" alt="Activity Active" style="max-width: 100%; height: auto; border-radius: 12px;">
+        </div>
+        <p style="font-size: 16px; text-align: center; margin-top: 20px; color: #555;">
+          Get ready for your next adventure! 🌍✨
+        </p>
+        <p style="font-size: 14px; text-align: center; color: #999; margin-top: 20px;">
+          This is an automated message, please do not reply.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending activity active email:", error);
+    throw new Error("Error sending activity active email");
+  }
+};
+
+
 
 export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, promoCode) => {
   const mailOptions = {

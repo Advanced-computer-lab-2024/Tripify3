@@ -125,22 +125,6 @@ export const getAllItineraries = async (req, res) => {
         },
       });
 
-    // Transform the itineraries to include a combined tags array
-    // let response = itineraries.map((itinerary) => {
-    //   // Extract tags from activities
-    //   const activityTags = itinerary.activities.flatMap((activity) => activity.tags.map((tag) => tag.name));
-    //   // Extract tags from locations
-    //   const locationTags = itinerary.places.flatMap((location) => location.tags.map((tag) => tag.name));
-
-    //   // Combine activity and location tags into one array
-    //   const combinedTags = [...new Set([...activityTags, ...locationTags])]; // Remove duplicates with Set
-
-    //   return {
-    //     ...itinerary.toObject(), // Convert Mongoose document to plain object
-    //     tags: combinedTags, // Add combined tags array to the itinerary
-    //   };
-    // });
-
     return res.status(200).json({
       message: "Iteneraries found successfully",
       data: itineraries,

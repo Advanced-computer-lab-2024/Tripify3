@@ -2,6 +2,10 @@ import Activity from "../../models/activity.js";
 import Itinerary from "../../models/itinerary.js"; // Assuming you have an Itinerary model
 import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js";
+import Booking from "../../models/booking.js";
+import Notification from "../../models/notification.js";
+import { sendActivityActiveEmail } from "../../middlewares/sendEmail.middleware.js";
+import mongoose from "mongoose";
 
 export const getAllActivities = async (req, res) => {
   try {
@@ -173,5 +177,127 @@ export const addActivityToItinerary = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export const ActivateActivity = async (req, res) => {
+  const activityId = req.params.id;
+
+  try {
+    // Find if there are any bookings with this activity
+    const bookings = await Booking.find({ activity: activityId });
+
+    // if (bookings.length === 0) {
+    //   return res.status(400).json({ message: "Activity has no bookings, cannot be activated" });
+    // }
+
+    // Now find the activity based on its ID
+    const activity = await Activity.findById(activityId);
+
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found" });
+    }
+
+    if (activity.status === "Active") {
+      return res.status(400).json({ message: "Activity is already active" });
+    }
+
+    activity.status = "Active";
+    await activity.save();
+
+    // Find tourists who have this activity in their bookmarks
+    const tourists = await Tourist.find({
+      userBookmarkedActivities: activityId,
+    });
+
+    if (tourists.length > 0) {
+      // Iterate over tourists to send emails and create notifications
+      const notifications = [];
+      for (const tourist of tourists) {
+        // Send email to the tourist
+        await sendActivityActiveEmail(
+          tourist,
+          activity.name,
+          `http://localhost:3000/activity/${activityId}`
+        );
+        // Create a notification for the tourist
+        notifications.push({
+          user: tourist._id,
+          message: `The activity "${activity.name}" you are interested in has been activated and is now available for booking.`,
+        });
+      }
+
+      // Save all notifications to the database
+      await Notification.insertMany(notifications);
+    }
+
+    res.status(200).json({ message: "Activity activated successfully", activity });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error activating activity", error });
+  }
+};
+
+
+export const DeactivateActivity = async (req, res) => {
+  const activityId = req.params.id;
+
+  try {
+
+    // Find if there are any bookings with this activity
+    const bookings = await Booking.find({ activity: activityId });
+
+    if (bookings.length === 0) {
+      return res.status(400).json({ message: "Activity with no bookings cannot be deactivated" });
+    }
+
+    // Now find the activity based on its ID
+    const activity = await Activity.findById(activityId);
+   
+
+    if (!activity) {
+      return res.status(404).json({ message: "Activity not found" });
+    }
+
+    if (activity.status === "Inactive") {
+      return res.status(400).json({ message: "Activity is already inactive" });
+    }
+
+    activity.status = "Inactive";
+    await activity.save();
+
+    res.status(200).json({ message: "Activity deactivated successfully", activity });
+  } catch (error) {
+    console.error("Error deactivating activity:", error);
+    res.status(500).json({ message: "Error deactivating activity", error: error.message || error });
+  }
+};
+
+
+
+export const fetchBookingsForActivity = async (req, res) => {
+  try {
+    const { activityId } = req.params;
+
+    // Validate activity ID format
+    if (!mongoose.Types.ObjectId.isValid(activityId)) {
+      return res.status(400).json({ message: "Invalid activity ID format" });
+    }
+
+    const bookings = await Booking.find({ activity: activityId })
+      .populate("tourist", "name email")
+      .populate("place", "name location")
+      .populate("itinerary", "name description");
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(404).json({ message: "No bookings found for this activity" });
+    }
+
+    res.status(200).json({ bookings });
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };

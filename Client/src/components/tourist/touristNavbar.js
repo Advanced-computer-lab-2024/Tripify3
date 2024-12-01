@@ -231,7 +231,7 @@ const TouristNavbar = () => {
   const handlePaymentsClick = () => navigate("/tourist/payments");
   const handleBookingsClick = () => navigate("/tourist/bookings");
   const handleWishlistClick = () => navigate("/tourist/wishlist");
-  const handleGiftCardsClick = () => navigate("/tourist/gift-cards");
+  const handleGiftCardsClick = () => navigate("/tourist/bookmark/events");
   const handleComplaintsClick = () => navigate("/tourist/view/complaints/");
 
   const isChatbotRoute = location.pathname === "/chatbot";

@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllActivities, getActivityById, updateActivity, deleteActivity, getAllActivitiesForTourist } from "../controllers/activity/activity.controller.js";
+import { fetchBookingsForActivity, ActivateActivity, DeactivateActivity, getAllActivities, getActivityById, updateActivity, deleteActivity, getAllActivitiesForTourist } from "../controllers/activity/activity.controller.js";
 
 const router = express.Router();
 
@@ -9,5 +9,11 @@ router.get("/tourist/activity/get/:userId", getAllActivitiesForTourist); // Get 
 router.get("/activity/get/:activityId", getActivityById); // Get an activity by ID
 router.put("/activity/get/:id", updateActivity); // Update an activity by ID
 router.delete("/activity/delete/:id", deleteActivity); // Delete an activity by ID
+
+router.put("/activity/activate/:id", ActivateActivity); // tourguide activates or deactivaes it
+router.put("/activity/deactivate/:id", DeactivateActivity); // tourguide activates or deactivaes it
+
+router.get("/activity/get/bookings/:activityId", fetchBookingsForActivity);
+
 
 export default router;

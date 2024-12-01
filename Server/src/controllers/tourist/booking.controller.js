@@ -8,6 +8,7 @@ import Payment from "../../models/payment.js";
 import Notification from "../../models/notification.js";
 import cron from "node-cron";
 import { sendItineraryReminderEmail, sendActivityReminderEmail } from "../../middlewares/sendEmail.middleware.js";
+import mongoose from "mongoose";
 
 export const createBooking = async (req, res) => {
   const { tourist, price, type, itemId, details, tickets } = req.body;
@@ -287,3 +288,38 @@ cron.schedule("14 18 * * *", async () => {
     console.error("Error processing reminder emails:", error);
   }
 });
+
+
+
+
+export const getTouristBookmarks = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Validate user ID format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
+    // Find the tourist by user ID
+    const tourist = await Tourist.findById(userId)
+      .populate("userBookmarkedItineraries", "name price rating status")
+      .populate("userBookmarkedActivities", "name location time date price status");
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    // Extract bookmarked itineraries and activities
+    const bookmarkedItineraries = tourist.userBookmarkedItineraries || [];
+    const bookmarkedActivities = tourist.userBookmarkedActivities || [];
+
+    res.status(200).json({
+      bookmarkedItineraries,
+      bookmarkedActivities,
+    });
+  } catch (error) {
+    console.error("Error fetching user bookmarks:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

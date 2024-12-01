@@ -11,6 +11,7 @@ import Tourist from "../../models/tourist.js"; // Importing the Tourist model (s
 import { sendPasswordResetEmail } from "../../middlewares/sendEmail.middleware.js";
 import { upload } from "../../middlewares/multer.middleware.js"; // Adjust the path accordingly
 import { uploadFiles } from "./file.controller.js"; // Import the upload controller
+import mongoose from "mongoose";
 
 const verificationCodes = new Map();
 
@@ -336,3 +337,10 @@ export const markAllNotificationsAsRead = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+

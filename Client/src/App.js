@@ -25,6 +25,7 @@ import OrdersPage from "./pages/tourist/orders.js";
 import AddAddress from "./pages/tourist/addAddress.js";
 import SelectAddress from "./pages/tourist/selectAddress.js";
 import PaymentSuccess from "./pages/tourist/paymentSuccess.js";
+import Bookmarks from "./pages/tourist/bookmarkedEvents.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -170,6 +171,7 @@ const App = () => {
         <Route path={"/tourist/mycart"} element={getLayoutForRole(userRole, <Cart />)} />
         <Route path={"/tourist/wishlist"} element={getLayoutForRole(userRole, <WishList />)} />
         <Route path={"/tourist/payment/success"} element={getLayoutForRole(userRole, <PaymentSuccess />)} />
+        <Route path={"/tourist/bookmark/events"} element={getLayoutForRole(userRole, <Bookmarks />)} />
         {/* Add the BookingDetails route with dynamic id and type parameters */}
         <Route path="/tourist/booking-details/:itemId/:type/:view/:bookingId" element={getLayoutForRole(userRole, <BookingDetails />)} />
         {/* Shared Routes */}
