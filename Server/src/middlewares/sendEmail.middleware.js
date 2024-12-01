@@ -141,6 +141,9 @@ export const sendOutOfStockNotificationEmailToAdmin = async (adminEmail, outOfSt
 
 // Function to send email notification for out-of-stock products
 export const sendOutOfStockNotificationEmailToSeller = async (user, productName) => {
+  console.log(user);
+  console.log("-----------------------");
+  
   const mailOptions = {
     from: "tripify.planner@gmail.com",
     to: user.email,

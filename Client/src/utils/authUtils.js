@@ -1,25 +1,25 @@
 // utils/authUtils.js
 
-// Set the user data in localStorage
+// Set the user data in sessionStorage
 export const setUser = (user) => {
-  localStorage.setItem("userId", user._id);
-  localStorage.setItem("username", user.username);
-  localStorage.setItem("userType", user.type);
-  localStorage.setItem("userCurrency", user.currency);
-  localStorage.setItem("userGender", user.gender);
-  localStorage.setItem("userBirthDate", user.birthDate);
-  localStorage.setItem("userPreferences", JSON.stringify(user.preferences));
+  sessionStorage.setItem("userId", user._id);
+  sessionStorage.setItem("username", user.username);
+  sessionStorage.setItem("userType", user.type);
+  sessionStorage.setItem("userCurrency", user.currency);
+  sessionStorage.setItem("userGender", user.gender);
+  sessionStorage.setItem("userBirthDate", user.birthDate);
+  sessionStorage.setItem("userPreferences", JSON.stringify(user.preferences));
 };
 
-// Retrieve the whole user object from localStorage
+// Retrieve the whole user object from sessionStorage
 export const getUser = () => {
-  const userId = localStorage.getItem("userId");
-  const username = localStorage.getItem("username");
-  const userType = localStorage.getItem("userType");
-  const userCurrency = localStorage.getItem("userCurrency");
-  const userPreferences = localStorage.getItem("userPreferences");
-  const userGender = localStorage.getItem("userGender");
-  const userBirthDate = localStorage.getItem("userBirthDate");
+  const userId = sessionStorage.getItem("userId");
+  const username = sessionStorage.getItem("username");
+  const userType = sessionStorage.getItem("userType");
+  const userCurrency = sessionStorage.getItem("userCurrency");
+  const userPreferences = sessionStorage.getItem("userPreferences");
+  const userGender = sessionStorage.getItem("userGender");
+  const userBirthDate = sessionStorage.getItem("userBirthDate");
 
   if (!userId || !username) {
     return null; // Return null if essential user data is missing
@@ -37,69 +37,69 @@ export const getUser = () => {
 };
 
 
-// Get the userId from localStorage
-export const getUserId = () => localStorage.getItem("userId");
+// Get the userId from sessionStorage
+export const getUserId = () => sessionStorage.getItem("userId");
 
-// Get the username from localStorage
-export const getUsername = () => localStorage.getItem("username");
+// Get the username from sessionStorage
+export const getUsername = () => sessionStorage.getItem("username");
 
-// Get the userType from localStorage
-export const getUserType = () => localStorage.getItem("userType");
+// Get the userType from sessionStorage
+export const getUserType = () => sessionStorage.getItem("userType");
 
-// Get the userCurrency from localStorage
-export const getUserCurrency = () => localStorage.getItem("userCurrency");
+// Get the userCurrency from sessionStorage
+export const getUserCurrency = () => sessionStorage.getItem("userCurrency");
 
-// Get the userPreferences from localStorage
+// Get the userPreferences from sessionStorage
 export const getUserPreferences = () => {
-  const preferences = localStorage.getItem("userPreferences");
+  const preferences = sessionStorage.getItem("userPreferences");
   return preferences ? JSON.parse(preferences) : [];
 };
 
-// Set the userType in localStorage
+// Set the userType in sessionStorage
 export const setUserType = (type) => {
-  localStorage.setItem("userType", type);
+  sessionStorage.setItem("userType", type);
 };
 
-// Set the userPreferences in localStorage
+// Set the userPreferences in sessionStorage
 export const setUserPreferences = (preferences) => {
-  localStorage.setItem("userPreferences", JSON.stringify(preferences));
+  sessionStorage.setItem("userPreferences", JSON.stringify(preferences));
 };
 
 // utils/authUtils.js
 
 // Set tourist booking data
 export const setTouristData = ({ tourist, price, type, itemId, tickets, wallet = false }) => {
-  localStorage.setItem("tourist", tourist || "");
-  localStorage.setItem("price", price || 0);
-  localStorage.setItem("itemType", type || "");
-  localStorage.setItem("itemId", itemId || "");
-  localStorage.setItem("tickets", tickets || 0);
-  localStorage.setItem("wallet", JSON.stringify(wallet));
+  sessionStorage.setItem("tourist", tourist || "");
+  sessionStorage.setItem("price", price || 0);
+  sessionStorage.setItem("itemType", type || "");
+  sessionStorage.setItem("itemId", itemId || "");
+  sessionStorage.setItem("tickets", tickets || 0);
+  sessionStorage.setItem("wallet", JSON.stringify(wallet));
 };
 
 // Get tourist booking data
 export const getTouristData = () => {
-  const tourist = localStorage.getItem("tourist") || "";
-  const price = parseFloat(localStorage.getItem("price")) || 0;
-  const type = localStorage.getItem("itemType") || "";
-  const itemId = localStorage.getItem("itemId") || "";
-  const tickets = parseInt(localStorage.getItem("tickets"), 10) || 0;
-  const wallet = localStorage.getItem("wallet") === "true"; 
+  const tourist = sessionStorage.getItem("tourist") || "";
+  const price = parseFloat(sessionStorage.getItem("price")) || 0;
+  const type = sessionStorage.getItem("itemType") || "";
+  const itemId = sessionStorage.getItem("itemId") || "";
+  const tickets = parseInt(sessionStorage.getItem("tickets"), 10) || 0;
+  const wallet = sessionStorage.getItem("wallet") === "true"; 
   return { tourist, price, type, itemId, tickets, wallet };
 };
 
-// Clear the user data from localStorage
+// Clear the user data from sessionStorage
 export const clearUser = () => {
-  localStorage.removeItem("userId");
-  localStorage.removeItem("username");
-  localStorage.removeItem("userType");
-  localStorage.removeItem("userCurrency");
-  localStorage.removeItem("userPreferences");
+  sessionStorage.removeItem("userId");
+  sessionStorage.removeItem("username");
+  sessionStorage.removeItem("userType");
+  sessionStorage.removeItem("userCurrency");
+  sessionStorage.removeItem("userPreferences");
 
-  localStorage.removeItem("tourist");
-  localStorage.removeItem("price");
-  localStorage.removeItem("itemType");
-  localStorage.removeItem("itemId");
-  localStorage.removeItem("details");
-  localStorage.removeItem("tickets");
+  sessionStorage.removeItem("tourist");
+  sessionStorage.removeItem("price");
+  sessionStorage.removeItem("itemType");
+  sessionStorage.removeItem("itemId");
+  sessionStorage.removeItem("details");
+  sessionStorage.removeItem("tickets");
 };

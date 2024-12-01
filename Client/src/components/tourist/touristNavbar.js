@@ -3,6 +3,7 @@ import { getUserId, clearUser } from "../../utils/authUtils.js";
 import axios from "axios";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
+import Badge from "@mui/material/Badge";
 import {
   AppBar,
   List,
@@ -30,7 +31,6 @@ import {
   Event,
   DirectionsRun,
   ListAlt,
-  Badge,
   Notifications,
   RoomService,
   HelpOutline,
@@ -245,10 +245,22 @@ const TouristNavbar = () => {
                 File a Complaint
               </MenuItem>
             </Menu>
-             {/* Notifications Icon */}
-             <IconButton color="inherit" sx={{ color: "#fff", ml:2 }} onClick={handleNotificationClick}>
-              <NotificationsNoneIcon />
-            </IconButton>
+            <Badge
+              badgeContent={unreadCount}
+              sx={{
+                "& .MuiBadge-badge": {
+                  backgroundColor: "orange", // Set the background color to yellow
+                  color: "white", // Adjust text color for contrast
+                  top: 8, // Adjust vertical position
+                  right: 8, // Adjust horizontal position
+                },
+              }}
+            >
+              <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleNotificationClick}>
+                <NotificationsNoneIcon />
+              </IconButton>
+            </Badge>
+
             {/* Notifications Menu */}
             <Menu
               anchorEl={notificationAnchorEl}
