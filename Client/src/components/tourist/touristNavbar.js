@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getUserId, clearUser } from "../../utils/authUtils.js";
 import axios from "axios";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
@@ -40,6 +40,7 @@ import {
   CardGiftcard,
   DirectionsCar,
 } from "@mui/icons-material";
+import ArrowDownwardIcon from "@mui/icons-material/KeyboardArrowDown";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import Report from "@mui/icons-material/Report";
 import Hotel from "@mui/icons-material/Hotel";
@@ -62,6 +63,27 @@ const TouristNavbar = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  // Define all steps for the tutorial
+  // Define tutorial steps
+  const steps = [
+    { id: "home", description: "This is your Home button. Click to explore the homepage." },
+    { id: "account", description: "This is your Account section. Click to manage your profile." },
+    { id: "settings", description: "Manage your account settings here." },
+    { id: "notifications", description: "Check your Notifications here." },
+    { id: "help", description: "Need help? Click here for support." },
+    { id: "hotels", description: "Search for Hotels. Click here to book your stay." },
+    { id: "toGo", description: "Explore transportation options. Click here to find rides." },
+    { id: "itineraries", description: "View your itineraries. Click here for planned activities." },
+    { id: "historicalPlaces", description: "Discover historical places. Click here to explore." },
+    { id: "products", description: "Shop for Products. Click here to view." },
+    { id: "activities", description: "Looking for activities? Click here to explore." },
+    { id: "flights", description: "Looking for flights? Click here to book one." },
+    { id: "cart", description: "This is your Cart. Click to view your items." },
+  ];
+
+  const currentInstruction = steps[currentStep];
 
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -75,8 +97,42 @@ const TouristNavbar = () => {
     }
   };
 
+  const refs = useRef(
+    steps.reduce((acc, step) => {
+      acc[step.id] = React.createRef();
+      return acc;
+    }, {})
+  );
+
+  const [currentPosition, setCurrentPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (currentStep < steps.length) {
+      const stepId = steps[currentStep].id;
+      const ref = refs.current[stepId]?.current;
+      if (ref) {
+        const rect = ref.getBoundingClientRect();
+        setCurrentPosition({
+          top: rect.top + window.scrollY - 50, // Adjust for arrow placement
+          left: rect.left + window.scrollX + rect.width / 2, // Center the arrow
+        });
+      }
+    }
+  }, [currentStep]);
+
+  const handleNextStep = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      setShowInstructions(false);
+    }
+  };
   // Use effect to fetch notifications every 30 seconds
   useEffect(() => {
+    const isFirstTime = localStorage.getItem("firstTimeLogin");
+    if (isFirstTime === "true") {
+      setShowInstructions(true);
+    }
     fetchNotifications(); // Fetch immediately on mount
     const interval = setInterval(fetchNotifications, 30000); // Fetch every 30 seconds
 
@@ -141,8 +197,18 @@ const TouristNavbar = () => {
     }
   };
 
-  const confirmLogout = () => {
+  const confirmLogout = async () => {
     setLogoutDialogOpen(false);
+    const username = localStorage.getItem("username");
+    if (username) {
+      try {
+        // Send POST request to the logout endpoint with the username
+        await axios.post("http://localhost:8000/access/user/logout", { username });
+        console.log("User logged out successfully");
+      } catch (error) {
+        console.error("Error during logout:", error.response ? error.response.data : error.message);
+      }
+    }
     clearUser();
     navigate("/login");
   };
@@ -171,14 +237,31 @@ const TouristNavbar = () => {
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={handleHomeClick}>
+            <IconButton
+              ref={refs.current.home}
+              id="home"
+              color="inherit"
+              sx={{ color: "#fff" }}
+              onClick={() => {
+                navigate("/tourist/homepage");
+                if (showInstructions && steps[currentStep].id === "home") handleNextStep();
+              }}
+            >
               <Home />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Home
               </Typography>
             </IconButton>
-           
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleAccountClick}>
+            <IconButton
+              id="account"
+              ref={refs.current.account}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={(event) => {
+                handleAccountClick(event);
+                if (showInstructions && steps[currentStep].id === "account") handleNextStep();
+              }}
+            >
               <AccountCircle />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Account
@@ -207,13 +290,16 @@ const TouristNavbar = () => {
                 <CardGiftcard sx={{ mr: 1 }} /> Gift Cards
               </MenuItem>
             </Menu>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleCartClick}>
-              <ShoppingCart />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Cart
-              </Typography>
-            </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleSettingsClick}>
+            <IconButton
+              id="settings"
+              ref={refs.current.settings}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={(event) => {
+                handleSettingsClick(event);
+                if (showInstructions && steps[currentStep].id === "settings") handleNextStep();
+              }}
+            >
               <Settings />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Settings
@@ -233,22 +319,34 @@ const TouristNavbar = () => {
                 Delete Account
               </MenuItem>
             </Menu>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleHelpClick}>
-              <HelpOutline />
-              <Typography variant="body1" sx={{ ml: 1 }}>
-                Help
-              </Typography>
-            </IconButton>
             <Menu anchorEl={helpAnchorEl} open={Boolean(helpAnchorEl)} onClose={handleHelpClose}>
               <MenuItem onClick={() => navigate("/tourist/file-complaint")}>
                 <Report sx={{ mr: 1 }} />
                 File a Complaint
               </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  localStorage.setItem("firstTimeLogin", true); // Set firstTimeLogin to true
+                  window.location.reload(); // Re-render components by refreshing the page
+                }}
+              >
+                Review Tutorial
+              </MenuItem>
             </Menu>
-             {/* Notifications Icon */}
-             <IconButton color="inherit" sx={{ color: "#fff", ml:2 }} onClick={handleNotificationClick}>
+            {/* Notifications Icon */}
+            <IconButton
+              id="notifications"
+              ref={refs.current.notifications}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={(event) => {
+                handleNotificationClick(event);
+                if (showInstructions && steps[currentStep].id === "notifications") handleNextStep();
+              }}
+            >
               <NotificationsNoneIcon />
             </IconButton>
+            Notifications
             {/* Notifications Menu */}
             <Menu
               anchorEl={notificationAnchorEl}
@@ -277,6 +375,21 @@ const TouristNavbar = () => {
                 )}
               </List>
             </Menu>
+            <IconButton
+              id="help"
+              ref={refs.current.help}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={(event) => {
+                handleHelpClick(event);
+                if (showInstructions && steps[currentStep].id === "help") handleNextStep();
+              }}
+            >
+              <HelpOutline />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Help
+              </Typography>
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
@@ -356,57 +469,161 @@ const TouristNavbar = () => {
       {!isChatbotRoute && !isSelectAddressRoute && !isPaymentRoute && (
         <AppBar position="fixed" sx={{ top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
           <Toolbar sx={{ display: "flex", justifyContent: "center" }}>
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={() => navigate("/search_hotels")}>
+            <IconButton
+              id="hotels"
+              ref={refs.current.hotels}
+              color="inherit"
+              sx={{ color: "#fff" }}
+              onClick={() => {
+                navigate("/search_hotels");
+                if (showInstructions && steps[currentStep].id === "hotels") handleNextStep();
+              }}
+            >
               <Hotel />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Hotels
               </Typography>
             </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff" }} onClick={() => navigate("/transportation")}>
+            <IconButton
+              id="toGo"
+              ref={refs.current.toGo}
+              color="inherit"
+              sx={{ color: "#fff" }}
+              onClick={() => {
+                navigate("/transportation");
+                if (showInstructions && steps[currentStep].id === "toGo") handleNextStep();
+              }}
+            >
               <DirectionsCar sx={{ display: "inline" }} />{" "}
               <Typography variant="body1" sx={{ ml: 1 }}>
                 To Go
               </Typography>
             </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/itineraries")}>
+            <IconButton
+              id="itineraries"
+              ref={refs.current.itineraries}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={() => {
+                navigate("/tourist/itineraries");
+                if (showInstructions && steps[currentStep].id === "itineraries") handleNextStep();
+              }}
+            >
               <ListAlt />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Itineraries
               </Typography>
             </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/historical-places")}>
+            <IconButton
+              id="historicalPlaces"
+              ref={refs.current.historicalPlaces}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={() => {
+                navigate("/tourist/historical-places");
+                if (showInstructions && steps[currentStep].id === "historicalPlaces") handleNextStep();
+              }}
+            >
               <AccountBalanceIcon />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Historical Places
               </Typography>
             </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/products")}>
+            <IconButton
+              id="products"
+              ref={refs.current.products}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={() => {
+                navigate("/tourist/products");
+                if (showInstructions && steps[currentStep].id === "products") handleNextStep();
+              }}
+            >
               <AccountBalanceIcon />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Products
               </Typography>
             </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/tourist/activities")}>
+            <IconButton
+              id="activities"
+              ref={refs.current.activities}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={() => {
+                navigate("/tourist/activities");
+                if (showInstructions && steps[currentStep].id === "activities") handleNextStep();
+              }}
+            >
               <DirectionsRun />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Activities
               </Typography>
             </IconButton>
-            <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={() => navigate("/search_flights")}>
+            <IconButton
+              id="flights"
+              ref={refs.current.flights}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={() => {
+                navigate("/search_flights");
+                if (showInstructions && steps[currentStep].id === "flights") handleNextStep();
+              }}
+            >
               <Flight />
               <Typography variant="body1" sx={{ ml: 1 }}>
                 Flights
               </Typography>
             </IconButton>
-
-            <Box sx={{ display: "flex", alignItems: "center", marginLeft: "0px" }}>
-              <CartIcon /> {/* Cart icon in desired color */}
-              <Typography variant="body1" sx={{ fontWeight: 500, ml: "-8px" }}>
+            <Box
+              onClick={() => {
+                if (showInstructions && steps[currentStep].id === "cart") handleNextStep();
+              }}
+              sx={{ display: "flex", alignItems: "center", marginLeft: "0px" }}
+            >
+              <CartIcon />
+              <Typography id="cart" ref={refs.current.cart} variant="body1" sx={{ fontWeight: 500, ml: "-8px" }}>
                 Cart
               </Typography>
             </Box>
           </Toolbar>
         </AppBar>
+      )}
+      {showInstructions && currentInstruction && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: currentPosition.top + 90, // Adjusted position dynamically
+            left: currentPosition.left - 20, // Adjusted to align with the element
+            zIndex: 1400,
+            textAlign: "center",
+          }}
+        >
+          {/* Arrow pointing out of the top left corner */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: -10, // Position the arrow above the label
+              left: 10, // Offset slightly from the left
+              width: 0,
+              height: 0,
+              borderLeft: "10px solid transparent",
+              borderRight: "10px solid transparent",
+              borderBottom: "10px solid orange", // Arrow color matches the background
+            }}
+          />
+          <Typography
+            sx={{
+              backgroundColor: "orange", // Orange background
+              color: "#fff",
+              padding: "8px",
+              borderRadius: "4px",
+              fontSize: "14px",
+              textAlign: "center",
+            }}
+          >
+            {currentInstruction.description}
+          </Typography>
+        </Box>
       )}
     </>
   );

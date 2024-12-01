@@ -105,6 +105,22 @@ export const login = async (req, res) => {
   }
 };
 
+export const logout = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const currentUser = await User.findOne({ username });
+    if (currentUser.firstLogin) {
+      // Update the firstLogin field to false
+      currentUser.firstLogin = false;
+      await currentUser.save(); // Save the updated user to the database
+    }
+    res.status(200).json({ message: "Logout successful", user: currentUser });
+  } catch (error) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 export const signup = async (req, res) => {
   try {
     const { email, username, type } = req.body;
@@ -112,7 +128,7 @@ export const signup = async (req, res) => {
     const existingUsername = await User.findOne({ username });
     const existingEmail = await User.findOne({ email });
     console.log(req.body);
- 
+
     if (existingUsername && existingEmail) {
       return res.status(400).json({ message: "Username and Email already exists." });
     } else if (existingUsername) {
@@ -181,10 +197,9 @@ export const changePassword = async (req, res) => {
   }
 };
 
-
 export const userAcceptTerms = async (req, res) => {
   const { id } = req.params;
-  
+
   try {
     // Find the user by ID and update the `hasAcceptedTerms` field
     const user = await User.findByIdAndUpdate(id, { hasAcceptedTerms: true }, { new: true });
@@ -215,27 +230,27 @@ export const userDeleteAccount = async (req, res) => {
     let upcomingBookings = [];
     if (user.type === "Advertiser") {
       const activities = await Activity.find({ advertiser: user._id });
-      const activityIds = activities.map(activity => activity._id);
+      const activityIds = activities.map((activity) => activity._id);
 
       upcomingBookings = await Booking.find({
         activity: { $in: activityIds },
         date: { $gt: new Date() },
-        price: { $gt: 0 }
+        price: { $gt: 0 },
       });
     } else if (user.type === "Tour Guide") {
       const itineraries = await Itinerary.find({ tourGuide: user._id });
-      const itineraryIds = itineraries.map(itinerary => itinerary._id);
+      const itineraryIds = itineraries.map((itinerary) => itinerary._id);
 
       upcomingBookings = await Booking.find({
         itinerary: { $in: itineraryIds },
         date: { $gt: new Date() },
-        price: { $gt: 0 }
+        price: { $gt: 0 },
       });
     }
 
     if (upcomingBookings.length > 0) {
       return res.status(400).json({
-        message: "Cannot delete account with upcoming paid bookings."
+        message: "Cannot delete account with upcoming paid bookings.",
       });
     }
 
@@ -254,7 +269,6 @@ export const userDeleteAccount = async (req, res) => {
   }
 };
 
-
 // Delete account controller
 export const getProfile = async (req, res) => {
   const { userId } = req.params;
@@ -265,19 +279,16 @@ export const getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-  
+
     res.status(200).json({
       message: "Account found successfully.",
-       user 
+      user,
     });
   } catch (error) {
     console.error("Error retrieving profile:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-
-
 
 export const getNotificationsByUserId = async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 import express from "express";
-import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,userAcceptTerms, userDeleteAccount, getProfile, getNotificationsByUserId} from "../controllers/user/user.auth.controller.js";
+import { login, signup, changePassword, resetPassword, sendVerificationCode, verifyVerificationCode ,userAcceptTerms, userDeleteAccount, getProfile, getNotificationsByUserId, logout} from "../controllers/user/user.auth.controller.js";
 import { signupSchema, loginSchema, changePasswordSchema } from "../validation/users.auth.validation.js";
 import { deleteProfilePicture, uploadFiles, getUploadedFiles, uploadProfilePicture, getProfilePicture ,getUserDetails } from "../controllers/user/file.controller.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -11,6 +11,7 @@ const router = express.Router();
 router.post("/access/user/login", validate(loginSchema, "body"), login);
 // Signup route
 router.post("/access/user/signup", signup);
+router.post("/access/user/logout", logout);
 // File upload route
 router.post("/user/upload/documents", upload.fields([{ name: 'files', maxCount: 4 }]), uploadFiles);
 router.put("/user/upload/picture", upload.fields([{ name: 'file', maxCount: 1 }]), uploadProfilePicture);

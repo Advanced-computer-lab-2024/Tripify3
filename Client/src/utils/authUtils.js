@@ -9,6 +9,7 @@ export const setUser = (user) => {
   localStorage.setItem("userGender", user.gender);
   localStorage.setItem("userBirthDate", user.birthDate);
   localStorage.setItem("userPreferences", JSON.stringify(user.preferences));
+  localStorage.setItem("firstTimeLogin", user.firstLogin);
 };
 
 // Retrieve the whole user object from localStorage
@@ -35,7 +36,6 @@ export const getUser = () => {
     preferences: userPreferences ? JSON.parse(userPreferences) : [],
   };
 };
-
 
 // Get the userId from localStorage
 export const getUserId = () => localStorage.getItem("userId");
@@ -84,7 +84,7 @@ export const getTouristData = () => {
   const type = localStorage.getItem("itemType") || "";
   const itemId = localStorage.getItem("itemId") || "";
   const tickets = parseInt(localStorage.getItem("tickets"), 10) || 0;
-  const wallet = localStorage.getItem("wallet") === "true"; 
+  const wallet = localStorage.getItem("wallet") === "true";
   return { tourist, price, type, itemId, tickets, wallet };
 };
 

@@ -21,11 +21,15 @@ const userSchema = new mongoose.Schema({
   },
   hasAcceptedTerms: {
     type: Boolean,
-    default: false,  // Default to false, indicating they haven't accepted yet
+    default: false, // Default to false, indicating they haven't accepted yet
   },
   joinDate: {
     type: Date,
-    default: Date.now,  // Automatically sets the current date and time when the user is created
+    default: Date.now, // Automatically sets the current date and time when the user is created
+  },
+  firstLogin: {
+    type: Boolean,
+    default: true,
   },
 });
 
