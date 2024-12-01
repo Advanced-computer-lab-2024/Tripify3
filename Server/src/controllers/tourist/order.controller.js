@@ -93,7 +93,6 @@ export const checkoutTouristCart = async (req, res) => {
   const promoCode = req.body.promoCode;
   const paymentMethod = req.body.paymentMethod;
 
-  
   try {
     // Find the tourist by ID and check if they exist
     const tourist = await Tourist.findById(userId).populate("cart");
@@ -104,7 +103,7 @@ export const checkoutTouristCart = async (req, res) => {
     // Check if the user has a cart
     if (!tourist.cart) {
       console.log("-----------");
-      
+
       return res.status(400).json({ message: "No cart associated with this tourist" });
     }
 
@@ -114,10 +113,9 @@ export const checkoutTouristCart = async (req, res) => {
     if (promoCode) {
       cartDetails.promoCode = promoCode / 100;
     }
-    
 
     await cartDetails.save();
-    
+
     // Create a new order with the cart details and tourist ID
     const order = new Order({
       tourist: userId,
@@ -149,12 +147,12 @@ export const checkoutTouristCart = async (req, res) => {
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {
         let sellerId;
-        if (product.sellerId?.id) { // Safely check if sellerId and its _id exist
+        if (product.sellerId?.id) {
+          // Safely check if sellerId and its _id exist
           sellerId = product.sellerId._id;
           console.log(sellerId);
           console.log("-----323223");
-          
-        }         
+        }
         if (!outOfStockProductsBySeller[sellerId]) {
           outOfStockProductsBySeller[sellerId] = {
             seller: product.sellerId,
@@ -171,24 +169,18 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Send out-of-stock notifications to each seller with relevant products
     for (const sellerId in outOfStockProductsBySeller) {
-      console.log(outOfStockProductsBySeller);
-      console.log("00000000000000000000");
-      
       const { seller, products } = outOfStockProductsBySeller[sellerId];
       if (!seller) {
         console.log(`Skipping sellerId: ${sellerId} as seller is undefined.`);
         continue; // Move to the next iteration
       }
-    
+
       const productNames = products.join(", ");
-      console.log(productNames);
-      console.log("====================");
-      console.log(seller);
 
       await sendOutOfStockNotificationEmailToSeller(seller, productNames);
 
       // Create a suitable message for the notification
-       notificationMessage = `The following products are out of stock: ${productNames}. Please restock them to continue sales.`;
+      notificationMessage = `The following products are out of stock: ${productNames}. Please restock them to continue sales.`;
       // Save the notification in the database
       const notification = new Notification({
         user: sellerId, // Assuming `seller` is the seller's user ID
@@ -199,24 +191,24 @@ export const checkoutTouristCart = async (req, res) => {
     }
 
     // Notify all admins for all out-of-stock products
-    const adminUsers = await User.find({ type: "Admin" }); 
+    const adminUsers = await User.find({ type: "Admin" });
     // Flatten all products grouped by sellers into a single list
     const outOfStockProductNames = Object.values(outOfStockProductsBySeller).flatMap((sellerInfo) => sellerInfo.products);
-    
+
     for (const admin of adminUsers) {
       if (outOfStockProductNames.length > 0) {
         await sendOutOfStockNotificationEmailToAdmin(admin.email, outOfStockProductNames);
       }
 
-        // Create a suitable message for the notification
-        notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
-        // Save the notification in the database
-        const notification = new Notification({
-          user: admin._id, // Assuming `seller` is the seller's user ID
-          message: notificationMessage,
-        });
-  
-        await notification.save();
+      // Create a suitable message for the notification
+      notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
+      // Save the notification in the database
+      const notification = new Notification({
+        user: admin._id, // Assuming `seller` is the seller's user ID
+        message: notificationMessage,
+      });
+
+      await notification.save();
     }
 
     // Respond with the new order details
@@ -260,8 +252,6 @@ export const validatePromoCode = async (req, res) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
-
-
 
 export const addAddress = async (req, res) => {
   try {
@@ -350,7 +340,6 @@ export const deleteAddress = async (req, res) => {
     res.status(500).json({ message: "Failed to delete address" });
   }
 };
-
 
 export const getAllAddresses = async (req, res) => {
   try {

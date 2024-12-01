@@ -29,7 +29,6 @@ const AdvertiserAddActivity = () => {
     price: "",
     category: "",
     specialDiscount: "",
-    status: false,
     duration: "",
   });
 
@@ -92,7 +91,6 @@ const AdvertiserAddActivity = () => {
         price: "",
         category: "",
         specialDiscount: "",
-        status: false,
         duration: "",
       });
       setSelectedTags([]);
@@ -277,17 +275,7 @@ const AdvertiserAddActivity = () => {
           inputProps={{ min: 1, max: 100 }}
           sx={{ mb: 2 }}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={newActivity.status}
-              onChange={(e) => setNewActivity({ ...newActivity, status: e.target.checked })}
-              sx={{ color: "#00796b" }}
-            />
-          }
-          label="Enable Booking"
-          sx={{ mb: 2 }}
-        />
+    
         <TextField
           fullWidth
           label="Duration (minutes)"

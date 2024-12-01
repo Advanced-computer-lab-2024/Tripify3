@@ -319,6 +319,47 @@ export const sendPaymentReceiptEmail = async (user, bookingDetails, tickets, tot
 };
 
 
+export const sendItineraryActiveEmail = async (user, itineraryName, bookingLink) => {
+  const mailOptions = {
+    from: "tripify.planner@gmail.com",
+    to: user.email,
+    subject: "📢 Your Favorite Itinerary is Active Again! 🌟",
+    text: `Dear ${user.name || 'User'},\n\nGood news! The itinerary you showed interest in, "${itineraryName}", is now active again and ready for booking! 🌍✨\n\nDon't miss your chance to secure it before it's gone.\n\nClick here to book now: ${bookingLink}\n\nHappy planning!\n\nBest regards,\nYour Tripify Team`, // Plain text fallback
+    html: `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 2px solid #4caf50; border-radius: 12px; background-color: #e8f5e9;">
+        <h1 style="color: #388e3c; text-align: center;">📢 Exciting News, ${user.name || 'User'}! 🌟</h1>
+        <p style="font-size: 18px; color: #555; text-align: center;">
+          The itinerary you were interested in, <strong>"${itineraryName}"</strong>, is now <span style="color: #388e3c; font-weight: bold;">active</span> and ready for booking! 🎉
+        </p>
+        <p style="font-size: 18px; text-align: center; color: #444;">
+          Don’t miss this opportunity—secure your spot today!
+        </p>
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="${bookingLink}" style="font-size: 20px; font-weight: bold; color: #fff; background-color: #388e3c; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">Book Now</a>
+        </div>
+       
+        <div style="text-align: center; margin-top: 30px;">
+          <img src="https://example.com/itinerary-active.jpg" alt="Itinerary Active" style="max-width: 100%; height: auto; border-radius: 12px;">
+        </div>
+        <p style="font-size: 16px; text-align: center; margin-top: 20px; color: #555;">
+          Ready to explore the world? 🌍✨
+        </p>
+        <p style="font-size: 14px; text-align: center; color: #999; margin-top: 20px;">
+          This is an automated message, please do not reply.
+        </p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending itinerary active email:", error);
+    throw new Error("Error sending itinerary active email");
+  }
+};
+
+
 
 export const sendBirthdayPromoCodeEmail = async (user, discount, expiryDate, promoCode) => {
   const mailOptions = {

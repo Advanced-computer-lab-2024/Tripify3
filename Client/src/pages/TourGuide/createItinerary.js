@@ -57,7 +57,7 @@ const TourGuideCreateItinerary = () => {
   };
   const fetchActivities = async () => {
     try {
-      const response = await getAllActivitiesForTourist();
+      const response = await getAllActivitiesForTourist(userId);
       setActivities(response.data.activities);
     } catch (error) {
       console.error("Failed to fetch activities:", error);

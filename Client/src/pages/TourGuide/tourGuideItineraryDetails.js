@@ -37,16 +37,6 @@ const TourGuideItineraryDetails = () => {
 
   // Fetch itinerary and user profile data
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await getUserProfile(userId);
-        setCurrency(response.data.userProfile.currency); // Set user's selected currency
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-
-    fetchUserProfile(); // Fetch currency when the component mounts
 
     const fetchItinerary = async () => {
       try {
@@ -54,7 +44,7 @@ const TourGuideItineraryDetails = () => {
         setItinerary(response.data.data.itinerary);
         setReview(response.data.data);
         setLoading(false);
-        await fetchTourGuideProfile(response.data.data.itinerary.tourGuide._id, userId);
+        // await fetchTourGuideProfile(response.data.data.itinerary.tourGuide._id, userId);
       } catch (error) {
         setError("Error fetching Itinerary details");
         setLoading(false);
@@ -76,14 +66,6 @@ const TourGuideItineraryDetails = () => {
     fetchBookingsForItinerary();
   }, [id, userId]);
 
-  const fetchTourGuideProfile = async (tourGuideId, touristId) => {
-    try {
-      const response = await axios.get(`http://localhost:8000/booking/get/tour-guide/profile/${tourGuideId}/${touristId}`);
-      setIsFollowing(response.data.isFollowing);
-    } catch (error) {
-      console.error("Error fetching tour guide profile:", error);
-    }
-  };
 
   const activateItinerary = async () => {
     try {

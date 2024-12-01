@@ -51,7 +51,7 @@ export const createActivity = async (req, res) => {
   console.log(req.body);
   
   try {
-    const { advertiser, category, tags, status } = req.body;
+    const { advertiser, category, tags } = req.body;
 
     // Check if the advertiser exists
     const advertiserExists = await Advertiser.exists({ _id: advertiser });
@@ -73,11 +73,8 @@ export const createActivity = async (req, res) => {
       return res.status(404).json({ message: "One or more tags not found" });
     }
 
-      // Set status to "Active" if true, else "Inactive"
-      const activityStatus = status ? "Active" : "Inactive";
-
       // If all checks pass, create the new activity with adjusted status
-      const newActivity = new Activity({ ...req.body, status: activityStatus });
+      const newActivity = new Activity({ ...req.body, status: "Active" });
       await newActivity.save();
   
      return res.status(201).json({

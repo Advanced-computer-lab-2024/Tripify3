@@ -4,7 +4,9 @@ import Tag from "../../models/user.js";
 import Tourist from "../../models/tourist.js";
 import Review from "../../models/review.js";
 import Booking from "../../models/booking.js";
+import Notification from "../../models/notification.js";
 import mongoose from "mongoose";
+import { sendItineraryActiveEmail } from "../../middlewares/sendEmail.middleware.js";
 import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail } from "../../middlewares/sendEmail.middleware.js";
 
 export const editItineraryAttribute = async (req, res) => {
@@ -379,9 +381,9 @@ export const ActivateItinerary = async (req, res) => {
     // Find if there are any bookings with this itinerary
     const bookings = await Booking.find({ itinerary: itineraryId });
 
-    if (bookings.length === 0) {
-      return res.status(400).json({ message: "Itinerary has no bookings, cannot be activated" });
-    }
+    // if (bookings.length === 0) {
+    //   return res.status(400).json({ message: "Itinerary has no bookings, cannot be activated" });
+    // }
 
     // Now find the itinerary based on its ID
     const itinerary = await Itinerary.findById(itineraryId);
@@ -397,8 +399,37 @@ export const ActivateItinerary = async (req, res) => {
     itinerary.status = "Active";
     await itinerary.save();
 
+     // Find tourists who have this itinerary in their bookmarks
+     const tourists = await Tourist.find({
+      userBookmarkedItineraries: itineraryId,
+    });
+
+    if (tourists.length > 0) {
+         // Iterate over tourists to send emails and create notifications
+         const notifications = [];
+         for (const tourist of tourists) {
+           // Send email to the tourist
+           await sendItineraryActiveEmail(
+             tourist,
+             itinerary.name,
+             `http://localhost:3000/tourist/itinerary/${itineraryId}`
+           );   
+           // Create a notification for the tourist
+           notifications.push({
+             user: tourist._id,
+             message: `The itinerary "${itinerary.name}" you are interested in has been activated and is now available for booking.`,
+           });
+         }
+   
+      // Save all notifications to the database
+      await Notification.insertMany(notifications);
+    }
+
+
     res.status(200).json({ message: "Itinerary activated successfully", itinerary });
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ message: "Error activating itinerary", error });
   }
 };
