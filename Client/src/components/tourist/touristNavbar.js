@@ -120,10 +120,21 @@ const TouristNavbar = () => {
     }
   }, [currentStep]);
 
-  const handleNextStep = () => {
+  const handleNextStep = async() => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
+      const username = sessionStorage.getItem("username");
+      if (username) {
+        try {
+          // Send POST request to the logout endpoint with the username
+          await axios.post("http://localhost:8000/access/user/logout", { username });
+          sessionStorage.setItem("firstTimeLogin",false);
+
+        } catch (error) {
+          console.error("Error during logout:", error.response ? error.response.data : error.message);
+        }
+      }
       setShowInstructions(false);
     }
   };
@@ -210,16 +221,6 @@ const TouristNavbar = () => {
 
   const confirmLogout = async () => {
     setLogoutDialogOpen(false);
-    const username = sessionStorage.getItem("username");
-    if (username) {
-      try {
-        // Send POST request to the logout endpoint with the username
-        await axios.post("http://localhost:8000/access/user/logout", { username });
-        console.log("User logged out successfully");
-      } catch (error) {
-        console.error("Error during logout:", error.response ? error.response.data : error.message);
-      }
-    }
     clearUser();
     navigate("/login");
   };
