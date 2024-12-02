@@ -17,7 +17,10 @@ export default function QuantityEdit() {
   const [selectedDelivery, setSelectedDelivery] = useState("1");
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [quant, setQuant] = useState([]);
-  const [dropOffDate, setDropOffDate] = useState(""); // Store the calculated date
+  const today = new Date();
+  today.setDate(today.getDate() + 3);
+  today.setHours(12, 0, 0, 0); // Set time to 12 PM
+  const [dropOffDate, setDropOffDate] = useState(today); // Store the calculated date
 
   const navigate = useNavigate();
   const [debounceTimeout, setDebounceTimeout] = useState(null);
@@ -37,13 +40,15 @@ export default function QuantityEdit() {
        // Calculate the drop-off date based on the selected delivery option
        const now = new Date();
        switch (selectedValue) {
+        case "1":
+          now.setDate(now.getDate() + 3);
+          now.setHours(12, 0, 0, 0); // Set time to 12 PM
+          break;
          case "2": // Express-Delivery
            now.setDate(now.getDate() + 1);
            now.setHours(12, 0, 0, 0); // Set time to 12 PM
            break;
          default: // Standard-Delivery
-           now.setDate(now.getDate() + 3);
-           now.setHours(12, 0, 0, 0); // Set time to 12 PM
            break;
        }
    
@@ -78,8 +83,6 @@ export default function QuantityEdit() {
             return { ...response.data, quantity: item.quantity }; // Add quantity to product details
           })
         );
-        console.log(productDetails);
-        console.log("==========2828282282828");
         
         setProducts(productDetails);
         const updatedQuant = cart.products.map((item) => ({

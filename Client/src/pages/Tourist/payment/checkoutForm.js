@@ -126,7 +126,7 @@ export default function CheckoutForm() {
         });
       }
 
-      // navigate(`/tourist/payment/success`);
+     
     } catch (err) {
       console.error("Error processing wallet payment:", err);
       setMessage("An error occurred during payment.");
@@ -134,6 +134,7 @@ export default function CheckoutForm() {
 
     if (selectedMethod !== "Visa") {
       setIsProcessing(false);
+       navigate(`/tourist/payment/success`);
       return;
     }
 
