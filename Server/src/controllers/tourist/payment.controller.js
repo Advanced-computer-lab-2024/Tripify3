@@ -14,6 +14,18 @@ dotenv.config(); // Load environment variables
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+
+export const cancelPaymentIntent = async (req, res) => {
+  const { paymentIntentId } = req.body;
+
+  try {
+    await stripe.paymentIntents.cancel(paymentIntentId);
+    res.status(200).send({ success: true });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+};
+
 export const createPaymentIntent = async (req, res) => {
   const { price } = req.body;
 

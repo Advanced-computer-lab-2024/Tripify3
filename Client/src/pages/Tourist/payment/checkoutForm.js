@@ -48,11 +48,22 @@ export default function CheckoutForm() {
         const discountedPrice = initialPrice - (initialPrice * discount) / 100;
         const newPrice = discountedPrice.toFixed(2); // Format to 2 decimal places
 
+        // Cancel the old payment intent
+        console.log(clientSecret);
+        console.log("=================================");
+
+        if (clientSecret) {
+          const paymentIntentId = clientSecret.split("_secret")[0];
+          await axios.post("http://localhost:8000/tourist/cancel/payment/intent", { paymentIntentId });
+        }
+
+        // Create a new payment intent
         const paymentIntentResponse = await axios.post("http://localhost:8000/tourist/create/payment/intent", {
           price: newPrice,
         });
 
         setClientSecret(paymentIntentResponse.data.clientSecret);
+        setIsPromoValid(true); // Mark the promo code as valid
       }
     } catch (err) {
       if (err.response && err.response.status === 400) {
@@ -91,7 +102,7 @@ export default function CheckoutForm() {
           amount: calculateFinalPrice(),
           paymentMethod: selectedMethod,
           promoCode,
-          type
+          type,
         });
 
         await axios.post(`http://localhost:8000/tourist/checkout?userId=${userId}`, {
@@ -111,11 +122,11 @@ export default function CheckoutForm() {
           paymentMethod: selectedMethod,
           promoCode,
           bookingId: response.data.booking._id,
-          type
+          type,
         });
       }
 
-      navigate(`/tourist/payment/success`);
+      // navigate(`/tourist/payment/success`);
     } catch (err) {
       console.error("Error processing wallet payment:", err);
       setMessage("An error occurred during payment.");
