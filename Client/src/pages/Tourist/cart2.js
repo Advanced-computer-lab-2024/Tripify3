@@ -17,15 +17,17 @@ export default function QuantityEdit() {
   const [selectedDelivery, setSelectedDelivery] = useState("1");
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [quant, setQuant] = useState([]);
+  const [dropOffDate, setDropOffDate] = useState(""); // Store the calculated date
 
   const navigate = useNavigate();
   const [debounceTimeout, setDebounceTimeout] = useState(null);
   const [form, setForm] = useState({
     location: "",
   });
+
+
   const handleCheckout = async () => {
   
-    const dropOffDate = "2024-12-05T00:00:00.000+00:00";
 
     navigate(`/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}`);
   };
@@ -34,9 +36,29 @@ export default function QuantityEdit() {
     const selectedValue = event.target.value; // Get the selected value
     setSelectedDelivery(selectedValue); // Update the state with the selected value
 
-    const selectedText = event.target.options[event.target.selectedIndex].text;
-    const price = selectedText.split("$")[1].trim(); // Get substring after "$" and trim whitespace
-    setDeliveryPrice(price); // Update the delivery price
+       // Calculate the drop-off date based on the selected delivery option
+       const now = new Date();
+       switch (selectedValue) {
+         case "2": // Express-Delivery
+           now.setDate(now.getDate() + 1);
+           now.setHours(12, 0, 0, 0); // Set time to 12 PM
+           break;
+         default: // Standard-Delivery
+           now.setDate(now.getDate() + 3);
+           now.setHours(12, 0, 0, 0); // Set time to 12 PM
+           break;
+       }
+   
+       setDropOffDate(now.toISOString()); // Convert to ISO string for consistent format
+
+    // const selectedText = event.target.options[event.target.selectedIndex].text;
+    // const price = selectedText.split("$")[1].trim(); // Get substring after "$" and trim whitespace
+    if(selectedValue === '2'){
+
+      setDeliveryPrice(20.00); // Update the delivery price
+    } else{
+      setDeliveryPrice(10.00); // Update the delivery price
+    }
   };
   const getCart = async () => {
     try {
@@ -273,10 +295,8 @@ export default function QuantityEdit() {
                           value={selectedDelivery} // Bind the select value to the state
                           onChange={handleDeliveryChange}
                         >
-                          <option value="1">Standard-Delivery - 5.00 EGP</option>
-                          <option value="2">Express-Delivery - 10.00 EGP</option>
-                          <option value="3">Next-Day-Delivery - 15.00 EGP</option>
-                          <option value="4">Same-Day-Delivery - 20.00 EGP</option>
+                          <option value="1">Standard-Delivery - 10.00 EGP</option>
+                          <option value="2">Next-Day-Delivery - 20.00 EGP</option>
                         </select>
                       </div>
                      
@@ -291,7 +311,7 @@ export default function QuantityEdit() {
                           {cart && cart.totalPrice
                             ? deliveryPrice
                               ? (parseFloat(cart.totalPrice) + parseFloat(deliveryPrice)).toFixed(2)
-                              : (parseFloat(cart.totalPrice) + parseFloat(5.0)).toFixed(2)
+                              : (parseFloat(cart.totalPrice) + parseFloat(10.0)).toFixed(2)
                             : "0.00"} EGP
                         </MDBTypography>
                       </div>
