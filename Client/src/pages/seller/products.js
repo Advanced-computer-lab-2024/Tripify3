@@ -66,11 +66,9 @@ const ImageFlipper = ({ images }) => {
 
   // Normalize the path to use forward slashes
   const normalizedPath = imagePath.replace(/\\/g, "/");
-  console.log("Normalized Image Path:", normalizedPath); // Log the normalized path
 
   // Extract the part after "uploads/" to create a relative path
   const relativeImagePath = normalizedPath.substring(normalizedPath.indexOf("uploads/"));
-  console.log("Relative Image Path:", relativeImagePath); // Log the extracted relative path
 
   // Construct the correct URL
   const imageUrl = `http://localhost:8000/${relativeImagePath}`;
@@ -278,7 +276,7 @@ const Products = () => {
       console.log("Product added to cart successfully");
     } catch (error) {
       console.error("Error adding product to cart:", error);
-      console.log("Failed to add the product to cart.");
+      
     }
   };
 
@@ -446,7 +444,6 @@ const Products = () => {
 
   const handleUpdate = async (product) => {
     try {
-      console.log("Updating product", product);
       const response = await axios.put(
         `http://localhost:8000/access/seller/editProduct3?productId=${product._id}`, // Don't pass the productId in the URL
         product, // Pass the product object in the request body
@@ -458,7 +455,6 @@ const Products = () => {
         }
       );
       fetchProducts();
-      console.log("Product updated successfully", response.data);
     } catch (error) {
       console.error("Error updating product", error.response?.data || error.message);
     }
@@ -500,7 +496,6 @@ const Products = () => {
 
     // Append new images using missing indices first, then increment
     newImage.forEach((image, idx) => {
-      console.log("this is image", image);
       const useIndex = missingIndices.length > 0 ? missingIndices.shift() : nextIndex++;
       newFormData.append("images", image, `${product.name}-${useIndex}.${image.name.split(".").pop()}`);
     });
@@ -513,7 +508,6 @@ const Products = () => {
         },
       });
 
-      console.log("Product updated successfully", response.data);
       setNewImage([]);
     } catch (error) {
       console.error("Error updating product", error.response?.data || error.message);
@@ -535,7 +529,6 @@ const Products = () => {
     fetchProducts();
   };
   const handleCloseModal2 = () => {
-    console.log("thisis cvlosdffdg");
     setOpenCreate(false);
     fetchProducts();
   };
@@ -564,9 +557,7 @@ const Products = () => {
         </AppBar>
 
         <Box sx={{ p: 4 }}>
-          {/* <Typography variant="h3" align="center" color="primary" gutterBottom>
-            Products
-          </Typography> */}
+      
 
           {/* Search Section */}
           <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>

@@ -239,25 +239,37 @@ export const createProduct = async (req, res) => {
   }
 };
 
-//need to change in FE to loop over the images need to be changed
 export const searchAllProducts = async (req, res) => {
   try {
     // Find products by name
-    const existingProduct = await Product.find({ archived: false, isDeleted: false }); // Using regex for case-insensitive search
+    const existingProducts = await Product.find({ archived: false, isDeleted: false });
 
-    return res.status(200).json(existingProduct);
+    // Modify imageUrl to replace backslashes with forward slashes
+    const updatedProducts = existingProducts.map(product => ({
+      ...product._doc, // Spread the product's properties
+      imageUrl: product.imageUrl.map(imagePath => imagePath.replace(/\\/g, '/')) // Replace backslashes with forward slashes
+    }));
+
+    return res.status(200).json(updatedProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
+
 export const searchAllArchivedProducts = async (req, res) => {
   try {
     // Find products by name
-    const existingProduct = await Product.find({ archived: true, isDeleted: false }); // Using regex for case-insensitive search
+    const existingProducts = await Product.find({ archived: true, isDeleted: false }); // Using regex for case-insensitive search
     // Return the found product(s)
-    return res.status(200).json(existingProduct);
+     // Replace backslashes with forward slashes in the imageUrl field
+     const updatedProducts = existingProducts.map(product => ({
+      ...product._doc, // Spread the product's properties
+      imageUrl: product.imageUrl.map(imagePath => imagePath.replace(/\\/g, '/')) // Replace backslashes with forward slashes
+    }));
+
+    return res.status(200).json(updatedProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -385,7 +397,6 @@ export const viewProductStockAndSales = async (req, res) => {
 //dont know whether to search with name or id
 export const archiveProduct = async (req, res) => {
   const { id } = req.body;
-  console.log(id);
   try {
     const existingProduct = await Product.findOneAndUpdate(
       { _id: id }, // Query to find the product by _id
@@ -459,14 +470,24 @@ export const SearchProductById = async (req, res) => {
   try {
     const { id } = req.query;
     const existingProduct = await Product.findById(id);
+
     if (!existingProduct) {
       return res.status(404).json({ message: "Product not found." });
     }
-    return res.status(200).json(existingProduct);
+
+    // Replace backslashes with forward slashes in the imageUrl array
+    const updatedProduct = {
+      ...existingProduct._doc, // Spread the product's properties
+      imageUrl: existingProduct.imageUrl.map(imagePath => imagePath.replace(/\\/g, '/')) // Replace backslashes with forward slashes
+    };
+
+    return res.status(200).json(updatedProduct);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 export const deleteSellerAccount = async (req, res) => {
   try {

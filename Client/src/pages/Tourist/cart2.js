@@ -27,8 +27,6 @@ export default function QuantityEdit() {
 
 
   const handleCheckout = async () => {
-  
-
     navigate(`/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}`);
   };
 
@@ -64,6 +62,9 @@ export default function QuantityEdit() {
     try {
       const response = await axios.get(`http://localhost:8000/tourist/cart/?touristId=${getUserId()}`);
       setCart(response.data);
+      console.log(response.data);
+      console.log("---------------------------");
+      
     } catch (error) {
       setErrorMessage("Error fetching cart: " + error.message);
     }
@@ -77,6 +78,9 @@ export default function QuantityEdit() {
             return { ...response.data, quantity: item.quantity }; // Add quantity to product details
           })
         );
+        console.log(productDetails);
+        console.log("==========2828282282828");
+        
         setProducts(productDetails);
         const updatedQuant = cart.products.map((item) => ({
           productId: item.product,
@@ -85,7 +89,6 @@ export default function QuantityEdit() {
 
         setQuant(updatedQuant); // Set the quant state with the array of objects
         console.log(updatedQuant);
-        console.log(products);
       } catch (error) {
         setErrorMessage("Error fetching products in the cart: " + error.message);
       }
@@ -166,15 +169,13 @@ export default function QuantityEdit() {
         productId,
         number: 0, // Set quantity to 0 to remove the item
       });
+     
       setCart(response.data.cart); // Update cart with the new data
     } catch (error) {
       setErrorMessage("Error updating cart: " + error.message);
     }
   };
 
-  // const handleQuantityChange(
-  //   product._id,
-  //   e.target.value
   // )
 
   return (

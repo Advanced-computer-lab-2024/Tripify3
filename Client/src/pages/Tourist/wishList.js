@@ -73,12 +73,16 @@ const Products = () => {
 
   const fetchSellerNames = async (products) => {
     try {
+  
       const sellerIds = [
-        ...new Set(products.map((product) => product.sellerId)),
+        ...new Set(
+          products.map((product) => product.sellerId || product.adminId) // Fallback to adminId if sellerId is null
+        ),
       ];
+
       const sellerPromises = sellerIds.map((sellerId) =>
         axios.get(
-          `http://localhost:8000/access/seller/findSeller?id=${sellerId}`
+          `http://localhost:8000/access/seller/find/seller?id=${sellerId}`
         )
       );
       const sellerResponses = await Promise.all(sellerPromises);
@@ -97,6 +101,9 @@ const Products = () => {
       const response = await axios.get(
         `http://localhost:8000/tourist/wishlist/get?touristId=${getUserId()}`
       );
+      console.log(response.data.items);
+      console.log("===================================");
+      
       setWishArray(response.data.items);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -167,6 +174,7 @@ const Products = () => {
       // alert("Failed to add to wishList. ");
     }
   };
+
 
   return (
     <ThemeProvider theme={theme}>
