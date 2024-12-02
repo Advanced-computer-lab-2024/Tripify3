@@ -14,21 +14,30 @@ import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail, sendPr
 
 export const getAllAcceptedUsers = async (req, res) => {
   try {
-    const users = await User.find({ status: "Accepted" });
-
+  
+    const users = await User.find({
+      $or: [
+        { status: "Accepted" },
+        { type: "Tourist" }
+      ]
+    });
     // Populate details based on user type
     const userDetailsPromises = users.map(async (user) => {
-      if (user.type === "advertiser") {
+      if (user.type === "Advertiser") {
         const advertiserDetails = await Advertiser.findOne({ _id: user._id });
         return { ...user.toObject(), advertiserDetails };
       }
-      if (user.type === "seller") {
+      if (user.type === "Seller") {
         const sellerDetails = await Seller.findOne({ _id: user._id });
         return { ...user.toObject(), sellerDetails };
       }
-      if (user.type === "tourGuide") {
+      if (user.type === "Tour Guide") {
         const tourGuideDetails = await TourGuide.findOne({ _id: user._id });
         return { ...user.toObject(), tourGuideDetails };
+      }
+      if (user.type === "Tourist") {
+        const touristDetails = await Tourist.findOne({ _id: user._id });
+        return { ...user.toObject(), touristDetails };
       }
       return user; // Return the user as is for other types
     });

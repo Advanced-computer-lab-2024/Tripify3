@@ -50,6 +50,11 @@ const Users = () => {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [openFileViewer, setOpenFileViewer] = useState(false);
   const [fileUrls, setFileUrls] = useState([]);
+  const [openPromoCodeDialog, setOpenPromoCodeDialog] = useState(false);
+  const [promoTouristId, setPromoTouristId] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [promoError, setPromoError] = useState("");
 
   const navigate = useNavigate(); // Use useNavigate for navigation
 
@@ -75,6 +80,51 @@ const Users = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  const handleGivePromoCode = (touristId) => {
+    setPromoTouristId(touristId);
+    setOpenPromoCodeDialog(true);
+  };
+
+  const handleAddPromoCode = async () => {
+    if (!expiryDate || new Date(expiryDate) < new Date()) {
+      setPromoError("Expiry date must be today or later.");
+      return;
+    }
+    if (!discount || discount <= 0 || discount > 100) {
+      setPromoError("Discount percentage must be between 1 and 100.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8000/admin/promocode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          touristId: promoTouristId,
+          discount,
+          expiryDate,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error giving promo code");
+      }
+
+      // Close the dialog and reset form
+      setOpenPromoCodeDialog(false);
+      setPromoTouristId("");
+      setDiscount("");
+      setExpiryDate("");
+      setPromoError("");
+      alert("Promo code added successfully!");
+    } catch (error) {
+      console.error("Error adding promo code:", error);
+      setPromoError("Failed to add promo code. Try again.");
+    }
+  };
 
   const handleUpdateUserStatus = async (id, status) => {
     try {
@@ -171,9 +221,19 @@ const Users = () => {
         <Grid container spacing={3}>
           {pendingUsers.map((user) => (
             <Grid item xs={12} md={6} key={user._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
+              <Card
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  p: 2,
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "12px",
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+              >
                 <CardContent>
-                  <Typography variant="h6">{user.username}</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#1e3a5f" }}>{user.username}</Typography>
                   <Typography color="textSecondary">{user.type}</Typography>
                   <Typography color="textSecondary">{user.email}</Typography>
                 </CardContent>
@@ -206,9 +266,16 @@ const Users = () => {
                   <Typography color="textSecondary">{user.type}</Typography>
                   <Typography color="textSecondary">{user.email}</Typography>
                 </CardContent>
-                <IconButton onClick={() => handleRemoveUser(user._id)} color="error">
-                  <Delete />
-                </IconButton>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <IconButton onClick={() => handleRemoveUser(user._id)} color="error" sx={{ mr: 1 }}>
+                    <Delete />
+                  </IconButton>
+                  {user.type === "Tourist" && (
+                    <Button variant="contained" color="secondary" onClick={() => handleGivePromoCode(user._id)}>
+                      Give Promo Code
+                    </Button>
+                  )}
+                </Box>
               </Card>
             </Grid>
           ))}
@@ -255,9 +322,48 @@ const Users = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        <Dialog open={openPromoCodeDialog} onClose={() => setOpenPromoCodeDialog(false)}>
+          <DialogTitle>Give Promo Code</DialogTitle>
+          <DialogContent>
+            {promoError && (
+              <Typography color="error" variant="body2" sx={{ mb: 1 }}>
+                {promoError}
+              </Typography>
+            )}
+            <TextField
+              label="Discount Percentage"
+              type="number"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ mb: 2 }}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">%</InputAdornment>,
+              }}
+            />
+            <TextField
+              label="Expiry Date"
+              type="date"
+              value={expiryDate}
+              onChange={(e) => setExpiryDate(e.target.value)}
+              fullWidth
+              variant="outlined"
+              sx={{ mb: 2 }}
+              InputLabelProps={{ shrink: true }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleAddPromoCode} color="primary" variant="contained">
+              Add Promo Code
+            </Button>
+            <Button onClick={() => setOpenPromoCodeDialog(false)} color="secondary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </ThemeProvider>
-
   );
 };
 
