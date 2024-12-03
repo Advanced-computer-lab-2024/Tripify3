@@ -81,30 +81,42 @@ const SalesReport = () => {
     return appRate;
   };
 
-  // Filter by date or month
   const filterPayments = (data) => {
-    return data.filter((paymentGroup) => {
-      // Filter by payment date range
-      if (dateFilter) {
-        const paymentDate = new Date(paymentGroup.payments[0].paymentDate);
-        const selectedDate = new Date(dateFilter);
-        if (paymentDate.toDateString() !== selectedDate.toDateString()) {
-          return false;
+    return data.flatMap((paymentGroup) => {
+      // Filter payments based on the selected filters
+      const filteredPayments = paymentGroup.payments.filter((payment) => {
+        // Filter by payment date
+        if (dateFilter) {
+          const selectedDate = new Date(dateFilter).toISOString().split('T')[0]; // Format selected date as 'yyyy-MM-dd'
+          const paymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
+          if (paymentDate !== selectedDate) {
+            return false;
+          }
         }
-      }
-
-      // Filter by payment month
-      if (monthFilter) {
-        const paymentMonth = format(new Date(paymentGroup.payments[0].paymentDate), 'yyyy-MM');
-        if (paymentMonth !== monthFilter) {
-          return false;
+  
+        // Filter by payment month
+        if (monthFilter) {
+          const paymentMonth = format(new Date(payment.paymentDate), 'yyyy-MM');
+          if (paymentMonth !== monthFilter) {
+            return false;
+          }
         }
+  
+        return true; // Payment matches all filters
+      });
+  
+      // Return matched payments within the same group structure
+      if (filteredPayments.length > 0) {
+        return {
+          ...paymentGroup,
+          payments: filteredPayments,
+        };
       }
-
-      return true;
+  
+      return []; // No matching payments for this group
     });
   };
-
+  
   // Reset Filters
   const resetFilters = () => {
     setDateFilter('');
