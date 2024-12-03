@@ -231,13 +231,8 @@ const SalesReport = () => {
           <TableHead>
             <TableRow>
               <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'amount'}
-                  direction={orderDirection}
-                  onClick={() => handleRequestSort('amount')}
-                >
+               
                   Amount
-                </TableSortLabel>
               </TableCell>
               <TableCell>Payment Method</TableCell>
               <TableCell>Payment Date</TableCell>
