@@ -153,8 +153,8 @@ const TourGuideSalesReport = () => {
       {/* Display total distinct users and total revenue */}
       <Row gutter={16} style={{ marginBottom: '20px' }}>
         <Col span={12}>
-          <Card title="Total Distinct Users">
-            <p>{totalDistinctUsersCount}</p>
+          <Card title="Total Distinct Customers">
+          <p>{salesData?.totalDistinctUsers || 0}</p>
           </Card>
         </Col>
         <Col span={12}>
