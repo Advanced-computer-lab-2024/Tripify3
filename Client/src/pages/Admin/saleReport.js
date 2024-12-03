@@ -68,7 +68,7 @@ const SalesReport = () => {
     let appRate = 0;
     if (paymentGroup.type === 'Activity' || paymentGroup.type === 'Itinerary') {
       paymentGroup.payments.forEach((payment) => {
-        if (payment.paymentMethod === 'Visa') {
+        if (payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') {
           appRate += payment.amount * 0.1;
         }
       });
@@ -152,7 +152,7 @@ const SalesReport = () => {
         <Grid item xs={12} sm={4}>
           <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              App Rate (Visa Payments)
+              App Rate (Online Payments)
             </Typography>
             <Typography variant="h4" color="secondary">
               ${completedPayments.reduce((acc, group) => acc + calculateAppRate(group), 0).toFixed(2)}
@@ -162,7 +162,7 @@ const SalesReport = () => {
         <Grid item xs={12} sm={4}>
           <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Total Income Sources
+              Total Distinct Customers
             </Typography>
             <Typography variant="h4" color="textPrimary">
               {completedPayments.length}
@@ -254,7 +254,7 @@ const SalesReport = () => {
                     <TableCell>{payment.paymentMethod}</TableCell>
                     <TableCell>{formatDate(payment.paymentDate)}</TableCell>
                     <TableCell>{paymentGroup.type}</TableCell>
-                    <TableCell>{payment.paymentMethod === 'Visa' && paymentGroup.type!="Product" ? payment.amount * 0.1 : 0}</TableCell>
+                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : 0}</TableCell>
                   </TableRow>
                 ))}
               </>
