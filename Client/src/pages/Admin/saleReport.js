@@ -66,11 +66,16 @@ const SalesReport = () => {
 
   const calculateAppRate = (paymentGroup) => {
     let appRate = 0;
-    if (paymentGroup.type === 'Activity' || paymentGroup.type === 'Itinerary') {
+    if (paymentGroup.type === 'Activity' || paymentGroup.type === 'Itinerary' ) {
       paymentGroup.payments.forEach((payment) => {
         if (payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') {
           appRate += payment.amount * 0.1;
         }
+      });
+    } else if (paymentGroup.type === 'Product'){
+      paymentGroup.payments.forEach((payment) => {
+          appRate += payment.adminAmount ;
+        
       });
     }
     return appRate;
@@ -193,6 +198,8 @@ const SalesReport = () => {
               label="Payment Month"
             >
               {[
+
+  { value: '2024-12', label: 'December 2024' },
   { value: '2024-11', label: 'November 2024' },
   { value: '2024-10', label: 'October 2024' },
   { value: '2024-09', label: 'September 2024' },
@@ -249,7 +256,7 @@ const SalesReport = () => {
                     <TableCell>{payment.paymentMethod}</TableCell>
                     <TableCell>{formatDate(payment.paymentDate)}</TableCell>
                     <TableCell>{paymentGroup.type}</TableCell>
-                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : 0}</TableCell>
+                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : (paymentGroup.type==='Product') ? payment.adminAmount : 0}</TableCell>
                   </TableRow>
                 ))}
               </>

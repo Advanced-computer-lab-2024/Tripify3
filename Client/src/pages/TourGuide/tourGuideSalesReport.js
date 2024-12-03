@@ -180,7 +180,7 @@ const TourGuideSalesReport = () => {
                 ))}
               </Select>
               <DatePicker
-                placeholder="Filter by start date"
+                placeholder="Filter by Payment date"
                 onChange={handleDateChange}
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD"
