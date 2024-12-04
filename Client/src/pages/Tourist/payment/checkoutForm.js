@@ -125,8 +125,6 @@ export default function CheckoutForm() {
           type,
         });
       }
-
-     
     } catch (err) {
       console.error("Error processing wallet payment:", err);
       setMessage("An error occurred during payment.");
@@ -134,7 +132,7 @@ export default function CheckoutForm() {
 
     if (selectedMethod !== "Visa") {
       setIsProcessing(false);
-       navigate(`/tourist/payment/success`);
+      navigate(`/tourist/payment/success`);
       return;
     }
 
@@ -253,7 +251,7 @@ export default function CheckoutForm() {
                   cursor: isPromoValid ? "not-allowed" : "text",
                 }}
               />
-              {!isPromoValid && (
+              {!isPromoValid ? (
                 <button
                   type="button"
                   onClick={validatePromoCode}
@@ -267,6 +265,28 @@ export default function CheckoutForm() {
                   }}
                 >
                   Add
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPromoCode("");
+                    setDiscount(0);
+                    setIsPromoValid(false);
+                  }}
+                  style={{
+                    padding: "5px 10px",
+                    backgroundColor: "#ff4d4f",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  &times;
                 </button>
               )}
             </div>
@@ -299,37 +319,66 @@ export default function CheckoutForm() {
         <form id="payment-form" onSubmit={handleSubmit}>
           <PaymentElement id="payment-element" />
 
-          {/* Promo Code Input */}
-          <div style={{ marginTop: "20px", marginBottom: "10px", display: "flex", alignItems: "center" }}>
-            <input
-              type="text"
-              placeholder="Enter Promo Code"
-              value={promoCode}
-              onChange={(e) => setPromoCode(e.target.value)}
-              style={{
-                flex: 1,
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                marginRight: "5px",
-              }}
-            />
-            <button
-              type="button"
-              onClick={validatePromoCode}
-              style={{
-                padding: "10px 15px",
-                backgroundColor: "#003366",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Add
-            </button>
+          <div style={{ marginBottom: "10px", marginTop: "10px" }}>
+            <div style={{ fontSize: "14px", marginBottom: "5px", color: "#555" }}>Enter Promo Code</div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <input
+                type="text"
+                placeholder="Promo Code"
+                value={promoCode}
+                onChange={handlePromoCodeChange}
+                disabled={isPromoValid}
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  border: "1px solid #ddd",
+                  borderRadius: "4px",
+                  marginRight: "5px",
+                  backgroundColor: isPromoValid ? "#f9f9f9" : "#fff",
+                  cursor: isPromoValid ? "not-allowed" : "text",
+                }}
+              />
+              {!isPromoValid ? (
+                <button
+                  type="button"
+                  onClick={validatePromoCode}
+                  style={{
+                    padding: "10px 15px",
+                    backgroundColor: "#003366",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Add
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPromoCode("");
+                    setDiscount(0);
+                    setIsPromoValid(false);
+                  }}
+                  style={{
+                    padding: "5px 10px",
+                    backgroundColor: "#ff4d4f",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+            {error && <div style={{ color: "red", marginTop: "5px" }}>{error}</div>}
           </div>
-          {error && <div style={{ color: "red", marginTop: "5px" }}>{error}</div>}
 
           <div style={{ marginBottom: "10px", fontSize: "16px", fontWeight: "bold", textAlign: "center" }}>Total Price: {calculateFinalPrice()} EGP</div>
 
