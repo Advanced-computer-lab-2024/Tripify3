@@ -269,7 +269,7 @@ export const createPayment = async (req, res) => {
 
 
 // Cron job runs daily at 1 AM
-cron.schedule("30 15 * * *", async () => {
+cron.schedule("15 23 * * *", async () => {
   try {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0); // Set the time to midnight for accurate date comparison

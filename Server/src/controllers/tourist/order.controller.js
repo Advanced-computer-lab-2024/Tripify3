@@ -78,6 +78,11 @@ export const getOrders = async (req, res) => {
     // Attach ratings to past order products
     const pastOrdersWithRatings = await attachRatingsToProducts(pastOrders);
 
+    console.log(pastOrders);
+    console.log("====================================");
+    console.log(upcomingOrders);
+    
+
     return res.status(200).json({
       pastOrders: JSON.parse(JSON.stringify(pastOrdersWithRatings)),
       upcomingOrders: JSON.parse(JSON.stringify(upcomingOrders)),
