@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
+  AppBar,
+  Toolbar,
   Container,
   Typography,
   TextField,
@@ -17,6 +19,7 @@ import {
   OutlinedInput,
   Box,
   ListItemText,
+  CardActions
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
@@ -45,7 +48,15 @@ const HistoricalPlaces = () => {
   const [filteredPlaces, setFilteredPlaces] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const placeTypes = ["Monument", "Religious Site", "Palace", "Castle", "Historical Place", "Museum"];
+  const placeTypes = [
+    "Monument",
+    "Religious Site",
+    "Palace",
+    "Castle",
+    "Historical Place",
+    "Museum",
+  ];
+
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -86,7 +97,9 @@ const HistoricalPlaces = () => {
 
   // Filter places based on search term
   useEffect(() => {
-    const filtered = places.filter((place) => place.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filtered = places.filter((place) =>
+      place.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     setFilteredPlaces(filtered);
   }, [searchTerm, places]);
 
@@ -100,7 +113,9 @@ const HistoricalPlaces = () => {
 
     // Filter by tags if any tag is selected
     if (selectedTags.length > 0) {
-      filtered = filtered.filter((place) => place.tags.some((tag) => selectedTags.includes(tag._id)));
+      filtered = filtered.filter((place) =>
+        place.tags.some((tag) => selectedTags.includes(tag._id))
+      );
     }
 
     // Filter by type if selected
@@ -137,17 +152,33 @@ const HistoricalPlaces = () => {
   return (
     <ThemeProvider theme={theme}>
       <Container>
-        <Typography variant="h2" align="center" gutterBottom sx={{ color: theme.palette.primary.main, marginTop: 8 }}>
-          Historical Places
-        </Typography>
-
+        <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 1 }}>
+          <Toolbar sx={{ justifyContent: "center" }}>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: "bold", textAlign: "center" }}
+            >
+              Historical Places
+            </Typography>
+          </Toolbar>
+        </AppBar>
         {/* Search and Filter Section */}
         <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <TextField label="Search by Name" variant="outlined" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} sx={{ mr: 2, width: "300px" }} />
+          <TextField
+            label="Search by Name"
+            variant="outlined"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ mr: 2, width: "300px" }}
+          />
 
           <FormControl variant="outlined" sx={{ mr: 2, width: "200px" }}>
             <InputLabel>Type of Place</InputLabel>
-            <Select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} label="Type of Place">
+            <Select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              label="Type of Place"
+            >
               <MenuItem value="">
                 <em>Select Type</em>
               </MenuItem>
@@ -169,7 +200,12 @@ const HistoricalPlaces = () => {
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {selected.map((value) => (
-                    <Chip key={value} label={tags.find((tag) => tag._id === value)?.name || value} />
+                    <Chip
+                      key={value}
+                      label={
+                        tags.find((tag) => tag._id === value)?.name || value
+                      }
+                    />
                   ))}
                 </Box>
               )}
@@ -182,21 +218,26 @@ const HistoricalPlaces = () => {
               ))}
             </Select>
           </FormControl>
-          {userType === "Tourism Governor" && (
-          <Button
-            variant="contained"
-            color="primary"
-            component={Link}
-            to="/tourism-governor/historical-places/add"
-            sx={{ ml: "auto" }}
-          >
-            Add Place
-          </Button>
-        )}
+          {/* {userType === "Tourism Governor" && (
+            <Button
+              variant="contained"
+              color="primary"
+              component={Link}
+              to="/tourism-governor/historical-places/add"
+              sx={{ ml: "auto" }}
+            >
+              Add Place
+            </Button>
+          )} */}
         </Box>
 
         <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <Button variant="contained" color="primary" onClick={handleFilter} sx={{ mr: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleFilter}
+            sx={{ mr: 2 }}
+          >
             Apply Filter
           </Button>
           <Button variant="contained" color="secondary" onClick={handleReset}>
@@ -206,30 +247,93 @@ const HistoricalPlaces = () => {
 
         {/* Places Display Section */}
         <Grid container spacing={3}>
-          {filteredPlaces.map((place) => (
-            <Grid item xs={12} md={6} key={place._id}>
-              <Card sx={{ display: "flex", justifyContent: "space-between" }}>
-                <CardContent>
-                  <Typography variant="h6" color="secondary">
-                    {place.name}
-                  </Typography>
-                  <Typography>
-                    <strong>Type:</strong> {place.type}
-                  </Typography>
-                  <Typography>
-                    <strong>Description:</strong> {place.description}
-                  </Typography>
-                  <Typography>
-                    <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(", ")}
-                  </Typography>
-                  <Button component={Link} to={`/historical-places/${place._id}`} variant="contained" sx={{ mt: 2 }}>
-                    View Details
-                  </Button>
-                </CardContent>
-              </Card>
+  {filteredPlaces.map((place) => (
+    <Grid item xs={12} sm={6} key={place._id}>
+      <Card
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          borderRadius: 2,
+          boxShadow: 4,
+          padding: 2,
+          backgroundColor: "#F7F9FC",
+        }}
+      >
+        <CardContent>
+          {/* Centered Name */}
+          <Typography
+            variant="h5"
+            color="#2D3748"
+            gutterBottom
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+              mb: 2,
+            }}
+          >
+            📍 {place.name}
+          </Typography>
+
+          <Grid container spacing={2}>
+            {/* Type */}
+            <Grid item xs={6}>
+              <Typography variant="body1" sx={{ color: "#4A5568" }}>
+                🏷️ <strong>Type:</strong> {place.type}
+              </Typography>
             </Grid>
-          ))}
-        </Grid>
+
+            {/* Tags */}
+            <Grid item xs={6}>
+              <Typography variant="body1" sx={{ color: "#4A5568" }}>
+                🔖 <strong>Tags:</strong> {place.tags.map((tag) => tag.name).join(", ")}
+              </Typography>
+            </Grid>
+
+            {/* Opening Hours Across Two Columns */}
+            <Grid item xs={6}>
+              <Typography variant="body1" sx={{ color: "#4A5568", mt: 2 }}>
+                🕒 <strong>Opening Hours:</strong>
+              </Typography>
+            </Grid>
+           
+            <Grid item xs={6}>
+              <Typography variant="body1" sx={{ color: "#4A5568", mt: 2  }}>
+              <Box sx={{ mt: 1 }}>
+                {place.openingHours.map((hours, index) => (
+                  <Typography key={index} variant="body1" sx={{ color: "#718096" }}>
+                    {hours.from} - {hours.to}
+                  </Typography>
+                ))}
+              </Box>
+              </Typography>
+            </Grid>
+
+          </Grid>
+        </CardContent>
+
+        <CardActions sx={{ justifyContent: "center", paddingTop: 0 }}>
+          <Button
+            component={Link}
+            to={`/historical-places/${place._id}`}
+            variant="contained"
+            color="primary"
+            sx={{
+              fontSize: "1rem",
+              fontWeight: "bold",
+              padding: "8px 16px",
+              borderRadius: 2,
+            }}
+          >
+            View Details
+          </Button>
+        </CardActions>
+      </Card>
+    </Grid>
+  ))}
+</Grid>
+
+
       </Container>
     </ThemeProvider>
   );

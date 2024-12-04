@@ -14,12 +14,8 @@ import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail, sendPr
 
 export const getAllAcceptedUsers = async (req, res) => {
   try {
-  
     const users = await User.find({
-      $or: [
-        { status: "Accepted" },
-        { type: "Tourist" }
-      ]
+      $or: [{ status: "Accepted" }, { type: "Tourist" }],
     });
     // Populate details based on user type
     const userDetailsPromises = users.map(async (user) => {
@@ -297,7 +293,6 @@ export const markActivityInappropriate = async (req, res) => {
     if (updatedActivity.inappropriate) {
       await sendFlagNotificationEmail(advertiser, updatedActivity.name, "Activity");
 
-      
       notificationMessage = `Your activity "${updatedActivity.name}" has been flagged as inappropriate by the admin. It will no longer be visible to tourists. Please review the content and make necessary adjustments. If you believe this is a mistake, feel free to contact support.`;
 
       // Save the notification in the database
@@ -309,7 +304,7 @@ export const markActivityInappropriate = async (req, res) => {
       await notification.save();
     } else {
       await sendContentRestoredNotificationEmail(advertiser, updatedActivity.name, "Activity");
-   
+
       notificationMessage = `Good news! Your activity "${updatedActivity.name}" has been reviewed and is now deemed appropriate. It is visible to tourists again. Thank you for maintaining quality content!`;
 
       // Save the notification in the database
@@ -410,7 +405,9 @@ export const createPromoCode = async (req, res) => {
 };
 
 // Cron job runs daily at 1 AM
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("0 1 * * *", async () => {
+  console.log("slslsls");
+  
   const today = new Date();
   const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Format month as two digits (e.g., 09 for September)
   const day = today.getDate().toString().padStart(2, "0"); // Format day as two digits (e.g., 28)
