@@ -26,6 +26,7 @@ const TourGuideEditItinerary = () => {
 
     const languages = ["English", "Spanish", "French", "German", "Arabic", "Russian", "Japanese", "Korean", "Italian"];
 
+   
     const [editMode, setEditMode] = useState(false);
     const [itinerary, setItinerary] = useState(null);
     const [title, setTitle] = useState("");
@@ -168,7 +169,9 @@ const TourGuideEditItinerary = () => {
         });
         alert("Activity updated successfully!");
         setEditMode(false); // Close edit mode
-        window.location.reload();
+       
+        
+    navigate(`/tour-guide/itinerary/details/${id}`);
       } catch (error) {
         console.error("Error updating activity:", error);
       }
@@ -198,9 +201,7 @@ return (
 
             <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-            <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
-                Language
-            </Typography>
+          
             {
                  (
                 <FormControl fullWidth sx={{ mb: 2 }}>

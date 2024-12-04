@@ -49,28 +49,56 @@
 
     const filterData = (month, date, itinerary) => {
       let filtered = salesData?.itineraries || [];
-
-      if (month) {
-        filtered = filtered.filter(item => item.startMonth === month);
-      }
-
+    
+      // Filter by specific date (overrides month and itinerary filters for bookingDetails)
       if (date) {
-        filtered = filtered.filter(item => 
-          item.bookingDetails.some(booking => dayjs(booking.date).format('YYYY-MM-DD') === date)
-        );
+        filtered = filtered.map((item) => {
+          const filteredBookingDetails = item.bookingDetails.filter((booking) =>
+            dayjs(booking.date).format("YYYY-MM-DD") === date
+          );
+    
+          if (filteredBookingDetails.length > 0) {
+            return {
+              ...item,
+              bookingDetails: filteredBookingDetails, // Keep only bookings for the specific date
+              numberOfBookings: filteredBookingDetails.length, // Update the number of bookings
+              revenueFromItinerary: filteredBookingDetails.reduce((sum, booking) => sum + booking.amount, 0), // Update revenue
+            };
+          }
+          return null; // Exclude items without matching bookings
+        }).filter((item) => item !== null); // Remove null values from the array
       }
     
-
-      if (itinerary) {
-        filtered = filtered.filter(item => item.itineraryName === itinerary);
+      // Filter by month if date is not specified
+      if (!date && month) {
+        filtered = filtered.map((item) => {
+          const filteredBookingDetails = item.bookingDetails.filter((booking) =>
+            dayjs(booking.date).format("MMMM") === month
+          );
+    
+          if (filteredBookingDetails.length > 0) {
+            return {
+              ...item,
+              bookingDetails: filteredBookingDetails, // Keep only bookings for the specific month
+              numberOfBookings: filteredBookingDetails.length, // Update the number of bookings
+              revenueFromItinerary: filteredBookingDetails.reduce((sum, booking) => sum + booking.amount, 0), // Update revenue
+            };
+          }
+          return null; // Exclude items without matching bookings
+        }).filter((item) => item !== null); // Remove null values from the array
       }
-
+    
+      // Filter by itinerary
+      if (itinerary) {
+        filtered = filtered.filter((item) => item.itineraryName === itinerary);
+      }
+    
       setFilteredData({
         ...salesData,
         itineraries: filtered,
       });
     };
-
+    
     // Reset filters to initial state (null)
     const resetFilters = () => {
       setSelectedMonth(null);
@@ -128,7 +156,7 @@
         dataIndex: 'revenueFromItinerary',
         key: 'revenueFromItinerary',
         sorter: (a, b) => a.revenueFromItinerary - b.revenueFromItinerary,
-        render: (text) => <span>${text}</span>,
+        render: (text) => <span>{text} EGP</span>,
       },
       {
         title: 'Bookings',
@@ -162,7 +190,7 @@
           </Col>
           <Col span={12}>
             <Card title="Total Revenue">
-              <p>${totalRevenue}</p>
+              <p>{totalRevenue} EGP</p>
             </Card>
           </Col>
         </Row>

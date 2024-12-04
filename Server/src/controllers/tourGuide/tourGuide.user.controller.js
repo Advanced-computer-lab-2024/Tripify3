@@ -97,16 +97,14 @@ export const deleteTourGuideAccount = async (req, res) => {
 };
 
 
-// Get Paid Itineraries and Revenue for a specific tour guide
 export const getPaidItinerariesAndRevenue = async (req, res) => {
   try {
-    const { id: tourGuideId } = req.params; // Get the tour guide ID from the request params
+    const { id: tourGuideId } = req.params;
 
     if (!tourGuideId) {
       return res.status(400).json({ message: "Tour guide ID is required." });
     }
 
-    // Fetch itineraries for the tour guide
     const itineraries = await Itinerary.find({ tourGuide: tourGuideId });
 
     if (itineraries.length === 0) {
@@ -114,74 +112,65 @@ export const getPaidItinerariesAndRevenue = async (req, res) => {
     }
 
     const result = [];
-    const allDistinctTourists = new Set(); // To track all distinct tourists globally
+    const allDistinctTourists = new Set();
 
-    // Loop through each itinerary to fetch the necessary data
     for (let itinerary of itineraries) {
-      // Fetch paid bookings for this itinerary
       const paidBookings = await Booking.aggregate([
         { $match: { itinerary: itinerary._id, paymentStatus: "Paid" } },
-        { $group: { _id: "$tourist" } }, // Group by distinct tourist IDs
-        { $count: "distinctUsers" } // Count the number of distinct users
+        { $group: { _id: "$tourist" } },
+        { $count: "distinctUsers" }
       ]);
 
-      // Calculate total revenue for the itinerary
       const revenue = await Booking.aggregate([
         { $match: { itinerary: itinerary._id, paymentStatus: "Paid" } },
         { $group: { _id: null, totalRevenue: { $sum: "$price" } } }
       ]);
 
-      // Get the distinct users for this itinerary
       const distinctUsersCount = paidBookings.length > 0 ? paidBookings[0].distinctUsers : 0;
       const totalRevenue = revenue.length > 0 ? revenue[0].totalRevenue : 0;
 
-      // Add distinct tourist IDs from the current itinerary to the global set
       const distinctTourists = await Booking.aggregate([
         { $match: { itinerary: itinerary._id, paymentStatus: "Paid" } },
         { $group: { _id: "$tourist" } }
       ]);
       distinctTourists.forEach((tourist) => allDistinctTourists.add(tourist._id.toString()));
 
-      // Get the start date and month of the itinerary
       const startDate = itinerary.timeline.startTime;
       const startMonth = startDate.toLocaleString("default", { month: "long" });
 
-      // Get the booking date and month
-      const bookingDates = await Booking.aggregate([
-        { $match: { itinerary: itinerary._id, paymentStatus: "Paid" } },
-        { $project: { date: 1 } },
-        { $group: { _id: null, bookingDates: { $push: "$date" } } }
-      ]);
+      const bookingDetails = await Booking.find({ itinerary: itinerary._id, paymentStatus: "Paid" })
+        .select("date price")
+        .lean();
 
-      const formattedBookingDates = bookingDates.length > 0 ? bookingDates[0].bookingDates : [];
-
-      // Format the dates and months for each booking
-      const formattedBookings = formattedBookingDates.map((date) => {
-        const bookingDate = new Date(date);
+      const formattedBookings = bookingDetails.map((booking) => {
+        const bookingDate = new Date(booking.date);
         const month = bookingDate.toLocaleString("default", { month: "long" });
         const day = bookingDate.getDate();
-        return { date: bookingDate, month, day };
+        return {
+          date: bookingDate,
+          month,
+          day,
+          amount: booking.price // Include payment amount
+        };
       });
 
       result.push({
         itineraryName: itinerary.name,
-        numberOfBookings: paidBookings.length, // Number of distinct bookings
+        numberOfBookings: bookingDetails.length,
         revenueFromItinerary: totalRevenue,
-        distinctUsersCount, // Number of distinct users who booked this itinerary
+        distinctUsersCount,
         startDate: startDate,
         startMonth: startMonth,
-        bookingDetails: formattedBookings, // Include booking date and month
+        bookingDetails: formattedBookings,
       });
     }
 
-    // Calculate total revenue from all paid bookings
     const totalRevenue = result.reduce((sum, item) => sum + item.revenueFromItinerary, 0);
-    const totalDistinctUsers = allDistinctTourists.size; // Count the distinct users globally
+    const totalDistinctUsers = allDistinctTourists.size;
 
-    // Return the results
     res.status(200).json({
       totalRevenue,
-      totalDistinctUsers, // Total distinct users across all itineraries
+      totalDistinctUsers,
       itineraries: result,
     });
   } catch (error) {
