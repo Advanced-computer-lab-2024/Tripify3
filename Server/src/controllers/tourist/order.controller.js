@@ -146,6 +146,7 @@ export const checkoutTouristCart = async (req, res) => {
 
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {
+      
         let sellerId;
         if (product.sellerId?.id) {
           // Safely check if sellerId and its _id exist
@@ -159,6 +160,8 @@ export const checkoutTouristCart = async (req, res) => {
             products: [],
           };
         }
+        console.log(outOfStockProductsBySeller);
+
         outOfStockProductsBySeller[sellerId].products.push(product.name);
       }
 
@@ -194,23 +197,21 @@ export const checkoutTouristCart = async (req, res) => {
     const adminUsers = await User.find({ type: "Admin" });
     // Flatten all products grouped by sellers into a single list
     const outOfStockProductNames = Object.values(outOfStockProductsBySeller).flatMap((sellerInfo) => sellerInfo.products);
-
-    for (const admin of adminUsers) {
-      if (outOfStockProductNames.length > 0) {
+    if (outOfStockProductNames.length > 0) {
+      for (const admin of adminUsers) {
         await sendOutOfStockNotificationEmailToAdmin(admin.email, outOfStockProductNames);
+
+        // Create a suitable message for the notification
+        notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
+        // Save the notification in the database
+        const notification = new Notification({
+          user: admin._id, // Assuming `seller` is the seller's user ID
+          message: notificationMessage,
+        });
+
+        await notification.save();
       }
-
-      // Create a suitable message for the notification
-      notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
-      // Save the notification in the database
-      const notification = new Notification({
-        user: admin._id, // Assuming `seller` is the seller's user ID
-        message: notificationMessage,
-      });
-
-      await notification.save();
     }
-
     // Respond with the new order details
     return res.status(201).json({
       message: "Order created successfully, inventory updated, and notifications sent",

@@ -17,6 +17,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const cancelPaymentIntent = async (req, res) => {
   const { paymentIntentId } = req.body;
+  console.log(paymentIntentId);
+  
 
   try {
     await stripe.paymentIntents.cancel(paymentIntentId);
@@ -28,6 +30,9 @@ export const cancelPaymentIntent = async (req, res) => {
 
 export const createPaymentIntent = async (req, res) => {
   const { price } = req.body;
+  console.log(price);
+  console.log("1");
+  
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({

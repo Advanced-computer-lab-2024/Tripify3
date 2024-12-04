@@ -6,8 +6,9 @@ import { getUserId } from "../../../utils/authUtils";
 import { getUserProfile } from "../../../services/tourist";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import VisaPayment from "./visaPayment.js";
 
-export default function CheckoutForm() {
+export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecret, createPaymentIntent, originalPrice, promoCode, setPromoCode, discountedPrice }) {
   const stripe = useStripe();
   const elements = useElements();
   const { price, tickets, itemId, type, dropOffLocation, dropOffDate } = useParams(); // Retrieve the price from the route params
@@ -15,12 +16,9 @@ export default function CheckoutForm() {
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState("Visa");
-  const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [isPromoValid, setIsPromoValid] = useState(false);
   const [error, setError] = useState(null);
   const [walletAmount, setWalletAmount] = useState(0);
-  const [clientSecret, setClientSecret] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,21 +46,14 @@ export default function CheckoutForm() {
         const discountedPrice = initialPrice - (initialPrice * discount) / 100;
         const newPrice = discountedPrice.toFixed(2); // Format to 2 decimal places
 
-        // Cancel the old payment intent
-        console.log(clientSecret);
-        console.log("=================================");
-
         if (clientSecret) {
           const paymentIntentId = clientSecret.split("_secret")[0];
           await axios.post("http://localhost:8000/tourist/cancel/payment/intent", { paymentIntentId });
         }
 
-        // Create a new payment intent
-        const paymentIntentResponse = await axios.post("http://localhost:8000/tourist/create/payment/intent", {
-          price: newPrice,
-        });
+        // Create a new payment intent and update parent component
+        await createPaymentIntent(newPrice, promoCode, true);
 
-        setClientSecret(paymentIntentResponse.data.clientSecret);
         setIsPromoValid(true); // Mark the promo code as valid
       }
     } catch (err) {
@@ -76,15 +67,33 @@ export default function CheckoutForm() {
     }
   };
 
-  const handlePromoCodeChange = (e) => {
-    const value = e.target.value;
-    setPromoCode(value);
-    if (isPromoValid) {
-      // Reset to original price if promo code is modified
-      setDiscount(0);
-      setIsPromoValid(false);
+  const removePromoCode = async () => {
+    // Cancel the old payment intent
+    console.log(clientSecret);
+    console.log("-2-2-2-22222");
+    
+
+    if (clientSecret) {
+      const paymentIntentId = clientSecret.split("_secret")[0];
+      await axios.post("http://localhost:8000/tourist/cancel/payment/intent", { paymentIntentId });
     }
+
+    await createPaymentIntent(originalPrice, "", false);
+  
   };
+
+  const handlePromoCodeChange = (e) => {
+    setPromoCode(e.target.value);
+  };
+
+  const resetPromoCode = () => {
+    setPromoCode("");
+    setDiscount(0);
+    setIsPromoValid(false);
+      removePromoCode();
+    
+  };
+  
 
   const handlePaymentMethodChange = (method) => {
     setSelectedMethod(method);
@@ -162,9 +171,9 @@ export default function CheckoutForm() {
   };
 
   const calculateFinalPrice = () => {
-    const initialPrice = parseFloat(price);
-    const discountedPrice = initialPrice - (initialPrice * discount) / 100;
-    return discountedPrice.toFixed(2); // Format to 2 decimal places
+    const initialPrice = parseFloat(discountedPrice);
+    // const discountedPrice = initialPrice - (initialPrice * discount) / 100;
+    return initialPrice; // Format to 2 decimal places
   };
 
   return (
@@ -269,11 +278,7 @@ export default function CheckoutForm() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    setPromoCode("");
-                    setDiscount(0);
-                    setIsPromoValid(false);
-                  }}
+                  onClick={resetPromoCode}
                   style={{
                     padding: "5px 10px",
                     backgroundColor: "#ff4d4f",
@@ -317,7 +322,8 @@ export default function CheckoutForm() {
       {/* Payment Form */}
       {selectedMethod === "Visa" && (
         <form id="payment-form" onSubmit={handleSubmit}>
-          <PaymentElement id="payment-element" />
+        
+        <VisaPayment clientSecret={clientSecret} />
 
           <div style={{ marginBottom: "10px", marginTop: "10px" }}>
             <div style={{ fontSize: "14px", marginBottom: "5px", color: "#555" }}>Enter Promo Code</div>
@@ -356,11 +362,7 @@ export default function CheckoutForm() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    setPromoCode("");
-                    setDiscount(0);
-                    setIsPromoValid(false);
-                  }}
+                  onClick={resetPromoCode}
                   style={{
                     padding: "5px 10px",
                     backgroundColor: "#ff4d4f",
