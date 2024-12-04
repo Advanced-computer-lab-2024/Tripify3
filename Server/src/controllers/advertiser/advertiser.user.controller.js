@@ -185,7 +185,6 @@ export const deleteAdvertiserAccount = async (req, res) => {
   }
 };
 
-
 export const getAdvertiserActivityRevenue = async (req, res) => {
   try {
     const { id: advertiserId } = req.params; // Get the advertiser ID from the request parameters
@@ -235,7 +234,7 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
       return {
         activityId: activity._id,
         activityName: activity.name,
-        activityDate: activity.date,  // Include activity date here
+        activityDate: activity.date, // Include activity date here
         bookingCount: bookingsForActivity.length,
         revenue: totalRevenueForActivity,
         distinctUsers: distinctUsers.size,
@@ -246,8 +245,13 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
     // Step 5: Calculate total revenue across all activities
     const totalRevenue = activityStats.reduce((sum, stat) => sum + stat.revenue, 0);
 
+    // Step 6: Calculate the total number of distinct users across all activities
+    const allDistinctUsers = new Set(paidBookings.map((booking) => booking.tourist.toString()));
+    const totalDistinctUsers = allDistinctUsers.size;
+
     res.status(200).json({
       totalRevenue,
+      totalDistinctUsers, // Add total distinct users here
       numberOfPaidActivities: paidBookings.length,
       activityStats,
     });
@@ -256,5 +260,3 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
-

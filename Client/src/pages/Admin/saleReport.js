@@ -66,40 +66,57 @@ const SalesReport = () => {
 
   const calculateAppRate = (paymentGroup) => {
     let appRate = 0;
-    if (paymentGroup.type === 'Activity' || paymentGroup.type === 'Itinerary') {
+    if (paymentGroup.type === 'Activity' || paymentGroup.type === 'Itinerary' ) {
       paymentGroup.payments.forEach((payment) => {
-        if (payment.paymentMethod === 'Visa') {
+        if (payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') {
           appRate += payment.amount * 0.1;
         }
+      });
+    } else if (paymentGroup.type === 'Product'){
+      paymentGroup.payments.forEach((payment) => {
+          appRate += payment.adminAmount ;
+        
       });
     }
     return appRate;
   };
 
-  // Filter by date or month
   const filterPayments = (data) => {
-    return data.filter((paymentGroup) => {
-      // Filter by payment date range
-      if (dateFilter) {
-        const paymentDate = new Date(paymentGroup.payments[0].paymentDate);
-        const selectedDate = new Date(dateFilter);
-        if (paymentDate.toDateString() !== selectedDate.toDateString()) {
-          return false;
+    return data.flatMap((paymentGroup) => {
+      // Filter payments based on the selected filters
+      const filteredPayments = paymentGroup.payments.filter((payment) => {
+        // Filter by payment date
+        if (dateFilter) {
+          const selectedDate = new Date(dateFilter).toISOString().split('T')[0]; // Format selected date as 'yyyy-MM-dd'
+          const paymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
+          if (paymentDate !== selectedDate) {
+            return false;
+          }
         }
-      }
-
-      // Filter by payment month
-      if (monthFilter) {
-        const paymentMonth = format(new Date(paymentGroup.payments[0].paymentDate), 'yyyy-MM');
-        if (paymentMonth !== monthFilter) {
-          return false;
+  
+        // Filter by payment month
+        if (monthFilter) {
+          const paymentMonth = format(new Date(payment.paymentDate), 'yyyy-MM');
+          if (paymentMonth !== monthFilter) {
+            return false;
+          }
         }
+  
+        return true; // Payment matches all filters
+      });
+  
+      // Return matched payments within the same group structure
+      if (filteredPayments.length > 0) {
+        return {
+          ...paymentGroup,
+          payments: filteredPayments,
+        };
       }
-
-      return true;
+  
+      return []; // No matching payments for this group
     });
   };
-
+  
   // Reset Filters
   const resetFilters = () => {
     setDateFilter('');
@@ -152,7 +169,7 @@ const SalesReport = () => {
         <Grid item xs={12} sm={4}>
           <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              App Rate (Visa Payments)
+              App Rate (Online Payments)
             </Typography>
             <Typography variant="h4" color="secondary">
               ${completedPayments.reduce((acc, group) => acc + calculateAppRate(group), 0).toFixed(2)}
@@ -162,7 +179,7 @@ const SalesReport = () => {
         <Grid item xs={12} sm={4}>
           <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Total Income Sources
+              Total Distinct Customers
             </Typography>
             <Typography variant="h4" color="textPrimary">
               {completedPayments.length}
@@ -193,6 +210,8 @@ const SalesReport = () => {
               label="Payment Month"
             >
               {[
+
+  { value: '2024-12', label: 'December 2024' },
   { value: '2024-11', label: 'November 2024' },
   { value: '2024-10', label: 'October 2024' },
   { value: '2024-09', label: 'September 2024' },
@@ -231,13 +250,8 @@ const SalesReport = () => {
           <TableHead>
             <TableRow>
               <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'amount'}
-                  direction={orderDirection}
-                  onClick={() => handleRequestSort('amount')}
-                >
+               
                   Amount
-                </TableSortLabel>
               </TableCell>
               <TableCell>Payment Method</TableCell>
               <TableCell>Payment Date</TableCell>
@@ -254,7 +268,7 @@ const SalesReport = () => {
                     <TableCell>{payment.paymentMethod}</TableCell>
                     <TableCell>{formatDate(payment.paymentDate)}</TableCell>
                     <TableCell>{paymentGroup.type}</TableCell>
-                    <TableCell>{payment.paymentMethod === 'Visa' && paymentGroup.type!="Product" ? payment.amount * 0.1 : 0}</TableCell>
+                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : (paymentGroup.type==='Product') ? payment.adminAmount : 0}</TableCell>
                   </TableRow>
                 ))}
               </>
