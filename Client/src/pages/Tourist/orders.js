@@ -68,6 +68,9 @@ const OrdersPage = () => {
       try {
         const response = await axios.get(`http://localhost:8000/tourist/get/orders/${userId}`);
         setOrders(response.data);
+        console.log(response.data);
+        console.log("======================");
+        
       } catch (error) {
         console.error("Error fetching orders:", error);
       }

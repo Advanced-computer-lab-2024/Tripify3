@@ -231,7 +231,7 @@ export const getTourGuideProfile = async (req, res) => {
 };
 
 // Cron job runs daily at midnight
-cron.schedule("14 18 * * *", async () => {
+cron.schedule("14 15 * * *", async () => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1); // Get tomorrow's date
   tomorrow.setHours(0, 0, 0, 0); // Reset time to midnight
