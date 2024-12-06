@@ -48,24 +48,51 @@ const AdvertiserSalesReport = () => {
 
   const filterData = (month, date, activity) => {
     let filtered = salesData?.activityStats || [];
-
+  
+    console.log("Original Data:", filtered);
+  
+    // Filter by payment month
     if (month) {
-      filtered = filtered.filter(item => dayjs(item.activityDate).format('MMMM') === month);
+      filtered = filtered.filter(item =>
+        item.bookingDatesAndMonths.some(
+          booking => dayjs(booking.date).format('MMMM') === month
+        )
+      );
     }
-
+  
+    // Filter by payment date
     if (date) {
-      filtered = filtered.filter(item => dayjs(item.activityDate).format('YYYY-MM-DD') === date);
+      console.log("Filter by Date:");
+      console.log("Selected Date:", date);
+  
+      filtered = filtered
+        .map(item => ({
+          ...item,
+          bookingDatesAndMonths: item.bookingDatesAndMonths.filter(booking => {
+            const bookingDate = dayjs(booking.date).format('YYYY-MM-DD');
+            if (bookingDate === date) {
+              console.log("Matching Booking Date:", bookingDate);
+            }
+            return bookingDate === date;
+          }),
+        }))
+        .filter(item => item.bookingDatesAndMonths.length > 0); // Keep only activities with matching bookings
     }
-
+  
+    // Filter by activity name
     if (activity) {
       filtered = filtered.filter(item => item.activityName === activity);
     }
-
+  
     setFilteredData({
       ...salesData,
       activityStats: filtered,
     });
+  
+    console.log("Filtered Data:", filtered);
   };
+  
+  
 
   // Reset filters to initial state (null)
   const resetFilters = () => {
@@ -75,8 +102,12 @@ const AdvertiserSalesReport = () => {
     setFilteredData(salesData); // Reset filtered data to original state
   };
 
-  // Calculate total revenue, total distinct users, and distinct users per activity
-  const totalRevenue = (filteredData?.activityStats || []).reduce((acc, item) => acc + (item.revenue || 0), 0);
+ 
+  const totalRevenue = (filteredData?.activityStats || []).reduce((acc, item) => {
+    const activityRevenue = item.bookingDatesAndMonths.reduce((sum, booking) => sum + booking.amount, 0);
+    return acc + activityRevenue;
+  }, 0);
+  
 
   const totalDistinctUsers = new Set();
   (filteredData?.activityStats || []).forEach(item => {
@@ -89,25 +120,29 @@ const AdvertiserSalesReport = () => {
     distinctUsersCount: item.distinctUsers,
   }));
 
-  // Prepare chart data for Pie Chart
-  const pieData = (filteredData?.activityStats || []).map((item) => ({
-    name: item.activityName,
-    value: item.revenue * 0.9,
-  }));
-
-  // Prepare chart data for Bar Chart (monthly revenue comparison)
+  const pieData = (filteredData?.activityStats || []).map((item) => {
+    const filteredRevenue = item.bookingDatesAndMonths.reduce((acc, booking) => acc + booking.amount, 0);
+    return {
+      name: item.activityName,
+      value: filteredRevenue * 0.9, // Apply percentage reduction if required
+    };
+  });
+  
+  
   const barData = (filteredData?.activityStats || []).reduce((acc, item) => {
-    const month = dayjs(item.activityDate).format('MMMM');
-    if (!acc[month]) acc[month] = 0;
-    acc[month] += item.revenue;
+    item.bookingDatesAndMonths.forEach((booking) => {
+      const month = dayjs(booking.date).format('MMMM');
+      if (!acc[month]) acc[month] = 0;
+      acc[month] += booking.amount; // Use the booking amount
+    });
     return acc;
   }, {});
-
+  
   const barChartData = Object.keys(barData).map((month) => ({
     month,
-    revenue: barData[month] * 0.9,
+    revenue: barData[month] * 0.9, // Apply percentage reduction if required
   }));
-
+  
   // Table columns configuration
   const columns = [
     {
@@ -121,12 +156,16 @@ const AdvertiserSalesReport = () => {
       dataIndex: 'revenue',
       key: 'revenue',
       sorter: (a, b) => a.revenue - b.revenue,
-      render: (text) => <span>{text * 0.9} EGP</span>,
+      render: (_, record) => {
+        const filteredRevenue = record.bookingDatesAndMonths.reduce((acc, booking) => acc + booking.amount, 0);
+        return <span>{(filteredRevenue * 0.9)} EGP</span>;
+      },
     },
     {
       title: 'Bookings',
       dataIndex: 'bookingCount',
       key: 'bookingCount',
+      render: (_, record) => record.bookingDatesAndMonths.length,
       sorter: (a, b) => a.bookingCount - b.bookingCount,
     },
     {
@@ -169,7 +208,7 @@ const AdvertiserSalesReport = () => {
           <Card title="Filters">
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
               <Select
-                placeholder="Filter by month"
+                placeholder="Filter by payment month"
                 value={selectedMonth}
                 onChange={handleMonthChange}
                 style={{ width: '100%' }}
@@ -179,7 +218,7 @@ const AdvertiserSalesReport = () => {
                 ))}
               </Select>
               <DatePicker
-                placeholder="Filter by activity date"
+                placeholder="Filter by payment date"
                 onChange={handleDateChange}
                 style={{ width: '100%' }}
                 format="YYYY-MM-DD"
