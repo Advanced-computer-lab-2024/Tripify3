@@ -162,7 +162,10 @@ const SalesReport = () => {
               Total Payments
             </Typography>
             <Typography variant="h4" color="primary">
-              ${completedPayments.reduce((acc, group) => acc + group.totalAmount, 0).toFixed(2)}
+            {filterPayments(completedPayments).reduce((acc, group) => 
+          acc + group.payments.reduce((sum, payment) => sum + payment.amount, 0), 0
+        ).toFixed(2)} EGP
+              {/* {completedPayments.reduce((acc, group) => acc + group.totalAmount, 0).toFixed(2)} EGP */}
             </Typography>
           </Paper>
         </Grid>
@@ -172,7 +175,10 @@ const SalesReport = () => {
               App Rate (Online Payments)
             </Typography>
             <Typography variant="h4" color="secondary">
-              ${completedPayments.reduce((acc, group) => acc + calculateAppRate(group), 0).toFixed(2)}
+            {filterPayments(completedPayments).reduce((acc, group) =>
+          acc + calculateAppRate(group), 0
+        ).toFixed(2)} EGP
+              {/* {completedPayments.reduce((acc, group) => acc + calculateAppRate(group), 0).toFixed(2)} EGP */}
             </Typography>
           </Paper>
         </Grid>
@@ -264,11 +270,11 @@ const SalesReport = () => {
               <>
                 {paymentGroup.payments.map((payment, rowIndex) => (
                   <TableRow key={rowIndex} onClick={() => handleRowClick(index)}>
-                    <TableCell>{payment.amount}</TableCell>
+                    <TableCell>{payment.amount} EGP</TableCell>
                     <TableCell>{payment.paymentMethod}</TableCell>
                     <TableCell>{formatDate(payment.paymentDate)}</TableCell>
                     <TableCell>{paymentGroup.type}</TableCell>
-                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : (paymentGroup.type==='Product') ? payment.adminAmount : 0}</TableCell>
+                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : (paymentGroup.type==='Product') ? payment.adminAmount : 0} EGP</TableCell>
                   </TableRow>
                 ))}
               </>

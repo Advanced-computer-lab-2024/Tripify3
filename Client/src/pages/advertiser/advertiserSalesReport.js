@@ -92,7 +92,7 @@ const AdvertiserSalesReport = () => {
   // Prepare chart data for Pie Chart
   const pieData = (filteredData?.activityStats || []).map((item) => ({
     name: item.activityName,
-    value: item.revenue,
+    value: item.revenue * 0.9,
   }));
 
   // Prepare chart data for Bar Chart (monthly revenue comparison)
@@ -105,7 +105,7 @@ const AdvertiserSalesReport = () => {
 
   const barChartData = Object.keys(barData).map((month) => ({
     month,
-    revenue: barData[month],
+    revenue: barData[month] * 0.9,
   }));
 
   // Table columns configuration
@@ -121,7 +121,7 @@ const AdvertiserSalesReport = () => {
       dataIndex: 'revenue',
       key: 'revenue',
       sorter: (a, b) => a.revenue - b.revenue,
-      render: (text) => <span>{text} EGP</span>,
+      render: (text) => <span>{text * 0.9} EGP</span>,
     },
     {
       title: 'Bookings',
@@ -158,7 +158,7 @@ const AdvertiserSalesReport = () => {
         </Col>
         <Col span={12}>
           <Card title="Total Revenue">
-            <p>{totalRevenue} EGP</p>
+            <p>{totalRevenue * 0.9} EGP</p>
           </Card>
         </Col>
       </Row>

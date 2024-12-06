@@ -124,20 +124,20 @@
     // Prepare chart data for Pie Chart
     const pieData = (filteredData?.itineraries || []).map((item) => ({
       name: item.itineraryName,
-      value: item.revenueFromItinerary,
+      value: item.revenueFromItinerary * 0.9,
     }));
 
     // Prepare chart data for Bar Chart (monthly revenue comparison)
     const barData = (filteredData?.itineraries || []).reduce((acc, item) => {
       const month = item.startMonth;
       if (!acc[month]) acc[month] = 0;
-      acc[month] += item.revenueFromItinerary;
+      acc[month] += item.revenueFromItinerary ;
       return acc;
     }, {});
 
     const barChartData = Object.keys(barData).map((month) => ({
       month,
-      revenue: barData[month],
+      revenue: barData[month] * 0.9,
     }));
 
     // Get all distinct itinerary names for the filter dropdown
@@ -156,7 +156,7 @@
         dataIndex: 'revenueFromItinerary',
         key: 'revenueFromItinerary',
         sorter: (a, b) => a.revenueFromItinerary - b.revenueFromItinerary,
-        render: (text) => <span>{text} EGP</span>,
+        render: (text) => <span>{text * 0.9} EGP</span>,
       },
       {
         title: 'Bookings',
@@ -190,7 +190,7 @@
           </Col>
           <Col span={12}>
             <Card title="Total Revenue">
-              <p>{totalRevenue} EGP</p>
+              <p>{totalRevenue * 0.9} EGP</p>
             </Card>
           </Col>
         </Row>
