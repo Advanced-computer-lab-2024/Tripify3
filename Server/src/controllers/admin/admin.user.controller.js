@@ -404,9 +404,32 @@ export const createPromoCode = async (req, res) => {
   }
 };
 
+
+// Controller function to get users who are not Admin
+export const getNonAdminUsers = async (req, res) => {
+  try {
+    // Fetch all users where type is not "Admin"
+    const users = await User.find(
+      { type: { $ne: "Admin" } }, // MongoDB query to exclude Admins
+      { username: 1, joinDate: 1, type: 1 } // Select only the fields you need
+    );
+
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error fetching non-admin users:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+    });
+  }
+};
+
 // Cron job runs daily at 1 AM
 cron.schedule("0 1 * * *", async () => {
-  console.log("slslsls");
+  
   
   const today = new Date();
   const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Format month as two digits (e.g., 09 for September)

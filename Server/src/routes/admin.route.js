@@ -1,5 +1,5 @@
 import express from "express";
-import {markActivityInappropriate,updateUserStatus, findUser,deleteUser, addUser,addCategory,getAllCategories,updateCategory,deleteCategory, getAllAcceptedUsers, getAllPendingUsers, createPromoCode, getAllUsersWithJoinDate } from "../controllers/admin/admin.user.controller.js";
+import {markActivityInappropriate,updateUserStatus, findUser,deleteUser, addUser,addCategory,getAllCategories,updateCategory,deleteCategory, getAllAcceptedUsers, getAllPendingUsers, createPromoCode, getAllUsersWithJoinDate, getNonAdminUsers } from "../controllers/admin/admin.user.controller.js";
 import {getComplaintById, markStatus } from "../controllers/admin/admin.complaint.controller.js";
 import {GetAllPayments} from "../controllers/admin/admin.sales.controller.js";
 
@@ -22,5 +22,7 @@ router.put("/admin/complaint/mark-status/:id", markStatus);
 router.put("/activity/inappropriate/:id", markActivityInappropriate);
 router.get('/payments/visa/completed', GetAllPayments);
 router.post("/admin/promocode", createPromoCode);
+// Route to get non-admin users
+router.get("/get/non-admins", getNonAdminUsers);
 
 export default router;

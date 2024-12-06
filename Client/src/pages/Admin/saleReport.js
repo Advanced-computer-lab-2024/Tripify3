@@ -11,6 +11,8 @@ const SalesReport = () => {
   const [openRow, setOpenRow] = useState(null);
   const [dateFilter, setDateFilter] = useState('');
   const [monthFilter, setMonthFilter] = useState('');
+  const [totalUsers, setTotalUsers] = useState([]);
+
 
   useEffect(() => {
     fetch('http://localhost:8000/payments/visa/completed')
@@ -20,11 +22,32 @@ const SalesReport = () => {
         calculatePaymentMethods(data.completedPayments);
       })
       .catch((error) => console.error('Error fetching payments:', error));
+
+       // Fetch all users
+  fetch('http://localhost:8000/get/non-admins')
+  .then((response) => response.json())
+  .then((data) => {
+    setTotalUsers(data.data); // Assuming the API returns users in the "users" field
+  })
+  .catch((error) => console.error('Error fetching users:', error));
+
   }, []);
 
   const formatDate = (date) => {
     return format(new Date(date), 'yyyy-MM-dd HH:mm:ss');
   };
+
+  const filterUsersByMonth = () => {
+    if (!monthFilter) return totalUsers.length;
+  
+    const filteredUsers = totalUsers.filter((user) => {
+      const userJoinMonth = format(new Date(user.joinDate), 'yyyy-MM');
+      return userJoinMonth === monthFilter;
+    });
+  
+    return filteredUsers.length;
+  };
+  
 
   const calculatePaymentMethods = (data) => {
     let methods = {
@@ -185,10 +208,11 @@ const SalesReport = () => {
         <Grid item xs={12} sm={4}>
           <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Total Distinct Customers
+              Total Users
             </Typography>
             <Typography variant="h4" color="textPrimary">
-              {completedPayments.length}
+            
+              {filterUsersByMonth()}
             </Typography>
           </Paper>
         </Grid>
@@ -209,7 +233,7 @@ const SalesReport = () => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth sx={{ marginBottom: 2 }}>
-            <InputLabel>Payment Month</InputLabel>
+            <InputLabel>Select Month</InputLabel>
             <Select
               value={monthFilter}
               onChange={(e) => setMonthFilter(e.target.value)}
