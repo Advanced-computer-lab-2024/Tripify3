@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import Itinerary from "../../models/itinerary.js";
 import Product from "../../models/product.js";
 import Tourist from "../../models/tourist.js";
+import Cart from "../../models/cart.js";
 import PromoCode from "../../models/promoCode.js";
 import Booking from "../../models/booking.js";
 import dotenv from "dotenv";
@@ -145,6 +146,7 @@ export const sendConfirmation = async (req, res) => {
 export const createPayment = async (req, res) => {
   try {
     const { touristId, amount, paymentMethod, bookingId, promoCode, type } = req.body;
+    console.log(promoCode);
     
     // Validate input
     if (!touristId || !amount || !paymentMethod) {
@@ -173,6 +175,25 @@ export const createPayment = async (req, res) => {
     if (existingPromoCode) {
 
       discount = existingPromoCode.discount || 0; // Get the discount value
+
+      console.log(discount);
+      
+
+      const cartId = tourist.cart; // Assuming cartId is stored in the Tourist schema
+
+      if (cartId) {
+        // Find the cart and update the promoCode
+        const cart = await Cart.findById(cartId);
+        if (cart) {
+          console.log(cart);
+          
+          cart.promoCode = discount / 100; // Update promoCode with the discount value
+          await cart.save();
+          console.log(`Promo code updated in cart for user ${cart.promoCode}`);
+        } else {
+          console.log(`Cart with ID ${cartId} not found`);
+        }
+      }
       // Delete the promo code from the table
       await PromoCode.deleteOne({ _id: existingPromoCode._id });
       console.log(`Promo code ${promoCode} deleted successfully`);

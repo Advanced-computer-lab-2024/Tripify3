@@ -554,7 +554,7 @@ export const deleteSellerAccount = async (req, res) => {
 
 export const getSellerRevenue = async (req, res) => {
   try {
-    // Step 1: Get the seller's user ID from the URL path
+    // Step 1: Get seller ID from the request parameters
     const sellerId = req.params.sellerId;
 
     if (!sellerId) {
@@ -567,47 +567,49 @@ export const getSellerRevenue = async (req, res) => {
     let totalRevenue = 0;
     let productsSold = {};
 
-    // Step 3: Iterate over orders and calculate revenue for this seller
+    // Step 3: Iterate over orders and calculate revenue
     for (const order of paidOrders) {
       const cart = await Cart.findById(order.cart).populate("products.product");
-      const promoCode = cart.promoCode;
 
       for (const cartItem of cart.products) {
         const product = cartItem.product;
 
-        if (product.sellerId != null) {
-          // Check if the product belongs to this seller
-          if (product.sellerId.toString() === sellerId.toString()) {
-            const revenueFromProduct = product.price * cartItem.quantity * promoCode;
+        if (product.sellerId && product.sellerId.toString() === sellerId.toString()) {
+          // Apply promo code if available
+          const promoCode = cart.promoCode || 1;
+          const revenueFromOrder = product.price * promoCode * cartItem.quantity;
 
-            // Add product revenue to total
-            totalRevenue += revenueFromProduct;
+          // Add product revenue to total
+          totalRevenue += revenueFromOrder;
 
-            // Track product sales details
-            if (!productsSold[product._id]) {
-              productsSold[product._id] = {
-                name: product.name,
-                price: product.price * promoCode,
-                quantitySold: 0,
-                revenue: 0,
-                saleDates: [], // New field to track sale dates
-              };
-            }
-            productsSold[product._id].quantitySold += cartItem.quantity;
-            productsSold[product._id].revenue += revenueFromProduct;
-
-            // Add full sale date to the product's saleDates array
-            const saleDate = order.orderDate.toISOString(); // ISO format for consistency
-            productsSold[product._id].saleDates.push(saleDate);
+          // Track product sales details
+          if (!productsSold[product._id]) {
+            productsSold[product._id] = {
+              productId: product._id,
+              name: product.name,
+              price: product.price,
+              quantitySold: 0,
+              revenue: 0,
+              orders: [], // Replace saleDates and salesByMonth with orders
+            };
           }
+          productsSold[product._id].quantitySold += cartItem.quantity;
+          productsSold[product._id].revenue += revenueFromOrder;
+
+          // Add order details to the orders array
+          productsSold[product._id].orders.push({
+            quantity: cartItem.quantity,
+            date: order.orderDate, // Order creation date
+            revenue: revenueFromOrder, // Revenue for this order
+          });
         }
       }
     }
 
-    // Convert productsSold to an array for better response structure
+    // Convert productsSold to an array for easier manipulation
     const productDetails = Object.values(productsSold);
 
-    // Step 4: Return response
+    // Step 4: Return the response
     return res.status(200).json({
       sellerId,
       totalRevenue,

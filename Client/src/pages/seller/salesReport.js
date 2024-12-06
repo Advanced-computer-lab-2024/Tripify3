@@ -11,17 +11,17 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import Select from "react-select"; // Dropdown component
-import DatePicker from "react-datepicker"; // Date picker component
-import "react-datepicker/dist/react-datepicker.css"; // Date picker styles
+import { Table,  DatePicker, Row, Col, Card, Typography, Space, Button } from 'antd';
+import Select from "react-select";
 import { getUserId } from "../../utils/authUtils.js";
+import { Spin } from "antd";
+import dayjs from 'dayjs';
 
 const SalesReport = () => {
   const [reportData, setReportData] = useState(null);
   const [filteredData, setFilteredData] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
 
   useEffect(() => {
@@ -40,12 +40,22 @@ const SalesReport = () => {
   }, []);
 
   if (!reportData) {
-    return <div>Loading...</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
   }
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]; // Colors for Pie Chart
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6666", "#AA66FF"];
 
-  // Months for dropdown
   const monthOptions = [
     { value: "01", label: "January" },
     { value: "02", label: "February" },
@@ -61,71 +71,69 @@ const SalesReport = () => {
     { value: "12", label: "December" },
   ];
 
-  // Filter products based on user selections
   const applyFilters = () => {
     let data = reportData.products;
 
-    // Filter by product
     if (selectedProduct) {
       data = data.filter((product) => product.name === selectedProduct.value);
     }
 
-    // Filter by date range
-    if (startDate || endDate) {
+    if (selectedDate) {
+      console.log(selectedDate);
+      console.log("-1-----1111111111111111111111");
+      
       data = data.map((product) => ({
         ...product,
-        saleDates: product.saleDates.filter((date) => {
-          const saleDate = new Date(date);
-          return (
-            (!startDate || saleDate >= startDate) &&
-            (!endDate || saleDate <= endDate)
-          );
+        orders: product.orders.filter((order) => {
+          const orderDate = new Date(order.date).toISOString().split("T")[0];
+          const selectedDay =  dayjs(selectedDate).format("YYYY-MM-DD")
+          console.log(orderDate);
+          console.log("==============");
+          console.log(selectedDay);
+          console.log("-1-1-1-1-1");
+          
+          return orderDate === selectedDay;
         }),
-        quantitySold: product.saleDates.filter((date) => {
-          const saleDate = new Date(date);
-          return (
-            (!startDate || saleDate >= startDate) &&
-            (!endDate || saleDate <= endDate)
-          );
-        }).length,
-      })).filter((product) => product.quantitySold > 0);
+      })).filter((product) => product.orders.length > 0);
     }
 
-    // Filter by month
     if (selectedMonth) {
-      const monthValue = selectedMonth.value;
+      const monthValue = parseInt(selectedMonth.value, 10);
       data = data.map((product) => ({
         ...product,
-        saleDates: product.saleDates.filter((date) => {
-          const saleDate = new Date(date);
-          return saleDate.getMonth() + 1 === parseInt(monthValue, 10);
+        orders: product.orders.filter((order) => {
+          const orderMonth = new Date(order.date).getMonth() + 1;
+          return orderMonth === monthValue;
         }),
-        quantitySold: product.saleDates.filter((date) => {
-          const saleDate = new Date(date);
-          return saleDate.getMonth() + 1 === parseInt(monthValue, 10);
-        }).length,
-      })).filter((product) => product.quantitySold > 0);
+      })).filter((product) => product.orders.length > 0);
     }
 
-    // Update filtered data
     setFilteredData({
       ...reportData,
       products: data,
-      totalRevenue: data.reduce((sum, product) => sum + product.revenue, 0),
+      totalRevenue: data.reduce(
+        (sum, product) =>
+          sum +
+          product.orders.reduce((orderSum, order) => orderSum + order.revenue, 0),
+        0
+      ),
     });
   };
 
-  // Dropdown options for products
   const productOptions = reportData.products.map((product) => ({
     value: product.name,
     label: product.name,
   }));
 
-  // Data for Bar Chart
   const barData = filteredData.products.map((product) => ({
     name: product.name,
-    revenue: product.revenue,
-    quantitySold: product.quantitySold,
+    revenue: product.orders.reduce((sum, order) => sum + order.revenue, 0),
+    quantitySold: product.orders.reduce((sum, order) => sum + order.quantity, 0),
+  }));
+
+  const pieData = filteredData.products.map((product) => ({
+    name: product.name,
+    value: product.orders.reduce((sum, order) => sum + order.revenue, 0),
   }));
 
   return (
@@ -151,6 +159,19 @@ const SalesReport = () => {
             isClearable
             placeholder="Select a product"
           />
+        </div>
+
+        {/* Single Day Picker */}
+        <div style={{ flex: "1", minWidth: "250px" }}>
+          <h4 style={{ fontSize: "18px", marginBottom: "10px" }}>Filter by Date</h4>
+        
+            <DatePicker
+              selected={selectedDate}
+                  placeholder="Filter by Payment date"
+                  onChange={(date) => setSelectedDate(date)}
+                  style={{ width: '100%' }}
+                  format="YYYY-MM-DD"
+                />
         </div>
 
         {/* Month Dropdown */}
@@ -183,17 +204,53 @@ const SalesReport = () => {
         </div>
       </div>
 
-      {/* Bar Chart */}
-      <div style={{ marginBottom: "40px" }}>
-        <h4 style={{ fontSize: "20px", color: "#333" }}>Revenue by Product</h4>
-        <BarChart width={600} height={300} data={barData}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="revenue" fill="#8884d8" name="Revenue" />
-          <Bar dataKey="quantitySold" fill="#82ca9d" name="Quantity Sold" />
-        </BarChart>
+      {/* Charts Section */}
+      <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
+        {/* Bar Chart */}
+        <div style={{ flex: "1", minWidth: "300px", marginRight: "20px" }}>
+          <h4 style={{ fontSize: "20px", color: "#333" }}>Revenue by Product</h4>
+          <BarChart width={400} height={300} data={barData}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="revenue" fill="#8884d8" name="Revenue" />
+            <Bar dataKey="quantitySold" fill="#82ca9d" name="Quantity Sold" />
+          </BarChart>
+        </div>
+
+        {/* Pie Chart */}
+        <div style={{ flex: "1", minWidth: "300px" }}>
+          <h4 style={{ fontSize: "20px", color: "#333" }}>Revenue Distribution</h4>
+          <PieChart width={300} height={300}>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+              label
+            >
+              {pieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div style={{ marginTop: "20px", fontSize: "16px" }}>
+        <h4>Product Legend:</h4>
+        <ul>
+          {pieData.map((entry, index) => (
+            <li key={index} style={{ color: COLORS[index % COLORS.length] }}>
+              {entry.name}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
