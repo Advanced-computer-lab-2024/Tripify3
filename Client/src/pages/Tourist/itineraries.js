@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import Bookmark from "@mui/icons-material/Bookmark"; // Filled bookmark icon
+import BookmarkBorder from "@mui/icons-material/BookmarkBorder"; // Border-only bookmark icon
 
 import {
   AppBar,
@@ -318,7 +320,7 @@ const Itineraries = () => {
 
             return (
               <Grid item xs={12} md={6} key={itinerary._id}>
-                <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" ,  backgroundColor: "#eaf4f4"}}>
                   <CardContent>
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                       {itinerary.name}
@@ -353,7 +355,11 @@ const Itineraries = () => {
 
                   {userType === "Tourist" && (
                     <IconButton onClick={() => handleToggleBookmark(itinerary._id, itinerary.isBookmarked)} color="secondary">
-                      {itinerary.isBookmarked ? <StarIcon style={{ color: "yellow" }} /> : <StarBorderIcon />}
+                      {itinerary.isBookmarked ? (
+                        <Bookmark style={{ color: "black" }} />
+                      ) : (
+                        <BookmarkBorder style={{ color: "black" }} /> // Border-only bookmark
+                      )}
                     </IconButton>
                   )}
                 </Card>

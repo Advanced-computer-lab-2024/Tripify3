@@ -60,7 +60,7 @@ const SelectAddress = () => {
   return (
     <Box p={3} maxWidth="lg" margin="auto">
       <Typography variant="h4" textAlign="center" gutterBottom>
-        🌍 Select Your Location
+        🌍 Select Your Address
       </Typography>
 
       <Box display="flex" justifyContent="center" mb={3}>

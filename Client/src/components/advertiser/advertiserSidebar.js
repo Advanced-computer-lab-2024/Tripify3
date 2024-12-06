@@ -30,11 +30,11 @@ const AdvertiserSidebar = () => {
         </ListItem>
 
 
-        <ListItem disablePadding>
+        {/* <ListItem disablePadding>
           <ListItemButton component={Link} to="/advertiser/products" sx={linkStyle}>
             Products
           </ListItemButton>
-        </ListItem>
+        </ListItem> */}
 
         <ListItem disablePadding>
         <ListItemButton component={Link} to="/advertiser/itineraries" sx={linkStyle}>

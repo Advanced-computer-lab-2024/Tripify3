@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, TextField, Button, Modal, Typography, MenuItem } from "@mui/material";
-import L from 'leaflet'; 
-import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
+import L from "leaflet";
+import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
 import { getUserId } from "../../utils/authUtils";
 
 // Set default icon URLs
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
 const AddAddress = () => {
@@ -86,7 +86,7 @@ const AddAddress = () => {
   }, []);
 
   return (
-    <Box className="container3" sx={{ mt: 10, px: 5, pb: 10 }}>
+    <Box className="container3" sx={{ mt: 3, px: 5, pb: 10 }}>
       <Typography variant="h4" gutterBottom>
         Mark your location on the map
       </Typography>
@@ -102,37 +102,21 @@ const AddAddress = () => {
 
       <form id="clinicForm" onSubmit={handleFormSubmit}>
         <div className="form-group">
-          <TextField
-            fullWidth
-            label="Location Address"
-            value={locationAddress}
-            onChange={(e) => setLocationAddress(e.target.value)}
-            required
-            sx={{ mb: 2 }}
-          />
+          <TextField fullWidth label="Location Address" value={locationAddress} onChange={(e) => setLocationAddress(e.target.value)} required sx={{ mb: 2 }} />
         </div>
         <div className="form-group">
-          <TextField
-            fullWidth
-            select
-            label="Label"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            required
-            sx={{ mb: 2 }}
-          >
+          <TextField fullWidth select label="Label" value={label} onChange={(e) => setLabel(e.target.value)} required sx={{ mb: 2 }}>
             <MenuItem value="Home">Home</MenuItem>
             <MenuItem value="Work">Work</MenuItem>
+            <MenuItem value="Family">Family</MenuItem>
+            <MenuItem value="Friends">Friends</MenuItem>
+            <MenuItem value="Vacation">Vacation</MenuItem>
+            <MenuItem value="School">School</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
           </TextField>
         </div>
 
-        <Button
-          type="submit"
-          variant="contained"
-          color="secondary"
-          className="btn-secondary"
-          disabled={!locationAddress || !label}
-        >
+        <Button type="submit" variant="contained" color="secondary" className="btn-secondary" disabled={!locationAddress || !label}>
           Add Address
         </Button>
       </form>

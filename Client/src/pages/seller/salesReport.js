@@ -78,20 +78,12 @@ const SalesReport = () => {
       data = data.filter((product) => product.name === selectedProduct.value);
     }
 
-    if (selectedDate) {
-      console.log(selectedDate);
-      console.log("-1-----1111111111111111111111");
-      
+    if (selectedDate) {      
       data = data.map((product) => ({
         ...product,
         orders: product.orders.filter((order) => {
           const orderDate = new Date(order.date).toISOString().split("T")[0];
-          const selectedDay =  dayjs(selectedDate).format("YYYY-MM-DD")
-          console.log(orderDate);
-          console.log("==============");
-          console.log(selectedDay);
-          console.log("-1-1-1-1-1");
-          
+          const selectedDay =  dayjs(selectedDate).format("YYYY-MM-DD")          
           return orderDate === selectedDay;
         }),
       })).filter((product) => product.orders.length > 0);

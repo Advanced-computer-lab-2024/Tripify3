@@ -301,17 +301,18 @@ export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecre
           <div style={{ marginBottom: "10px", fontSize: "16px", fontWeight: "bold", textAlign: "center" }}>Total Price: {calculateFinalPrice()} EGP</div>
 
           <button
-            disabled={isProcessing || !stripe || !elements}
+            disabled={isProcessing || !stripe || !elements || (walletAmount < calculateFinalPrice())}
             id="submit"
             style={{
               marginTop: "20px",
               width: "100%",
               padding: "10px",
-              backgroundColor: "#003366",
+              backgroundColor: (walletAmount < calculateFinalPrice()) ? "#a9a9a9" : "#003366",
               color: "#fff",
               border: "none",
               borderRadius: "4px",
-              cursor: "pointer",
+              cursor:  (walletAmount < calculateFinalPrice()) ? "not-allowed" : "pointer", // No pointer events when disabled
+              opacity: (walletAmount < calculateFinalPrice()) ? 0.6 : 1, // Dim the button
             }}
           >
             <span id="button-text">{isProcessing ? "Processing..." : "Pay now"}</span>
