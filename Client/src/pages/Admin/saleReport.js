@@ -259,10 +259,7 @@ const SalesReport = () => {
         </Grid>
       </Grid>
 
-      {/* Download Button */}
-      <Button variant="contained" color="primary" onClick={downloadCSV} sx={{ marginTop: 4 }}>
-        Download CSV
-      </Button>
+      
 
       {/* Payments Table */}
       <TableContainer component={Paper} sx={{ marginTop: 4 }}>
