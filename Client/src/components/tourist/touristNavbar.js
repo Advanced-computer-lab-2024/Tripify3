@@ -526,7 +526,7 @@ const TouristNavbar = () => {
       </Dialog>
 
       {!isChatbotRoute && !isSelectAddressRoute && !isPaymentRoute && (
-        <AppBar position="fixed" sx={{ minHeight: "30px", top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
+        <AppBar position="fixed" sx={{ minHeight: "30px", top: "56px", backgroundColor: "#007958", zIndex: 1299 }}>
           <Toolbar
             sx={{
               minHeight: "30px",

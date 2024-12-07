@@ -105,9 +105,12 @@ const OrdersPage = () => {
         <Typography variant="body1" sx={{ fontSize: 18 }}>
           <strong>💳 Payment Status:</strong> {order.paymentStatus}
         </Typography>
-        <Typography variant="body1" sx={{ fontSize: 18 }}>
-          <strong>🎁 Discount:</strong> {order.cart.promoCode * 100}%
-        </Typography>
+        {order.cart.promoCode !== 1 && (
+          <Typography variant="body1" sx={{ fontSize: 18 }}>
+            <strong>🎁 Discount:</strong> {order.cart.promoCode * 100}%
+          </Typography>
+        )}
+
         <Typography variant="body1" sx={{ color: "#4caf50", fontSize: 18 }}>
           <strong>🚚 Delivery Fee:</strong> {order.deliveryFee} EGP
         </Typography>
@@ -185,7 +188,7 @@ const OrdersPage = () => {
               {productItem.product.details}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: 18 }}>
-              <strong>Price:</strong>  {productItem.product.price} EGP
+              <strong>Price:</strong> {productItem.product.price} EGP
             </Typography>
             <Typography variant="body1" sx={{ fontSize: 18 }}>
               <strong>Quantity:</strong> {productItem.quantity}
