@@ -208,7 +208,7 @@ const SalesReport = () => {
         <Grid item xs={12} sm={4}>
           <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Total Users
+              Total Customers
             </Typography>
             <Typography variant="h4" color="textPrimary">
             
