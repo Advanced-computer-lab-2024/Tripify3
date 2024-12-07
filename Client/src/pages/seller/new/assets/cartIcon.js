@@ -248,7 +248,7 @@ function App() {
     fetchCartData();
   
     // Set up the interval to call the function every 10 seconds
-    const intervalId = setInterval(fetchCartData, 10000); // 10 seconds = 10000 milliseconds
+    const intervalId = setInterval(fetchCartData, 5000); // 10 seconds = 10000 milliseconds
   
     // Cleanup the interval when the component unmounts
     return () => clearInterval(intervalId);

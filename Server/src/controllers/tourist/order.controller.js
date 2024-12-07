@@ -326,19 +326,16 @@ export const deleteAddress = async (req, res) => {
       return res.status(400).json({ message: "Address ID is required" });
     }
 
-    const tourist = await Tourist.findById(userId); // Find the tourist by ID
+    // Find the tourist and update addresses
+    const tourist = await Tourist.findByIdAndUpdate(
+      userId,
+      { $pull: { addresses: { _id: addressId } } }, // Remove the address with the specified ID
+      { new: true } // Return the updated document
+    );
+
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });
     }
-
-    // Remove the address by ID
-    const address = tourist.addresses.id(addressId);
-    if (!address) {
-      return res.status(404).json({ message: "Address not found" });
-    }
-
-    address.remove(); // Remove the address
-    await tourist.save();
 
     res.status(200).json({ message: "Address deleted successfully", addresses: tourist.addresses });
   } catch (error) {
@@ -346,6 +343,7 @@ export const deleteAddress = async (req, res) => {
     res.status(500).json({ message: "Failed to delete address" });
   }
 };
+
 
 export const getAllAddresses = async (req, res) => {
   try {
