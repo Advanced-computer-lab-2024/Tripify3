@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import Itinerary from "../../models/itinerary.js";
 import Product from "../../models/product.js";
 import Tourist from "../../models/tourist.js";
+import Cart from "../../models/cart.js";
 import PromoCode from "../../models/promoCode.js";
 import Booking from "../../models/booking.js";
 import dotenv from "dotenv";
@@ -17,6 +18,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const cancelPaymentIntent = async (req, res) => {
   const { paymentIntentId } = req.body;
+  console.log(paymentIntentId);
+  
 
   try {
     await stripe.paymentIntents.cancel(paymentIntentId);
@@ -28,6 +31,9 @@ export const cancelPaymentIntent = async (req, res) => {
 
 export const createPaymentIntent = async (req, res) => {
   const { price } = req.body;
+  console.log(price);
+  console.log("1");
+  
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -140,6 +146,7 @@ export const sendConfirmation = async (req, res) => {
 export const createPayment = async (req, res) => {
   try {
     const { touristId, amount, paymentMethod, bookingId, promoCode, type } = req.body;
+    console.log(promoCode);
     
     // Validate input
     if (!touristId || !amount || !paymentMethod) {
@@ -168,6 +175,25 @@ export const createPayment = async (req, res) => {
     if (existingPromoCode) {
 
       discount = existingPromoCode.discount || 0; // Get the discount value
+
+      console.log(discount);
+      
+
+      const cartId = tourist.cart; // Assuming cartId is stored in the Tourist schema
+
+      if (cartId) {
+        // Find the cart and update the promoCode
+        const cart = await Cart.findById(cartId);
+        if (cart) {
+          console.log(cart);
+          
+          cart.promoCode = discount / 100; // Update promoCode with the discount value
+          await cart.save();
+          console.log(`Promo code updated in cart for user ${cart.promoCode}`);
+        } else {
+          console.log(`Cart with ID ${cartId} not found`);
+        }
+      }
       // Delete the promo code from the table
       await PromoCode.deleteOne({ _id: existingPromoCode._id });
       console.log(`Promo code ${promoCode} deleted successfully`);
@@ -264,7 +290,7 @@ export const createPayment = async (req, res) => {
 
 
 // Cron job runs daily at 1 AM
-cron.schedule("05 16 * * *", async () => {
+cron.schedule("15 23 * * *", async () => {
   try {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0); // Set the time to midnight for accurate date comparison

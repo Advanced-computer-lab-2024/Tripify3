@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -12,27 +13,35 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  IconButton,
+  Grid,
   Card,
   CardContent,
+  CardActions,
   CardHeader,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Avatar,} from "@mui/material";
+  Avatar,
+} from "@mui/material";
 
+import { Delete } from "@mui/icons-material";
 import { FaTrophy, FaShieldAlt, FaStarHalfAlt, FaCoins, FaCamera } from "react-icons/fa";
 import { getAllTags, getProfile, updateProfile, redeemPoints } from "../../services/tourist.js";
 import { getUserId, setUserPreferences } from "../../utils/authUtils.js";
 import Wallet from "./wallet.js";
 
 const TouristProfile = () => {
+  const navigate = useNavigate();
   const userId = getUserId();
   const [userProfile, setUserProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [redeemSuccess, setRedeemSuccess] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState("");
   const [vacationOptions, setVacationOptions] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -104,7 +113,21 @@ const TouristProfile = () => {
       }
     };
 
+    // Fetch addresses
+    const fetchAddresses = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/tourist/get/addresses/${userId}`);
+        setAddresses(response.data.addresses);
+        setLoadingAddresses(false);
+      } catch (error) {
+        console.error("Error fetching addresses:", error);
+        setLoadingAddresses(false);
+      }
+    };
+
     fetchProfile();
+
+    fetchAddresses();
     fetchTags();
   }, [userId]);
 
@@ -182,6 +205,17 @@ const TouristProfile = () => {
     }));
   };
 
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await axios.delete(`http://localhost:8000/tourist/delete/address/${userId}`, {
+        data: { addressId }, // Pass addressId in the request body
+      });
+      setAddresses((prevAddresses) => prevAddresses.filter((address) => address.id !== addressId));
+    } catch (error) {
+      console.error("Error deleting address:", error);
+    }
+  };
+  
   return (
     <Box sx={{ padding: 7 }}>
       {userProfile && (
@@ -344,6 +378,59 @@ const TouristProfile = () => {
             >
               {isEditing ? "Save" : "Edit"}
             </Button>
+          </Card>
+
+          {/* Addresses Section */}
+          <Card sx={{ borderRadius: "10px", padding: 3, marginTop: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              My Addresses
+            </Typography>
+            <Box>
+              {loadingAddresses ? (
+                <Typography>Loading addresses...</Typography>
+              ) : addresses.length === 0 ? (
+                <Typography>No addresses found. Add one now!</Typography>
+              ) : (
+                <Grid container spacing={3}>
+                  {addresses.map((address) => (
+                    <Grid item xs={12} md={6} key={address.id}>
+                      <Card
+                        sx={{
+                          borderRadius: "8px",
+                          border: "1px solid #ddd",
+                          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                        }}
+                      >
+                        <CardContent>
+                          <Typography variant="subtitle1" sx={{ fontWeight: "bold", marginBottom: 1 }}>
+                            {address.label}
+                          </Typography>
+                          <Typography variant="body2" color="textSecondary">
+                            {address.location}
+                          </Typography>
+                        </CardContent>
+                        <CardActions>
+                          <IconButton
+                            onClick={() => handleDeleteAddress(address.id)}
+                            sx={{
+                              color: "#d32f2f",
+                              "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" },
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </Box>
+            <Box sx={{ textAlign: "right", marginTop: 3 }}>
+              <Button variant="contained" color="primary" onClick={() => navigate("/tourist/add/address")} sx={{ borderRadius: "8px", padding: "8px 16px" }}>
+                Add Address
+              </Button>
+            </Box>
           </Card>
         </Box>
       )}

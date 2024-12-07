@@ -14,7 +14,7 @@ const TouristLayout = ({ children }) => {
   const isPaymentRoute = useMatch("/tourist/payment/:price/:type/:itemId/:tickets/:dropOffLocation/:dropOffDate");
   
    // Determine margin for main content based on current route
-   const topMargin = isChatbotRoute || isSelectAddressRoute || isPaymentRoute ? "60px" : "120px";
+   const topMargin = isChatbotRoute || isSelectAddressRoute || isPaymentRoute ? "60px" : "140px";
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>

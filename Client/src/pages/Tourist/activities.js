@@ -27,7 +27,9 @@ import FlagIcon from "@mui/icons-material/Flag";
 import { toast } from "react-toastify";
 import { getUserProfile } from "../../services/tourist";
 import { getUserId, getUserType, getUserPreferences } from "../../utils/authUtils";
-import { useParams, useNavigate } from "react-router-dom"; 
+import { useParams, useNavigate } from "react-router-dom";
+import Bookmark from "@mui/icons-material/Bookmark"; // Filled bookmark icon
+import BookmarkBorder from "@mui/icons-material/BookmarkBorder"; // Border-only bookmark icon
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { toggleBookmark, getAllActivities, getAllCategories, getAllActivitiesForTourist } from "../../services/tourist.js";
@@ -250,7 +252,7 @@ const Activities = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 8 }}>
+      <AppBar position="static" color="primary" sx={{ mb: 2, marginTop: 1 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
             Upcoming Activities
@@ -369,7 +371,7 @@ const Activities = () => {
               <Grid container spacing={3}>
                 {getRecommendedActivities().map((activity) => (
                   <Grid item xs={12} key={activity._id}>
-                    <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative" }}>
+                    <Card sx={{ display: "flex", justifyContent: "space-between", position: "relative", backgroundColor: "#eaf4f4" }}>
                       <CardContent>
                         <Typography variant="h6" color="secondary">
                           {activity.name}
@@ -394,7 +396,11 @@ const Activities = () => {
                       </CardContent>
                       {userType === "Tourist" && (
                         <IconButton onClick={() => handleToggleBookmark(activity._id, activity.isBookmarked)} color="secondary">
-                          {activity.isBookmarked ? <StarIcon style={{ color: "yellow" }} /> : <StarBorderIcon />}
+                          {activity.isBookmarked ? (
+                            <Bookmark style={{ color: "black" }} />
+                          ) : (
+                            <BookmarkBorder style={{ color: "black" }} /> // Border-only bookmark
+                          )}
                         </IconButton>
                       )}
                     </Card>

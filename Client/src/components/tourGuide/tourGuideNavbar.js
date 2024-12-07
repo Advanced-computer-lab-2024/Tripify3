@@ -189,21 +189,27 @@ const TourGuideNavbar = () => {
               </MenuItem>
             </Menu>
 
-            <Badge
-              badgeContent={unreadCount}
-              sx={{
-                "& .MuiBadge-badge": {
-                  backgroundColor: "orange", // Set the background color to yellow
-                  color: "white", // Adjust text color for contrast
-                  top: 8, // Adjust vertical position
-                  right: 8, // Adjust horizontal position
-                },
-              }}
-            >
-              <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleNotificationClick}>
+
+            <IconButton id="notifications"  color="inherit" sx={{ color: "#fff", ml: 2 }}      onClick={(event) => {
+                handleNotificationClick(event);
+              }}>
+              <Badge
+                badgeContent={unreadCount}
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: "orange", // Set the background color to orange
+                    color: "white", // Adjust text color for contrast
+                    top: -2, // Adjust vertical position for proper alignment
+                    right: 0, // Adjust horizontal position for proper alignment
+                  },
+                }}
+              >
                 <NotificationsNoneIcon />
-              </IconButton>
-            </Badge>
+              </Badge>
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Notifications
+              </Typography>
+            </IconButton>
 
             {/* Notifications Menu */}
             <Menu

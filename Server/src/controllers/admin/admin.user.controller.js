@@ -14,12 +14,8 @@ import { sendFlagNotificationEmail, sendContentRestoredNotificationEmail, sendPr
 
 export const getAllAcceptedUsers = async (req, res) => {
   try {
-  
     const users = await User.find({
-      $or: [
-        { status: "Accepted" },
-        { type: "Tourist" }
-      ]
+      $or: [{ status: "Accepted" }, { type: "Tourist" }],
     });
     // Populate details based on user type
     const userDetailsPromises = users.map(async (user) => {
@@ -297,7 +293,6 @@ export const markActivityInappropriate = async (req, res) => {
     if (updatedActivity.inappropriate) {
       await sendFlagNotificationEmail(advertiser, updatedActivity.name, "Activity");
 
-      
       notificationMessage = `Your activity "${updatedActivity.name}" has been flagged as inappropriate by the admin. It will no longer be visible to tourists. Please review the content and make necessary adjustments. If you believe this is a mistake, feel free to contact support.`;
 
       // Save the notification in the database
@@ -309,7 +304,7 @@ export const markActivityInappropriate = async (req, res) => {
       await notification.save();
     } else {
       await sendContentRestoredNotificationEmail(advertiser, updatedActivity.name, "Activity");
-   
+
       notificationMessage = `Good news! Your activity "${updatedActivity.name}" has been reviewed and is now deemed appropriate. It is visible to tourists again. Thank you for maintaining quality content!`;
 
       // Save the notification in the database
@@ -409,8 +404,33 @@ export const createPromoCode = async (req, res) => {
   }
 };
 
+
+// Controller function to get users who are not Admin
+export const getNonAdminUsers = async (req, res) => {
+  try {
+    // Fetch all users where type is not "Admin"
+    const users = await User.find(
+      { type: { $ne: "Admin" } }, // MongoDB query to exclude Admins
+      { username: 1, joinDate: 1, type: 1 } // Select only the fields you need
+    );
+
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error fetching non-admin users:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+    });
+  }
+};
+
 // Cron job runs daily at 1 AM
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("0 1 * * *", async () => {
+  
+  
   const today = new Date();
   const month = (today.getMonth() + 1).toString().padStart(2, "0"); // Format month as two digits (e.g., 09 for September)
   const day = today.getDate().toString().padStart(2, "0"); // Format day as two digits (e.g., 28)

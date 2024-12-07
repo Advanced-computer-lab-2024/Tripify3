@@ -147,10 +147,10 @@ const AdvertiserActivities = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 8 }}>
+      <AppBar position="static" color="primary" sx={{ mb: 4, marginTop: 2 }}>
         <Toolbar sx={{ justifyContent: "center" }}>
           <Typography variant="h4" sx={{ fontWeight: "bold", textAlign: "center" }}>
-            Upcoming Activities
+            My Activities
           </Typography>
         </Toolbar>
       </AppBar>
@@ -252,7 +252,7 @@ const AdvertiserActivities = () => {
                     {activity.name}
                   </Typography>
                   <Typography>
-                    <strong>Price:</strong> ${activity.price}
+                    <strong>Price:</strong> {activity.price} EGP
                   </Typography>
                   <Typography>
                     <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}

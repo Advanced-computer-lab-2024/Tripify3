@@ -28,6 +28,11 @@ const TourismGovernorSidebar = () => {
             My Places
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/tourism-governor/historical-places/add" sx={linkStyle}>
+            Add Place
+          </ListItemButton>
+        </ListItem>
 
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/tourism-governor/tags" sx={linkStyle}>

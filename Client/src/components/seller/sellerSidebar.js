@@ -16,17 +16,12 @@ const SellerSidebar = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
+      <Typography variant="h6" sx={{ mt:8, mb: 3, fontWeight: "bold", color: "#fff" }}>
         Seller Menu
       </Typography>
 
       <List>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/seller/seller" sx={linkStyle}>
-            Home
-          </ListItemButton>
-        </ListItem>        
-
+      
      
         <ListItem disablePadding>
         <ListItemButton component={Link} to="/seller/my-products" sx={linkStyle}>

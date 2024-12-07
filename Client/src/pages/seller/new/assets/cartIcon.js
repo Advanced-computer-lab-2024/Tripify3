@@ -42,7 +42,7 @@ const Cart = ({
       <div className="head">
         <p style={{ color: "black" }}>Cart</p>
         <p style={{ marginLeft: "200px", color: "black" }}>
-          ${totalPrice.toFixed(2)}
+          {totalPrice} EGP
         </p>{" "}
       </div>
 
@@ -114,9 +114,9 @@ const Product = ({
         <div className="price">
           <span>
             {" "}
-            {`$${products.price.toFixed(2)} x ${quantity.quantity}`}{" "}
+            {`${products.price.toFixed(2)} EGP x ${quantity.quantity}`}{" "}
           </span>
-          <span> {`$${(products.price * quantity.quantity).toFixed(2)}`} </span>
+          <span> {`${(products.price * quantity.quantity).toFixed(2)} EGP`} </span>
         </div>
       </div>
       <IconButton
@@ -248,7 +248,7 @@ function App() {
     fetchCartData();
   
     // Set up the interval to call the function every 10 seconds
-    const intervalId = setInterval(fetchCartData, 10000); // 10 seconds = 10000 milliseconds
+    const intervalId = setInterval(fetchCartData, 5000); // 10 seconds = 10000 milliseconds
   
     // Cleanup the interval when the component unmounts
     return () => clearInterval(intervalId);

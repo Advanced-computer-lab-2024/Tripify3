@@ -78,6 +78,11 @@ export const getOrders = async (req, res) => {
     // Attach ratings to past order products
     const pastOrdersWithRatings = await attachRatingsToProducts(pastOrders);
 
+    console.log(pastOrders);
+    console.log("====================================");
+    console.log(upcomingOrders);
+    
+
     return res.status(200).json({
       pastOrders: JSON.parse(JSON.stringify(pastOrdersWithRatings)),
       upcomingOrders: JSON.parse(JSON.stringify(upcomingOrders)),
@@ -92,6 +97,11 @@ export const checkoutTouristCart = async (req, res) => {
   const { userId } = req.query;
   const promoCode = req.body.promoCode;
   const paymentMethod = req.body.paymentMethod;
+  const deliveryFee = req.body.deliveryFee;
+
+  console.log(deliveryFee);
+  console.log("deliveryFee");
+  
 
   try {
     // Find the tourist by ID and check if they exist
@@ -102,7 +112,6 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Check if the user has a cart
     if (!tourist.cart) {
-      console.log("-----------");
 
       return res.status(400).json({ message: "No cart associated with this tourist" });
     }
@@ -123,6 +132,7 @@ export const checkoutTouristCart = async (req, res) => {
       dropOffLocation: req.body.dropOffLocation,
       dropOffDate: req.body.dropOffDate,
       paymentStatus: paymentMethod === "Cash on Delivery" ? "Unpaid" : "Paid",
+      deliveryFee
     });
 
     await order.save(); // Save the order
@@ -146,6 +156,7 @@ export const checkoutTouristCart = async (req, res) => {
 
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {
+      
         let sellerId;
         if (product.sellerId?.id) {
           // Safely check if sellerId and its _id exist
@@ -159,6 +170,8 @@ export const checkoutTouristCart = async (req, res) => {
             products: [],
           };
         }
+        console.log(outOfStockProductsBySeller);
+
         outOfStockProductsBySeller[sellerId].products.push(product.name);
       }
 
@@ -194,23 +207,21 @@ export const checkoutTouristCart = async (req, res) => {
     const adminUsers = await User.find({ type: "Admin" });
     // Flatten all products grouped by sellers into a single list
     const outOfStockProductNames = Object.values(outOfStockProductsBySeller).flatMap((sellerInfo) => sellerInfo.products);
-
-    for (const admin of adminUsers) {
-      if (outOfStockProductNames.length > 0) {
+    if (outOfStockProductNames.length > 0) {
+      for (const admin of adminUsers) {
         await sendOutOfStockNotificationEmailToAdmin(admin.email, outOfStockProductNames);
+
+        // Create a suitable message for the notification
+        notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
+        // Save the notification in the database
+        const notification = new Notification({
+          user: admin._id, // Assuming `seller` is the seller's user ID
+          message: notificationMessage,
+        });
+
+        await notification.save();
       }
-
-      // Create a suitable message for the notification
-      notificationMessage = `The following products are out of stock: ${outOfStockProductNames}. Please take appropriate action to coordinate with sellers for restocking these items.`;
-      // Save the notification in the database
-      const notification = new Notification({
-        user: admin._id, // Assuming `seller` is the seller's user ID
-        message: notificationMessage,
-      });
-
-      await notification.save();
     }
-
     // Respond with the new order details
     return res.status(201).json({
       message: "Order created successfully, inventory updated, and notifications sent",
@@ -320,19 +331,16 @@ export const deleteAddress = async (req, res) => {
       return res.status(400).json({ message: "Address ID is required" });
     }
 
-    const tourist = await Tourist.findById(userId); // Find the tourist by ID
+    // Find the tourist and update addresses
+    const tourist = await Tourist.findByIdAndUpdate(
+      userId,
+      { $pull: { addresses: { _id: addressId } } }, // Remove the address with the specified ID
+      { new: true } // Return the updated document
+    );
+
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });
     }
-
-    // Remove the address by ID
-    const address = tourist.addresses.id(addressId);
-    if (!address) {
-      return res.status(404).json({ message: "Address not found" });
-    }
-
-    address.remove(); // Remove the address
-    await tourist.save();
 
     res.status(200).json({ message: "Address deleted successfully", addresses: tourist.addresses });
   } catch (error) {
@@ -340,6 +348,7 @@ export const deleteAddress = async (req, res) => {
     res.status(500).json({ message: "Failed to delete address" });
   }
 };
+
 
 export const getAllAddresses = async (req, res) => {
   try {

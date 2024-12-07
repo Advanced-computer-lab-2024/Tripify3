@@ -28,14 +28,7 @@ const AdminSidebar = () => {
       <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
         Admin Menu
       </Typography>
-
       <List>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tourist/home" sx={linkStyle}>
-            Home
-          </ListItemButton>
-        </ListItem>
-
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/admin/users" sx={linkStyle}>
             Users
@@ -108,8 +101,6 @@ const AdminSidebar = () => {
                 Sales Report
               </ListItemButton>
             </ListItem>
-
-            
           </List>
         </Collapse>
       </List>

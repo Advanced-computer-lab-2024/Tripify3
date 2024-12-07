@@ -11,6 +11,8 @@ const SalesReport = () => {
   const [openRow, setOpenRow] = useState(null);
   const [dateFilter, setDateFilter] = useState('');
   const [monthFilter, setMonthFilter] = useState('');
+  const [totalUsers, setTotalUsers] = useState([]);
+
 
   useEffect(() => {
     fetch('http://localhost:8000/payments/visa/completed')
@@ -20,11 +22,32 @@ const SalesReport = () => {
         calculatePaymentMethods(data.completedPayments);
       })
       .catch((error) => console.error('Error fetching payments:', error));
+
+       // Fetch all users
+  fetch('http://localhost:8000/get/non-admins')
+  .then((response) => response.json())
+  .then((data) => {
+    setTotalUsers(data.data); // Assuming the API returns users in the "users" field
+  })
+  .catch((error) => console.error('Error fetching users:', error));
+
   }, []);
 
   const formatDate = (date) => {
     return format(new Date(date), 'yyyy-MM-dd HH:mm:ss');
   };
+
+  const filterUsersByMonth = () => {
+    if (!monthFilter) return totalUsers.length;
+  
+    const filteredUsers = totalUsers.filter((user) => {
+      const userJoinMonth = format(new Date(user.joinDate), 'yyyy-MM');
+      return userJoinMonth === monthFilter;
+    });
+  
+    return filteredUsers.length;
+  };
+  
 
   const calculatePaymentMethods = (data) => {
     let methods = {
@@ -162,7 +185,10 @@ const SalesReport = () => {
               Total Payments
             </Typography>
             <Typography variant="h4" color="primary">
-              ${completedPayments.reduce((acc, group) => acc + group.totalAmount, 0).toFixed(2)}
+            {filterPayments(completedPayments).reduce((acc, group) => 
+          acc + group.payments.reduce((sum, payment) => sum + payment.amount, 0), 0
+        ).toFixed(2)} EGP
+              {/* {completedPayments.reduce((acc, group) => acc + group.totalAmount, 0).toFixed(2)} EGP */}
             </Typography>
           </Paper>
         </Grid>
@@ -172,20 +198,14 @@ const SalesReport = () => {
               App Rate (Online Payments)
             </Typography>
             <Typography variant="h4" color="secondary">
-              ${completedPayments.reduce((acc, group) => acc + calculateAppRate(group), 0).toFixed(2)}
+            {filterPayments(completedPayments).reduce((acc, group) =>
+          acc + calculateAppRate(group), 0
+        ).toFixed(2)} EGP
+              {/* {completedPayments.reduce((acc, group) => acc + calculateAppRate(group), 0).toFixed(2)} EGP */}
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Total Distinct Customers
-            </Typography>
-            <Typography variant="h4" color="textPrimary">
-              {completedPayments.length}
-            </Typography>
-          </Paper>
-        </Grid>
+        
       </Grid>
 
       {/* Filter Section */}
@@ -203,7 +223,7 @@ const SalesReport = () => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth sx={{ marginBottom: 2 }}>
-            <InputLabel>Payment Month</InputLabel>
+            <InputLabel>Select Month</InputLabel>
             <Select
               value={monthFilter}
               onChange={(e) => setMonthFilter(e.target.value)}
@@ -239,10 +259,7 @@ const SalesReport = () => {
         </Grid>
       </Grid>
 
-      {/* Download Button */}
-      <Button variant="contained" color="primary" onClick={downloadCSV} sx={{ marginTop: 4 }}>
-        Download CSV
-      </Button>
+      
 
       {/* Payments Table */}
       <TableContainer component={Paper} sx={{ marginTop: 4 }}>
@@ -264,11 +281,11 @@ const SalesReport = () => {
               <>
                 {paymentGroup.payments.map((payment, rowIndex) => (
                   <TableRow key={rowIndex} onClick={() => handleRowClick(index)}>
-                    <TableCell>{payment.amount}</TableCell>
+                    <TableCell>{payment.amount} EGP</TableCell>
                     <TableCell>{payment.paymentMethod}</TableCell>
                     <TableCell>{formatDate(payment.paymentDate)}</TableCell>
                     <TableCell>{paymentGroup.type}</TableCell>
-                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : (paymentGroup.type==='Product') ? payment.adminAmount : 0}</TableCell>
+                    <TableCell>{(payment.paymentMethod === 'Visa' || payment.paymentMethod === 'Wallet') && paymentGroup.type!="Product" ? payment.amount * 0.1 : (paymentGroup.type==='Product') ? payment.adminAmount : 0} EGP</TableCell>
                   </TableRow>
                 ))}
               </>

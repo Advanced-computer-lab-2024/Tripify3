@@ -19,17 +19,12 @@ const TourGuideSidebar = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
-        TourGuide Menu
+      <Typography variant="h6" sx={{mt:8,  mb: 3, fontWeight: "bold", color: "#fff" }}>
+        Tour Guide Menu
       </Typography>
 
       <List>
-        <ListItem disablePadding>
-          <ListItemButton component={Link} to="/tour-guide/home" sx={linkStyle}>
-            Home
-          </ListItemButton>
-        </ListItem>
-
+     
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/tour-guide/itinerary" sx={linkStyle}>
             My Itineraries

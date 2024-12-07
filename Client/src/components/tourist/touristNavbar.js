@@ -351,7 +351,7 @@ const TouristNavbar = () => {
             </Menu>
             {/* Notifications Icon */}
 
-            <Badge
+            {/* <Badge
               badgeContent={unreadCount}
               sx={{
                 "& .MuiBadge-badge": {
@@ -377,7 +377,34 @@ const TouristNavbar = () => {
                   Notifications
                 </Typography>
               </IconButton>
-            </Badge>
+            </Badge> */}
+            <IconButton
+              id="notifications"
+              ref={refs.current.notifications}
+              color="inherit"
+              sx={{ color: "#fff", ml: 2 }}
+              onClick={(event) => {
+                handleNotificationClick(event);
+                if (showInstructions && steps[currentStep].id === "notifications") handleNextStep();
+              }}
+            >
+              <Badge
+                badgeContent={unreadCount}
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: "orange", // Set the background color to orange
+                    color: "white", // Adjust text color for contrast
+                    top: -2, // Adjust vertical position for proper alignment
+                    right: 0, // Adjust horizontal position for proper alignment
+                  },
+                }}
+              >
+                <NotificationsNoneIcon />
+              </Badge>
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Notifications
+              </Typography>
+            </IconButton>
 
             {/* Notifications Menu */}
             <Menu

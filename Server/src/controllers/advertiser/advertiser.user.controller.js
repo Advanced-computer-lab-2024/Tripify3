@@ -225,10 +225,11 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
         bookingsForActivity.map((booking) => booking.tourist.toString())
       );
 
-      // Extract booking dates and months
+      // Extract booking dates, months, and amounts
       const bookingDatesAndMonths = bookingsForActivity.map((booking) => ({
         date: booking.date,
         month: booking.date.getMonth() + 1, // Months are zero-indexed in JavaScript
+        amount: booking.price, // Include the amount for this booking
       }));
 
       return {
@@ -238,7 +239,7 @@ export const getAdvertiserActivityRevenue = async (req, res) => {
         bookingCount: bookingsForActivity.length,
         revenue: totalRevenueForActivity,
         distinctUsers: distinctUsers.size,
-        bookingDatesAndMonths,
+        bookingDatesAndMonths, // Now includes date, month, and amount
       };
     });
 

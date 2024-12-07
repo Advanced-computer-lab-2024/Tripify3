@@ -33,11 +33,9 @@ const TourGuideItineraryDetails = () => {
   const [ticketCount, setTicketCount] = useState(1);
   const [currency, setCurrency] = useState("USD"); // Default currency
   const [bookings, setBookings] = useState([]); // Initialize bookings as an empty array
- 
 
   // Fetch itinerary and user profile data
   useEffect(() => {
-
     const fetchItinerary = async () => {
       try {
         const response = await getItineraryById(id);
@@ -65,7 +63,6 @@ const TourGuideItineraryDetails = () => {
 
     fetchBookingsForItinerary();
   }, [id, userId]);
-
 
   const activateItinerary = async () => {
     try {
@@ -185,20 +182,30 @@ const TourGuideItineraryDetails = () => {
         position: "relative",
       }}
     >
-      <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
+      <Button variant="contained" color="primary" onClick={() => navigate("/tour-guide/itinerary")} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
         Go Back
       </Button>
 
-              <Button onClick={() => navigate(`/tour-guide/itinerary/edit/${itinerary._id}`)}>Edit</Button>
-
-
-
-
+   
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 4 }}>
         {/* Left: Itinerary Card */}
 
         <Box sx={{ flex: 1, maxWidth: "900px" }}>
-          <Card sx={{ mt: 6, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
+          <Card sx={{ mt: 6, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px", position: "relative", }}>
+          <Button
+    variant="contained"
+    color="primary"
+    onClick={() => navigate(`/tour-guide/itinerary/edit/${itinerary._id}`)}
+    sx={{
+      position: "absolute", // Absolute positioning
+      top: 16, // Distance from the top of the card
+      right: 16, // Distance from the right of the card
+      fontSize: "1rem",
+      fontWeight: 500,
+    }}
+  >
+    Edit
+  </Button>
             <CardContent>
               {/* Main Itinerary Header */}
               <Typography variant="h4" textAlign="center" sx={{ marginBottom: 2 }}>
@@ -376,36 +383,11 @@ const TourGuideItineraryDetails = () => {
                     Share
                   </Button>
 
-                  {/* {bookings.length === 0 ? (
-                      <Typography sx={{ marginLeft: 2, color: "gray", fontSize: "0.9rem" }}>
-                        This itinerary cannot be activated or deactivated as it has no bookings.
-                      </Typography>
-                    ) : (
-                      itinerary.status === 'Inactive' ? (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => activateItinerary()}
-                          sx={{ marginLeft: 2, fontSize: "1rem", textTransform: "none" }}
-                        >
-                          Activate
-                        </Button>
-                      ) : itinerary.status === 'Active' ? (
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          onClick={() => deactivateItinerary()}
-                          sx={{ marginLeft: 2, fontSize: "1rem", textTransform: "none" }}
-                        >
-                          Deactivate
-                        </Button>
-                      ) : null
-                    )} */}
                   <Box sx={{ position: "relative" }}>
                     {userType === "Tour Guide" && (
                       <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 10 }}>
                         {bookings.length === 0 ? (
-                          <Typography sx={{ color: "gray", fontSize: "0.9rem" }}>This itinerary cannot be activated or deactivated as it has no bookings.</Typography>
+                          <Typography sx={{ color: "gray", fontSize: "0.9rem" }}>This itinerary cannot be deactivated as it has no bookings.</Typography>
                         ) : itinerary.status === "Inactive" ? (
                           <Button variant="contained" color="primary" onClick={() => activateItinerary()} sx={{ fontSize: "1rem", textTransform: "none" }}>
                             Activate

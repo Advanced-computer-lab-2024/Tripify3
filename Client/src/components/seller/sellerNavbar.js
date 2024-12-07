@@ -196,7 +196,7 @@ const SellerNavbar = () => {
               </MenuItem>
             </Menu>
 
-            <Badge
+            {/* <Badge
               badgeContent={unreadCount}
               sx={{
                 "& .MuiBadge-badge": {
@@ -210,7 +210,30 @@ const SellerNavbar = () => {
               <IconButton color="inherit" sx={{ color: "#fff", ml: 2 }} onClick={handleNotificationClick}>
                 <NotificationsNoneIcon />
               </IconButton>
-            </Badge>
+            </Badge> */}
+
+            
+            <IconButton id="notifications"  color="inherit" sx={{ color: "#fff", ml: 2 }}      onClick={(event) => {
+                handleNotificationClick(event);
+              }}>
+              <Badge
+                badgeContent={unreadCount}
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: "orange", // Set the background color to orange
+                    color: "white", // Adjust text color for contrast
+                    top: -2, // Adjust vertical position for proper alignment
+                    right: 0, // Adjust horizontal position for proper alignment
+                  },
+                }}
+              >
+                <NotificationsNoneIcon />
+              </Badge>
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Notifications
+              </Typography>
+            </IconButton>
+
             {/* Notifications Menu */}
             <Menu
               anchorEl={notificationAnchorEl}
