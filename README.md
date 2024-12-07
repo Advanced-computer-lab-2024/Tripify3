@@ -547,9 +547,20 @@ If you're new to Tripify, we've prepared a comprehensive tutorial to guide you t
 
 ## Credits 
 
+- `https://www.youtube.com/playlist?list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY`
+- `https://www.youtube.com/watch?v=fgTGADljAeg`
+- `https://www.youtube.com/playlist?list=PLZlA0Gpn_vH8EtggFGERCwMY5u5hOjf-h`
+- `https://codedamn.com/news/reactjs/usestate-and-useeffect-hooks`
+
 ---
 
 ## License 
+
+### Stripe
+- We utilize Stripe to handle payment processing. Stripe provides a secure and reliable way to process payments and manage transactions. 
+
+### SerpAPI
+- We utilized SerpAPI for additional API functionality in our project (Third-party services)
 
 ---
 
