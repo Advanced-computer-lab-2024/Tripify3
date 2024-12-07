@@ -124,67 +124,6 @@ const SalesReport = () => {
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6666", "#AA66FF"];
 
-  const monthOptions = [
-    { value: "01", label: "January" },
-    { value: "02", label: "February" },
-    { value: "03", label: "March" },
-    { value: "04", label: "April" },
-    { value: "05", label: "May" },
-    { value: "06", label: "June" },
-    { value: "07", label: "July" },
-    { value: "08", label: "August" },
-    { value: "09", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
-
-  const applyFilters = () => {
-    let data = reportData.products;
-
-    if (selectedProduct) {
-      data = data.filter((product) => product.name === selectedProduct.value);
-    }
-
-    if (selectedDate) {      
-      data = data.map((product) => ({
-        ...product,
-        orders: product.orders.filter((order) => {
-          const orderDate = new Date(order.date).toISOString().split("T")[0];
-          const selectedDay =  dayjs(selectedDate).format("YYYY-MM-DD")          
-          return orderDate === selectedDay;
-        }),
-      })).filter((product) => product.orders.length > 0);
-    }
-
-    if (selectedMonth) {
-      const monthValue = parseInt(selectedMonth.value, 10);
-      data = data.map((product) => ({
-        ...product,
-        orders: product.orders.filter((order) => {
-          const orderMonth = new Date(order.date).getMonth() + 1;
-          return orderMonth === monthValue;
-        }),
-      })).filter((product) => product.orders.length > 0);
-    }
-
-    setFilteredData({
-      ...reportData,
-      products: data,
-      totalRevenue: data.reduce(
-        (sum, product) =>
-          sum +
-          product.orders.reduce((orderSum, order) => orderSum + order.revenue, 0),
-        0
-      ),
-    });
-  };
-
-  const productOptions = reportData.products.map((product) => ({
-    value: product.name,
-    label: product.name,
-  }));
-
   const barData = filteredData.products.map((product) => ({
     name: product.name,
     revenue: product.orders.reduce((sum, order) => sum + order.revenue, 0),
