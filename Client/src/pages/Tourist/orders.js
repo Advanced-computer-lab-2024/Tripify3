@@ -7,7 +7,6 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import StarIcon from "@mui/icons-material/Star";
 
-
 const OrderSlider = styled(Slider)({
   width: "100px",
   height: "8px",
@@ -23,7 +22,6 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState({ pastOrders: [], upcomingOrders: [] });
   const [showPastOrders, setShowPastOrders] = useState(true);
   const [currency, setCurrency] = useState("USD"); // Default currency
-
 
   const exchangeRates = {
     USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)
@@ -62,15 +60,11 @@ const OrdersPage = () => {
     return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
 
-
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/tourist/get/orders/${userId}`);
         setOrders(response.data);
-        console.log(response.data);
-        console.log("======================");
-        
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -88,7 +82,7 @@ const OrdersPage = () => {
         tourist: userId,
         product: productId,
         rating: rating,
-        order: orderId
+        order: orderId,
       });
       alert(`Rated ${rating} star(s) successfully!`);
     } catch (error) {
@@ -109,15 +103,21 @@ const OrdersPage = () => {
           <strong>📅 Drop-Off Date:</strong> {new Date(order.dropOffDate).toLocaleDateString()}
         </Typography>
         <Typography variant="body1" sx={{ fontSize: 18 }}>
-          <strong>💵 Payment Status:</strong> {order.paymentStatus}
+          <strong>💳 Payment Status:</strong> {order.paymentStatus}
+        </Typography>
+        <Typography variant="body1" sx={{ fontSize: 18 }}>
+          <strong>🎁 Discount:</strong> {order.cart.promoCode * 100}%
         </Typography>
         <Typography variant="body1" sx={{ color: "#4caf50", fontSize: 18 }}>
-          <strong>💲 Total Price:</strong> EGP {order.cart.totalPrice}
+          <strong>🚚 Delivery Fee:</strong> {order.deliveryFee} EGP
+        </Typography>
+        <Typography variant="body1" sx={{ color: "#4caf50", fontSize: 18 }}>
+          <strong>🛒 Total Price:</strong> {order.cart.totalPrice * order.cart.promoCode + order.deliveryFee} EGP
         </Typography>
 
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {order.cart.products.map((productItem) => (
-            <ProductCard key={productItem.product._id} productItem={productItem} showPastOrders={showPastOrders}  onRate={(productId, rating) => handleRating(productId, rating, order._id)}  />
+            <ProductCard key={productItem.product._id} productItem={productItem} showPastOrders={showPastOrders} onRate={(productId, rating) => handleRating(productId, rating, order._id)} />
           ))}
         </Grid>
       </CardContent>
@@ -185,7 +185,7 @@ const OrdersPage = () => {
               {productItem.product.details}
             </Typography>
             <Typography variant="body1" sx={{ fontSize: 18 }}>
-              <strong>Price:</strong> EGP {productItem.product.price}
+              <strong>Price:</strong>  {productItem.product.price} EGP
             </Typography>
             <Typography variant="body1" sx={{ fontSize: 18 }}>
               <strong>Quantity:</strong> {productItem.quantity}
