@@ -117,7 +117,7 @@ const ItineraryDetails = () => {
     //   console.error("Error sending message:", error);
     // }
 
-    navigate(`/tourist/payment/${price}/${type}/${itemId}/${tickets}/${null}/${null}`);
+    navigate(`/tourist/payment/${price}/${type}/${itemId}/${tickets}/${null}/${null}/${null}`);
   };
 
   const handleShareToggle = () => {

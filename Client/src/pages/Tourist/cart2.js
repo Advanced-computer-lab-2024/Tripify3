@@ -15,12 +15,12 @@ export default function QuantityEdit() {
   const [cart, setCart] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedDelivery, setSelectedDelivery] = useState("1");
-  const [deliveryPrice, setDeliveryPrice] = useState("");
+  const [deliveryPrice, setDeliveryPrice] = useState(10);
   const [quant, setQuant] = useState([]);
   const today = new Date();
   today.setDate(today.getDate() + 3);
   today.setHours(12, 0, 0, 0); // Set time to 12 PM
-  const [dropOffDate, setDropOffDate] = useState(today); // Store the calculated date
+  const [dropOffDate, setDropOffDate] = useState(today.toISOString()); // Store the calculated date
 
   const navigate = useNavigate();
   const [debounceTimeout, setDebounceTimeout] = useState(null);
@@ -29,8 +29,8 @@ export default function QuantityEdit() {
   });
 
 
-  const handleCheckout = async () => {
-    navigate(`/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}`);
+  const handleCheckout = async () => {    
+    navigate(`/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}/${deliveryPrice}`);
   };
 
   const handleDeliveryChange = (event) => {

@@ -7,11 +7,12 @@ import { loadStripe } from "@stripe/stripe-js";
 function Payment() {
   const [stripePromise, setStripePromise] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
-  const { price } = useParams();
+  const { price, delivery } = useParams();
   const [elementsKey, setElementsKey] = useState(0); // Unique key for forcing Elements to re-render
   const [promoCode, setPromoCode] = useState(""); // State to track promo code
   const [discountedPrice, setDiscountedPrice] = useState(price); // Updated price after discount
   const [isPromoValid, setIsPromoValid] = useState(false);
+  const deliveryPrice = delivery ? parseFloat(delivery) || 0 : 0;
 
   useEffect(() => {
     fetch("http://localhost:8000/tourist/payment/config").then(async (r) => {
@@ -21,12 +22,16 @@ function Payment() {
   }, []);
 
   const createPaymentIntent = async (newPrice, promoCode="", isPromo) => {
+    const numericPrice = parseFloat(newPrice) || 0; // Ensure newPrice is treated as a number
+    const totalPrice = numericPrice + deliveryPrice; // Perform arithmetic addition
+    
+  
     const response = await fetch("http://localhost:8000/tourist/create/payment/intent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ price: newPrice }),
+      body: JSON.stringify({ price: totalPrice }),
     });
     const { clientSecret } = await response.json();
     setClientSecret(clientSecret);

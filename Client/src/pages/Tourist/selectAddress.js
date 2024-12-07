@@ -12,7 +12,7 @@ import { getUserId } from "../../utils/authUtils";
 import { useParams, useNavigate } from "react-router-dom";
 
 const SelectAddress = () => {
-  const { price, dropOffDate } = useParams();
+  const { price, dropOffDate, delivery } = useParams();
   const navigate = useNavigate();
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -41,7 +41,7 @@ const SelectAddress = () => {
   const handleContinue = () => {
     if (selectedLocation) {
       const dropOffLocation = selectedLocation.location;
-      navigate(`/tourist/payment/${price}/Product/${null}/${null}/${dropOffLocation}/${dropOffDate}`);
+      navigate(`/tourist/payment/${price}/Product/${null}/${null}/${dropOffLocation}/${dropOffDate}/${delivery}`);
     }
   };
 
