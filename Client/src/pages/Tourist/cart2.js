@@ -1,4 +1,16 @@
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardText, MDBCol, MDBContainer, MDBIcon, MDBInput, MDBRow, MDBTypography } from "mdb-react-ui-kit";
+import {
+  MDBBtn,
+  MDBCard,
+  MDBCardBody,
+  MDBCardImage,
+  MDBCardText,
+  MDBCol,
+  MDBContainer,
+  MDBIcon,
+  MDBInput,
+  MDBRow,
+  MDBTypography,
+} from "mdb-react-ui-kit";
 import React from "react";
 import { IconButton, TextField, TableCell, TableRow } from "@mui/material";
 import "mdb-react-ui-kit/dist/css/mdb.min.css"; // Ensure MDB's CSS is imported
@@ -28,48 +40,49 @@ export default function QuantityEdit() {
     location: "",
   });
 
-
-  const handleCheckout = async () => {    
-    navigate(`/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}/${deliveryPrice}`);
+  const handleCheckout = async () => {
+    navigate(
+      `/tourist/select/address/${cart.totalPrice}/Product/${dropOffDate}/${deliveryPrice}`
+    );
   };
 
   const handleDeliveryChange = (event) => {
     const selectedValue = event.target.value; // Get the selected value
     setSelectedDelivery(selectedValue); // Update the state with the selected value
 
-       // Calculate the drop-off date based on the selected delivery option
-       const now = new Date();
-       switch (selectedValue) {
-        case "1":
-          now.setDate(now.getDate() + 3);
-          now.setHours(12, 0, 0, 0); // Set time to 12 PM
-          break;
-         case "2": // Express-Delivery
-           now.setDate(now.getDate() + 1);
-           now.setHours(12, 0, 0, 0); // Set time to 12 PM
-           break;
-         default: // Standard-Delivery
-           break;
-       }
-   
-       setDropOffDate(now.toISOString()); // Convert to ISO string for consistent format
+    // Calculate the drop-off date based on the selected delivery option
+    const now = new Date();
+    switch (selectedValue) {
+      case "1":
+        now.setDate(now.getDate() + 3);
+        now.setHours(12, 0, 0, 0); // Set time to 12 PM
+        break;
+      case "2": // Express-Delivery
+        now.setDate(now.getDate() + 1);
+        now.setHours(12, 0, 0, 0); // Set time to 12 PM
+        break;
+      default: // Standard-Delivery
+        break;
+    }
+
+    setDropOffDate(now.toISOString()); // Convert to ISO string for consistent format
 
     // const selectedText = event.target.options[event.target.selectedIndex].text;
     // const price = selectedText.split("$")[1].trim(); // Get substring after "$" and trim whitespace
-    if(selectedValue === '2'){
-
-      setDeliveryPrice(20.00); // Update the delivery price
-    } else{
-      setDeliveryPrice(10.00); // Update the delivery price
+    if (selectedValue === "2") {
+      setDeliveryPrice(20.0); // Update the delivery price
+    } else {
+      setDeliveryPrice(10.0); // Update the delivery price
     }
   };
   const getCart = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/tourist/cart/?touristId=${getUserId()}`);
+      const response = await axios.get(
+        `http://localhost:8000/tourist/cart/?touristId=${getUserId()}`
+      );
       setCart(response.data);
       console.log(response.data);
       console.log("---------------------------");
-      
     } catch (error) {
       setErrorMessage("Error fetching cart: " + error.message);
     }
@@ -79,11 +92,13 @@ export default function QuantityEdit() {
       try {
         const productDetails = await Promise.all(
           cart.products.map(async (item) => {
-            const response = await axios.get(`http://localhost:8000/access/seller/SearchProductById?id=${item.product}`);
+            const response = await axios.get(
+              `http://localhost:8000/access/seller/SearchProductById?id=${item.product}`
+            );
             return { ...response.data, quantity: item.quantity }; // Add quantity to product details
           })
         );
-        
+
         setProducts(productDetails);
         const updatedQuant = cart.products.map((item) => ({
           productId: item.product,
@@ -93,7 +108,9 @@ export default function QuantityEdit() {
         setQuant(updatedQuant); // Set the quant state with the array of objects
         console.log(updatedQuant);
       } catch (error) {
-        setErrorMessage("Error fetching products in the cart: " + error.message);
+        setErrorMessage(
+          "Error fetching products in the cart: " + error.message
+        );
       }
     }
   };
@@ -101,11 +118,14 @@ export default function QuantityEdit() {
   const updateCart = async (productId, currentQuantity) => {
     try {
       const newQuantity = currentQuantity;
-      const response = await axios.put("http://localhost:8000/tourist/cart/update", {
-        touristId: getUserId(),
-        productId,
-        number: newQuantity < 0 ? 0 : newQuantity, // Decrement by 1
-      });
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/update",
+        {
+          touristId: getUserId(),
+          productId,
+          number: newQuantity < 0 ? 0 : newQuantity, // Decrement by 1
+        }
+      );
       setCart(response.data.cart); // Update cart with the new data
     } catch (error) {
       setErrorMessage("Error updating cart: " + error.message);
@@ -123,7 +143,13 @@ export default function QuantityEdit() {
 
   const handleIncrement = (productId) => {
     // Optimistically update the quantity in the UI
-    setQuant((prevQuant) => prevQuant.map((q) => (q.productId === productId ? { ...q, quantity: Math.max(0, parseInt(q.quantity) + 1) } : q)));
+    setQuant((prevQuant) =>
+      prevQuant.map((q) =>
+        q.productId === productId
+          ? { ...q, quantity: Math.max(0, parseInt(q.quantity) + 1) }
+          : q
+      )
+    );
 
     // Clear any existing timeout to prevent multiple API calls
     if (debounceTimeout) {
@@ -134,7 +160,8 @@ export default function QuantityEdit() {
     const newTimeout = setTimeout(() => {
       // Use functional state update to get the latest value of `quant`
       setQuant((currentQuant) => {
-        const updatedQuantity = currentQuant.find((q) => q.productId === productId)?.quantity || 0;
+        const updatedQuantity =
+          currentQuant.find((q) => q.productId === productId)?.quantity || 0;
         updateCart(productId, updatedQuantity); // Call the API with the latest quantity
         return currentQuant; // Return current state
       });
@@ -145,7 +172,13 @@ export default function QuantityEdit() {
 
   const handleDecrement = (productId) => {
     // Optimistically update the quantity in the UI
-    setQuant((prevQuant) => prevQuant.map((q) => (q.productId === productId ? { ...q, quantity: Math.max(0, parseInt(q.quantity) - 1) } : q)));
+    setQuant((prevQuant) =>
+      prevQuant.map((q) =>
+        q.productId === productId
+          ? { ...q, quantity: Math.max(0, parseInt(q.quantity) - 1) }
+          : q
+      )
+    );
 
     // Clear any existing timeout to prevent multiple API calls
     if (debounceTimeout) {
@@ -156,7 +189,8 @@ export default function QuantityEdit() {
     const newTimeout = setTimeout(() => {
       // Use functional state update to get the latest value of `quant`
       setQuant((currentQuant) => {
-        const updatedQuantity = currentQuant.find((q) => q.productId === productId)?.quantity || 0;
+        const updatedQuantity =
+          currentQuant.find((q) => q.productId === productId)?.quantity || 0;
         updateCart(productId, updatedQuantity); // Call the API with the latest quantity
         return currentQuant; // Return current state
       });
@@ -167,12 +201,15 @@ export default function QuantityEdit() {
 
   const handleRemove = async (productId) => {
     try {
-      const response = await axios.put("http://localhost:8000/tourist/cart/update", {
-        touristId: getUserId(),
-        productId,
-        number: 0, // Set quantity to 0 to remove the item
-      });
-     
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/update",
+        {
+          touristId: getUserId(),
+          productId,
+          number: 0, // Set quantity to 0 to remove the item
+        }
+      );
+
       setCart(response.data.cart); // Update cart with the new data
     } catch (error) {
       setErrorMessage("Error updating cart: " + error.message);
@@ -186,16 +223,24 @@ export default function QuantityEdit() {
       <MDBContainer className="py-5 h-100">
         <MDBRow className="justify-content-center align-items-center h-100">
           <MDBCol size="12">
-            <MDBCard className="card-registration card-registration-2" style={{ borderRadius: "15px" }}>
+            <MDBCard
+              className="card-registration card-registration-2"
+              style={{ borderRadius: "15px" }}
+            >
               <MDBCardBody className="p-0">
                 <MDBRow className="g-0">
                   <MDBCol lg="8">
                     <div className="p-5">
                       <div className="d-flex justify-content-between align-items-center mb-5">
-                        <MDBTypography tag="h1" className="fw-bold mb-0 text-black">
+                        <MDBTypography
+                          tag="h1"
+                          className="fw-bold mb-0 text-black"
+                        >
                           Shopping Cart
                         </MDBTypography>
-                        <MDBTypography className="mb-0 text-muted">{cart ? cart.itemCount : 0} items</MDBTypography>
+                        <MDBTypography className="mb-0 text-muted">
+                          {cart ? cart.itemCount : 0} items
+                        </MDBTypography>
                       </div>
 
                       <hr className="my-4" />
@@ -209,8 +254,13 @@ export default function QuantityEdit() {
                               <MDBCol md="2" lg="2" xl="2">
                                 <MDBCardImage
                                   src={
-                                    Array.isArray(product.imageUrl) && product.imageUrl.length > 0
-                                      ? `http://localhost:8000/${product.imageUrl[0].substring(product.imageUrl[0].indexOf("uploads/"))}`
+                                    Array.isArray(product.imageUrl) &&
+                                    product.imageUrl.length > 0
+                                      ? `http://localhost:8000/${product.imageUrl[0].substring(
+                                          product.imageUrl[0].indexOf(
+                                            "uploads/"
+                                          )
+                                        )}`
                                       : "https://shuttershopegypt.com/wp-content/uploads/2024/08/Microsoft-Surface-Laptop-4-i7.webp2_.webp"
                                   }
                                   fluid
@@ -223,37 +273,83 @@ export default function QuantityEdit() {
                                 <MDBTypography tag="h6" className="text-muted">
                                   {product.category}
                                 </MDBTypography>
-                                <MDBTypography tag="h6" className="text-black mb-0">
+                                <MDBTypography
+                                  tag="h6"
+                                  className="text-black mb-0"
+                                >
                                   {product.name}
                                 </MDBTypography>
                               </MDBCol>
 
-                              <MDBCol md="3" lg="3" xl="3" className="d-flex align-items-center">
-                                <IconButton color="primary" onClick={() => handleDecrement(product._id, product.quantity)}>
+                              <MDBCol
+                                md="3"
+                                lg="3"
+                                xl="3"
+                                className="d-flex align-items-center"
+                              >
+                                <IconButton
+                                  color="primary"
+                                  onClick={() =>
+                                    handleDecrement(
+                                      product._id,
+                                      product.quantity
+                                    )
+                                  }
+                                >
                                   <Remove />
                                 </IconButton>
 
                                 <MDBInput
                                   type="number"
                                   size="sm"
-                                  value={quant.find((q) => q.productId === product._id)?.quantity}
-                                  onChange={(e) => setQuant(quant.map((q) => (q.productId === product._id ? { ...q, quantity: e.target.value } : q)))}
-                                  onBlur={() => updateCart(product._id, quant.find((q) => q.productId === product._id)?.quantity || 0)}
+                                  value={
+                                    quant.find(
+                                      (q) => q.productId === product._id
+                                    )?.quantity
+                                  }
+                                  onChange={(e) =>
+                                    setQuant(
+                                      quant.map((q) =>
+                                        q.productId === product._id
+                                          ? { ...q, quantity: e.target.value }
+                                          : q
+                                      )
+                                    )
+                                  }
+                                  onBlur={() =>
+                                    updateCart(
+                                      product._id,
+                                      quant.find(
+                                        (q) => q.productId === product._id
+                                      )?.quantity || 0
+                                    )
+                                  }
                                 />
 
-                                <IconButton color="primary" onClick={() => handleIncrement(product._id, product.quantity)}>
+                                <IconButton
+                                  color="primary"
+                                  onClick={() =>
+                                    handleIncrement(
+                                      product._id,
+                                      product.quantity
+                                    )
+                                  }
+                                >
                                   <Add />
                                 </IconButton>
                               </MDBCol>
 
                               <MDBCol md="3" lg="2" xl="2" className="text-end">
                                 <MDBTypography tag="h6" className="mb-0">
-                                   {product.price.toFixed(2)} EGP
+                                  {product.price.toFixed(2)} EGP
                                 </MDBTypography>
                               </MDBCol>
 
                               <MDBCol md="1" lg="1" xl="1" className="text-end">
-                                <IconButton color="error" onClick={() => handleRemove(product._id)}>
+                                <IconButton
+                                  color="error"
+                                  onClick={() => handleRemove(product._id)}
+                                >
                                   <Delete />
                                 </IconButton>
                               </MDBCol>
@@ -266,8 +362,13 @@ export default function QuantityEdit() {
 
                       <div className="pt-5">
                         <MDBTypography tag="h6" className="mb-0">
-                          <MDBCardText tag="a" href="#!" className="text-body">
-                            <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back to shop
+                          <MDBCardText
+                            tag="a"
+                            href="products"
+                            className="text-body"
+                          >
+                            <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back
+                            to shop
                           </MDBCardText>
                         </MDBTypography>
                       </div>
@@ -275,7 +376,10 @@ export default function QuantityEdit() {
                   </MDBCol>
                   <MDBCol lg="4" className="bg-grey">
                     <div className="p-5">
-                      <MDBTypography tag="h3" className="fw-bold mb-5 mt-2 pt-1">
+                      <MDBTypography
+                        tag="h3"
+                        className="fw-bold mb-5 mt-2 pt-1"
+                      >
                         Summary
                       </MDBTypography>
 
@@ -285,7 +389,9 @@ export default function QuantityEdit() {
                         <MDBTypography tag="h5" className="text-uppercase">
                           {cart ? cart.itemCount : 0} items
                         </MDBTypography>
-                        <MDBTypography tag="h5">{cart && cart.totalPrice}.00 EGP</MDBTypography>
+                        <MDBTypography tag="h5">
+                          {cart && cart.totalPrice}.00 EGP
+                        </MDBTypography>
                       </div>
 
                       <MDBTypography tag="h5" className="text-uppercase mb-3">
@@ -299,11 +405,15 @@ export default function QuantityEdit() {
                           value={selectedDelivery} // Bind the select value to the state
                           onChange={handleDeliveryChange}
                         >
-                          <option value="1">Standard-Delivery - 10.00 EGP</option>
-                          <option value="2">Next-Day-Delivery - 20.00 EGP</option>
+                          <option value="1">
+                            Standard-Delivery - 10.00 EGP
+                          </option>
+                          <option value="2">
+                            Next-Day-Delivery - 20.00 EGP
+                          </option>
                         </select>
                       </div>
-                     
+
                       <hr className="my-4" />
 
                       <div className="d-flex justify-content-between mb-5">
@@ -311,16 +421,26 @@ export default function QuantityEdit() {
                           Total price
                         </MDBTypography>
                         <MDBTypography tag="h5">
-                          
                           {cart && cart.totalPrice
                             ? deliveryPrice
-                              ? (parseFloat(cart.totalPrice) + parseFloat(deliveryPrice)).toFixed(2)
-                              : (parseFloat(cart.totalPrice) + parseFloat(10.0)).toFixed(2)
-                            : "0.00"} EGP
+                              ? (
+                                  parseFloat(cart.totalPrice) +
+                                  parseFloat(deliveryPrice)
+                                ).toFixed(2)
+                              : (
+                                  parseFloat(cart.totalPrice) + parseFloat(10.0)
+                                ).toFixed(2)
+                            : "0.00"}{" "}
+                          EGP
                         </MDBTypography>
                       </div>
 
-                      <MDBBtn color="dark" block size="lg" onClick={handleCheckout}>
+                      <MDBBtn
+                        color="dark"
+                        block
+                        size="lg"
+                        onClick={handleCheckout}
+                      >
                         Checkout
                       </MDBBtn>
                     </div>

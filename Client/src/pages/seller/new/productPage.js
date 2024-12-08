@@ -601,8 +601,8 @@ const Description = ({
 }) => {
   return (
     <section className="description">
-      <p className="pre">sneaker company</p>
-      <h1>fall limited edition sneakers</h1>
+      <p className="pre">Tripify company</p>
+      <h1>{products.name}</h1>
       <p className="desc">{products.details}</p>
       <div className="price">
         <div className="main-tag">
@@ -791,7 +791,7 @@ function App() {
   return (
     <main className="App">
       <Container component="section" maxWidth={"lg"}>
-        <Navbar
+        {/* <Navbar
           onOrderedQuant={orderedQuant}
           onReset={resetQuant}
           products={products}
@@ -803,7 +803,7 @@ function App() {
           setProductList={setProductList}
           totalPrice={total}
           setTotal={setTotal}
-        />
+        /> */}
 
         <section className="core">
           {products.imageUrl && products.imageUrl.length > 0 ? (
