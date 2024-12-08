@@ -98,9 +98,6 @@ export const checkoutTouristCart = async (req, res) => {
   const promoCode = req.body.promoCode;
   const paymentMethod = req.body.paymentMethod;
   const deliveryFee = req.body.deliveryFee;
-
-  console.log(deliveryFee);
-  console.log("deliveryFee");
   
 
   try {
@@ -161,8 +158,6 @@ export const checkoutTouristCart = async (req, res) => {
         if (product.sellerId?.id) {
           // Safely check if sellerId and its _id exist
           sellerId = product.sellerId._id;
-          console.log(sellerId);
-          console.log("-----323223");
         }
         if (!outOfStockProductsBySeller[sellerId]) {
           outOfStockProductsBySeller[sellerId] = {
@@ -170,7 +165,7 @@ export const checkoutTouristCart = async (req, res) => {
             products: [],
           };
         }
-        console.log(outOfStockProductsBySeller);
+   
 
         outOfStockProductsBySeller[sellerId].products.push(product.name);
       }

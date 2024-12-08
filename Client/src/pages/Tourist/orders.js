@@ -215,24 +215,81 @@ const OrdersPage = () => {
 
   return (
     <Container>
-      <Box display="flex" flexDirection="column" alignItems="center" sx={{ my: 4 }}>
-        <Typography variant="h4" sx={{ color: "#3f51b5", mb: 2 }}>
-          Your Orders
-        </Typography>
-        <Box width="100%" textAlign="center">
-          <OrderSlider
-            value={showPastOrders ? 0 : 1}
-            min={0}
-            max={1}
-            step={1}
-            onChange={handleSliderChange}
-            marks={[
-              { value: 0, label: "Past Orders" },
-              { value: 1, label: "Upcoming Orders" },
-            ]}
-          />
-        </Box>
-      </Box>
+       <Box
+    display="flex"
+    flexDirection="column"
+    alignItems="center"
+    justifyContent="center"
+    sx={{ my: 4, textAlign: "center" }}
+  >
+    {/* Modern title with gradient */}
+    <Typography
+      variant="h4"
+      sx={{
+        fontWeight: "bold",
+        background: "linear-gradient(90deg, #3f51b5, #2196f3)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        mb: 3,
+      }}
+    >
+      Your Orders
+    </Typography>
+
+    {/* Toggle buttons with modern design */}
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      gap={2}
+      sx={{
+        borderRadius: 2,
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        bgcolor: "#f9f9f9",
+        p: 1,
+        width: "fit-content",
+      }}
+    >
+      <Typography
+        variant="subtitle1"
+        sx={{
+          cursor: "pointer",
+          px: 2,
+          py: 1,
+          borderRadius: 2,
+          fontWeight: "500",
+          transition: "background-color 0.3s, color 0.3s",
+          bgcolor: showPastOrders ? "#3f51b5" : "transparent",
+          color: showPastOrders ? "#fff" : "#3f51b5",
+          "&:hover": {
+            bgcolor: showPastOrders ? "#2c387e" : "#e3f2fd",
+          },
+        }}
+        onClick={() => setShowPastOrders(true)}
+      >
+        Past Orders
+      </Typography>
+      <Typography
+        variant="subtitle1"
+        sx={{
+          cursor: "pointer",
+          px: 2,
+          py: 1,
+          borderRadius: 2,
+          fontWeight: "500",
+          transition: "background-color 0.3s, color 0.3s",
+          bgcolor: !showPastOrders ? "#3f51b5" : "transparent",
+          color: !showPastOrders ? "#fff" : "#3f51b5",
+          "&:hover": {
+            bgcolor: !showPastOrders ? "#2c387e" : "#e3f2fd",
+          },
+        }}
+        onClick={() => setShowPastOrders(false)}
+      >
+        Upcoming Orders
+      </Typography>
+    </Box>
+  </Box>
 
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {showPastOrders ? orders.pastOrders.map((order) => <OrderCard key={order._id} order={order} />) : orders.upcomingOrders.map((order) => <OrderCard key={order._id} order={order} />)}
