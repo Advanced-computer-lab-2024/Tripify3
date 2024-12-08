@@ -791,7 +791,7 @@ function App() {
   return (
     <main className="App">
       <Container component="section" maxWidth={"lg"}>
-        <Navbar
+        {/* <Navbar
           onOrderedQuant={orderedQuant}
           onReset={resetQuant}
           products={products}
@@ -803,7 +803,7 @@ function App() {
           setProductList={setProductList}
           totalPrice={total}
           setTotal={setTotal}
-        />
+        /> */}
 
         <section className="core">
           {products.imageUrl && products.imageUrl.length > 0 ? (
