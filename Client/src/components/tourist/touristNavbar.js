@@ -289,9 +289,9 @@ const TouristNavbar = () => {
               <MenuItem onClick={handleOrdersClick}>
                 <Assignment sx={{ mr: 1 }} /> Orders
               </MenuItem>
-              <MenuItem onClick={handlePaymentsClick}>
+              {/* <MenuItem onClick={handlePaymentsClick}>
                 <MonetizationOn sx={{ mr: 1 }} /> Payments
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem onClick={handleComplaintsClick}>
                 <ReportProblemIcon sx={{ mr: 1 }} /> My Complaints
               </MenuItem>
