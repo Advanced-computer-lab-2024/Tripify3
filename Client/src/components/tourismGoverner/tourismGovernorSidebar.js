@@ -18,8 +18,8 @@ const TourismGovernorSidebar = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
-        Tourist Menu
+      <Typography variant="h6" sx={{ mt: 8, mb: 3, fontWeight: "bold", color: "#fff", fontSize: "1.2rem" }}>
+        Tourism Governor Menu
       </Typography>
 
       <List>

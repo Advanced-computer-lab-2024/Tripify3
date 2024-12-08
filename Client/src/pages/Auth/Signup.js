@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import signupImage from "../../assets/signup/CarouselLogin1.png";
+import signupImage from "../../assets/logo.jpeg";
 import { TextField, Button, IconButton, Checkbox, FormControlLabel, Grid, Box, Typography, Link, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { signup, uploadFiles } from "../../services/Signup.js"; // Import the signup service
 import DeleteIcon from "@mui/icons-material/Delete";

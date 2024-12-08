@@ -18,9 +18,7 @@ def chat():
 
     print(request.json)
 
-    # if not user_input:
-    #     return jsonify({"error": "Please provide a message"}), 400
-    
+
     places = ["Pyramids of Giza", "Egyptian Museum in Cairo", "Cairo Citadel (Saladin Citadel)"]
     # Get the chatbot's response from the main logic
     response = chatbot_response(user_input, user_info, places)

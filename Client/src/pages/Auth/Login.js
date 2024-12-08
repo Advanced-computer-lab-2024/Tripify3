@@ -4,7 +4,7 @@ import { Box, Button, Container, TextField, Typography, Alert, IconButton, Link,
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import backgroundImage from "../../assets/signup/CarouselLogin1.png";
+import backgroundImage from "../../assets/logo.jpeg";
 import { setUser,setUserType } from "../../utils/authUtils.js";
 
 
@@ -119,6 +119,12 @@ const Login = () => {
             padding: "40px",
           }}
         >
+{/* 
+<img
+    src={require("../../assets/logo.jpeg")}
+    alt="App Logo"
+    style={{ width: "100px", marginBottom: "20px" }} // Adjust size and spacing
+  /> */}
           <Box sx={{ width: "100%", maxWidth: "500px" }}>
             <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", color: "black" }}>
               Login

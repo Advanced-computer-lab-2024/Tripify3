@@ -153,10 +153,16 @@ const handleNotificationClick = async (event) => {
       {/* Top Navbar */}
       <AppBar position="fixed" sx={{ backgroundColor: "#003366", zIndex: 1300 }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fff" }}>
-            Tripify
-          </Typography>
-
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+            <img
+              src={require("../../assets/logo.jpeg")}
+              alt="Tripify Logo"
+              style={{ height: "40px", marginRight: "8px" }} // Adjust spacing
+            />
+            <Typography variant="h6" sx={{ fontWeight: "bold", color: "#fff" }}>
+              Tripify
+            </Typography>
+          </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* Home Icon */}
 

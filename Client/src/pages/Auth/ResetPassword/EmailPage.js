@@ -3,7 +3,7 @@ import axios from "axios";  // Import axios
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Container, TextField, Typography, Alert, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import backgroundImage from "../../../assets/signup/CarouselLogin2.png"; // Import your image
+import backgroundImage from "../../../assets/logo.jpeg"; // Import your image
 
 const EmailInput = () => {
   const [email, setEmail] = useState("");

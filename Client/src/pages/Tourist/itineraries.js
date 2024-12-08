@@ -186,6 +186,12 @@ const Itineraries = () => {
   const formatCurrency = (amount) => {
     if (!currency) return amount; 
     const value = Number(amount);
+    if (getUserType() !== "Tourist") {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "EGP",
+      }).format(value);
+    }
     const convertedAmount = currency === "EGP" ? value : value * exchangeRates[currency];
     const formattedAmount = new Intl.NumberFormat("en-US", {
       style: "currency",

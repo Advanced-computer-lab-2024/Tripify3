@@ -25,7 +25,7 @@ const AdminSidebar = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: "#fff" }}>
+      <Typography variant="h6" sx={{mt: 8, mb: 1, fontWeight: "bold", color: "#fff" }}>
         Admin Menu
       </Typography>
       <List>
