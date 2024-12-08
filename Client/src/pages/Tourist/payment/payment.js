@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./checkoutForm";
 import { loadStripe } from "@stripe/stripe-js";
@@ -13,6 +13,24 @@ function Payment() {
   const [discountedPrice, setDiscountedPrice] = useState(price); // Updated price after discount
   const [isPromoValid, setIsPromoValid] = useState(false);
   const deliveryPrice = delivery ? parseFloat(delivery) || 0 : 0;
+  const navigate = useNavigate();
+
+  const buttonStyle = {
+    backgroundColor: 'darkblue',
+    color: 'white',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    marginTop: '20px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    transition: 'transform 0.2s ease-in-out',
+  };
+
+  const buttonHoverStyle = {
+    transform: 'scale(1.1)',
+  };
 
   useEffect(() => {
     fetch("http://localhost:8000/tourist/payment/config").then(async (r) => {
@@ -53,7 +71,14 @@ function Payment() {
 
   return (
     <>
-      <h1>React Stripe and the Payment Element</h1>
+     <button
+        onClick={() => navigate(-1)}
+        style={buttonStyle}
+        onMouseOver={(e) => (e.target.style.transform = buttonHoverStyle.transform)}
+        onMouseOut={(e) => (e.target.style.transform = 'none')}
+      >
+        Go Back
+      </button>
       {clientSecret && stripePromise && (
         <Elements stripe={stripePromise} options={{ clientSecret }} key={elementsKey} >
           <CheckoutForm

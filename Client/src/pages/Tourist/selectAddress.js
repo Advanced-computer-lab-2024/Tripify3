@@ -22,7 +22,9 @@ const SelectAddress = () => {
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/tourist/get/addresses/${userId}`);
+        const response = await axios.get(
+          `http://localhost:8000/tourist/get/addresses/${userId}`
+        );
         setLocations(response.data.addresses || []);
       } catch (error) {
         console.error("Error fetching addresses:", error);
@@ -41,7 +43,9 @@ const SelectAddress = () => {
   const handleContinue = () => {
     if (selectedLocation) {
       const dropOffLocation = selectedLocation.location;
-      navigate(`/tourist/payment/${price}/Product/${null}/${null}/${dropOffLocation}/${dropOffDate}/${delivery}`);
+      navigate(
+        `/tourist/payment/${price}/Product/${null}/${null}/${dropOffLocation}/${dropOffDate}/${delivery}`
+      );
     }
   };
 
@@ -58,7 +62,32 @@ const SelectAddress = () => {
   }
 
   return (
-    <Box p={3} maxWidth="lg" margin="auto">
+    <Box p={3} maxWidth="lg" margin="auto" position="relative">
+      {/* Go Back Button */}
+      <Button
+        variant="contained"
+        onClick={() => navigate(-1)}
+        style={{
+          position: "absolute",
+          top: "10px",
+          left: "0",
+          transformOrigin: "center left",
+          backgroundColor: "darkblue",
+          color: "white",
+          fontWeight: "bold",
+          textTransform: "none",
+          transition: "transform 0.2s ease-in-out",
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = "scale(1.1)";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+        }}
+      >
+        Go Back
+      </Button>
+
       <Typography variant="h4" textAlign="center" gutterBottom>
         🌍 Select Your Address
       </Typography>
@@ -118,7 +147,7 @@ const SelectAddress = () => {
             textTransform: "none",
           }}
         >
-          ✅ Continue
+          Continue
         </Button>
       </Box>
     </Box>
