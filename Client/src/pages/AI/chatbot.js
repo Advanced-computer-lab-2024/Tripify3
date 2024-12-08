@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Box, Button, TextField, Typography, Paper, Avatar } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
-import PersonIcon from "@mui/icons-material/Person";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
 import { getUser } from "../../utils/authUtils";
 
+// Import images
+import cleopatraImage from "../../assets/cleopatra.png";
+import touristImage from "../../assets/tourist.png"; // Add a tourist image in the assets folder
 
 // Custom professional theme
 const theme = createTheme({
@@ -34,7 +35,6 @@ const Chatbot = () => {
   const user = getUser();
   const initialMessageSent = useRef(false); // Flag to track initial message
 
-
   const scrollToBottom = () => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
@@ -52,9 +52,11 @@ const Chatbot = () => {
     setBotTyping(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", { message: inputMessage, user_info: user });
-      console.log(user);
-      
+      const response = await axios.post("http://localhost:5000/chat", {
+        message: inputMessage,
+        user_info: user,
+      });
+
       setBotTyping(false);
       const botMessage = { sender: "bot", text: response.data.response };
       setMessages((prev) => [...prev, botMessage]);
@@ -71,7 +73,10 @@ const Chatbot = () => {
     setBotTyping(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/chat", { message: "", user_info: user });
+      const response = await axios.post("http://localhost:5000/chat", {
+        message: "",
+        user_info: user,
+      });
       setBotTyping(false);
       const botMessage = { sender: "bot", text: response.data.response };
       setMessages((prev) => [...prev, botMessage]);
@@ -85,7 +90,6 @@ const Chatbot = () => {
   useEffect(() => {
     sendInitialMessage();
   }, []); // Runs only once when the component mounts
-
 
   useEffect(() => {
     scrollToBottom();
@@ -101,7 +105,7 @@ const Chatbot = () => {
           backgroundColor: theme.palette.background.default,
         }}
       >
-        {/* Title */}
+        {/* Centered Title with Cleopatra Image */}
         <Box
           sx={{
             py: 2,
@@ -109,13 +113,14 @@ const Chatbot = () => {
             backgroundColor: theme.palette.primary.main,
             color: "white",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "center", // Center the title
             alignItems: "center",
           }}
         >
           <Typography variant="h4" fontWeight="bold">
             Chat with Cleopatra
           </Typography>
+          <img src={cleopatraImage} alt="Cleopatra" style={{ width: 50, height: 50, marginLeft: 10, borderRadius: "50%" }} />
         </Box>
 
         {/* Chat Display */}
@@ -128,11 +133,11 @@ const Chatbot = () => {
             flexDirection: "column",
             gap: 2,
             p: 2,
-            maxHeight: "calc(100vh - 300px)",// Only set the height when messages are present
+            maxHeight: "calc(100vh - 300px)",
             border: "1px solid #ced4da",
             borderRadius: 3,
             backgroundColor: "#f1f3f5",
-            marginBottom: "20px", // Additional space above the input field
+            marginBottom: "20px",
           }}
         >
           {messages.map((msg, index) => (
@@ -145,8 +150,13 @@ const Chatbot = () => {
               }}
             >
               {msg.sender === "bot" && (
-                <Avatar sx={{ bgcolor: "primary.main", mr: 1 }}>
-                  <SmartToyIcon />
+                <Avatar
+                  sx={{
+                    bgcolor: "secondary.main",
+                    mr: 1,
+                  }}
+                >
+                  <img src={cleopatraImage} alt="Cleopatra" style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
                 </Avatar>
               )}
               <Paper
@@ -161,7 +171,7 @@ const Chatbot = () => {
               </Paper>
               {msg.sender === "user" && (
                 <Avatar sx={{ bgcolor: "primary.main", ml: 1 }}>
-                  <PersonIcon />
+                  <img src={touristImage} alt="Tourist" style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
                 </Avatar>
               )}
             </Box>
@@ -170,14 +180,14 @@ const Chatbot = () => {
           {botTyping && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar sx={{ bgcolor: "secondary.main", mr: 1 }}>
-                <SmartToyIcon />
+                <img src={cleopatraImage} alt="Cleopatra Typing" style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
               </Avatar>
               <Typography variant="body1">Typing...</Typography>
             </Box>
           )}
         </Box>
 
-        {/* Input and Send Button at the bottom */}
+        {/* Input and Send Button */}
         <Box
           sx={{
             display: "flex",
