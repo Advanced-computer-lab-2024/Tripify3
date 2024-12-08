@@ -59,9 +59,9 @@ export const GetAllPayments = async (req, res) => {
           }
 
           // Apply promo code if exists
-          const discountMultiplier = cart.promoCode ? cart.promoCode : 1;
-          adminTotal *= discountMultiplier;
-          sellerTotal *= discountMultiplier;
+          const discountMultiplier = cart.promoCode ? cart.promoCode : 0;
+          adminTotal *= (1 - discountMultiplier);
+          sellerTotal *= (1 - discountMultiplier);
 
           // Add calculated amounts to the payment
           payment.adminAmount = adminTotal;

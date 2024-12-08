@@ -20,7 +20,7 @@ const OrderSlider = styled(Slider)({
 const OrdersPage = () => {
   const userId = getUserId();
   const [orders, setOrders] = useState({ pastOrders: [], upcomingOrders: [] });
-  const [showPastOrders, setShowPastOrders] = useState(true);
+  const [showPastOrders, setShowPastOrders] = useState(false);
   const [currency, setCurrency] = useState("USD"); // Default currency
 
   const exchangeRates = {
@@ -105,7 +105,7 @@ const OrdersPage = () => {
         <Typography variant="body1" sx={{ fontSize: 18 }}>
           <strong>💳 Payment Status:</strong> {order.paymentStatus}
         </Typography>
-        {order.cart.promoCode !== 1 && (
+        {order.cart.promoCode !== 0 && (
           <Typography variant="body1" sx={{ fontSize: 18 }}>
             <strong>🎁 Discount:</strong> {order.cart.promoCode * 100}%
           </Typography>
@@ -115,7 +115,7 @@ const OrdersPage = () => {
           <strong>🚚 Delivery Fee:</strong> {order.deliveryFee} EGP
         </Typography>
         <Typography variant="body1" sx={{ color: "#4caf50", fontSize: 18 }}>
-          <strong>🛒 Total Price:</strong> {order.cart.totalPrice * order.cart.promoCode + order.deliveryFee} EGP
+          <strong>🛒 Total Price:</strong> {order.cart.totalPrice * (1 - order.cart.promoCode) + order.deliveryFee} EGP
         </Typography>
 
         <Grid container spacing={2} sx={{ mt: 2 }}>

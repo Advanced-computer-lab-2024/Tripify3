@@ -576,7 +576,7 @@ export const getSellerRevenue = async (req, res) => {
 
         if (product.sellerId && product.sellerId.toString() === sellerId.toString()) {
           // Apply promo code if available
-          const promoCode = cart.promoCode || 1;
+          const promoCode = cart.promoCode;
           const revenueFromOrder = product.price * cartItem.quantity * (1 - promoCode);
 
 

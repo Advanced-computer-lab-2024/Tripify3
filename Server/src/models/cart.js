@@ -33,7 +33,7 @@ const cartSchema = new mongoose.Schema({
   }, // Total number of products in the cart
   promoCode: {
     type: Number,
-    default: 1
+    default: 0
   }
 });
 
