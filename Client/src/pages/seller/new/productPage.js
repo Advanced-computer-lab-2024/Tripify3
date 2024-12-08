@@ -606,7 +606,7 @@ const Description = ({
       <p className="desc">{products.details}</p>
       <div className="price">
         <div className="main-tag">
-          <p>${products.price}</p>
+          <p>{products.price} EGP</p>
         </div>
       </div>
       <div className="buttons">

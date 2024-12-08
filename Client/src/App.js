@@ -210,7 +210,7 @@ const App = () => {
         {/* Seller Routes */}
         <Route path={`/seller/my-products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
         <Route path={`/seller/profile`} element={getLayoutForRole(userRole, <SellerProfile />)} />
-        <Route path={"product/:productId"} element={<ProductPage />} />
+        <Route path={"product/:productId"} element={getLayoutForRole(userRole, <ProductPage />)} />
         {/* Admin Routes */}
         <Route path={"/chatbot"} element={getLayoutForRole(userRole, <Chatbot />)} />
         <Route path={`/admin/users`} element={getLayoutForRole(userRole, <Users />)} />
