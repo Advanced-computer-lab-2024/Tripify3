@@ -26,6 +26,7 @@ import AddAddress from "./pages/tourist/addAddress.js";
 import SelectAddress from "./pages/tourist/selectAddress.js";
 import PaymentSuccess from "./pages/tourist/paymentSuccess.js";
 import Bookmarks from "./pages/tourist/bookmarkedEvents.js";
+import ProductsReport from "./pages/admin/productsReport.js";
 
 import Itineraries from "./pages/tourist/itineraries.js";
 import HistoricalPlaces from "./pages/tourist/historicalPlaces.js";
@@ -215,6 +216,7 @@ const App = () => {
         <Route path={"/chatbot"} element={getLayoutForRole(userRole, <Chatbot />)} />
         <Route path={`/admin/users`} element={getLayoutForRole(userRole, <Users />)} />
         <Route path={`/admin/profile`} element={getLayoutForRole(userRole, <AdminProfile />)} />
+        <Route path={`/admin/products/report`} element={getLayoutForRole(userRole, < ProductsReport/>)} />
         <Route path={`${basePath}/categories`} element={getLayoutForRole(userRole, <Categories />)} />
         <Route path={`${basePath}/tags`} element={getLayoutForRole(userRole, <Tags />)} />
         <Route path={`${basePath}/file-viewer`} element={getLayoutForRole(userRole, <FileViewer />)} />

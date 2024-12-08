@@ -101,6 +101,11 @@ const AdminSidebar = () => {
                 Sales Report
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={Link} to="/admin/products/report" sx={subLinkStyle}>
+                Products Report
+              </ListItemButton>
+            </ListItem>
           </List>
         </Collapse>
       </List>

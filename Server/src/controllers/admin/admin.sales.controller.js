@@ -2,6 +2,7 @@
 import Payment from "../../models/payment.js";
 import Cart from "../../models/cart.js";
 import Product from "../../models/product.js";
+import Order from "../../models/order.js";
 
 export const GetAllPayments = async (req, res) => {
   try {
@@ -87,3 +88,80 @@ export const GetAllPayments = async (req, res) => {
     });
   }
 };
+
+export const getAllSellersRevenue = async (req, res) => {
+  try {
+    // Step 1: Fetch all orders with 'Paid' status
+    const paidOrders = await Order.find({ paymentStatus: "Paid" }).populate("cart");
+
+    let sellerRevenue = {};
+
+    // Step 2: Iterate over orders and calculate revenue
+    for (const order of paidOrders) {
+      const cart = await Cart.findById(order.cart).populate("products.product");
+
+      for (const cartItem of cart.products) {
+        const product = cartItem.product;
+
+        // Determine seller ID: prefer sellerId, fallback to adminId
+        const sellerId = product.sellerId ? product.sellerId.toString() : product.adminId?.toString();
+
+        if (sellerId) {
+          // Initialize seller entry if not already present
+          if (!sellerRevenue[sellerId]) {
+            sellerRevenue[sellerId] = {
+              sellerId,
+              totalRevenue: 0,
+              products: {},
+            };
+          }
+
+          // Apply promo code if available
+          const promoCode = cart.promoCode || 0; // Assuming promoCode is a discount percentage (e.g., 0.1 for 10% off)
+          const revenueFromOrder = product.price * cartItem.quantity * (1 - promoCode);
+
+          // Add product revenue to total for the seller
+          sellerRevenue[sellerId].totalRevenue += revenueFromOrder;
+
+          // Track product sales details
+          if (!sellerRevenue[sellerId].products[product._id]) {
+            sellerRevenue[sellerId].products[product._id] = {
+              productId: product._id,
+              name: product.name,
+              price: product.price,
+              quantitySold: 0,
+              revenue: 0,
+              orders: [],
+            };
+          }
+
+          sellerRevenue[sellerId].products[product._id].quantitySold += cartItem.quantity;
+          sellerRevenue[sellerId].products[product._id].revenue += revenueFromOrder;
+
+          // Add order details to the orders array
+          sellerRevenue[sellerId].products[product._id].orders.push({
+            quantity: cartItem.quantity,
+            date: order.orderDate, // Order creation date
+            revenue: revenueFromOrder, // Revenue for this order
+          });
+        }
+      }
+    }
+
+    // Convert sellerRevenue to an array and products to arrays for easier manipulation
+    const sellerRevenueArray = Object.values(sellerRevenue).map((seller) => ({
+      sellerId: seller.sellerId,
+      totalRevenue: seller.totalRevenue,
+      products: Object.values(seller.products),
+    }));
+
+    // Step 3: Return the response
+    return res.status(200).json({
+      sellers: sellerRevenueArray,
+    });
+  } catch (error) {
+    console.error("Error fetching all sellers' revenue:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
