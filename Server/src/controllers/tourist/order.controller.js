@@ -97,6 +97,8 @@ export const checkoutTouristCart = async (req, res) => {
   const { userId } = req.query;
   const promoCode = req.body.promoCode;
   const paymentMethod = req.body.paymentMethod;
+  const deliveryFee = req.body.deliveryFee;
+  
 
   try {
     // Find the tourist by ID and check if they exist
@@ -107,7 +109,6 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Check if the user has a cart
     if (!tourist.cart) {
-      console.log("-----------");
 
       return res.status(400).json({ message: "No cart associated with this tourist" });
     }
@@ -128,6 +129,7 @@ export const checkoutTouristCart = async (req, res) => {
       dropOffLocation: req.body.dropOffLocation,
       dropOffDate: req.body.dropOffDate,
       paymentStatus: paymentMethod === "Cash on Delivery" ? "Unpaid" : "Paid",
+      deliveryFee
     });
 
     await order.save(); // Save the order
@@ -156,8 +158,6 @@ export const checkoutTouristCart = async (req, res) => {
         if (product.sellerId?.id) {
           // Safely check if sellerId and its _id exist
           sellerId = product.sellerId._id;
-          console.log(sellerId);
-          console.log("-----323223");
         }
         if (!outOfStockProductsBySeller[sellerId]) {
           outOfStockProductsBySeller[sellerId] = {
@@ -165,7 +165,7 @@ export const checkoutTouristCart = async (req, res) => {
             products: [],
           };
         }
-        console.log(outOfStockProductsBySeller);
+   
 
         outOfStockProductsBySeller[sellerId].products.push(product.name);
       }

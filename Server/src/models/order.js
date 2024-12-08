@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema({
   cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart", required: true },
   dropOffLocation: { type: String, required: true },
   dropOffDate: { type: Date, required: true },
+  deliveryFee: { type: Number, required: true },
 });
 
 const Order = mongoose.model("Order", orderSchema);

@@ -176,9 +176,6 @@ export const createPayment = async (req, res) => {
 
       discount = existingPromoCode.discount || 0; // Get the discount value
 
-      console.log(discount);
-      
-
       const cartId = tourist.cart; // Assuming cartId is stored in the Tourist schema
 
       if (cartId) {

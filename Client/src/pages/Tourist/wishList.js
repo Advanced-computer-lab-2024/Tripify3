@@ -330,7 +330,7 @@ const Products = () => {
                       )}
                       <CardContent>
                         <Typography variant="h5">{product.name}</Typography>
-                        <Typography>Price: ${product.price}</Typography>
+                        <Typography>Price: {product.price} EGP</Typography>
                         <Typography>Details: {product.details}</Typography>
                         <Rating
                           name="read-only"

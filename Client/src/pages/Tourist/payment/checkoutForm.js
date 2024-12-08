@@ -11,8 +11,10 @@ import VisaPayment from "./visaPayment.js";
 export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecret, createPaymentIntent, originalPrice, promoCode, setPromoCode, discountedPrice }) {
   const stripe = useStripe();
   const elements = useElements();
-  const { price, tickets, itemId, type, dropOffLocation, dropOffDate } = useParams(); // Retrieve the price from the route params
+  const { price, tickets, itemId, type, dropOffLocation, dropOffDate, delivery } = useParams(); // Retrieve the price from the route params
   const userId = getUserId();
+  const deliveryPrice = delivery ? parseFloat(delivery) || 0 : 0;
+
   const [message, setMessage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState("Visa");
@@ -43,7 +45,7 @@ export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecre
         setError(null);
 
         const initialPrice = parseFloat(price);
-        const discountedPrice = initialPrice - (initialPrice * discount) / 100;
+        const discountedPrice = initialPrice - (initialPrice * discount) / 100;        
         const newPrice = discountedPrice.toFixed(2); // Format to 2 decimal places
 
         if (clientSecret) {
@@ -68,10 +70,7 @@ export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecre
   };
 
   const removePromoCode = async () => {
-    // Cancel the old payment intent
-    console.log(clientSecret);
-    console.log("-2-2-2-22222");
-    
+  
 
     if (clientSecret) {
       const paymentIntentId = clientSecret.split("_secret")[0];
@@ -119,6 +118,7 @@ export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecre
           dropOffDate,
           promoCode: discount,
           paymentMethod: selectedMethod,
+          deliveryFee: deliveryPrice
         });
       } else {
         const booking = { tourist: userId, price: calculateFinalPrice(), type, itemId, tickets };
@@ -172,8 +172,9 @@ export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecre
 
   const calculateFinalPrice = () => {
     const initialPrice = parseFloat(discountedPrice);
+  
     // const discountedPrice = initialPrice - (initialPrice * discount) / 100;
-    return initialPrice; // Format to 2 decimal places
+    return initialPrice + deliveryPrice; // Format to 2 decimal places
   };
 
   return (

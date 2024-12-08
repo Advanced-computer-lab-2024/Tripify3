@@ -289,9 +289,9 @@ const TouristNavbar = () => {
               <MenuItem onClick={handleOrdersClick}>
                 <Assignment sx={{ mr: 1 }} /> Orders
               </MenuItem>
-              <MenuItem onClick={handlePaymentsClick}>
+              {/* <MenuItem onClick={handlePaymentsClick}>
                 <MonetizationOn sx={{ mr: 1 }} /> Payments
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem onClick={handleComplaintsClick}>
                 <ReportProblemIcon sx={{ mr: 1 }} /> My Complaints
               </MenuItem>
@@ -526,7 +526,7 @@ const TouristNavbar = () => {
       </Dialog>
 
       {!isChatbotRoute && !isSelectAddressRoute && !isPaymentRoute && (
-        <AppBar position="fixed" sx={{ minHeight: "30px", top: "56px", backgroundColor: "#00695C", zIndex: 1299 }}>
+        <AppBar position="fixed" sx={{ minHeight: "30px", top: "56px", backgroundColor: "#007958", zIndex: 1299 }}>
           <Toolbar
             sx={{
               minHeight: "30px",

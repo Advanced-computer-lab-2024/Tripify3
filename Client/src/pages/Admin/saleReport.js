@@ -205,17 +205,7 @@ const SalesReport = () => {
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper sx={{ padding: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Total Users
-            </Typography>
-            <Typography variant="h4" color="textPrimary">
-            
-              {filterUsersByMonth()}
-            </Typography>
-          </Paper>
-        </Grid>
+        
       </Grid>
 
       {/* Filter Section */}
@@ -269,10 +259,7 @@ const SalesReport = () => {
         </Grid>
       </Grid>
 
-      {/* Download Button */}
-      <Button variant="contained" color="primary" onClick={downloadCSV} sx={{ marginTop: 4 }}>
-        Download CSV
-      </Button>
+      
 
       {/* Payments Table */}
       <TableContainer component={Paper} sx={{ marginTop: 4 }}>

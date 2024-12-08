@@ -163,7 +163,7 @@ const App = () => {
         <Route path={"/load_hotels"} element={getLayoutForRole(userRole, <LoadHotels />)} />
         <Route path={"/transportation"} element={getLayoutForRole(userRole, <Transportation />)} />
         <Route path={"/tourist/my-orders"} element={getLayoutForRole(userRole, <OrdersPage />)} />
-        <Route path={"/tourist/payment/:price/:type/:itemId/:tickets/:dropOffLocation/:dropOffDate"} element={getLayoutForRole(userRole, <Payment />)} />
+        <Route path={"/tourist/payment/:price/:type/:itemId/:tickets/:dropOffLocation/:dropOffDate/:delivery"} element={getLayoutForRole(userRole, <Payment />)} />
         <Route path={"/tourist/completionn"} element={getLayoutForRole(userRole, <Completion />)} />
         <Route path={"/tourist/view/complaints"} element={getLayoutForRole(userRole, <ViewComplaints />)} />
         <Route path={"/tourist/itinerary/:id"} element={getLayoutForRole(userRole, <ItinerariesDetails />)} />
@@ -186,7 +186,7 @@ const App = () => {
         <Route path={`${basePath}/historical-places`} element={getLayoutForRole(userRole, <HistoricalPlaces />)} />
         <Route path={`${basePath}/products`} element={getLayoutForRole(userRole, <ProductsLists />)} />
         <Route path={`${basePath}/add/address`} element={getLayoutForRole(userRole, <AddAddress />)}  />
-        <Route path={`${basePath}/select/address/:price/:type/:dropOffDate`} element={getLayoutForRole(userRole, <SelectAddress />)}  />
+        <Route path={`${basePath}/select/address/:price/:type/:dropOffDate/:delivery`} element={getLayoutForRole(userRole, <SelectAddress />)}  />
 
         {/* Tour Guide Routes */}
         {/* <Route path={`/tour-guide/activate-deactivate/itinerary/`} element={<TourGuideActivateDeactivateItinerary />} /> */}
