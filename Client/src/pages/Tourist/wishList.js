@@ -6,6 +6,7 @@ import { IconButton } from "@mui/material";
 import ArchiveIcon from "@mui/icons-material/Archive"; // Import an archive icon
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import {
   AppBar,
   Toolbar,
@@ -52,6 +53,20 @@ const Products = () => {
   const [budget, setBudget] = useState(""); // State for budget
   const [effect, setEffect] = useState("");
   const [wishArray, setWishArray] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleAddToCart = async (productId) => {
+    try {
+      // API call with `productId` in the request body
+      const response = await axios.put(
+        "http://localhost:8000/tourist/cart/add",
+        { productId: productId, touristId: getUserId() } // Use `productId`
+      );
+      console.log("Product added to cart successfully");
+    } catch (error) {
+      console.error("Error adding product to cart:", error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -73,7 +88,6 @@ const Products = () => {
 
   const fetchSellerNames = async (products) => {
     try {
-  
       const sellerIds = [
         ...new Set(
           products.map((product) => product.sellerId || product.adminId) // Fallback to adminId if sellerId is null
@@ -103,7 +117,7 @@ const Products = () => {
       );
       console.log(response.data.items);
       console.log("===================================");
-      
+
       setWishArray(response.data.items);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -174,7 +188,6 @@ const Products = () => {
       // alert("Failed to add to wishList. ");
     }
   };
-
 
   return (
     <ThemeProvider theme={theme}>
@@ -369,6 +382,37 @@ const Products = () => {
                             "Loading seller name..."
                           )}
                         </Typography>
+                        <Button
+                          variant="contained"
+                          startIcon={<ShoppingCartIcon />}
+                          onClick={async () => {
+                            if (!loading) {
+                              setLoading(true);
+                              await handleAddToCart(product._id);
+                            }
+                            setTimeout(() => {
+                              setLoading(false);
+                            }, 5000);
+                          }} // Assuming you have an add-to-cart function
+                          sx={{
+                            width: "80%",
+                            margin: "16px auto", // Center the button with margin on top and bottom
+                            display: "block", // Center align in the card
+                            background:
+                              "linear-gradient(45deg, #FF6B6B, #FFD93D)",
+                            color: "#fff",
+                            fontWeight: "bold",
+                            textTransform: "none",
+                            borderRadius: "8px",
+                            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                            "&:hover": {
+                              background:
+                                "linear-gradient(45deg, #FF5A5A, #FFC837)",
+                            },
+                          }}
+                        >
+                          Add to Cart
+                        </Button>
                       </CardContent>
                     </Card>
                   </Grid>
