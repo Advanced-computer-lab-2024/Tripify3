@@ -599,3 +599,7 @@ If you're new to Tripify, we've prepared a comprehensive tutorial to guide you t
 ![alt text](activities.png)
 
 ![alt text](account.png)
+
+![alt text](itineraries.png)
+
+![alt text](<To go.png>)
