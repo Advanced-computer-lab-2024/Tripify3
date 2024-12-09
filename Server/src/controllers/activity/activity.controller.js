@@ -40,7 +40,7 @@ export const getAllActivitiesForTourist = async (req, res) => {
      console.log(userId);
 
     // Fetch activities with future dates and populate tag names
-    const activities = await Activity.find({ date: { $gt: tomorrow }, isDeleted: false, inappropriate: false, status: "Active" })
+    const activities = await Activity.find({ date: { $gt: tomorrow }, isDeleted: false, inappropriate: false, })
       .populate({
         path: "tags", // Populate the tags field
         select: "name", // Only retrieve the tag's name

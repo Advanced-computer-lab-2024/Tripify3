@@ -280,7 +280,7 @@ const ActivityDetails = () => {
             </Dialog>
 
           <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px" }}>
-            {userType === "Tourist" && (
+            {userType === "Tourist" && activity.status === "Active" && (
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
                   <RemoveIcon />

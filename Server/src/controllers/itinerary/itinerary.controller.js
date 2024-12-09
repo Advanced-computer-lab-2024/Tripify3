@@ -144,7 +144,7 @@ export const getAllActiveAppropriateItineraries = async (req, res) => {
     const { userId } = req.params;
 
 
-    const itineraries = await Itinerary.find({ status: "Active", inappropriate: false, isDeleted: false, "timeline.startTime": { $gt: tomorrow } })
+    const itineraries = await Itinerary.find({ inappropriate: false, isDeleted: false, "timeline.startTime": { $gt: tomorrow } })
       .populate({
         path: "activities",
         populate: {

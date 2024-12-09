@@ -372,12 +372,12 @@ export const cancelOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found or not authorized" });
     }
 
-     // Fetch the tourist
-     const tourist = await Tourist.findById(userId);
-     if (!tourist) {
-       return res.status(404).json({ message: "Tourist not found" });
-     }
-     
+    // Fetch the tourist
+    const tourist = await Tourist.findById(userId);
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
     // Fetch and delete the cart
     const cart = await Cart.findById(order.cart);
     if (cart) {
@@ -387,8 +387,10 @@ export const cancelOrder = async (req, res) => {
     // Fetch and delete the payment associated with the cart
     const payment = await Payment.findOne({ cart: order.cart });
     if (payment) {
-      tourist.walletAmount += payment.amount; // Add the payment amount to the wallet
-      await tourist.save();
+      if (order.paymentStatus === "Paid") {
+        tourist.walletAmount += payment.amount; // Add the payment amount to the wallet
+        await tourist.save();
+      }
       await payment.deleteOne();
     }
 

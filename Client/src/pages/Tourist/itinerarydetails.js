@@ -424,7 +424,7 @@ const ItineraryDetails = () => {
           </Card>
 
           {/* Reviews Section */}
-          <Card sx={{ mt: 9, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
+          {/* <Card sx={{ mt: 9, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4 }}>
             <CardContent>
               <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
                 Reviews
@@ -460,7 +460,7 @@ const ItineraryDetails = () => {
                 ))}
               </Box>
             </CardContent>
-          </Card>
+          </Card> */}
         </Box>
 
         {/* Right: Comments & Tour Guide */}
