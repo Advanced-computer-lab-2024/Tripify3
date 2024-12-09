@@ -90,6 +90,24 @@ const OrdersPage = () => {
     }
   };
 
+  const handleCancelOrder = (orderId) => async () => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/tourist/delete/order/${userId}/${orderId}`);
+      if (response.status === 200) {
+        alert("Order cancelled successfully!");
+        // Remove the cancelled order from the state
+        setOrders((prevOrders) => ({
+          ...prevOrders,
+          upcomingOrders: prevOrders.upcomingOrders.filter((order) => order._id !== orderId),
+        }));
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      alert("Failed to cancel the order. Please try again.");
+    }
+  };
+  
+
   const OrderCard = ({ order }) => (
     <Card variant="outlined" sx={{ bgcolor: "#f1f8ff", my: 2, width: "100%" }}>
       <CardContent>
@@ -123,6 +141,25 @@ const OrdersPage = () => {
             <ProductCard key={productItem.product._id} productItem={productItem} showPastOrders={showPastOrders} onRate={(productId, rating) => handleRating(productId, rating, order._id)} />
           ))}
         </Grid>
+
+        {!showPastOrders && (
+  <Box display="flex" justifyContent="flex-end" sx={{ mt: 2 }}>
+    <button
+      onClick={handleCancelOrder(order._id)}
+      style={{
+        padding: "10px 20px",
+        backgroundColor: "#f44336",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+      }}
+    >
+      Cancel Order
+    </button>
+  </Box>
+)}
+
       </CardContent>
     </Card>
   );

@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Table, Select, DatePicker, Row, Col, Card, Typography, Space, Button, Spin } from "antd";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import dayjs from "dayjs";
 
 const { Option } = Select;
@@ -26,7 +14,6 @@ const ProductsReport = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6666", "#AA66FF"];
-
 
   useEffect(() => {
     const fetchSalesData = async () => {
@@ -49,40 +36,42 @@ const ProductsReport = () => {
 
     // Filter by month
     if (month) {
-      filtered = filtered.map((seller) => ({
-        ...seller,
-        products: seller.products
-          .map((product) => ({
-            ...product,
-            orders: product.orders.filter(
-              (order) => dayjs(order.date).format("MMMM") === month
-            ),
-          }))
-          .filter((product) => product.orders.length > 0),
-      })).filter((seller) => seller.products.length > 0);
+      filtered = filtered
+        .map((seller) => ({
+          ...seller,
+          products: seller.products
+            .map((product) => ({
+              ...product,
+              orders: product.orders.filter((order) => dayjs(order.date).format("MMMM") === month),
+            }))
+            .filter((product) => product.orders.length > 0),
+        }))
+        .filter((seller) => seller.products.length > 0);
     }
 
     // Filter by date
     if (date) {
-      filtered = filtered.map((seller) => ({
-        ...seller,
-        products: seller.products
-          .map((product) => ({
-            ...product,
-            orders: product.orders.filter(
-              (order) => dayjs(order.date).format("YYYY-MM-DD") === date
-            ),
-          }))
-          .filter((product) => product.orders.length > 0),
-      })).filter((seller) => seller.products.length > 0);
+      filtered = filtered
+        .map((seller) => ({
+          ...seller,
+          products: seller.products
+            .map((product) => ({
+              ...product,
+              orders: product.orders.filter((order) => dayjs(order.date).format("YYYY-MM-DD") === date),
+            }))
+            .filter((product) => product.orders.length > 0),
+        }))
+        .filter((seller) => seller.products.length > 0);
     }
 
     // Filter by product name
     if (productName) {
-      filtered = filtered.map((seller) => ({
-        ...seller,
-        products: seller.products.filter((product) => product.name === productName),
-      })).filter((seller) => seller.products.length > 0);
+      filtered = filtered
+        .map((seller) => ({
+          ...seller,
+          products: seller.products.filter((product) => product.name === productName),
+        }))
+        .filter((seller) => seller.products.length > 0);
     }
 
     setFilteredData(filtered);
@@ -161,13 +150,13 @@ const ProductsReport = () => {
     </Option>
   ));
 
-  const productOptions = salesData.flatMap((seller) =>
-    seller.products.map((product) => product.name)
-  ).map((name, index) => (
-    <Option key={index} value={name}>
-      {name}
-    </Option>
-  ));
+  const productOptions = salesData
+    .flatMap((seller) => seller.products.map((product) => product.name))
+    .map((name, index) => (
+      <Option key={index} value={name}>
+        {name}
+      </Option>
+    ));
 
   return (
     <div style={{ padding: "20px" }}>
@@ -176,7 +165,15 @@ const ProductsReport = () => {
       <Card style={{ marginBottom: "20px" }}>
         <Title level={4}>
           Total Revenue:{" "}
-          {filteredData.reduce((total, seller) => total + seller.totalRevenue, 0)} EGP
+          {filteredData.reduce((totalRevenue, seller) => {
+            return (
+              totalRevenue +
+              seller.products.reduce((sellerRevenue, product) => {
+                return sellerRevenue + product.orders.reduce((orderRevenue, order) => orderRevenue + order.revenue, 0);
+              }, 0)
+            );
+          }, 0)}{" "}
+          EGP
         </Title>
       </Card>
 
@@ -185,12 +182,7 @@ const ProductsReport = () => {
         <Col span={8}>
           <Space direction="vertical">
             <Title level={5}>Filter by Month</Title>
-            <Select
-              placeholder="Select Month"
-              style={{ width: "100%" }}
-              value={selectedMonth}
-              onChange={handleMonthChange}
-            >
+            <Select placeholder="Select Month" style={{ width: "100%" }} value={selectedMonth} onChange={handleMonthChange}>
               {monthOptions}
             </Select>
           </Space>
@@ -199,23 +191,14 @@ const ProductsReport = () => {
         <Col span={8}>
           <Space direction="vertical">
             <Title level={5}>Filter by Date</Title>
-            <DatePicker
-              format="YYYY-MM-DD"
-              style={{ width: "100%" }}
-              onChange={handleDateChange}
-            />
+            <DatePicker format="YYYY-MM-DD" style={{ width: "100%" }} onChange={handleDateChange} />
           </Space>
         </Col>
 
         <Col span={8}>
           <Space direction="vertical">
             <Title level={5}>Filter by Product</Title>
-            <Select
-              placeholder="Select Product"
-              style={{ width: "100%" }}
-              value={selectedProduct}
-              onChange={handleProductChange}
-            >
+            <Select placeholder="Select Product" style={{ width: "100%" }} value={selectedProduct} onChange={handleProductChange}>
               {productOptions}
             </Select>
           </Space>
@@ -227,13 +210,7 @@ const ProductsReport = () => {
       </Row>
 
       {/* Table */}
-      <Table
-        columns={tableColumns}
-        dataSource={products}
-        rowKey={(record) => record.productId}
-        pagination={{ pageSize: 5 }}
-        style={{ marginBottom: "20px" }}
-      />
+      <Table columns={tableColumns} dataSource={products} rowKey={(record) => record.productId} pagination={{ pageSize: 5 }} style={{ marginBottom: "20px" }} />
 
       {/* Charts */}
       <Row gutter={[16, 16]}>
@@ -257,16 +234,7 @@ const ProductsReport = () => {
           <Card title="Revenue Distribution">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  label
-                >
+                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#8884d8" label>
                   {pieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}

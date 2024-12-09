@@ -27,7 +27,7 @@ import { getUserId, getUserType, getUserPreferences } from "../../utils/authUtil
 import { useParams, useNavigate } from "react-router-dom"; ////////////////////////
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getAllActivities, getAllCategories, getAllActivitiesForTourist } from "../../services/tourist.js";
+import { getAllActivities, getAllCategories, getAllActivitiesForTourist, getAllActivitiesForGuest } from "../../services/tourist.js";
 import { Link } from "react-router-dom";
 
 import { markActivityInappropriate } from "../../services/admin.js";
@@ -79,11 +79,10 @@ const GuestActivities = () => {
     fetchUserProfile();
     const fetchData = async () => {
       try {
-        const fetchActivities = userType === "Tourist" || userType === "Guest" ? getAllActivitiesForTourist : getAllActivities;
+        const fetchActivities =  userType === "Guest" ? getAllActivitiesForGuest : getAllActivities;
         const [activitiesResponse, categoriesResponse] = await Promise.all([fetchActivities(), getAllCategories()]);
         setActivities(activitiesResponse.data.activities);
         setOriginalActivities(activitiesResponse.data.activities);
-        console.log("Test", activitiesResponse.data.activities);
 
         setCategories(categoriesResponse.data);
         setLoading(false);

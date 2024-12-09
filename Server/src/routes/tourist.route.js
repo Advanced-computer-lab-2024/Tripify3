@@ -19,6 +19,7 @@ import {
     editAddress,
     deleteAddress,
     getAllAddresses,
+    cancelOrder
   } from "../controllers/tourist/order.controller.js";
   
 const router = express.Router();
@@ -86,6 +87,8 @@ router.put("/tourist/edit/address/:userId", editAddress);
 
 // Route to delete an address
 router.delete("/tourist/delete/address/:userId", deleteAddress);
+
+router.delete("/tourist/delete/order/:userId/:orderId", cancelOrder);
 
 // Route to get all addresses for a user
 router.get("/tourist/get/addresses/:userId", getAllAddresses);
