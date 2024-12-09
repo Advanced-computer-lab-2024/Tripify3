@@ -7,6 +7,7 @@ import User from "../../models/user.js";
 import Notification from "../../models/notification.js";
 import Cart from "../../models/cart.js";
 import Payment from "../../models/payment.js";
+import Produt from "../../models/product.js";
 
 import { sendOutOfStockNotificationEmailToSeller, sendOutOfStockNotificationEmailToAdmin } from "../../middlewares/sendEmail.middleware.js";
 // Controller to get past and upcoming orders based on dropOffDate
@@ -381,6 +382,19 @@ export const cancelOrder = async (req, res) => {
     // Fetch and delete the cart
     const cart = await Cart.findById(order.cart);
     if (cart) {
+
+       // Iterate over each product in the cart
+       for (const cartProduct of cart.products) {
+        const { product: productId, quantity } = cartProduct;
+
+        // Fetch the product and update its quantity
+        const product = await Product.findById(productId);
+        if (product) {
+          product.quantity += quantity; // Add the quantity back to the product's stock
+          await product.save();
+        }
+      }
+
       await cart.deleteOne();
     }
 

@@ -274,7 +274,7 @@ const TourGuideItineraries = () => {
                     <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                       📍 {itinerary.name}
                     </Typography>
-                    <Typography>💵 {itinerary.price}</Typography>
+                    <Typography>💵 {itinerary.price} EGP</Typography>
                     <Typography>
                       <strong>🈸 </strong> {itinerary.language}
                     </Typography>

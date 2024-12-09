@@ -141,26 +141,36 @@ const AdvertiserActivityDetails = () => {
       <Button variant="contained" color="primary" onClick={() => navigate(-1)} sx={{ position: "absolute", top: 16, left: 16 }}>
         Go Back
       </Button>
-
+  
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start", mt: 5 }}>
-        <Card sx={{ width: "100%", maxWidth: "900px", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px" }}>
+        <Card sx={{ width: "100%", maxWidth: "900px", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px", position: "relative" }}>
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <Typography variant="h4" color="#333" gutterBottom textAlign="center" sx={{ mb: 3 }}>
-                {editMode ? <TextField label="Activity Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth sx={{ mb: 2 }} /> : activity?.name || "Activity Name"}
+              <Typography
+                variant="h4"
+                color="#333"
+                gutterBottom
+                textAlign={!editMode ? "center" : "left"}
+                sx={{ mb: 3, width: "100%" }}
+              >
+                {editMode ? (
+                  <TextField label="Activity Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth sx={{ mb: 2 }} />
+                ) : (
+                  activity?.name || "Activity Name"
+                )}
               </Typography>
-              <Button variant="contained" color="secondary" onClick={handleUpdateToggle}>
+              <Button variant="contained" color="success" onClick={handleUpdateToggle}>
                 {editMode ? "Cancel" : "Edit"}
               </Button>
             </Box>
-
+  
             {/* Special Discount */}
             {activity?.specialDiscount > 0 && !editMode && (
               <Box sx={{ backgroundColor: "#E2F0E6", color: "#2C7A7B", borderRadius: 2, padding: "12px", textAlign: "center", mb: 4, fontWeight: 600 }}>
                 Special Discount: {activity.specialDiscount}%
               </Box>
             )}
-
+  
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
                 <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
@@ -177,7 +187,7 @@ const AdvertiserActivityDetails = () => {
                   </Box>
                 )}
               </Grid>
-
+  
               <Grid item xs={12} sm={6}>
                 <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
                   Category
@@ -199,7 +209,7 @@ const AdvertiserActivityDetails = () => {
                   </Typography>
                 )}
               </Grid>
-
+  
               {editMode && (
                 <Grid item xs={12} sm={6}>
                   <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
@@ -208,7 +218,7 @@ const AdvertiserActivityDetails = () => {
                   <TextField type="number" label="Special Discount (%)" value={specialDiscount} onChange={(e) => setSpecialDiscount(e.target.value)} fullWidth sx={{ mb: 2 }} />
                 </Grid>
               )}
-
+  
               {/* Rating Display */}
               <Grid item xs={12}>
                 <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
@@ -220,7 +230,7 @@ const AdvertiserActivityDetails = () => {
                   </Typography>
                 )}
               </Grid>
-
+  
               <Grid item xs={12}>
                 <Typography variant="h6" sx={{ color: "#4A5568", fontWeight: 500, mb: 1 }}>
                   Tags
@@ -232,7 +242,11 @@ const AdvertiserActivityDetails = () => {
                           key={tag._id}
                           label={tag.name}
                           clickable
-                          onClick={() => setSelectedTags((prevTags) => (prevTags.includes(tag._id) ? prevTags.filter((id) => id !== tag._id) : [...prevTags, tag._id]))}
+                          onClick={() =>
+                            setSelectedTags((prevTags) =>
+                              prevTags.includes(tag._id) ? prevTags.filter((id) => id !== tag._id) : [...prevTags, tag._id]
+                            )
+                          }
                           color={selectedTags.includes(tag._id) ? "primary" : "default"}
                         />
                       ))
@@ -241,7 +255,7 @@ const AdvertiserActivityDetails = () => {
               </Grid>
             </Grid>
           </CardContent>
-
+  
           {editMode && (
             <CardActions sx={{ justifyContent: "flex-end", padding: "24px 32px" }}>
               <Button variant="contained" color="primary" onClick={handleSave} sx={{ px: 4 }}>
@@ -249,30 +263,25 @@ const AdvertiserActivityDetails = () => {
               </Button>
             </CardActions>
           )}
-        </Card>
-
-        <Box sx={{ position: "relative" }}>
-          {userType === "Advertiser" && (
-            <Box sx={{ position: "absolute", top: 16, right: 16, zIndex: 10 }}>
-              {bookings.length === 0 ? (
-                <Typography sx={{ color: "gray", fontSize: "0.9rem" }}>This itinerary cannot be deactivated as it has no bookings yet.</Typography>
-              ) : activity.status === "Inactive" ? (
-                <Button variant="contained" color="primary" onClick={() => activateActivity()} sx={{ fontSize: "1rem", textTransform: "none" }}>
-                  Activate
-                </Button>
-              ) : activity.status === "Active" ? (
-                <Button variant="contained" color="secondary" onClick={() => deactivateActivity()} sx={{ fontSize: "1rem", textTransform: "none" }}>
+  
+          {userType === "Advertiser" && !editMode && (
+            <Box sx={{ position: "absolute", bottom: 16, right: 16 }}>
+              {activity.status === "Active" ? (
+                <Button variant="contained" color="success" onClick={deactivateActivity}>
                   Deactivate
                 </Button>
-              ) : null}
+              ) : (
+                <Button variant="contained" color="primary" onClick={activateActivity}>
+                  Activate
+                </Button>
+              )}
             </Box>
           )}
-
-          {/* Rest of the component's content goes here */}
-        </Box>
+        </Card>
       </Box>
     </Box>
   );
+  
 };
 
 export default AdvertiserActivityDetails;

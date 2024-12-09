@@ -88,7 +88,7 @@ const ActivityDetails = () => {
     setTouristData(booking);
 
     console.log(getTouristData());
-    
+
     // try {
     //   const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
     //   alert(response.data.message);
@@ -237,70 +237,77 @@ const ActivityDetails = () => {
             </Grid>
           </CardContent>
 
-          
           <Dialog
-              open={shareOpen}
-              onClose={handleShareToggle}
-              TransitionComponent={Slide}
-              TransitionProps={{ direction: "up" }}
-              sx={{
-                "& .MuiPaper-root": {
-                  borderRadius: "16px", // Rounded corners
-                  padding: 4, // Added padding
-                  backgroundColor: "#F7F9FC", // Light background color
-                  width: "80%", // Larger dialog width
-                  maxWidth: 600, // Maximum width
-                },
-              }}
-            >
-              <Box sx={{ position: "relative" }}>
-                {/* Close Button */}
-                <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
-                  <CloseIcon />
+            open={shareOpen}
+            onClose={handleShareToggle}
+            TransitionComponent={Slide}
+            TransitionProps={{ direction: "up" }}
+            sx={{
+              "& .MuiPaper-root": {
+                borderRadius: "16px", // Rounded corners
+                padding: 4, // Added padding
+                backgroundColor: "#F7F9FC", // Light background color
+                width: "80%", // Larger dialog width
+                maxWidth: 600, // Maximum width
+              },
+            }}
+          >
+            <Box sx={{ position: "relative" }}>
+              {/* Close Button */}
+              <IconButton onClick={handleShareToggle} sx={{ position: "absolute", top: 16, right: 16, color: "#E53E3E" }}>
+                <CloseIcon />
+              </IconButton>
+
+              {/* Title */}
+              <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
+                Share this Itinerary
+              </Typography>
+
+              {/* Icon Buttons */}
+              <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
+                {/* Copy Link Button */}
+                <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
+                  <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
                 </IconButton>
 
-                {/* Title */}
-                <Typography variant="h6" color="#2D3748" textAlign="center" sx={{ mt: 3, fontWeight: "bold", fontSize: "1.2rem" }}>
-                  Share this Itinerary
-                </Typography>
-
-                {/* Icon Buttons */}
-                <Box sx={{ display: "flex", justifyContent: "space-evenly", mt: 4, mb: 2 }}>
-                  {/* Copy Link Button */}
-                  <IconButton onClick={handleCopyLink} sx={{ backgroundColor: "#38B2AC", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#319795" } }}>
-                    <LinkIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
-                  </IconButton>
-
-                  {/* Email Share Button */}
-                  <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
-                    <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
-                  </IconButton>
-                </Box>
+                {/* Email Share Button */}
+                <IconButton onClick={handleEmailShare} sx={{ backgroundColor: "#5A67D8", padding: 2, borderRadius: "8px", "&:hover": { backgroundColor: "#4C51BF" } }}>
+                  <EmailIcon sx={{ color: "#FFFFFF", fontSize: "2rem" }} /> {/* Increased icon size */}
+                </IconButton>
               </Box>
-            </Dialog>
+            </Box>
+          </Dialog>
 
           <CardActions sx={{ justifyContent: "space-between", padding: "24px 32px" }}>
-            {userType === "Tourist" && activity.status === "Active" && (
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
-                  <RemoveIcon />
-                </IconButton>
-                <Typography variant="h6" sx={{ mx: 1 }}>
-                  {ticketCount}
-                </Typography>
-                <IconButton onClick={handleIncrease}>
-                  <AddIcon />
-                </IconButton>
+            {userType === "Tourist" && (
+              <>
+                {activity.status === "Active" ? (
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <IconButton onClick={handleDecrease} disabled={ticketCount === 1}>
+                      <RemoveIcon />
+                    </IconButton>
+                    <Typography variant="h6" sx={{ mx: 1 }}>
+                      {ticketCount}
+                    </Typography>
+                    <IconButton onClick={handleIncrease}>
+                      <AddIcon />
+                    </IconButton>
 
-                {/* Position total price next to ticket count */}
-                <Typography variant="h6" color="#333" sx={{ mx: 2 }}>
-                  Total Price: {formatCurrency(totalPrice)}
-                </Typography>
+                    {/* Position total price next to ticket count */}
+                    <Typography variant="h6" color="#333" sx={{ mx: 2 }}>
+                      Total Price: {formatCurrency(totalPrice)}
+                    </Typography>
 
-                <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500 }}>
-                  Book Activity
-                </Button>
-              </Box>
+                    <Button variant="contained" color="primary" onClick={BookActivity} sx={{ fontSize: "1rem", fontWeight: 500 }}>
+                      Book Activity
+                    </Button>
+                  </Box>
+                ) : (
+                  <Typography variant="body1" color="error" sx={{ mt: 2, textAlign: "center", fontWeight: 500 }}>
+                    You cannot book this activity now as it is not active.
+                  </Typography>
+                )}
+              </>
             )}
 
             <Button variant="outlined" onClick={handleShareToggle} startIcon={<ShareIcon />} sx={{ fontSize: "1rem" }}>

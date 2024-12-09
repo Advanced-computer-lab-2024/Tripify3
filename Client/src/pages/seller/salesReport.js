@@ -124,6 +124,32 @@ const SalesReport = () => {
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF6666", "#AA66FF"];
 
+  const tableColumns = [
+    {
+      title: "Product Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (price) => `${price} EGP`,
+    },
+    {
+      title: "Quantity Sold",
+      dataIndex: "quantitySold",
+      key: "quantitySold",
+    },
+    {
+      title: "Total Revenue",
+      dataIndex: "revenue",
+      key: "revenue",
+      render: (revenue) => `${revenue} EGP`,
+    },
+  ];
+
+
   const barData = filteredData.products.map((product) => ({
     name: product.name,
     revenue: product.orders.reduce((sum, order) => sum + order.revenue, 0),
@@ -206,6 +232,10 @@ const SalesReport = () => {
       <Row justify="end" style={{ marginBottom: "20px" }}>
         <Button onClick={resetFilters}>Reset Filters</Button>
       </Row>
+
+            {/* Table */}
+            <Table columns={tableColumns} dataSource={filteredData.products} rowKey={(record) => record.productId} pagination={{ pageSize: 5 }} style={{ marginBottom: "20px" }} />
+
 
       {/* Charts */}
       <Row gutter={[16, 16]}>

@@ -75,7 +75,7 @@ const Products = () => {
       );
       if (getUserType() === "Tourist") {
         setProducts(
-          response.data.filter((product) => wishArray.includes(product._id))
+          response.data.filter((product) => wishArray.includes(product._id) && product.quantity > 0)
         );
       } else {
         setProducts(response.data);
@@ -116,7 +116,6 @@ const Products = () => {
         `http://localhost:8000/tourist/wishlist/get?touristId=${getUserId()}`
       );
       console.log(response.data.items);
-      console.log("===================================");
 
       setWishArray(response.data.items);
     } catch (error) {

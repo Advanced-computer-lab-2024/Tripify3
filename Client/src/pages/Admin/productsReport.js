@@ -131,6 +131,7 @@ const ProductsReport = () => {
       title: "Price",
       dataIndex: "price",
       key: "price",
+      render: (price) => `${price} EGP`,
     },
     {
       title: "Quantity Sold",
@@ -141,6 +142,7 @@ const ProductsReport = () => {
       title: "Total Revenue",
       dataIndex: "revenue",
       key: "revenue",
+      render: (revenue) => `${revenue} EGP`,
     },
   ];
 
