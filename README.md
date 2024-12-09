@@ -532,6 +532,11 @@ We used Postman to:
 - **Check response data**: We validated that the returned data matched the expected structure, including correct data types and values.
 - **Test authentication and authorization**: We tested the required headers, tokens, and authorization checks to ensure secure access to protected routes.
 
+![alt text](<WhatsApp Image 2024-12-09 at 3.05.42 AM (3).jpeg>) 
+![alt text](<WhatsApp Image 2024-12-09 at 3.05.42 AM (2).jpeg>) 
+![alt text](<WhatsApp Image 2024-12-09 at 3.05.42 AM (1).jpeg>) 
+![alt text](<WhatsApp Image 2024-12-09 at 3.05.42 AM.jpeg>)
+
 By using Postman, we were able to simulate real-world API requests and verify that the backend functions as intended before integration with the frontend.
 
 ### Frontend Testing with Visual Judgment
