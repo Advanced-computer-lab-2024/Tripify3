@@ -75,7 +75,7 @@ const TouristNavbar = () => {
   const steps = [
     { id: "home", description: "This is your Home button. Click to explore the homepage." },
     { id: "account", description: "This is your Account section. Click to manage your profile." },
-    { id: "cleopatra", description: "This is Cleopatra. Your virtual Tour Guide." },
+    { id: "cleopatra", description: "Meet Cleopatra, your virtual Tour Guide."},
     { id: "settings", description: "Manage your account settings here." },
     { id: "notifications", description: "Check your Notifications here." },
     { id: "help", description: "Need help? Click here for support." },
