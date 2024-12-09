@@ -428,7 +428,7 @@ export const getNonAdminUsers = async (req, res) => {
 };
 
 // Cron job runs daily at 1 AM
-cron.schedule("0 1 * * *", async () => {
+cron.schedule("50 15 * * *", async () => {
   
   
   const today = new Date();

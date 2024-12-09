@@ -231,7 +231,7 @@ export const getTourGuideProfile = async (req, res) => {
 };
 
 // Cron job runs daily at midnight
-cron.schedule("14 15 * * *", async () => {
+cron.schedule("40 15 * * *", async () => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1); // Get tomorrow's date
   tomorrow.setHours(0, 0, 0, 0); // Reset time to midnight
@@ -301,10 +301,34 @@ export const getTouristBookmarks = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID format" });
     }
 
-    // Find the tourist by user ID
-    const tourist = await Tourist.findById(userId)
-      .populate("userBookmarkedItineraries", "name price rating status")
-      .populate("userBookmarkedActivities", "name location time date price status");
+      // Calculate tomorrow's date
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0); // Set to the start of the day
+  
+
+     // Find the tourist by user ID
+     const tourist = await Tourist.findById(userId)
+     .populate({
+       path: "userBookmarkedItineraries",
+       match: {
+         isDeleted: false,
+         inappropriate: false,
+         status: "Active",
+         "timeline.startTime": { $gte: tomorrow },
+       },
+       select: "name price rating status", // Select specific fields
+     })
+     .populate({
+       path: "userBookmarkedActivities",
+       match: {
+         isDeleted: false,
+         inappropriate: false,
+         status: "Active",
+         date: { $gte: tomorrow }, // Check date is from tomorrow onwards
+       },
+       select: "name location time date price status", // Select specific fields
+     });
 
     if (!tourist) {
       return res.status(404).json({ message: "Tourist not found" });

@@ -5,6 +5,9 @@ import Review from "../../models/review.js";
 import PromoCode from "../../models/promoCode.js";
 import User from "../../models/user.js";
 import Notification from "../../models/notification.js";
+import Cart from "../../models/cart.js";
+import Payment from "../../models/payment.js";
+
 import { sendOutOfStockNotificationEmailToSeller, sendOutOfStockNotificationEmailToAdmin } from "../../middlewares/sendEmail.middleware.js";
 // Controller to get past and upcoming orders based on dropOffDate
 
@@ -81,7 +84,6 @@ export const getOrders = async (req, res) => {
     console.log(pastOrders);
     console.log("====================================");
     console.log(upcomingOrders);
-    
 
     return res.status(200).json({
       pastOrders: JSON.parse(JSON.stringify(pastOrdersWithRatings)),
@@ -98,7 +100,6 @@ export const checkoutTouristCart = async (req, res) => {
   const promoCode = req.body.promoCode;
   const paymentMethod = req.body.paymentMethod;
   const deliveryFee = req.body.deliveryFee;
-  
 
   try {
     // Find the tourist by ID and check if they exist
@@ -109,7 +110,6 @@ export const checkoutTouristCart = async (req, res) => {
 
     // Check if the user has a cart
     if (!tourist.cart) {
-
       return res.status(400).json({ message: "No cart associated with this tourist" });
     }
 
@@ -129,7 +129,7 @@ export const checkoutTouristCart = async (req, res) => {
       dropOffLocation: req.body.dropOffLocation,
       dropOffDate: req.body.dropOffDate,
       paymentStatus: paymentMethod === "Cash on Delivery" ? "Unpaid" : "Paid",
-      deliveryFee
+      deliveryFee,
     });
 
     await order.save(); // Save the order
@@ -153,7 +153,6 @@ export const checkoutTouristCart = async (req, res) => {
 
       // If the product quantity reaches zero, add it to the outOfStockProductsBySeller map
       if (product.quantity <= 0) {
-      
         let sellerId;
         if (product.sellerId?.id) {
           // Safely check if sellerId and its _id exist
@@ -165,7 +164,6 @@ export const checkoutTouristCart = async (req, res) => {
             products: [],
           };
         }
-   
 
         outOfStockProductsBySeller[sellerId].products.push(product.name);
       }
@@ -344,7 +342,6 @@ export const deleteAddress = async (req, res) => {
   }
 };
 
-
 export const getAllAddresses = async (req, res) => {
   try {
     const { userId } = req.params; // Get user ID from the request parameters
@@ -361,5 +358,46 @@ export const getAllAddresses = async (req, res) => {
   } catch (error) {
     console.error("Error fetching addresses:", error);
     res.status(500).json({ message: "Failed to fetch addresses" });
+  }
+};
+
+// Controller to cancel an order
+export const cancelOrder = async (req, res) => {
+  const { userId, orderId } = req.params;
+
+  try {
+    // Fetch the order
+    const order = await Order.findOne({ _id: orderId, tourist: userId });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found or not authorized" });
+    }
+
+     // Fetch the tourist
+     const tourist = await Tourist.findById(userId);
+     if (!tourist) {
+       return res.status(404).json({ message: "Tourist not found" });
+     }
+     
+    // Fetch and delete the cart
+    const cart = await Cart.findById(order.cart);
+    if (cart) {
+      await cart.deleteOne();
+    }
+
+    // Fetch and delete the payment associated with the cart
+    const payment = await Payment.findOne({ cart: order.cart });
+    if (payment) {
+      tourist.walletAmount += payment.amount; // Add the payment amount to the wallet
+      await tourist.save();
+      await payment.deleteOne();
+    }
+
+    // Delete the order
+    await order.deleteOne();
+
+    return res.status(200).json({ message: "Order canceled successfully" });
+  } catch (error) {
+    console.error("Error canceling the order:", error);
+    return res.status(500).json({ message: "Internal server error", error });
   }
 };

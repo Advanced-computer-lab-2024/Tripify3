@@ -44,6 +44,12 @@ export const getAllActivitiesForTourist = async (userId) => {
   return await axios.get(`${API_URL}/tourist/activity/get/${userId}`);
 };
 
+
+export const getAllActivitiesForGuest = async () => {
+  return await axios.get(`${API_URL}/guest/activity/get`);
+};
+
+
 export const getAllActivitiesForAdvertiser = async (userId) => {
   return await axios.get(`${API_URL}/advertiser/activity/${userId}`);
 };
