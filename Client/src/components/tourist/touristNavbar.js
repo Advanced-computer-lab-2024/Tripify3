@@ -5,6 +5,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CategoryIcon from "@mui/icons-material/Category";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import cleopatraImage from "../../assets/cleopatra.png";
 
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import Badge from "@mui/material/Badge";
@@ -74,6 +75,7 @@ const TouristNavbar = () => {
   const steps = [
     { id: "home", description: "This is your Home button. Click to explore the homepage." },
     { id: "account", description: "This is your Account section. Click to manage your profile." },
+    { id: "cleopatra", description: "This is Cleopatra. Your virtual Tour Guide." },
     { id: "settings", description: "Manage your account settings here." },
     { id: "notifications", description: "Check your Notifications here." },
     { id: "help", description: "Need help? Click here for support." },
@@ -314,6 +316,36 @@ const TouristNavbar = () => {
                 <BookmarkIcon sx={{ mr: 1 }} /> Bookmarked Events
               </MenuItem>
             </Menu>
+
+            <IconButton
+              ref={refs.current.cleopatra}
+              id="cleopatra"
+              color="inherit"
+              sx={{ color: "#fff", display: "flex", alignItems: "center", ml: 2}}
+              onClick={() => {
+                if (!showInstructions) {
+                  navigate("/chatbot");
+                }
+                if (showInstructions && steps[currentStep].id === "cleopatra") handleNextStep();
+              }}
+            >
+              <Box
+                component="img"
+                src={cleopatraImage}
+                alt="Cleopatra"
+                sx={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: "50%", // Make it circular
+                  objectFit: "cover", // Ensure the image fits well
+                  mr: 1, // Margin right for spacing
+                }}
+              />
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Cleopatra
+              </Typography>
+            </IconButton>
+
             <IconButton
               id="settings"
               ref={refs.current.settings}

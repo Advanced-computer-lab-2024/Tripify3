@@ -1,12 +1,12 @@
 import React from "react";
-import { Box, Typography, Button, Card, CardContent } from "@mui/material";
+import { Box, Typography, Button, Card, CardContent, Divider } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
-    navigate("/tourist/homepage"); // Navigate to the home page or desired route
+    navigate("/tourist/homepage");
   };
 
   return (
@@ -15,56 +15,60 @@ const PaymentSuccess = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      height="100vh"
-      bgcolor="#f0f4f8"
+      height="90vh"
+      bgcolor="#e8f5e9"
+      px={2} // Add some padding for responsiveness
     >
       <Card
-        style={{
+        sx={{
           maxWidth: 500,
           padding: "30px",
-          borderRadius: "20px",
-          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          borderRadius: "16px",
+          boxShadow: "0px 6px 24px rgba(0, 0, 0, 0.12)",
+          textAlign: "center",
         }}
       >
-        <CardContent style={{ textAlign: "center" }}>
-          <Typography variant="h3" gutterBottom>
-            🎉 Payment Successful! 🎉
-          </Typography>
-          <Typography variant="h6" gutterBottom color="textSecondary">
-            Thank you for your purchase. Your transaction was completed
-            successfully.
+        <CardContent>
+          <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+            <Typography variant="h3" sx={{ fontSize: "2.5rem", fontWeight: 600 }}>
+              🎉 Payment Successful! 🎉
+            </Typography>
+          </Box>
+          <Divider sx={{ mb: 3 }} />
+          <Typography variant="h6" color="textSecondary" sx={{ mb: 2 }}>
+            Thank you for your payment! Your transaction is complete. 🛒
           </Typography>
           <Typography
             variant="body1"
             color="textSecondary"
-            style={{ margin: "20px 0", lineHeight: "1.6" }}
+            sx={{ mb: 3, lineHeight: 1.6 }}
           >
-            Sit back and relax while we process your order. If you have any
-            questions, feel free to contact us.
+            🌟 Your order is being processed. You will receive a confirmation email shortly. For further assistance, feel free to reach out to our support team. 
           </Typography>
           <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
-            style={{
-              fontSize: "80px",
-              margin: "20px 0",
+            sx={{
+              fontSize: "5rem",
+              mb: 3,
+              color: "#4caf50", // Success green
             }}
           >
             ✅
           </Box>
           <Button
             variant="contained"
-            color="primary"
+            color="success"
             onClick={handleGoHome}
-            style={{
-              fontSize: "16px",
+            sx={{
+              fontSize: "1rem",
               fontWeight: "bold",
               padding: "10px 20px",
-              borderRadius: "10px",
+              borderRadius: "8px",
             }}
           >
-            Go to Homepage
+            🏠 Go to Homepage
           </Button>
         </CardContent>
       </Card>
