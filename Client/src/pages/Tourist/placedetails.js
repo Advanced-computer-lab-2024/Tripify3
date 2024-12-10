@@ -91,7 +91,7 @@ const PlaceDetails = () => {
     //   console.error("Error sending booking:", error);
     // }
 
-    navigate(`/tourist/payment/${price}/Place/${itemId}/${tickets}/${null}/${null}`);
+    navigate(`/tourist/payment/${price}/Place/${itemId}/${tickets}/${null}/${null}/${null}/${null}`);
   };
 
   const handleCopyLink = () => {

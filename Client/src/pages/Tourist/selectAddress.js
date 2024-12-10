@@ -44,7 +44,7 @@ const SelectAddress = () => {
     if (selectedLocation) {
       const dropOffLocation = selectedLocation.location;
       navigate(
-        `/tourist/payment/${price}/Product/${null}/${null}/${dropOffLocation}/${dropOffDate}/${delivery}`
+        `/tourist/payment/${price}/Product/${null}/${null}/${dropOffLocation}/${dropOffDate}/${delivery}/${null}`
       );
     }
   };

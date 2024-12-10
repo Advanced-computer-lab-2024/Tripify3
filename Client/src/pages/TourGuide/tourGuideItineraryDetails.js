@@ -182,7 +182,7 @@ const TourGuideItineraryDetails = () => {
         position: "relative",
       }}
     >
-      <Button variant="contained" color="primary" onClick={() => navigate("/tour-guide/itinerary")} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
+      <Button variant="contained" color="primary" onClick={() => navigate("/guest/itineraries")} sx={{ position: "absolute", top: 16, left: 16, fontSize: "1rem", fontWeight: 500 }}>
         Go Back
       </Button>
 
@@ -191,20 +191,23 @@ const TourGuideItineraryDetails = () => {
 
         <Box sx={{ flex: 1, maxWidth: "900px" }}>
           <Card sx={{ mt: 6, width: "100%", borderRadius: 3, boxShadow: 5, padding: 4, minHeight: "500px", position: "relative" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate(`/tour-guide/itinerary/edit/${itinerary._id}`)}
-              sx={{
-                position: "absolute", // Absolute positioning
-                top: 16, // Distance from the top of the card
-                right: 16, // Distance from the right of the card
-                fontSize: "1rem",
-                fontWeight: 500,
-              }}
-            >
-              Edit
-            </Button>
+          {userType === "Tour Guide" && (
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={() => navigate(`/tour-guide/itinerary/edit/${itinerary._id}`)}
+    sx={{
+      position: "absolute", // Absolute positioning
+      top: 16, // Distance from the top of the card
+      right: 16, // Distance from the right of the card
+      fontSize: "1rem",
+      fontWeight: 500,
+    }}
+  >
+    Edit
+  </Button>
+)}
+
             <CardContent>
               {/* Main Itinerary Header */}
               <Typography variant="h4" textAlign="center" sx={{ marginBottom: 2 }}>

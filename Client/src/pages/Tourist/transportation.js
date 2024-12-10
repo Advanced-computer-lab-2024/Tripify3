@@ -58,11 +58,11 @@ const Transportation = () => {
 
   const handleBooking = async () => {
     // Retrieve userId (tourist) from local storage
-    const userId = localStorage.getItem("userId");
-    if (!userId) {
-      alert("User not found in local storage");
-      return;
-    }
+    // const userId = localStorage.getItem("userId");
+    // if (!userId) {
+    //   alert("User not found in local storage");
+    //   return;
+    // }
 
     // Prepare booking details as a string (formatted)
     const details = `Source: ${source}, Destination: ${destination},Price: ${price}, Pickup Time: ${pickupTime.toLocaleString()}, Transport Type: ${transportType}`;
@@ -70,32 +70,34 @@ const Transportation = () => {
     // Set the price (this should already be calculated from your previous logic)
     const calculatedPrice = price; // Make sure price state is set correctly earlier
 
-    const booking = { tourist: userId, price: calculatedPrice, type: "Transportation", details: details };
+    // const booking = { tourist: userId, price: calculatedPrice, type: "Transportation", details: details };
 
-    setTouristData(booking);
-    try {
-      // Show loading indicator
-      setLoading(true);
-      setShowModal(true); // Show modal
+    navigate(`/tourist/payment/${calculatedPrice}/Transportation/${null}/${null}/${null}/${null}/${null}/${null}`);
+ 
+    // setTouristData(booking);
+    // try {
+    //   // Show loading indicator
+    //   setLoading(true);
+    //   setShowModal(true); // Show modal
 
-      // Send POST request to your API
-      const response = await axios.post("http://localhost:8000/tourist/booking/create", {
-        tourist: userId,
-        price: calculatedPrice,
-        type: "Transportation",
-        details,
-      });
+    //   // Send POST request to your API
+    //   const response = await axios.post("http://localhost:8000/tourist/booking/create", {
+    //     tourist: userId,
+    //     price: calculatedPrice,
+    //     type: "Transportation",
+    //     details,
+    //   });
 
-      // Handle successful booking response
-      setBookingSuccess(true); // Set booking success
-    } catch (error) {
-      // Handle errors (e.g., network issues)
-      console.error("Error booking:", error);
-      setBookingSuccess(false);
-    } finally {
-      // Hide loading indicator
-      setLoading(false);
-    }
+    //   // Handle successful booking response
+    //   setBookingSuccess(true); // Set booking success
+    // } catch (error) {
+    //   // Handle errors (e.g., network issues)
+    //   console.error("Error booking:", error);
+    //   setBookingSuccess(false);
+    // } finally {
+    //   // Hide loading indicator
+    //   setLoading(false);
+    // }
   };
   const exchangeRates = {
     USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)

@@ -11,7 +11,7 @@ import VisaPayment from "./visaPayment.js";
 export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecret, createPaymentIntent, originalPrice, promoCode, setPromoCode, discountedPrice }) {
   const stripe = useStripe();
   const elements = useElements();
-  const { price, tickets, itemId, type, dropOffLocation, dropOffDate, delivery } = useParams(); // Retrieve the price from the route params
+  const { price, tickets, itemId, type, dropOffLocation, dropOffDate, delivery, details } = useParams(); // Retrieve the price from the route params
   const userId = getUserId();
   const deliveryPrice = delivery ? parseFloat(delivery) || 0 : 0;
 
@@ -121,7 +121,7 @@ export default function CheckoutForm({setIsPromoValid, isPromoValid, clientSecre
           deliveryFee: deliveryPrice
         });
       } else {
-        const booking = { tourist: userId, price: calculateFinalPrice(), type, itemId, tickets };
+        const booking = { tourist: userId, price: calculateFinalPrice(), type, itemId, tickets, details };
 
         const response = await axios.post(`http://localhost:8000/tourist/booking/create`, booking);
 

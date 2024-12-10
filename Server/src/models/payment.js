@@ -6,7 +6,7 @@ const paymentSchema = new mongoose.Schema({
   tourist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tourist",
-    required: true
+    required: true,
   },
   paymentDate: { type: Date, default: Date.now },
   amount: { type: Number, required: true },
@@ -14,19 +14,17 @@ const paymentSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ["Pending", "Completed", "Failed"], default: "Completed" },
   cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
   booking: { type: mongoose.Schema.Types.ObjectId, ref: "Booking" },
-  type: { type: String, enum: ["Activity", "Itinerary", "Product", "App Product"] },
-
+  type: { type: String, enum: ["Activity", "Itinerary", "Product", "App Product", "Hotel", "Place", "Flight", "Transportation"] },
 });
 
-
-paymentSchema.post("save", async function(payment) {
-  console.log("Payment saved:", payment);  
+paymentSchema.post("save", async function (payment) {
+  console.log("Payment saved:", payment);
   if (payment.paymentStatus === "completed") {
     try {
       const user = await User.findById(payment.tourist);
-      console.log("User found:", user);  
+      console.log("User found:", user);
 
-      if (user && user.type === "Tourist") {  
+      if (user && user.type === "Tourist") {
         if (user.loyaltyPoints > 500000) {
           pointsMultiplier = 1.5;
         } else if (user.loyaltyPoints > 100000) {
@@ -36,21 +34,20 @@ paymentSchema.post("save", async function(payment) {
         }
 
         const pointsToAdd = payment.amount * pointsMultiplier;
-        console.log(`Points to add: ${pointsToAdd}`);  
+        console.log(`Points to add: ${pointsToAdd}`);
         user.loyaltyPoints += pointsToAdd;
 
-        await user.save().catch(error => {
+        await user.save().catch((error) => {
           console.error("Error saving user:", error);
         });
 
-        console.log("User loyalty points updated:", user.loyaltyPoints);  // Verify points update
+        console.log("User loyalty points updated:", user.loyaltyPoints); // Verify points update
       }
     } catch (error) {
       console.error("Error updating loyalty points:", error);
     }
   }
 });
-
 
 const Payment = mongoose.model("Payment", paymentSchema);
 export default Payment;

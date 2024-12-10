@@ -127,21 +127,23 @@ const LoadFlights = () => {
     Total Price: ${selectedFlight.price}
   `;
 
-    const booking = { tourist: userId, price: selectedFlight.price * 49, type: "Flight", details: flightDetails };
+    // const booking = { tourist: userId, price: selectedFlight.price * 49, type: "Flight", details: flightDetails };
 
-    setTouristData(booking);
+    navigate(`/tourist/payment/${selectedFlight.price * 49}/Flight/${null}/${null}/${null}/${null}/${null}/${flightDetails}`);
+ 
+    // setTouristData(booking);
 
-    try {
-      await axios.post("http://localhost:8000/tourist/booking/create", {
-        tourist: userId,
-        price: selectedFlight.price * 49,
-        type: "Flight",
-        details: flightDetails,
-      });
-      setBookingDialog(true); // Show booking confirmation dialog
-    } catch (error) {
-      console.error("Error creating booking:", error);
-    }
+    // try {
+    //   await axios.post("http://localhost:8000/tourist/booking/create", {
+    //     tourist: userId,
+    //     price: selectedFlight.price * 49,
+    //     type: "Flight",
+    //     details: flightDetails,
+    //   });
+    //   setBookingDialog(true); // Show booking confirmation dialog
+    // } catch (error) {
+    //   console.error("Error creating booking:", error);
+    // }
   };
 
   const closeBookingDialog = () => {

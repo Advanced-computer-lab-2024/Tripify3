@@ -11,7 +11,10 @@ import { sendItineraryReminderEmail, sendActivityReminderEmail } from "../../mid
 import mongoose from "mongoose";
 
 export const createBooking = async (req, res) => {
-  const { tourist, price, type, itemId, details, tickets } = req.body;
+  const { tourist, price, type, itemId, details } = req.body;
+  let { tickets } = req.body;
+  console.log(req.body);
+  
 
   try {
     let item;
@@ -51,7 +54,9 @@ export const createBooking = async (req, res) => {
       return res.status(404).json({ message: "Tourist not found" });
     }
 
-
+    if (tickets === null || tickets === "null") {
+      tickets = 0;
+    }
     // Create a new booking
     let booking = new Booking({
       tourist,
@@ -82,6 +87,8 @@ export const createBooking = async (req, res) => {
       booking: booking,
     });
   } catch (error) {
+    console.log(error);
+    
     res.status(500).json({ message: error.message });
   }
 };

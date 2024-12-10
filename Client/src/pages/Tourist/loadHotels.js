@@ -138,6 +138,7 @@ const LoadHotels = () => {
     return formattedAmount.replace(/(\D)(\d)/, "$1 $2");
   };
   const handleBookHotel = async () => {
+
     const currentDate = new Date().toISOString();
     const hotelDetails = `
     Hotel: ${selectedHotel.name}, 
@@ -148,25 +149,28 @@ const LoadHotels = () => {
     Children: ${children}, 
     Total Price: ${selectedHotel.total_rate?.extracted_lowest * 49}
   `;
-    setBookingDialog(true);
-    const booking = { tourist: userId, price: selectedHotel.total_rate?.extracted_lowest * 49, type: "Hotel", details: hotelDetails };
 
-    setTouristData(booking);
-    try {
-      setBookingLoading(true); // Start loading immediately
-      await axios.post("http://localhost:8000/tourist/booking/create", {
-        tourist: userId,
-        price: selectedHotel.total_rate?.extracted_lowest * 49,
-        type: "Hotel",
-        details: hotelDetails,
-      });
-      setOpenModal(false);
-      setBookingLoading(false);
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      setError("Failed to create booking. Please try again.");
-      setBookingLoading(false);
-    }
+  
+  navigate(`/tourist/payment/${selectedHotel.total_rate?.extracted_lowest * 49}/Hotel/${null}/${null}/${null}/${null}/${null}/${hotelDetails}`);
+    // setBookingDialog(true);
+    // const booking = { tourist: userId, price: selectedHotel.total_rate?.extracted_lowest * 49, type: "Hotel", details: hotelDetails };
+
+    // setTouristData(booking);
+    // try {
+    //   setBookingLoading(true); // Start loading immediately
+    //   await axios.post("http://localhost:8000/tourist/booking/create", {
+    //     tourist: userId,
+    //     price: selectedHotel.total_rate?.extracted_lowest * 49,
+    //     type: "Hotel",
+    //     details: hotelDetails,
+    //   });
+    //   setOpenModal(false);
+    //   setBookingLoading(false);
+    // } catch (error) {
+    //   console.error("Error creating booking:", error);
+    //   setError("Failed to create booking. Please try again.");
+    //   setBookingLoading(false);
+    // }
   };
 
   const closeBookingDialog = () => {

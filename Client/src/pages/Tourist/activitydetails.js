@@ -96,7 +96,7 @@ const ActivityDetails = () => {
     //   console.error("Error sending message:", error);
     // }
 
-    navigate(`/tourist/payment/${price}/Activity/${itemId}/${tickets}/${null}/${null}/${null}`);
+    navigate(`/tourist/payment/${price}/Activity/${itemId}/${tickets}/${null}/${null}/${null}/${null}`);
   };
   const exchangeRates = {
     USD: 1 / 49, // 1 EGP = 0.0204 USD (1 USD = 49 EGP)

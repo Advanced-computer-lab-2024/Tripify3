@@ -64,19 +64,7 @@ const GuestActivities = () => {
 
   // Fetch activities and categories when the component mounts
   useEffect(() => {
-    console.log("userPreferences");
-    console.log(userPreferences);
 
-    const fetchUserProfile = async () => {
-      try {
-        const response = await getUserProfile(userId);
-        setCurrency(response.data.userProfile.currency); // Set user's selected currency
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-
-    fetchUserProfile();
     const fetchData = async () => {
       try {
         const fetchActivities =  userType === "Guest" ? getAllActivitiesForGuest : getAllActivities;
