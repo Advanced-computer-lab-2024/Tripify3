@@ -48,12 +48,19 @@ Unlike generic travel platforms, Tripify focuses specifically on Egypt, deliveri
 
 ## Code Style and Architecture
 
-### Server (Backend)
-The server is built using **Node.js** and is structured using the **MVC (Model-View-Controller)** architecture to ensure clean and maintainable code.
+## Server (Backend)
+The backend server is built using **Node.js** and follows the **MVC (Model-View-Controller)** architecture, ensuring clean and maintainable code. It is part of the **MERN stack** and utilizes the following core components:
+
+- **Node.js**: Provides a runtime environment for executing server-side code.
+- **Express.js**: A web framework used for creating robust APIs and managing routing and middleware.
+- **MongoDB**: A NoSQL database used for storing and managing application data, with **Mongoose** as the Object Data Modeling (ODM) library for MongoDB.
+
+### Directory Structure
+The server is structured into the following components:
 
 - **Models**:
   - Located in the `models` folder.
-  - Define the schema and handle database interactions using ORM (Mongoose).
+  - Define the schema and handle database interactions using **Mongoose**.
 
 - **Controllers**:
   - Located in the `controllers` folder.
@@ -61,11 +68,13 @@ The server is built using **Node.js** and is structured using the **MVC (Model-V
 
 - **Routes**:
   - Located in the `routes` folder.
-  - Define API endpoints and map them to the corresponding controller functions.
+  - Define API endpoints and map them to the corresponding controller functions using **Express.js**.
 
 - **Middlewares**:
   - Located in the `middlewares` folder.
   - Handle tasks such as authentication, validation, and error handling.
+
+This combination of technologies and structure makes the backend robust, scalable, and efficient.
 
 
 ### Client (Frontend)
